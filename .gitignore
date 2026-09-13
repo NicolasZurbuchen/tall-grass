@@ -1,0 +1,55 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Kotlin Intermediate files
+.kotlin/
+kotlin-js-store/
+
+# Local configuration
+local.properties
+
+# Android
+*.apk
+*.ap_
+*.aab
+captures/
+.externalNativeBuild
+.cxx/
+
+# iOS & Xcode
+# Specifically ignore user settings and intermediate files
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+DerivedData/
+*.xcodeproj/project.xcworkspace/
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# IntelliJ IDEA & Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Project Specific
+.artifacts/
+.claude/
+docs/superpowers/

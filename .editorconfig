@@ -1,0 +1,40 @@
+root = true
+
+[*.{kt,kts}]
+
+# Compose — function naming
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# Compose — disable too-rigid rules
+ktlint_standard_chain-method-continuation = disabled
+
+# Compose — theme and design system. Things the theme or the shell provides once and every screen reads.
+compose_allowed_composition_locals = LocalTallGrassColors,LocalSpacing,LocalShimmerAlpha,LocalSharedTransitionScope
+
+# Compose — enforce M3 only
+compose_disallow_material2 = true
+
+# Compose — Koin ViewModel factory
+compose_view_model_factories = koinViewModel
+
+# Compose — modifier visibility
+compose_check_modifiers_for_visibility = public_and_internal
+
+# Compose — preview naming
+compose_preview_naming_enabled = true
+compose_preview_naming_strategy = suffix
+
+# Compose — Route pattern (ViewModel forwarding is intentional in Routes)
+compose_allowed_forwarding = .*Route
+
+# Compose — past-tense completion callbacks (explicitly allowlisted)
+# compose_allowed_lambda_parameter_names = onAuthenticated
+
+# Compose — unstable collections (enable when ready to adopt ImmutableList)
+# compose_disallow_unstable_collections = true
+
+[**/build.gradle.kts]
+ktlint = disabled
+
+[**/generated/**]
+ktlint = disabled
