@@ -68,6 +68,16 @@
   .totals { display:flex; align-items:center; justify-content:space-between; margin-top:16px;
             padding-top:15px; border-top:1.5px solid #f0f2f8; }
   .tot { font-size:9.5px; font-weight:700; letter-spacing:.07em; color:#b0b4c6; }
+
+  /* symmetric comparison row: value | label | value. Identical values grey out both sides. */
+  .kv{display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;gap:8px;padding:9px 0;
+      border-bottom:1px solid #f6f7fb}
+  .kv:last-child{border-bottom:0}
+  .kl,.kr{font-size:11px;font-weight:600;line-height:1.3}
+  .kl{text-align:right}
+  .kr{text-align:left}
+  .kk{font-size:8.5px;font-weight:700;letter-spacing:.05em;color:#9095ad;text-align:center;text-transform:uppercase}
+  .kk i{display:block;font-style:normal;font-size:7.5px;color:#c8ccda;letter-spacing:.03em;margin-top:2px}
   .tv { font-size:21px; font-weight:700; }
 
   /* matchup */
@@ -80,10 +90,6 @@
           animation:pop .45s cubic-bezier(.3,1.5,.5,1) both .2s; }
   .note { font-size:10.5px; color:#9095ad; line-height:1.5; margin:11px 2px 0; }
 
-  .verdict { background:#2b2f45; color:#fff; border-radius:20px; padding:16px 17px; animation:rise .5s both .1s; }
-  .verdict .h { font-size:10px; font-weight:700; letter-spacing:.09em; color:rgba(255,255,255,.5); margin-bottom:7px; }
-  .verdict .t { font-size:13px; line-height:1.5; }
-  .verdict .t b { color:#FF9D5C; }
 
   /* side notes */
   .notes { width:280px; font-size:12.5px; line-height:1.6; color:#5b6079; flex:0 0 auto; padding-top:8px; }
@@ -122,9 +128,15 @@ const SP = n => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprite
 const TC = { fire:'#FF9D5C', flying:'#8FA9F0', dragon:'#6A5BD6', ground:'#D79B4A' };
 
 const A = { id:6,   name:'Charizard', no:'#006', types:['Fire','Flying'],  color:'#FF9D5C',
-            stats:[78,84,78,109,85,100] };
+            stats:[78,84,78,109,85,100],
+            abilities:['Blaze'], hidden:'Solar Power',
+            height:'1.7 m', weight:'90.5 kg', eggs:'Monster, Dragon',
+            catch:'45', growth:'Medium Slow', hatch:'20 cycles' };
 const B = { id:445, name:'Garchomp',  no:'#445', types:['Dragon','Ground'], color:'#6A5BD6',
-            stats:[108,130,95,80,85,102] };
+            stats:[108,130,95,80,85,102],
+            abilities:['Sand Veil'], hidden:'Rough Skin',
+            height:'1.9 m', weight:'95.0 kg', eggs:'Monster, Dragon',
+            catch:'45', growth:'Slow', hatch:'40 cycles' };
 
 const LABELS = ['HP','ATK','DEF','SP.ATK','SP.DEF','SPEED'];
 const MAX = 160;
@@ -187,16 +199,38 @@ function render() {
       + '<span class="tv" style="color:' + (rt>lt?r.color:'#c2c6d6') + '">' + rt + '</span></div></div>'
     + '</div>'
 
+    + '<div class="sect">ABILITIES</div>'
+    + '<div class="card" style="animation-delay:.26s">'
+      + kv('Ability', l.abilities.join(', '), r.abilities.join(', '), l, r)
+      + kv('Hidden', l.hidden, r.hidden, l, r)
+    + '</div>'
+
     + '<div class="sect">TYPE MATCHUP &mdash; STAB ONLY</div>'
     + '<div class="card" style="animation-delay:.32s">' + mu
       + '<div class="note">Ability effects and coverage moves are not counted here.</div></div>'
 
-    + '<div class="verdict"><div class="h">TAKEAWAY</div><div class="t">'
-    + (flip
-        ? '<b>Garchomp</b> wins on raw bulk and attack, but its Ground STAB cannot touch Charizard at all.'
-        : '<b>Charizard</b> is outclassed on totals &mdash; yet it is immune to Garchomp\'s Ground STAB and only takes neutral Dragon.')
-    + '</div></div>'
+    + '<div class="sect">DETAILS</div>'
+    + '<div class="card" style="animation-delay:.38s">'
+      + kv('Height', l.height, r.height, l, r)
+      + kv('Weight', l.weight, r.weight, l, r)
+      + kv('Egg groups', l.eggs, r.eggs, l, r)
+      + kv('Catch rate', l.catch, r.catch, l, r)
+      + kv('Growth rate', l.growth, r.growth, l, r)
+      + kv('Hatch time', l.hatch, r.hatch, l, r)
+    + '</div>'
+
+    // No takeaway card. The split hero and the diverging bars already say who is bigger,
+    // and the matchup card already says Ground does nothing. A written verdict would be
+    // the app forming an opinion — the thing issue #16 removed from the Team Builder.
     + '</div>';
+}
+
+// A comparison row. Identical values grey out on both sides — same rule as a tied stat.
+function kv(label, lv, rv, l, r) {
+  const same = lv === rv;
+  return '<div class="kv"><span class="kl" style="color:' + (same ? '#c2c6d6' : l.color) + '">' + lv + '</span>'
+    + '<span class="kk">' + label + (same ? '<i>same</i>' : '') + '</span>'
+    + '<span class="kr" style="color:' + (same ? '#c2c6d6' : r.color) + '">' + rv + '</span></div>';
 }
 
 function mon(m, cls) {
