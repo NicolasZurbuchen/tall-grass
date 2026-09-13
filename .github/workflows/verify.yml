@@ -1,0 +1,161 @@
+name: verify
+
+# The commands CLAUDE.md asks for before calling anything done, run by a machine instead of by
+# memory. Until this existed, every Konsist rule, every test file and the migration check all
+# depended on a human typing four things in the right order — and the Konsist one silently reported
+# a stale pass until the task was pinned to always run.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A superseded run on the same branch is only ever noise, so cancel it.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: konsist · tests · ktlint · migration
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # A tampered wrapper jar executes arbitrary code in every build that runs it, and this repo is
+      # public. One step, checked against the published Gradle checksums.
+      - name: Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Each command is its own step, and every one runs even after an earlier failure. Chaining
+      # them would report only the first, which is exactly the loop CLAUDE.md warns about: you fix
+      # ktlint, push, wait, and only then discover Konsist. They catch different things — ktlint has
+      # a history of finding violations across files a narrower run never touches.
+      #
+      # `!cancelled()` rather than `always()`: a cancelled run should stop, not grind through four
+      # more Gradle invocations.
+      - name: Konsist — architecture rules
+        run: ./gradlew :konsistTest:test
+
+      - name: Unit tests
+        if: ${{ !cancelled() }}
+        run: ./gradlew :shared:testAndroidHostTest
+
+      - name: ktlint
+        if: ${{ !cancelled() }}
+        run: ./gradlew ktlintCheck
+
+      # The odd one out, and the reason it is on the list: a table added to a .sq file without a
+      # matching .sqm compiles, runs and passes every other command here. It only breaks on a device
+      # that already had the database.
+      - name: Database migration
+        if: ${{ !cancelled() }}
+        run: ./gradlew :shared:verifyCommonMainAppDatabaseMigration
+
+      # The build already writes ktlint HTML/JSON/checkstyle reports and JUnit XML, and nothing has
+      # ever read them. On a red run they are the difference between a log line and the file.
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-reports
+          path: |
+            **/build/reports/ktlint/**
+            **/build/reports/tests/**
+            **/build/test-results/**/*.xml
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # The commands above never compile for Kotlin/Native and never run a test on it, so half of a
+  # Multiplatform project would be verified by compiling the other half. Not academic: rounding,
+  # number formatting and duration arithmetic are all places JVM and Native are allowed to disagree.
+  #
+  # macOS is required to build an iOS target at all, and is free here because the repo is public. A
+  # private fork should expect this job to cost minutes and may want to run it on a schedule
+  # instead.
+  ios:
+    name: ios — compile · commonTest on native
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile the iOS framework
+        run: ./gradlew :shared:compileKotlinIosSimulatorArm64
+
+      # The same commonTest sources the JVM already runs, on Native this time. The runner is arm64,
+      # which is what iosSimulatorArm64 wants.
+      - name: Run commonTest on iOS
+        if: ${{ !cancelled() }}
+        run: ./gradlew :shared:iosSimulatorArm64Test
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/test-results/**/*.xml
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # Nothing in the four commands builds the app. A broken manifest, a missing resource or an R8
+  # problem lives entirely in `:androidApp`, which the shared tests never touch.
+  android:
+    name: android — assemble · lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble the debug app
+        run: ./gradlew :androidApp:assembleDebug
+
+      # Android Lint sees things ktlint and Konsist cannot: manifest problems, deprecated platform
+      # APIs, and accessibility — including whether the contentDescriptions the code claims are
+      # actually there.
+      - name: Android Lint
+        if: ${{ !cancelled() }}
+        run: ./gradlew :androidApp:lintDebug
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            androidApp/build/reports/**
+          retention-days: 14
+          if-no-files-found: ignore

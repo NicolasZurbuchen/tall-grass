@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Tall Grass</string>
+    <string name="home_subtitle">What are you looking for?</string>
+
+    <string name="home_tile_pokedex">Pokédex</string>
+    <string name="home_tile_moves">Moves</string>
+    <string name="home_tile_abilities">Abilities</string>
+    <string name="home_tile_items">Items</string>
+    <string name="home_tile_regions">Regions</string>
+    <string name="home_tile_type_chart">Type Chart</string>
+    <string name="home_tile_team_builder">Team Builder</string>
+    <string name="home_tile_compare">Compare</string>
+
+    <string name="error_retry">Retry</string>
+    <string name="error_dismiss">Dismiss</string>
+    <string name="error_network_unavailable_title">No internet connection</string>
+    <string name="error_network_unavailable_subtitle">Please check your network settings.</string>
+    <string name="error_network_timeout_title">Request timed out</string>
+    <string name="error_network_timeout_subtitle">The server took too long to respond.</string>
+    <string name="error_network_http_title">Network error</string>
+    <string name="error_network_http_subtitle_default">Something went wrong. Try again.</string>
+    <string name="error_database_query_failed_title">Couldn\'t read from storage</string>
+    <string name="error_database_generic_subtitle">Something went wrong. Try again.</string>
+    <string name="error_database_insert_failed_title">Couldn\'t save to storage</string>
+    <string name="error_unexpected_title">Something went wrong</string>
+    <string name="error_unexpected_subtitle">Please try again.</string>
+</resources>

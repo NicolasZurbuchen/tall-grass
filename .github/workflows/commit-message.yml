@@ -1,0 +1,38 @@
+name: commit message
+
+# commitlint runs from a husky `commit-msg` hook, which is local, opt-in and skipped by
+# `--no-verify`. The convention it enforces is not cosmetic — `agents/agent-commit-convention.md` is
+# a decision procedure whose whole value is that the type and scope are picked the same way every
+# time, and a scope enum only means something if nothing can land outside it.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commit-message-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: conventional commits
+    runs-on: ubuntu-latest
+
+    steps:
+      # commitlint needs the commits themselves, so the default shallow clone is not enough.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install commitlint
+        run: npm install --no-save @commitlint/cli @commitlint/config-conventional
+
+      # Every commit on the branch, not just the tip: a squash merge would hide a bad message, and
+      # the convention is worth nothing if only the last message is read.
+      - name: Lint commit messages
+        run: npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose

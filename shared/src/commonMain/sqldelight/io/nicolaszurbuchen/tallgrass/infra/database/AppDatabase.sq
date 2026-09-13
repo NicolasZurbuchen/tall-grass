@@ -1,0 +1,9 @@
+-- The user-owned database, and it is deliberately empty.
+--
+-- Everything the app reads about Pokemon lives in the generated, read-only pokedex.db, which is
+-- replaced whole-file and needs no migrations. This database holds only what the user creates --
+-- favourites, saved teams, the remembered game, settings -- and none of that exists yet.
+--
+-- It is declared now rather than later because the driver, the Koin module and the migration
+-- verification are all wired around it, and a schema with no tables keeps that path compiling and
+-- checked instead of leaving it to be rebuilt from memory when the first table lands.
