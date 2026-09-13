@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compare screen — mock</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#e7e9f1; font-family:Poppins,system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased; color:#2b2f45; }
+  .stage { display:flex; gap:34px; align-items:flex-start; justify-content:center; padding:34px 20px 60px; flex-wrap:wrap; }
+
+  /* phone */
+  .phone { width:375px; height:812px; background:#fff; border-radius:40px; overflow:hidden; position:relative;
+           box-shadow:0 40px 90px -40px rgba(40,44,80,.6), 0 0 0 9px #1a1d2b; flex:0 0 auto; }
+  .scroll { position:absolute; inset:0; overflow-y:auto; }
+  .scroll::-webkit-scrollbar { width:0; }
+
+  /* header */
+  .hero { position:relative; height:300px; border-radius:0 0 34px 34px; overflow:hidden; }
+  .half { position:absolute; top:0; bottom:0; width:58%; }
+  .half.l { left:0;  clip-path:polygon(0 0, 100% 0, 76% 100%, 0 100%); }
+  .half.r { right:0; clip-path:polygon(24% 0, 100% 0, 100% 100%, 0 100%); }
+  .statusbar { position:absolute; top:0; left:0; right:0; height:44px; display:flex; justify-content:space-between;
+               align-items:center; padding:0 20px; color:#fff; font-size:12px; font-weight:600; z-index:5; opacity:.9; }
+  .navrow { position:absolute; top:52px; left:0; right:0; display:flex; justify-content:space-between;
+            align-items:center; padding:0 18px; z-index:5; }
+  .icon { width:34px; height:34px; border-radius:12px; background:rgba(255,255,255,.22); color:#fff;
+          display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer; backdrop-filter:blur(4px); }
+  .title { color:#fff; font-size:15px; font-weight:600; letter-spacing:.01em; }
+
+  .mons { position:absolute; top:92px; left:0; right:0; display:flex; z-index:3; }
+  .mon { flex:1; text-align:center; }
+  .art { width:118px; height:118px; margin:0 auto; background-size:contain; background-repeat:no-repeat;
+         background-position:center; filter:drop-shadow(0 14px 18px rgba(0,0,0,.24)); animation:artIn .55s cubic-bezier(.22,.9,.24,1) both; }
+  .mon.b .art { animation-delay:.09s; }
+  .mon .nm  { color:#fff; font-size:17px; font-weight:600; margin-top:8px; animation:heroUp .5s both .14s; }
+  .mon .no  { color:rgba(255,255,255,.72); font-size:11px; font-weight:600; animation:heroUp .5s both .18s; }
+  .tags { display:flex; gap:5px; justify-content:center; margin-top:7px; }
+  .tag { background:rgba(255,255,255,.26); color:#fff; font-size:9.5px; font-weight:600;
+         padding:3.5px 10px; border-radius:999px; animation:pop .42s both .22s; }
+
+  .vs { position:absolute; left:50%; top:150px; transform:translateX(-50%); z-index:6;
+        width:46px; height:46px; border-radius:50%; background:#fff; color:#2b2f45;
+        display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+        box-shadow:0 12px 24px -10px rgba(40,44,80,.55); animation:pop .5s cubic-bezier(.3,1.5,.5,1) both .3s; }
+  .swap { position:absolute; left:50%; bottom:18px; transform:translateX(-50%); z-index:6;
+          background:rgba(255,255,255,.9); border:0; border-radius:999px; padding:8px 18px; cursor:pointer;
+          font-family:inherit; font-size:11.5px; font-weight:600; color:#2b2f45;
+          box-shadow:0 10px 22px -12px rgba(40,44,80,.5); animation:fadeIn .5s both .4s; }
+
+  /* body */
+  .body { padding:20px 18px 40px; }
+  .sect { font-size:11px; font-weight:700; letter-spacing:.09em; color:#b0b4c6; margin:0 0 12px 2px; }
+  .card { background:#fff; border-radius:22px; padding:18px 16px; margin-bottom:18px;
+          box-shadow:0 18px 38px -30px rgba(40,44,80,.75); animation:rise .5s both; }
+
+  /* diverging stat rows */
+  .srow { display:grid; grid-template-columns:30px 1fr 62px 1fr 30px; align-items:center; gap:7px; margin-bottom:13px; }
+  .num { font-size:12px; font-weight:700; }
+  .num.l { text-align:right; } .num.r { text-align:left; }
+  .num.lose { color:#c2c6d6; font-weight:600; }
+  .lane { height:7px; background:#f0f2f8; border-radius:4px; overflow:hidden; display:flex; }
+  .lane.l { justify-content:flex-end; }
+  .bar { height:100%; border-radius:4px; transform-origin:right; animation:grow .62s cubic-bezier(.22,.9,.24,1) both; }
+  .lane.r .bar { transform-origin:left; }
+  .slab { font-size:9.5px; font-weight:700; letter-spacing:.05em; color:#9095ad; text-align:center; }
+
+  .totals { display:flex; align-items:center; justify-content:space-between; margin-top:16px;
+            padding-top:15px; border-top:1.5px solid #f0f2f8; }
+  .tot { font-size:9.5px; font-weight:700; letter-spacing:.07em; color:#b0b4c6; }
+
+  /* symmetric comparison row: value | label | value. Identical values grey out both sides. */
+  .kv{display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;gap:8px;padding:9px 0;
+      border-bottom:1px solid #f6f7fb}
+  .kv:last-child{border-bottom:0}
+  .kl,.kr{font-size:11px;font-weight:600;line-height:1.3}
+  .kl{text-align:right}
+  .kr{text-align:left}
+  .kk{font-size:8.5px;font-weight:700;letter-spacing:.05em;color:#9095ad;text-align:center;text-transform:uppercase}
+  .kk i{display:block;font-style:normal;font-size:7.5px;color:#c8ccda;letter-spacing:.03em;margin-top:2px}
+  .tv { font-size:21px; font-weight:700; }
+
+  /* matchup */
+  .mu { display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:15px;
+        background:#f7f8fc; margin-bottom:9px; animation:rise .45s both; }
+  .mu .who { width:26px; height:26px; border-radius:50%; background-size:cover; flex:0 0 26px; }
+  .mu .txt { flex:1; font-size:11.5px; line-height:1.35; color:#6d7288; }
+  .mu .txt b { color:#2b2f45; font-weight:600; }
+  .mult { font-size:12.5px; font-weight:700; padding:5px 11px; border-radius:999px; color:#fff;
+          animation:pop .45s cubic-bezier(.3,1.5,.5,1) both .2s; }
+  .note { font-size:10.5px; color:#9095ad; line-height:1.5; margin:11px 2px 0; }
+
+
+  /* side notes */
+  .notes { width:280px; font-size:12.5px; line-height:1.6; color:#5b6079; flex:0 0 auto; padding-top:8px; }
+  .notes h3 { font-size:13px; color:#2b2f45; margin:0 0 10px; }
+  .notes li { margin-bottom:9px; }
+  .notes ul { padding-left:17px; margin:0 0 20px; }
+  .btn { border:0; background:#2b2f45; color:#fff; border-radius:12px; padding:10px 16px;
+         font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+
+  @keyframes artIn  { from{opacity:0;transform:translateY(22px) scale(.86)} to{opacity:1;transform:none} }
+  @keyframes heroUp { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:none} }
+  @keyframes pop    { from{opacity:0;transform:scale(.72)} to{opacity:1;transform:none} }
+  @keyframes rise   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+  @keyframes grow   { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><div class="scroll" id="screen"></div></div>
+
+  <div class="notes">
+    <h3>Compare &mdash; mock</h3>
+    <ul>
+      <li><b>Split hero.</b> Diagonal clip, each side tinted by that Pok&eacute;mon's primary type. Sprites face each other; the VS badge springs in last.</li>
+      <li><b>Diverging stat bars.</b> Bars grow outward from the centre label, each scaled against 160. The winner's number is solid, the loser's greys out &mdash; so you read the shape, not the digits.</li>
+      <li><b>Matchup card.</b> Each side's STAB against the other. This pairing is the showcase: Garchomp's Ground STAB is <b>0&times;</b> into Charizard's Flying &mdash; it literally cannot connect.</li>
+      <li><b>Swap</b> re-runs every animation with the sides exchanged, which is the whole reason this screen is fun to build.</li>
+    </ul>
+    <button class="btn" onclick="swap()">Replay with sides swapped</button>
+  </div>
+</div>
+
+<script>
+const SP = n => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + n + '.png';
+const TC = { fire:'#FF9D5C', flying:'#8FA9F0', dragon:'#6A5BD6', ground:'#D79B4A' };
+
+const A = { id:6,   name:'Charizard', no:'#006', types:['Fire','Flying'],  color:'#FF9D5C',
+            stats:[78,84,78,109,85,100],
+            abilities:['Blaze'], hidden:'Solar Power',
+            height:'1.7 m', weight:'90.5 kg', eggs:'Monster, Dragon',
+            catch:'45', growth:'Medium Slow', hatch:'20 cycles' };
+const B = { id:445, name:'Garchomp',  no:'#445', types:['Dragon','Ground'], color:'#6A5BD6',
+            stats:[108,130,95,80,85,102],
+            abilities:['Sand Veil'], hidden:'Rough Skin',
+            height:'1.9 m', weight:'95.0 kg', eggs:'Monster, Dragon',
+            catch:'45', growth:'Slow', hatch:'40 cycles' };
+
+const LABELS = ['HP','ATK','DEF','SP.ATK','SP.DEF','SPEED'];
+const MAX = 160;
+let flip = false;
+
+function render() {
+  const l = flip ? B : A, r = flip ? A : B;
+  const lt = l.stats.reduce((a,b)=>a+b,0), rt = r.stats.reduce((a,b)=>a+b,0);
+
+  const rows = LABELS.map((lab,i) => {
+    const lv = l.stats[i], rv = r.stats[i];
+    const lw = lv > rv, rw = rv > lv;
+    return '<div class="srow">'
+      + '<div class="num l ' + (lw?'':'lose') + '" style="color:' + (lw?l.color:'') + '">' + lv + '</div>'
+      + '<div class="lane l"><div class="bar" style="width:' + (lv/MAX*100) + '%;background:' + l.color
+        + ';opacity:' + (lw?1:.4) + ';animation-delay:' + (.30+i*.06).toFixed(2) + 's"></div></div>'
+      + '<div class="slab">' + lab + '</div>'
+      + '<div class="lane r"><div class="bar" style="width:' + (rv/MAX*100) + '%;background:' + r.color
+        + ';opacity:' + (rw?1:.4) + ';animation-delay:' + (.30+i*.06).toFixed(2) + 's"></div></div>'
+      + '<div class="num r ' + (rw?'':'lose') + '" style="color:' + (rw?r.color:'') + '">' + rv + '</div>'
+      + '</div>';
+  }).join('');
+
+  // STAB matchups, hard-coded for this pairing
+  const mu = [
+    { from:l, mult: flip ? '0&times;' : '0.5&times;',
+      txt: flip ? '<b>Ground</b> vs Fire / <b>Flying</b>' : '<b>Fire</b> vs <b>Dragon</b> / Ground',
+      col: flip ? '#9095ad' : '#8FA9F0',
+      tail: flip ? 'no effect' : 'resisted' },
+    { from:r, mult: flip ? '0.5&times;' : '0&times;',
+      txt: flip ? '<b>Fire</b> vs <b>Dragon</b> / Ground' : '<b>Ground</b> vs Fire / <b>Flying</b>',
+      col: flip ? '#8FA9F0' : '#9095ad',
+      tail: flip ? 'resisted' : 'no effect' }
+  ].map((m,i) =>
+    '<div class="mu" style="animation-delay:' + (.5+i*.08).toFixed(2) + 's">'
+    + '<div class="who" style="background-image:url(' + SP(m.from.id) + ')"></div>'
+    + '<div class="txt">' + m.txt + '<br><span style="font-size:10px">' + m.tail + '</span></div>'
+    + '<div class="mult" style="background:' + m.col + '">' + m.mult + '</div></div>'
+  ).join('');
+
+  document.getElementById('screen').innerHTML =
+    '<div class="hero">'
+    + '<div class="half l" style="background:' + l.color + '"></div>'
+    + '<div class="half r" style="background:' + r.color + '"></div>'
+    + '<div class="statusbar"><span>9:41</span><span>&#9679;&#9679;&#9679; &#9660;</span></div>'
+    + '<div class="navrow"><div class="icon">&#8592;</div><div class="title">Compare</div>'
+      + '<div class="icon" onclick="swap()" title="Swap sides">&#8646;</div></div>'
+    + '<div class="mons">'
+      + mon(l,'a') + mon(r,'b')
+    + '</div>'
+    + '<div class="vs">VS</div>'
+    + '</div>'
+
+    + '<div class="body">'
+    + '<div class="sect">BASE STATS</div>'
+    + '<div class="card" style="animation-delay:.2s">' + rows
+      + '<div class="totals"><div class="tot">TOTAL</div>'
+      + '<div><span class="tv" style="color:' + (lt>rt?l.color:'#c2c6d6') + '">' + lt + '</span>'
+      + '<span style="color:#d8dbe6;margin:0 9px">/</span>'
+      + '<span class="tv" style="color:' + (rt>lt?r.color:'#c2c6d6') + '">' + rt + '</span></div></div>'
+    + '</div>'
+
+    + '<div class="sect">ABILITIES</div>'
+    + '<div class="card" style="animation-delay:.26s">'
+      + kv('Ability', l.abilities.join(', '), r.abilities.join(', '), l, r)
+      + kv('Hidden', l.hidden, r.hidden, l, r)
+    + '</div>'
+
+    + '<div class="sect">TYPE MATCHUP &mdash; STAB ONLY</div>'
+    + '<div class="card" style="animation-delay:.32s">' + mu
+      + '<div class="note">Ability effects and coverage moves are not counted here.</div></div>'
+
+    + '<div class="sect">DETAILS</div>'
+    + '<div class="card" style="animation-delay:.38s">'
+      + kv('Height', l.height, r.height, l, r)
+      + kv('Weight', l.weight, r.weight, l, r)
+      + kv('Egg groups', l.eggs, r.eggs, l, r)
+      + kv('Catch rate', l.catch, r.catch, l, r)
+      + kv('Growth rate', l.growth, r.growth, l, r)
+      + kv('Hatch time', l.hatch, r.hatch, l, r)
+    + '</div>'
+
+    // No takeaway card. The split hero and the diverging bars already say who is bigger,
+    // and the matchup card already says Ground does nothing. A written verdict would be
+    // the app forming an opinion — the thing issue #16 removed from the Team Builder.
+    + '</div>';
+}
+
+// A comparison row. Identical values grey out on both sides — same rule as a tied stat.
+function kv(label, lv, rv, l, r) {
+  const same = lv === rv;
+  return '<div class="kv"><span class="kl" style="color:' + (same ? '#c2c6d6' : l.color) + '">' + lv + '</span>'
+    + '<span class="kk">' + label + (same ? '<i>same</i>' : '') + '</span>'
+    + '<span class="kr" style="color:' + (same ? '#c2c6d6' : r.color) + '">' + rv + '</span></div>';
+}
+
+function mon(m, cls) {
+  return '<div class="mon ' + cls + '">'
+    + '<div class="art" style="background-image:url(' + SP(m.id) + ')"></div>'
+    + '<div class="nm">' + m.name + '</div><div class="no">' + m.no + '</div>'
+    + '<div class="tags">' + m.types.map(t => '<div class="tag">' + t + '</div>').join('') + '</div>'
+    + '</div>';
+}
+
+function swap() { flip = !flip; render(); }
+render();
+</script>
+</body>
+</html>

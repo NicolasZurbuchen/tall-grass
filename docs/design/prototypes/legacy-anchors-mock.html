@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Legacy anchors — density mock</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e7e9f1;font-family:Poppins,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#2b2f45}
+  .stage{display:flex;gap:30px;align-items:flex-start;justify-content:center;padding:30px 18px 56px;flex-wrap:wrap}
+
+  .phone{width:360px;height:760px;background:#fff;border-radius:38px;overflow:hidden;position:relative;
+         box-shadow:0 40px 90px -40px rgba(40,44,80,.6),0 0 0 9px #1a1d2b;flex:0 0 auto}
+  .scroll{position:absolute;inset:0;overflow-y:auto}
+  .scroll::-webkit-scrollbar{width:0}
+
+  .hero{position:relative;height:246px;border-radius:0 0 32px 32px;overflow:hidden;padding:46px 20px 0}
+  .hero .nm{color:#fff;font-size:25px;font-weight:600;animation:heroUp .5s both}
+  .hero .no{position:absolute;right:20px;top:52px;color:rgba(255,255,255,.8);font-size:13px;font-weight:700}
+  .tags{display:flex;gap:6px;margin-top:9px}
+  .tag{background:rgba(255,255,255,.26);color:#fff;font-size:10px;font-weight:600;padding:4px 12px;border-radius:999px;animation:pop .4s both .15s}
+  .art{position:absolute;right:14px;bottom:6px;width:150px;height:150px;background-size:contain;background-repeat:no-repeat;
+       background-position:center;filter:drop-shadow(0 14px 18px rgba(0,0,0,.26));animation:artIn .55s cubic-bezier(.22,.9,.24,1) both}
+
+  .body{padding:20px 18px 40px}
+  .sect{font-size:10px;font-weight:700;letter-spacing:.09em;color:#b0b4c6;margin:0 0 10px 2px}
+  .card{background:#fff;border:1.5px solid #f0f2f8;border-radius:18px;padding:15px 14px;margin-bottom:16px;animation:rise .45s both}
+
+  .row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0}
+  .k{font-size:12px;color:#9095ad}
+  .v{font-size:12.5px;font-weight:600}
+
+  /* the legacy anchor itself */
+  .anc{display:block;font-size:10px;color:#a8adc0;line-height:1.45;margin-top:3px;font-weight:500}
+  .anc b{color:#8e93a8;font-weight:600}
+  .anc.noise{color:#c9cddc}
+
+  /* stat rows */
+  .srow{display:grid;grid-template-columns:58px 30px 1fr;gap:9px;align-items:center;margin-bottom:4px}
+  .slab{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:#9095ad}
+  .sval{font-size:12px;font-weight:700;text-align:right}
+  .lane{height:6px;background:#f0f2f8;border-radius:3px;overflow:hidden}
+  .bar{height:100%;border-radius:3px;transform-origin:left;animation:grow .6s cubic-bezier(.22,.9,.24,1) both}
+  .sanc{grid-column:1/-1;margin:0 0 7px 67px}
+
+  .count{margin-top:14px;padding:11px 13px;border-radius:13px;font-size:11.5px;line-height:1.5}
+  .count.ok{background:#eaf7f0;color:#24704d}
+  .count.bad{background:#fdecea;color:#9e3a33}
+  .count.off{background:#eef1fb;color:#47508a}
+
+  /* controls */
+  .panel{width:300px;flex:0 0 auto;padding-top:6px}
+  .panel h3{font-size:14px;margin:0 0 4px}
+  .panel p{font-size:12.5px;line-height:1.6;color:#5b6079;margin:0 0 16px}
+  .grp{margin-bottom:16px}
+  .glab{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#b0b4c6;margin-bottom:7px}
+  .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opt{border:1.5px solid #dcdfeb;background:#fff;border-radius:11px;padding:8px 12px;font-family:inherit;
+       font-size:11.5px;font-weight:600;cursor:pointer;color:#6d7288}
+  .opt.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+  .note{font-size:11.5px;line-height:1.6;color:#6d7288;background:#fff;border-radius:14px;padding:13px 14px;border:1.5px solid #f0f2f8}
+  .note b{color:#2b2f45}
+
+  @keyframes artIn{from{opacity:0;transform:translateY(20px) scale(.88)}to{opacity:1;transform:none}}
+  @keyframes heroUp{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.74)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><div class="scroll" id="screen"></div></div>
+
+  <div class="panel">
+    <h3>Legacy anchors — density mock</h3>
+    <p>Same screen, three policies. Switch between them and count the grey lines.</p>
+
+    <div class="grp">
+      <div class="glab">POLICY</div>
+      <div class="opts" id="mode"></div>
+    </div>
+    <div class="grp">
+      <div class="glab">POKÉMON</div>
+      <div class="opts" id="pick"></div>
+    </div>
+
+    <div class="note" id="explain"></div>
+  </div>
+</div>
+
+<script>
+const SP = n => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/'+n+'.png';
+const LABELS=['HP','ATK','DEF','SP.ATK','SP.DEF','SPEED'];
+
+// anchors: {real:true} survives the filter; {real:false} is mechanic-wide noise
+const MONS = {
+  gengar: {
+    id:94, name:'Gengar', no:'#094', color:'#7B6BB5',
+    types:['Ghost','Poison'], typeAnc:null,
+    abilities:[{n:'Cursed Body', anc:{t:'<b>Levitate</b> through Gen 6', real:true}}],
+    stats:[60,65,60,130,75,110],
+    statAnc:{4:{t:'<b>60</b> through Gen 5', real:true}, 3:{t:'combined <b>Special</b> stat in Gen 1', real:false}}
+  },
+  clefairy: {
+    id:35, name:'Clefairy', no:'#035', color:'#EE97CE',
+    types:['Fairy'], typeAnc:{t:'<b>Normal</b> through Gen 5', real:true},
+    abilities:[{n:'Cute Charm', anc:null},{n:'Magic Guard', anc:null},
+               {n:'Friend Guard', anc:{t:'hidden ability slot added in Gen 5', real:false}}],
+    stats:[70,45,48,60,65,35],
+    statAnc:{3:{t:'combined <b>Special</b> stat in Gen 1', real:false}}
+  },
+  charizard: {
+    id:6, name:'Charizard', no:'#006', color:'#FF9D5C',
+    types:['Fire','Flying'], typeAnc:null,
+    abilities:[{n:'Blaze', anc:null},{n:'Solar Power', anc:{t:'hidden ability slot added in Gen 5', real:false}}],
+    stats:[78,84,78,109,85,100],
+    statAnc:{3:{t:'combined <b>Special</b> stat in Gen 1', real:false}}
+  }
+};
+
+const MODES = {
+  A:{label:'A · filtered', desc:'<b>Option A.</b> Only species-specific changes render. Mechanic-wide ones — the Gen 1 combined Special stat, hidden-ability slots that did not exist yet — are dropped by a mechanical rule, not a curated list.'},
+  C:{label:'C · unfiltered', desc:'<b>Option C.</b> Every <code>past_*</code> entry rendered. This is what the data gives you raw — and why filtering matters: every Pokémon in the dex gets footnoted about Gen 1 mechanics.'},
+  B:{label:'B · off', desc:'<b>Option B.</b> No legacy UI at all. Cleanest screen; the handover intent is lost — nothing tells you Gengar ever had Levitate.'}
+};
+
+let mode='A', cur='gengar';
+
+function show(a){ return a && (mode==='C' || (mode==='A' && a.real)); }
+
+function render(){
+  const m = MONS[cur];
+  let n = 0;
+  const anc = a => { if(!show(a)) return ''; n++; return '<span class="anc'+(a.real?'':' noise')+'">'+a.t+'</span>'; };
+
+  const abil = m.abilities.map(a =>
+    '<div class="row"><span class="k">Ability</span><span style="text-align:right"><span class="v">'+a.n+'</span>'+anc(a.anc)+'</span></div>'
+  ).join('');
+
+  const stats = m.stats.map((s,i)=>{
+    const a = m.statAnc[i];
+    return '<div class="srow"><div class="slab">'+LABELS[i]+'</div><div class="sval">'+s+'</div>'
+      + '<div class="lane"><div class="bar" style="width:'+(s/160*100)+'%;background:'+m.color+';animation-delay:'+(.2+i*.05).toFixed(2)+'s"></div></div>'
+      + (show(a)?'<div class="sanc">'+anc(a)+'</div>':'') + '</div>';
+  }).join('');
+
+  const typeRow = '<div class="row"><span class="k">Type</span><span style="text-align:right"><span class="v">'
+    + m.types.join(' / ')+'</span>'+anc(m.typeAnc)+'</span></div>';
+
+  const cls = n===0?'off':(n<=2?'ok':'bad');
+  const msg = n===0 ? 'No legacy anchors on this screen.'
+            : n+' legacy anchor'+(n>1?'s':'')+' on this screen.';
+
+  document.getElementById('screen').innerHTML =
+    '<div class="hero" style="background:'+m.color+'">'
+    + '<div class="nm">'+m.name+'</div><div class="no">'+m.no+'</div>'
+    + '<div class="tags">'+m.types.map(t=>'<div class="tag">'+t+'</div>').join('')+'</div>'
+    + '<div class="art" style="background-image:url('+SP(m.id)+')"></div></div>'
+    + '<div class="body">'
+    + '<div class="sect">ABOUT</div><div class="card">'+typeRow+abil+'</div>'
+    + '<div class="sect">BASE STATS</div><div class="card" style="animation-delay:.08s">'+stats+'</div>'
+    + '<div class="count '+cls+'">'+msg+'</div>'
+    + '</div>';
+
+  document.getElementById('mode').innerHTML = Object.keys(MODES).map(k=>
+    '<button class="opt'+(k===mode?' on':'')+'" onclick="setMode(\''+k+'\')">'+MODES[k].label+'</button>').join('');
+  document.getElementById('pick').innerHTML = Object.keys(MONS).map(k=>
+    '<button class="opt'+(k===cur?' on':'')+'" onclick="setMon(\''+k+'\')">'+MONS[k].name+'</button>').join('');
+  document.getElementById('explain').innerHTML = MODES[mode].desc;
+}
+function setMode(m){mode=m;render()}
+function setMon(c){cur=c;render()}
+render();
+</script>
+</body>
+</html>

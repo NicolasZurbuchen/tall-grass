@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tall Grass — navigable prototype</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e7e9f1;font-family:Poppins,system-ui,-apple-system,sans-serif;
+       -webkit-font-smoothing:antialiased;color:#2b2f45}
+  .stage{display:flex;gap:26px;align-items:flex-start;justify-content:center;padding:26px 18px 50px;flex-wrap:wrap}
+  .phone{width:375px;height:812px;background:#fff;border-radius:40px;overflow:hidden;position:relative;
+         box-shadow:0 40px 90px -40px rgba(40,44,80,.6),0 0 0 9px #1a1d2b;flex:0 0 auto}
+  .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;background:#fff}
+  .screen::-webkit-scrollbar{width:0}
+  .pane{animation:scrIn .34s cubic-bezier(.22,.9,.24,1) both;min-height:812px}
+  .pane.back{animation:scrBack .34s cubic-bezier(.22,.9,.24,1) both}
+
+  /* the decorative pokeball ring, used as a watermark throughout */
+  .ring{position:absolute;border-radius:50%;border:14px solid rgba(255,255,255,.16);pointer-events:none}
+  .ring:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+              width:38%;height:38%;border-radius:50%;background:rgba(255,255,255,.18)}
+
+  /* ---------- white page header (home, lists) ---------- */
+  .page{padding:52px 22px 0}
+  .pnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .pnav .ic{font-size:19px;color:#2b2f45;cursor:pointer;width:26px}
+  .ptitle{font-size:25px;font-weight:700;line-height:1.28;letter-spacing:-.01em}
+  .psub{font-size:11.5px;color:#9095ad;margin-top:5px;font-weight:500}
+  .pbody{padding:16px 22px 46px}
+  .pwhite{position:absolute;right:-60px;top:-70px;width:210px;height:210px;border-radius:50%;
+          border:16px solid #f2f3f8;pointer-events:none}
+  .pwhite:after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+                width:34%;height:34%;border-radius:50%;background:#f2f3f8}
+
+  .sbar{display:flex;align-items:center;gap:10px;background:#f2f3f8;border-radius:999px;padding:13px 17px;
+        margin:18px 0 22px;cursor:pointer}
+  .sbar span{font-size:12.5px;color:#a8adc0}
+  .sbar input{border:0;outline:0;background:transparent;font-family:inherit;font-size:12.5px;flex:1;color:#2b2f45}
+
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tile{border-radius:14px;padding:16px 15px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;
+        position:relative;overflow:hidden;height:58px;display:flex;align-items:center;animation:rise .42s both}
+
+  /* ---------- dex cards ---------- */
+  .dex{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{border-radius:15px;padding:11px 12px;color:#fff;cursor:pointer;position:relative;overflow:hidden;
+        height:104px;animation:rise .42s both}
+  .card .n{font-size:12.5px;font-weight:700;position:relative;z-index:3}
+  .card .no{position:absolute;right:11px;top:10px;font-size:10px;font-weight:700;color:rgba(255,255,255,.42);z-index:3}
+  .card .tg{margin-top:7px;position:relative;z-index:3;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .card .art{position:absolute;right:4px;bottom:2px;width:64px;height:64px;background-size:contain;
+             background-repeat:no-repeat;background-position:center;z-index:2;
+             filter:drop-shadow(0 5px 7px rgba(0,0,0,.22))}
+  .tag{background:rgba(255,255,255,.25);color:#fff;font-size:8px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .tp{font-size:9px;font-weight:600;color:#fff;padding:3.5px 10px;border-radius:999px;display:inline-block}
+
+  /* ---------- entity detail: tall coloured hero + overlapping sheet ---------- */
+  .hero{position:relative;padding:50px 22px 0;height:388px;overflow:hidden}
+  .hnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;position:relative;z-index:4}
+  .hnav .ic{font-size:19px;color:#fff;cursor:pointer}
+  .hrow{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:4}
+  .hname{font-size:29px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.01em}
+  .hnum{font-size:14px;font-weight:700;color:#fff;padding-top:7px}
+  .hrow2{display:flex;align-items:flex-start;justify-content:space-between;margin-top:9px;position:relative;z-index:4}
+  .htypes{display:flex;gap:6px}
+  .hgenus{font-size:11.5px;font-weight:600;color:#fff;padding-top:3px}
+  .hart{position:absolute;left:50%;transform:translateX(-50%);bottom:-6px;width:186px;height:186px;
+        background-size:contain;background-repeat:no-repeat;background-position:center;z-index:5;cursor:pointer;
+        filter:drop-shadow(0 16px 20px rgba(0,0,0,.28));animation:artIn .55s cubic-bezier(.22,.9,.24,1) both}
+  .hart.pulse{animation:pulse .5s cubic-bezier(.3,1.5,.5,1)}
+  .hring{position:absolute;right:-46px;top:-56px;width:200px;height:200px;border-radius:50%;
+         border:16px solid rgba(255,255,255,.13);z-index:1}
+  .hdots{position:absolute;left:26px;top:24px;z-index:1;opacity:.35;
+         background-image:radial-gradient(rgba(255,255,255,.7) 1.4px, transparent 1.4px);
+         background-size:11px 11px;width:78px;height:46px}
+
+  .sheet2{position:relative;z-index:6;background:#fff;border-radius:30px 30px 0 0;margin-top:-52px;
+          min-height:480px;padding:22px 22px 46px;animation:rise .42s both .06s}
+  .dtabs{display:flex;gap:22px;border-bottom:1.5px solid #f2f3f8;margin-bottom:18px}
+  .dtab{font-size:12.5px;font-weight:600;color:#b8bcca;padding-bottom:11px;cursor:pointer}
+  .dtab.on{color:#2b2f45;border-bottom:2.5px solid #2b2f45}
+  .fpills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .fp{font-size:10px;font-weight:600;padding:6px 13px;border-radius:999px;border:1.5px solid #eceef5;
+      background:#fff;color:#9095ad;cursor:pointer}
+  .fp.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+
+  h4{font-size:15px;font-weight:700;margin:22px 0 12px}
+  .prose{font-size:12.5px;line-height:1.72;color:#5b6079}
+  .inset{background:#f7f8fb;border-radius:12px;padding:14px 16px;display:flex;gap:26px;margin:16px 0 4px}
+  .inset .c{flex:1}
+  .inset .k{font-size:10px;color:#9095ad;font-weight:500}
+  .inset .v{font-size:12.5px;font-weight:600;margin-top:4px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:8px 0;font-size:12px}
+  .kv .k{color:#9095ad;flex:0 0 96px}
+  .kv .v{font-weight:500;text-align:left;flex:1}
+
+  /* stats */
+  .srow{display:grid;grid-template-columns:58px 30px 1fr;gap:10px;align-items:center;margin-bottom:11px}
+  .slab{font-size:10.5px;color:#9095ad;font-weight:500}
+  .sval{font-size:11.5px;font-weight:600;text-align:right}
+  .lane{height:5px;background:#f2f3f8;border-radius:3px;overflow:hidden}
+  .bar{height:100%;border-radius:3px;transform-origin:left;animation:grow .6s cubic-bezier(.22,.9,.24,1) both}
+
+  /* evolution */
+  .evo{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+  .node{width:76px;text-align:center;cursor:pointer;animation:pop .4s both}
+  .node .c{width:60px;height:60px;margin:0 auto;border-radius:50%;background:#f7f8fb;background-size:74% 74%;
+           background-repeat:no-repeat;background-position:center}
+  .node .n{font-size:10px;font-weight:600;margin-top:6px;line-height:1.25}
+  .arr{text-align:center;min-width:56px}
+  .arr .a{font-size:12px;color:#c8ccda}
+  .arr .c{font-size:8.5px;font-weight:700;color:#6d7288;line-height:1.3}
+  .arr .x{font-size:7.5px;color:#b0b4c6;line-height:1.3;margin-top:1px}
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+  /* ---------- moves & abilities, per the Claude Design file ---------- */
+  .lpage{padding:52px 22px 0}
+  .sqbk{width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;
+        justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;
+        font-size:18px;color:#2b2f45;animation:pop .4s both}
+  .ltitle{margin-top:14px;font-size:30px;font-weight:700;letter-spacing:-.5px;animation:rise .45s .04s both}
+  .lsub{margin-top:6px;font-size:13px;color:#9095ad;animation:rise .45s .08s both}
+  .lsearch{margin-top:14px;display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;
+           padding:12px 14px;box-shadow:0 10px 24px -18px rgba(40,44,80,.5);animation:rise .45s .08s both}
+  .lsearch .o{width:14px;height:14px;border-radius:50%;border:2.5px solid #c3c7d8;display:block;flex:0 0 14px}
+  .lsearch input{border:0;outline:0;font-family:inherit;font-size:13.5px;color:#2b2f45;width:100%;background:transparent}
+  .lcount{margin-top:12px;font-size:11.5px;color:#a2a6bd}
+  .llist{padding:12px 0 40px;display:flex;flex-direction:column;gap:12px}
+
+  .mvcard{position:relative;overflow:hidden;border-radius:20px;padding:16px 18px;cursor:pointer;
+          animation:rise .45s both}
+  .mvcard .b1{position:absolute;right:-26px;top:-30px;width:104px;height:104px;border-radius:50%;background:rgba(255,255,255,.13)}
+  .mvcard .b2{position:absolute;right:14px;top:18px;width:44px;height:44px;border-radius:50%;border:8px solid rgba(255,255,255,.22)}
+  .mvcard .in{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .mvcard .nm{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.2px}
+  .mvcard .ps{display:flex;gap:6px;margin-top:9px}
+  .mvcard .ps span{padding:4px 11px;border-radius:12px;font-size:10.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.26)}
+  .mvcard .pw{font-size:22px;font-weight:700;color:#fff;line-height:1}
+  .mvcard .pl{font-size:9.5px;color:rgba(255,255,255,.8);letter-spacing:.7px;margin-top:3px}
+
+  .abcard{background:#fff;border-radius:20px;padding:16px;cursor:pointer;
+          box-shadow:0 14px 30px -24px rgba(40,44,80,.8);animation:rise .45s both}
+  .abcard .in{display:flex;align-items:center;gap:13px}
+  .abcard .ic2{width:44px;height:44px;border-radius:14px;flex:0 0 44px;display:flex;align-items:center;
+               justify-content:center;font-size:16px}
+  .abcard .nm{font-size:15.5px;font-weight:600}
+  .abcard .tg2{padding:2px 8px;border-radius:10px;font-size:9.5px;font-weight:600}
+  .abcard .sh2{font-size:12px;color:#8b8fa6;margin-top:4px;line-height:1.5}
+
+  /* coloured hero for move / ability detail */
+  .chero{position:relative;overflow:hidden;border-radius:0 0 34px 34px;padding:52px 24px 30px;animation:rise .45s both}
+  .chero .c1{position:absolute;right:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.13)}
+  .chero .c2{position:absolute;right:30px;top:100px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1)}
+  .chero .c3{position:absolute;left:-30px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .chero .nav{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:3}
+  .chero .bk2{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.24);display:flex;
+              align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:17px}
+  .chero .fav{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.24);display:flex;
+              align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:15px}
+  .chero .nm{margin-top:22px;font-size:31px;font-weight:700;color:#fff;letter-spacing:-.6px;position:relative;z-index:3}
+  .chero .ps{display:flex;gap:8px;margin-top:12px;position:relative;z-index:3;flex-wrap:wrap}
+  .chero .ps span{padding:6px 14px;border-radius:16px;background:rgba(255,255,255,.26);color:#fff;font-size:12px;font-weight:600}
+  .chero .sh3{font-size:13.5px;color:rgba(255,255,255,.9);margin-top:8px;position:relative;z-index:3;line-height:1.5}
+
+  .cbody{padding:20px 22px 44px;display:flex;flex-direction:column;gap:16px}
+  .wcard{background:#fff;border-radius:20px;padding:18px;box-shadow:0 16px 34px -26px rgba(40,44,80,.8);animation:rise .45s both}
+  .wcard .h{font-size:13px;font-weight:600;margin-bottom:14px}
+  .wbar{margin-bottom:13px}
+  .wbar:last-child{margin-bottom:0}
+  .wbar .t{display:flex;justify-content:space-between;font-size:11.5px;color:#8b8fa6;margin-bottom:6px}
+  .wbar .t b{color:#2b2f45;font-weight:600}
+  .wbar .tr{height:7px;border-radius:6px;background:#f0f1f7;overflow:hidden}
+  .wbar .fl{height:100%;border-radius:6px;transform-origin:left;animation:grow .7s cubic-bezier(.2,.9,.2,1) both}
+  .wdesc{font-size:13px;line-height:1.65;color:#6f7490}
+  .wins{display:flex;gap:10px;margin-top:14px}
+  .wins .c{flex:1;background:#f6f7fb;border-radius:14px;padding:11px 13px}
+  .wins .k{font-size:10px;color:#a3a7bd;letter-spacing:.5px}
+  .wins .v{font-size:12.5px;font-weight:600;margin-top:3px}
+  .wtrio{display:flex;gap:12px;animation:rise .45s both}
+  .wtrio .c{flex:1;background:#fff;border-radius:18px;padding:14px 12px;text-align:center;box-shadow:0 16px 32px -28px rgba(40,44,80,.9)}
+  .wtrio .v{font-size:19px;font-weight:700}
+  .wtrio .k{font-size:10px;color:#a3a7bd;margin-top:3px;letter-spacing:.4px}
+  .hscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+  .hscroll::-webkit-scrollbar{height:0}
+  .ucard{flex:0 0 auto;width:92px;background:#fff;border-radius:16px;padding:10px 8px;text-align:center;
+         box-shadow:0 14px 28px -24px rgba(40,44,80,.9);cursor:pointer;animation:pop .45s both}
+  .ucard .sp2{width:56px;height:56px;margin:0 auto;background-size:contain;background-repeat:no-repeat;background-position:center}
+  .ucard .n{font-size:11px;font-weight:600;margin-top:2px}
+  .ucard .h{font-size:9.5px;color:#a6aac0;margin-top:2px}
+  .ugrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ugrid .u{display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:10px;
+            box-shadow:0 14px 28px -26px rgba(40,44,80,.9);cursor:pointer;animation:pop .45s both}
+  .ugrid .t2{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:0 0 40px}
+  .ugrid .sp2{width:36px;height:36px;background-size:contain;background-repeat:no-repeat;background-position:center}
+  .ugrid .n{font-size:12.5px;font-weight:600}
+  .ugrid .h{font-size:10px;color:#a6aac0}
+  .sechead{font-size:13px;font-weight:600;margin-bottom:10px}
+  .fab{position:absolute;right:20px;bottom:26px;z-index:12;width:56px;height:56px;border-radius:50%;
+       background:#5C4EE5;display:flex;align-items:center;justify-content:center;cursor:pointer;
+       box-shadow:0 16px 30px -12px rgba(92,78,229,.7);color:#fff;font-size:22px;font-weight:300}
+
+
+  /* items grid */
+  .igrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 0 40px;align-content:start}
+  .icard{background:#fff;border-radius:20px;padding:14px;cursor:pointer;
+         box-shadow:0 14px 30px -26px rgba(40,44,80,.9);animation:rise .45s both}
+  .itile{height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+  .isp{width:34px;height:34px;background-size:contain;background-repeat:no-repeat;background-position:center;image-rendering:pixelated}
+  .inm{font-size:13.5px;font-weight:600;margin-top:10px}
+  .ict{font-size:10.5px;color:#a3a7bd;margin-top:2px}
+  .ihead{display:flex;align-items:center;gap:14px;margin-top:18px;animation:rise .45s .05s both}
+  .ibig{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex:0 0 60px}
+  .inm2{font-size:19px;font-weight:700}
+  .ict2{font-size:11.5px;color:#a3a7bd;margin-top:2px}
+
+  /* detail-tab ability rows and move rows */
+  .abrow{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid #f2f3f8;border-radius:16px;
+         padding:12px 13px;cursor:pointer;animation:rise .4s both}
+  .abrow .ic2{width:40px;height:40px;border-radius:13px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .abrow .nm{font-size:14px;font-weight:600}
+  .abrow .tg2{padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600}
+  .abrow .sh2{font-size:11px;color:#8b8fa6;margin-top:3px;line-height:1.45}
+  .mvrow{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;
+         border-radius:16px;padding:13px 15px;cursor:pointer;animation:rise .42s both}
+  .mvrow .n{font-size:14px;font-weight:600;color:#fff}
+  .mvrow .meta{font-size:10.5px;color:rgba(255,255,255,.85);margin-top:3px}
+  .mvrow .how{font-size:11px;font-weight:600;color:#fff}
+  .mvrow .pw2{font-size:10px;color:rgba(255,255,255,.8);margin-top:3px}
+
+  /* generic rows */
+  .row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #f4f5f9;
+       cursor:pointer;animation:rise .34s both}
+  .row:last-child{border-bottom:0}
+  .row .sp{width:38px;height:38px;flex:0 0 38px;background-size:contain;background-repeat:no-repeat;background-position:center}
+  .row .tx{flex:1;min-width:0}
+  .row .n{font-size:12.5px;font-weight:600}
+  .row .d{font-size:10px;color:#9095ad;margin-top:2px}
+  .row .cv{font-size:15px;color:#d8dbe6}
+  .muted{font-size:10.5px;color:#b0b4c6;line-height:1.6;margin-top:14px}
+  .muted b{color:#8a90a3}
+  .none{font-size:12px;color:#9095ad;padding:22px 0;text-align:center;line-height:1.6}
+
+  /* availability grid */
+  .grid{border:1.5px solid #f2f3f8;border-radius:14px;padding:12px 11px 8px;animation:rise .34s both}
+  .grow2{display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:start;margin-bottom:10px}
+  .glab{font-size:8px;font-weight:700;color:#b0b4c6;padding-top:7px;text-align:right;line-height:1.2}
+  .cells{display:flex;gap:4px;flex-wrap:wrap}
+  .cell{width:29px;height:29px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+        font-size:9px;font-weight:700;cursor:pointer;animation:pop .3s both;background:#3FAE72;color:#fff}
+  .cell.no{background:#f4f5f9;color:#c8ccda}
+  .bar2{display:flex;align-items:center;gap:10px;background:#2b2f45;border-radius:14px;padding:11px 13px;
+        cursor:pointer;animation:pop .34s both}
+  .bar2 .tok{width:29px;height:29px;border-radius:8px;background:#3FAE72;color:#fff;flex:0 0 29px;
+             display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+  .bar2 .tok.no{background:#565b78;color:#a8adc6}
+  .bar2 .tx{flex:1;line-height:1.3}
+  .bar2 .t1{font-size:12px;font-weight:600;color:#fff}
+  .bar2 .t2{font-size:9px;color:#9298b8;margin-top:1px}
+  .bar2 .cv{font-size:9px;color:#8c92b0}
+  .legend{display:flex;gap:11px;flex-wrap:wrap;margin:10px 0 0}
+  .legend span{display:flex;align-items:center;gap:5px;font-size:9px;color:#6d7288}
+  .legend i{width:9px;height:9px;border-radius:3px;display:block}
+  .enc{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #f4f5f9}
+  .enc:last-child{border-bottom:0}
+  .enc .sp{width:34px;height:34px;flex:0 0 34px;background-size:contain;background-repeat:no-repeat;background-position:center}
+  .enc .n{font-size:12px;font-weight:600}
+  .enc .d{font-size:9.5px;color:#b0b4c6;margin-top:2px}
+  .enc .m{font-size:8.5px;font-weight:700;padding:3.5px 9px;border-radius:999px;color:#fff}
+
+  /* type chart */
+  .chart{overflow-x:auto;border:1.5px solid #f2f3f8;border-radius:14px;padding:8px}
+  .chart::-webkit-scrollbar{height:0}
+  .crow{display:flex;gap:2px;margin-bottom:2px}
+  .ch,.cc{width:19px;height:19px;border-radius:4px;flex:0 0 19px;font-size:6.5px;font-weight:700;
+          display:flex;align-items:center;justify-content:center}
+  .ch{color:#fff}
+  .cc{background:#fafbfd;color:#c8ccda}
+  .ck{width:52px;flex:0 0 52px;font-size:7.5px;font-weight:700;color:#fff;border-radius:4px;
+      display:flex;align-items:center;justify-content:center;height:19px}
+
+  /* team matrix */
+  .matrix{border:1.5px solid #f2f3f8;border-radius:13px;padding:7px 8px}
+  .mrow{display:grid;grid-template-columns:54px repeat(6,1fr);gap:3px;margin-bottom:3px;animation:rise .3s both}
+  .mlab{font-size:7.5px;font-weight:700;color:#fff;border-radius:5px;padding:5px 2px;text-align:center;white-space:nowrap;overflow:hidden}
+  .mhc{height:25px;border-radius:6px;background:#f4f5f9;background-size:82% 82%;background-repeat:no-repeat;background-position:center}
+  .mhc.empty{background:#fafbfd}
+  .mc{height:23px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+  .mc.empty{background:#fafbfd}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .slot{height:98px;border-radius:14px;background:#f7f8fb;border:2px dashed #e4e7f1;display:flex;
+        flex-direction:column;align-items:center;justify-content:center;color:#c8ccda;font-size:21px;cursor:pointer}
+  .slot.filled{border:2px solid transparent;justify-content:flex-end;padding-bottom:7px;position:relative;
+               background-size:70% 70%;background-repeat:no-repeat;background-position:center 5px;
+               animation:pop .34s cubic-bezier(.22,.9,.24,1) both}
+  .slot .nm{font-size:9px;font-weight:600;color:#2b2f45}
+  .modes{display:flex;gap:6px;margin-bottom:10px}
+  .mo{flex:1;text-align:center;font-size:11px;font-weight:600;padding:9px;border-radius:11px;
+      background:#f4f5f9;color:#9095ad;cursor:pointer}
+  .mo.on{background:#2b2f45;color:#fff}
+
+  /* compare */
+  .cmp{position:relative;height:286px;overflow:hidden}
+  .half{position:absolute;top:0;bottom:0;width:58%}
+  .half.l{left:0;clip-path:polygon(0 0,100% 0,76% 100%,0 100%)}
+  .half.r{right:0;clip-path:polygon(24% 0,100% 0,100% 100%,0 100%)}
+  .cmons{position:absolute;top:96px;left:0;right:0;display:flex;z-index:3}
+  .cmon{flex:1;text-align:center;cursor:pointer}
+  .cmon .a{width:112px;height:112px;margin:0 auto;background-size:contain;background-repeat:no-repeat;
+           background-position:center;filter:drop-shadow(0 12px 16px rgba(0,0,0,.24));animation:artIn .55s both}
+  .cmon .n{color:#fff;font-size:15px;font-weight:600;margin-top:8px}
+  .cmon .e{width:106px;height:106px;margin:0 auto;border-radius:50%;border:2px dashed rgba(255,255,255,.55);
+           display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px}
+  .vs{position:absolute;left:50%;top:142px;transform:translateX(-50%);z-index:6;width:44px;height:44px;
+      border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:700;box-shadow:0 12px 24px -10px rgba(40,44,80,.55);animation:pop .5s cubic-bezier(.3,1.5,.5,1) both .3s}
+  .drow{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f4f5f9}
+  .drow:last-child{border-bottom:0}
+  .dl,.dr{font-size:11.5px;font-weight:600}
+  .dl{text-align:right}
+  .dk{font-size:8px;font-weight:700;letter-spacing:.04em;color:#9095ad;text-align:center;text-transform:uppercase}
+  .dk i{display:block;font-style:normal;font-size:7px;color:#c8ccda;margin-top:2px}
+  .divrow{display:grid;grid-template-columns:28px 1fr 56px 1fr 28px;align-items:center;gap:7px;margin-bottom:11px}
+  .dnum{font-size:11.5px;font-weight:700}
+  .dnum.l{text-align:right}.dnum.r{text-align:left}
+  .dnum.lose{color:#c8ccda}
+  .dlane{height:5px;background:#f2f3f8;border-radius:3px;overflow:hidden;display:flex}
+  .dlane.l{justify-content:flex-end}
+  .dbar{height:100%;border-radius:3px;transform-origin:right;animation:grow .6s cubic-bezier(.22,.9,.24,1) both}
+  .dlane.r .dbar{transform-origin:left}
+
+  /* sheet */
+  .scrim{position:absolute;inset:0;background:rgba(20,23,38,.45);z-index:20;animation:fadeIn .25s both}
+  .picker{position:absolute;left:0;right:0;bottom:0;max-height:74%;background:#fff;border-radius:26px 26px 0 0;
+          z-index:21;display:flex;flex-direction:column;animation:sheetUp .34s cubic-bezier(.22,.9,.24,1) both}
+  .picker .sh{padding:14px 20px 12px}
+  .picker .sh .t{font-size:15px;font-weight:700}
+  .picker .sb{overflow-y:auto;padding:4px 20px 24px}
+  .picker .sb::-webkit-scrollbar{width:0}
+  .grab{width:36px;height:4px;border-radius:2px;background:#e9ebf2;margin:0 auto 12px}
+
+  .notes{width:290px;flex:0 0 auto;padding-top:6px;font-size:12.5px;line-height:1.6;color:#5b6079}
+  .notes h3{font-size:14px;color:#2b2f45;margin:0 0 8px}
+  .notes ul{padding-left:17px;margin:0 0 14px}
+  .notes li{margin-bottom:7px}
+  .notes code{background:#fff;padding:1px 5px;border-radius:5px;font-size:11px}
+
+  @keyframes scrIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes scrBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.74)}to{opacity:1;transform:none}}
+  @keyframes artIn{from{opacity:0;transform:translateX(-50%) translateY(22px) scale(.86)}
+                   to{opacity:1;transform:translateX(-50%)}}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes sheetUp{from{transform:translateY(110%)}to{transform:none}}
+  @keyframes pulse{0%{transform:translateX(-50%) scale(1)}45%{transform:translateX(-50%) scale(1.08)}
+                   100%{transform:translateX(-50%) scale(1)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><div class="screen" id="screen"></div></div>
+  <div class="notes">
+    <h3>Tall Grass — navigable prototype</h3>
+    <ul>
+      <li>Styled after the Flutter reference: white pages with large dark titles, and a tall type-coloured hero with <b>centred artwork</b> over a rounded white sheet.</li>
+      <li><b>Fully mapped:</b> Venusaur, Charizard, Blastoise, Pikachu, Magikarp, Eevee — real PokéAPI stats, abilities, moves, evolution chains and encounters.</li>
+      <li><b>Locations:</b> all 96 Kanto entries listed; <code>Route 1</code> and <code>Pallet Town</code> carry real encounter data.</li>
+      <li><b>Try:</b> Eevee's eight-way branch · Charizard's Mega pills · Pallet Town in Red vs Let's Go · tap the artwork for a cry.</li>
+    </ul>
+  </div>
+</div>
+<script>
+const DATA = {"mons":{"venusaur":{"dex":3,"name":"venusaur","types":["grass","poison"],"stats":[80,82,83,100,100,80],"abilities":[{"n":"overgrow","h":false},{"n":"chlorophyll","h":true}],"height":2,"weight":100,"eggs":["monster","plant"],"catch":45,"growth":"medium-slow","hatch":20,"genderRate":1,"genus":"Seed Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/3.ogg","desc":"A heavy quadruped that carries a broad flower on its back. The bloom draws energy from sunlight and grows larger the longer the Pokemon rests in the open.","moves":[{"name":"petal-blizzard","level":0},{"name":"tackle","level":1},{"name":"growl","level":1},{"name":"petal-dance","level":1},{"name":"amnesia","level":1},{"name":"leech-seed","level":7},{"name":"vine-whip","level":13},{"name":"seed-bomb","level":20},{"name":"poison-powder","level":22},{"name":"take-down","level":25},{"name":"razor-leaf","level":30},{"name":"sweet-scent","level":30},{"name":"synthesis","level":37},{"name":"growth","level":43}],"forms":[["venusaur","Standard"],["venusaur-mega","Mega"]],"cosmetic":1,"chain":[{"name":"bulbasaur","from":null,"dets":[]},{"name":"ivysaur","from":"bulbasaur","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":16}]},{"name":"venusaur","from":"ivysaur","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":32}]}]},"charizard":{"dex":6,"name":"charizard","types":["fire","flying"],"stats":[78,84,78,109,85,100],"abilities":[{"n":"blaze","h":false},{"n":"solar-power","h":true}],"height":1.7,"weight":90.5,"eggs":["monster","dragon"],"catch":45,"growth":"medium-slow","hatch":20,"genderRate":1,"genus":"Flame Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/6.ogg","desc":"A winged reptile whose tail flame burns hotter as it grows stronger. It prefers altitude and open sky, and rarely settles anywhere enclosed.","moves":[{"name":"air-slash","level":0},{"name":"scratch","level":1},{"name":"wing-attack","level":1},{"name":"growl","level":1},{"name":"counter","level":1},{"name":"smokescreen","level":1},{"name":"crunch","level":1},{"name":"heat-wave","level":1},{"name":"dragon-claw","level":1},{"name":"shadow-claw","level":1},{"name":"ember","level":9},{"name":"dragon-breath","level":12},{"name":"metal-claw","level":13},{"name":"leer","level":15}],"forms":[["charizard","Standard"],["charizard-mega-x","Mega X"],["charizard-mega-y","Mega Y"]],"cosmetic":1,"chain":[{"name":"charmander","from":null,"dets":[]},{"name":"charmeleon","from":"charmander","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":16}]},{"name":"charizard","from":"charmeleon","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":36}]}]},"blastoise":{"dex":9,"name":"blastoise","types":["water"],"stats":[79,83,100,85,105,78],"abilities":[{"n":"torrent","h":false},{"n":"rain-dish","h":true}],"height":1.6,"weight":85.5,"eggs":["monster","water1"],"catch":45,"growth":"medium-slow","hatch":20,"genderRate":1,"genus":"Shellfish Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/9.ogg","desc":"Heavily shelled and deliberate. The cannons on its back brace against the shell, which lets it fire without losing its footing.","moves":[{"name":"flash-cannon","level":0},{"name":"tackle","level":1},{"name":"tail-whip","level":1},{"name":"fake-out","level":1},{"name":"aqua-jet","level":1},{"name":"bubble","level":8},{"name":"rapid-spin","level":9},{"name":"water-gun","level":15},{"name":"water-pulse","level":15},{"name":"protect","level":20},{"name":"bite","level":24},{"name":"rain-dance","level":25},{"name":"aqua-tail","level":30},{"name":"withdraw","level":31}],"forms":[["blastoise","Standard"],["blastoise-mega","Mega"]],"cosmetic":1,"chain":[{"name":"squirtle","from":null,"dets":[]},{"name":"wartortle","from":"squirtle","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":16}]},{"name":"blastoise","from":"wartortle","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":36}]}]},"pikachu":{"dex":25,"name":"pikachu","types":["electric"],"stats":[35,55,40,50,50,90],"abilities":[{"n":"static","h":false},{"n":"lightning-rod","h":true}],"height":0.4,"weight":6,"eggs":["ground","fairy"],"catch":190,"growth":"medium","hatch":10,"genderRate":4,"genus":"Mouse Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/25.ogg","desc":"Small, quick and noisy. It stores charge in its cheeks and releases it in short bursts, which is also how it greets others of its group.","moves":[{"name":"tail-whip","level":1},{"name":"growl","level":1},{"name":"thunder-shock","level":1},{"name":"sweet-kiss","level":1},{"name":"charm","level":1},{"name":"nasty-plot","level":1},{"name":"play-nice","level":1},{"name":"nuzzle","level":1},{"name":"double-team","level":8},{"name":"double-kick","level":9},{"name":"thunder-wave","level":9},{"name":"electro-ball","level":12},{"name":"quick-attack","level":16},{"name":"feint","level":16}],"forms":[["pikachu","Standard"]],"cosmetic":16,"chain":[{"name":"pichu","from":null,"dets":[]},{"name":"pikachu","from":"pichu","dets":[{"vg":"gold-silver","def":true,"trigger":"level-up","min_happiness":220}]},{"name":"raichu","from":"pikachu","dets":[{"vg":"red-blue","def":true,"item":"thunder-stone","trigger":"use-item","base_form":"pikachu"},{"vg":"sun-moon","def":true,"item":"thunder-stone","trigger":"use-item","region":"alola","base_form":"pikachu","evolved_form":"raichu-alola"}]}]},"magikarp":{"dex":129,"name":"magikarp","types":["water"],"stats":[20,10,55,15,20,80],"abilities":[{"n":"swift-swim","h":false},{"n":"rattled","h":true}],"height":0.9,"weight":10,"eggs":["water2","dragon"],"catch":255,"growth":"slow","hatch":5,"genderRate":4,"genus":"Fish Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/129.ogg","desc":"Almost entirely harmless. It splashes rather than swims, and survives mainly by being unremarkable enough to ignore.","moves":[{"name":"splash","level":1},{"name":"tackle","level":15},{"name":"flail","level":25}],"forms":[["magikarp","Standard"]],"cosmetic":0,"chain":[{"name":"magikarp","from":null,"dets":[]},{"name":"gyarados","from":"magikarp","dets":[{"vg":"red-blue","def":true,"trigger":"level-up","min_level":20}]}]},"eevee":{"dex":133,"name":"eevee","types":["normal"],"stats":[55,55,50,45,65,55],"abilities":[{"n":"run-away","h":false},{"n":"adaptability","h":false},{"n":"anticipation","h":true}],"height":0.3,"weight":6.5,"eggs":["ground"],"catch":45,"growth":"medium","hatch":35,"genderRate":1,"genus":"Evolution Pokémon","cry":"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/133.ogg","desc":"Genetically unstable, which is why it takes so many adult forms. Which one it becomes depends almost entirely on where and how it is raised.","moves":[{"name":"sand-attack","level":1},{"name":"tackle","level":1},{"name":"growl","level":1},{"name":"helping-hand","level":1},{"name":"covet","level":1},{"name":"double-kick","level":10},{"name":"baby-doll-eyes","level":15},{"name":"swift","level":20},{"name":"refresh","level":20},{"name":"mimic","level":25},{"name":"quick-attack","level":27},{"name":"copycat","level":30},{"name":"tail-whip","level":31},{"name":"calm-mind","level":34}],"forms":[["eevee","Standard"]],"cosmetic":2,"chain":[{"name":"eevee","from":null,"dets":[]},{"name":"vaporeon","from":"eevee","dets":[{"vg":"red-blue","def":true,"item":"water-stone","trigger":"use-item","base_form":"eevee"}]},{"name":"jolteon","from":"eevee","dets":[{"vg":"red-blue","def":true,"item":"thunder-stone","trigger":"use-item","base_form":"eevee"}]},{"name":"flareon","from":"eevee","dets":[{"vg":"red-blue","def":true,"item":"fire-stone","trigger":"use-item","base_form":"eevee"}]},{"name":"espeon","from":"eevee","dets":[{"vg":"gold-silver","def":true,"trigger":"level-up","min_happiness":160,"time_of_day":"day","base_form":"eevee"}]},{"name":"umbreon","from":"eevee","dets":[{"vg":"gold-silver","def":true,"trigger":"level-up","min_happiness":160,"time_of_day":"night","base_form":"eevee"}]},{"name":"leafeon","from":"eevee","dets":[{"vg":"diamond-pearl","def":false,"trigger":"level-up","location":"eterna-forest","near_special_rock":true,"base_form":"eevee"},{"vg":"black-white","def":false,"trigger":"level-up","location":"pinwheel-forest","near_special_rock":true,"base_form":"eevee"},{"vg":"x-y","def":false,"trigger":"level-up","location":"kalos-route-20","near_special_rock":true,"base_form":"eevee"},{"vg":"sword-shield","def":true,"item":"leaf-stone","trigger":"use-item","base_form":"eevee"},{"vg":"omega-ruby-alpha-sapphire","def":false,"trigger":"level-up","location":"petalburg-woods","near_special_rock":true,"base_form":"eevee"},{"vg":"sun-moon","def":false,"trigger":"level-up","location":"lush-jungle","near_special_rock":true,"base_form":"eevee"}]},{"name":"glaceon","from":"eevee","dets":[{"vg":"diamond-pearl","def":false,"trigger":"level-up","location":"sinnoh-route-217","near_special_rock":true,"base_form":"eevee"},{"vg":"black-white","def":false,"trigger":"level-up","location":"twist-mountain","near_special_rock":true,"base_form":"eevee"},{"vg":"x-y","def":false,"trigger":"level-up","location":"frost-cavern","near_special_rock":true,"base_form":"eevee"},{"vg":"sword-shield","def":true,"item":"ice-stone","trigger":"use-item","base_form":"eevee"},{"vg":"omega-ruby-alpha-sapphire","def":false,"trigger":"level-up","location":"shoal-cave","near_special_rock":true,"base_form":"eevee"},{"vg":"sun-moon","def":false,"trigger":"level-up","location":"mount-lanakila","near_special_rock":true,"base_form":"eevee"}]},{"name":"sylveon","from":"eevee","dets":[{"vg":"x-y","def":false,"trigger":"level-up","known_move_type":"fairy","min_affection":2,"base_form":"eevee"},{"vg":"sword-shield","def":true,"trigger":"level-up","known_move_type":"fairy","min_happiness":160,"base_form":"eevee"}]}]}},"forms":{"charizard-mega-x":{"id":10034,"name":"charizard-mega-x","types":["fire","dragon"],"stats":[78,130,111,130,85,100],"abilities":[{"n":"tough-claws","h":false}],"height":1.7,"weight":110.5},"charizard-mega-y":{"id":10035,"name":"charizard-mega-y","types":["fire","flying"],"stats":[78,104,78,159,115,100],"abilities":[{"n":"drought","h":false}],"height":1.7,"weight":100.5},"venusaur-mega":{"id":10033,"name":"venusaur-mega","types":["grass","poison"],"stats":[80,100,123,122,120,80],"abilities":[{"n":"thick-fat","h":false}],"height":2.4,"weight":155.5},"blastoise-mega":{"id":10036,"name":"blastoise-mega","types":["water"],"stats":[79,103,120,135,115,78],"abilities":[{"n":"mega-launcher","h":false}],"height":1.6,"weight":101.1}},"moves":{"petal-blizzard":{"name":"petal-blizzard","type":"grass","cat":"physical","power":90,"acc":100,"pp":15,"prio":0,"target":"all-other-pokemon","eff":"Inflicts regular damage."},"tackle":{"name":"tackle","type":"normal","cat":"physical","power":40,"acc":100,"pp":35,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"growl":{"name":"growl","type":"normal","cat":"status","power":null,"acc":100,"pp":40,"prio":0,"target":"all-opponents","eff":"Lowers the target’s Attack by one stage."},"petal-dance":{"name":"petal-dance","type":"grass","cat":"special","power":120,"acc":100,"pp":10,"prio":0,"target":"random-opponent","eff":"Hits every turn for 2-3 turns, then confuses the user."},"amnesia":{"name":"amnesia","type":"psychic","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Raises the user’s Special Defense by two stages."},"leech-seed":{"name":"leech-seed","type":"grass","cat":"status","power":null,"acc":90,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Seeds the target, stealing HP from it every turn."},"vine-whip":{"name":"vine-whip","type":"grass","cat":"physical","power":45,"acc":100,"pp":25,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"seed-bomb":{"name":"seed-bomb","type":"grass","cat":"physical","power":80,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"poison-powder":{"name":"poison-powder","type":"poison","cat":"status","power":null,"acc":75,"pp":35,"prio":0,"target":"selected-pokemon","eff":"Poisons the target."},"take-down":{"name":"take-down","type":"normal","cat":"physical","power":90,"acc":85,"pp":20,"prio":0,"target":"selected-pokemon","eff":"User receives 1/4 the damage it inflicts in recoil."},"razor-leaf":{"name":"razor-leaf","type":"grass","cat":"physical","power":55,"acc":95,"pp":25,"prio":0,"target":"all-opponents","eff":"Has an increased chance for a critical hit."},"sweet-scent":{"name":"sweet-scent","type":"normal","cat":"status","power":null,"acc":100,"pp":20,"prio":0,"target":"all-opponents","eff":"Lowers the target’s evasion by one stage."},"synthesis":{"name":"synthesis","type":"grass","cat":"status","power":null,"acc":null,"pp":5,"prio":0,"target":"user","eff":"Heals the user by half its max HP.  Affected by weather."},"growth":{"name":"growth","type":"normal","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Raises the user’s Attack and Special Attack by one stage."},"air-slash":{"name":"air-slash","type":"flying","cat":"special","power":75,"acc":95,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Has a chance to make the target flinch."},"scratch":{"name":"scratch","type":"normal","cat":"physical","power":40,"acc":100,"pp":35,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"wing-attack":{"name":"wing-attack","type":"flying","cat":"physical","power":60,"acc":100,"pp":35,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"counter":{"name":"counter","type":"fighting","cat":"physical","power":null,"acc":100,"pp":20,"prio":-5,"target":"specific-move","eff":"Inflicts twice the damage the user received from the last physical hit it took."},"smokescreen":{"name":"smokescreen","type":"normal","cat":"status","power":null,"acc":100,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Lowers the target’s accuracy by one stage."},"crunch":{"name":"crunch","type":"dark","cat":"physical","power":80,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Has a chance to lower the target’s Defense by one stage."},"heat-wave":{"name":"heat-wave","type":"fire","cat":"special","power":95,"acc":90,"pp":10,"prio":0,"target":"all-opponents","eff":"Has a chance to burn the target."},"dragon-claw":{"name":"dragon-claw","type":"dragon","cat":"physical","power":80,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"shadow-claw":{"name":"shadow-claw","type":"ghost","cat":"physical","power":70,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Has an increased chance for a critical hit."},"ember":{"name":"ember","type":"fire","cat":"special","power":40,"acc":100,"pp":25,"prio":0,"target":"selected-pokemon","eff":"Has a chance to burn the target."},"dragon-breath":{"name":"dragon-breath","type":"dragon","cat":"special","power":60,"acc":100,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Has a chance to paralyze the target."},"metal-claw":{"name":"metal-claw","type":"steel","cat":"physical","power":50,"acc":95,"pp":35,"prio":0,"target":"selected-pokemon","eff":"Has a chance to raise the user’s Attack by one stage."},"leer":{"name":"leer","type":"normal","cat":"status","power":null,"acc":100,"pp":30,"prio":0,"target":"all-opponents","eff":"Lowers the target’s Defense by one stage."},"flash-cannon":{"name":"flash-cannon","type":"steel","cat":"special","power":80,"acc":100,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Has a chance to lower the target’s Special Defense by one stage."},"tail-whip":{"name":"tail-whip","type":"normal","cat":"status","power":null,"acc":100,"pp":30,"prio":0,"target":"all-opponents","eff":"Lowers the target’s Defense by one stage."},"fake-out":{"name":"fake-out","type":"normal","cat":"physical","power":40,"acc":100,"pp":10,"prio":3,"target":"selected-pokemon","eff":"Can only be used as the first move after the user enters battle.  Causes the target to flinch."},"aqua-jet":{"name":"aqua-jet","type":"water","cat":"physical","power":40,"acc":100,"pp":20,"prio":1,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"bubble":{"name":"bubble","type":"water","cat":"special","power":40,"acc":100,"pp":30,"prio":0,"target":"all-opponents","eff":"Has a chance to lower the target’s Speed by one stage."},"rapid-spin":{"name":"rapid-spin","type":"normal","cat":"physical","power":50,"acc":100,"pp":40,"prio":0,"target":"selected-pokemon","eff":"Frees the user from binding moves, removes Leech Seed, and blows away Spikes."},"water-gun":{"name":"water-gun","type":"water","cat":"special","power":40,"acc":100,"pp":25,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"water-pulse":{"name":"water-pulse","type":"water","cat":"special","power":60,"acc":100,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Has a chance to confuse the target."},"protect":{"name":"protect","type":"normal","cat":"status","power":null,"acc":null,"pp":10,"prio":4,"target":"user","eff":"Prevents any moves from hitting the user this turn."},"bite":{"name":"bite","type":"dark","cat":"physical","power":60,"acc":100,"pp":25,"prio":0,"target":"selected-pokemon","eff":"Has a chance to make the target flinch."},"rain-dance":{"name":"rain-dance","type":"water","cat":"status","power":null,"acc":null,"pp":5,"prio":0,"target":"entire-field","eff":"Changes the weather to rain for five turns."},"aqua-tail":{"name":"aqua-tail","type":"water","cat":"physical","power":90,"acc":90,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"withdraw":{"name":"withdraw","type":"water","cat":"status","power":null,"acc":null,"pp":40,"prio":0,"target":"user","eff":"Raises the user’s Defense by one stage."},"thunder-shock":{"name":"thunder-shock","type":"electric","cat":"special","power":40,"acc":100,"pp":30,"prio":0,"target":"selected-pokemon","eff":"Has a chance to paralyze the target."},"sweet-kiss":{"name":"sweet-kiss","type":"fairy","cat":"status","power":null,"acc":75,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Confuses the target."},"charm":{"name":"charm","type":"fairy","cat":"status","power":null,"acc":100,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Lowers the target’s Attack by two stages."},"nasty-plot":{"name":"nasty-plot","type":"dark","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Raises the user’s Special Attack by two stages."},"play-nice":{"name":"play-nice","type":"normal","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Lowers the target’s Attack by one stage."},"nuzzle":{"name":"nuzzle","type":"electric","cat":"physical","power":20,"acc":100,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Has a chance to paralyze the target."},"double-team":{"name":"double-team","type":"normal","cat":"status","power":null,"acc":null,"pp":15,"prio":0,"target":"user","eff":"Raises the user’s evasion by one stage."},"double-kick":{"name":"double-kick","type":"fighting","cat":"physical","power":30,"acc":100,"pp":30,"prio":0,"target":"selected-pokemon","eff":"Hits twice in one turn."},"thunder-wave":{"name":"thunder-wave","type":"electric","cat":"status","power":null,"acc":90,"pp":20,"prio":0,"target":"selected-pokemon","eff":"Paralyzes the target."},"electro-ball":{"name":"electro-ball","type":"electric","cat":"special","power":null,"acc":100,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Power is higher when the user has greater Speed than the target, up to a maximum of 150."},"quick-attack":{"name":"quick-attack","type":"normal","cat":"physical","power":40,"acc":100,"pp":30,"prio":1,"target":"selected-pokemon","eff":"Inflicts regular damage with no additional effect."},"feint":{"name":"feint","type":"normal","cat":"physical","power":30,"acc":100,"pp":10,"prio":2,"target":"selected-pokemon","eff":"Hits through Protect and Detect."},"splash":{"name":"splash","type":"normal","cat":"status","power":null,"acc":null,"pp":40,"prio":0,"target":"user","eff":"Does nothing."},"flail":{"name":"flail","type":"normal","cat":"physical","power":null,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Inflicts more damage when the user has less HP remaining, with a maximum of 200 power."},"sand-attack":{"name":"sand-attack","type":"ground","cat":"status","power":null,"acc":100,"pp":15,"prio":0,"target":"selected-pokemon","eff":"Lowers the target’s accuracy by one stage."},"helping-hand":{"name":"helping-hand","type":"normal","cat":"status","power":null,"acc":null,"pp":20,"prio":5,"target":"ally","eff":"Ally’s next move inflicts half more damage."},"covet":{"name":"covet","type":"normal","cat":"physical","power":60,"acc":100,"pp":25,"prio":0,"target":"selected-pokemon","eff":"Takes the target’s item."},"baby-doll-eyes":{"name":"baby-doll-eyes","type":"fairy","cat":"status","power":null,"acc":100,"pp":30,"prio":1,"target":"selected-pokemon","eff":"Lowers the target’s Attack by one stage."},"swift":{"name":"swift","type":"normal","cat":"special","power":60,"acc":null,"pp":20,"prio":0,"target":"all-opponents","eff":"Never misses."},"refresh":{"name":"refresh","type":"normal","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Cleanses the user of a burn, paralysis, or poison."},"mimic":{"name":"mimic","type":"normal","cat":"status","power":null,"acc":null,"pp":10,"prio":0,"target":"selected-pokemon","eff":"Copies the target’s last used move."},"copycat":{"name":"copycat","type":"normal","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Uses the target’s last used move."},"calm-mind":{"name":"calm-mind","type":"psychic","cat":"status","power":null,"acc":null,"pp":20,"prio":0,"target":"user","eff":"Raises the user’s Special Attack and Special Defense by one stage."}},"abilities":{"overgrow":{"name":"overgrow","eff":"Strengthens Grass moves to inflict 1.5× damage at 1/3 max HP or less.","gen":"generation-iii","holders":["bulbasaur","ivysaur","venusaur","chikorita","bayleef","meganium","treecko","grovyle","sceptile","turtwig","grotle","torterra"]},"chlorophyll":{"name":"chlorophyll","eff":"Doubles Speed during strong sunlight.","gen":"generation-iii","holders":["bulbasaur","ivysaur","venusaur","oddish","gloom","vileplume","bellsprout","weepinbell","victreebel","exeggcute","exeggutor","tangela"]},"blaze":{"name":"blaze","eff":"Strengthens Fire moves to inflict 1.5× damage at 1/3 max HP or less.","gen":"generation-iii","holders":["charmander","charmeleon","charizard","cyndaquil","quilava","typhlosion","torchic","combusken","blaziken","chimchar","monferno","infernape"]},"solar-power":{"name":"solar-power","eff":"Increases Special Attack to 1.5× but costs 1/8 max HP after each turn during strong sunlight.","gen":"generation-iv","holders":["charmander","charmeleon","charizard","sunkern","sunflora","tropius","helioptile","heliolisk","houndoom-mega","charizard-gmax"]},"torrent":{"name":"torrent","eff":"Strengthens Water moves to inflict 1.5× damage at 1/3 max HP or less.","gen":"generation-iii","holders":["squirtle","wartortle","blastoise","totodile","croconaw","feraligatr","mudkip","marshtomp","swampert","piplup","prinplup","empoleon"]},"rain-dish":{"name":"rain-dish","eff":"Heals for 1/16 max HP after each turn during rain.","gen":"generation-iii","holders":["squirtle","wartortle","blastoise","tentacool","tentacruel","lotad","lombre","ludicolo","wingull","pelipper","surskit","morelull"]},"static":{"name":"static","eff":"Has a 30% chance of paralyzing attacking Pokémon on contact.","gen":"generation-iii","holders":["pikachu","raichu","voltorb","electrode","electabuzz","zapdos","pichu","mareep","flaaffy","ampharos","elekid","electrike"]},"lightning-rod":{"name":"lightning-rod","eff":"Redirects single-target Electric moves to this Pokémon where possible.  Absorbs Electric moves, raising Special Attack one stage.","gen":"generation-iii","holders":["pikachu","raichu","cubone","marowak","rhyhorn","rhydon","goldeen","seaking","pichu","electrike","manectric","plusle"]},"swift-swim":{"name":"swift-swim","eff":"Doubles Speed during rain.","gen":"generation-iii","holders":["psyduck","golduck","poliwag","poliwhirl","poliwrath","horsea","goldeen","seaking","magikarp","omanyte","omastar","kabuto"]},"rattled":{"name":"rattled","eff":"Raises Speed one stage upon being hit by a Dark, Ghost, or Bug move.","gen":"generation-v","holders":["magikarp","ledyba","sudowoodo","dunsparce","snubbull","granbull","poochyena","whismur","clamperl","bonsly","cubchoo","yamper"]},"run-away":{"name":"run-away","eff":"Ensures success fleeing from wild battles.","gen":"generation-iii","holders":["caterpie","weedle","rattata","raticate","oddish","venonat","ponyta","rapidash","doduo","dodrio","eevee","sentret"]},"adaptability":{"name":"adaptability","eff":"Increases the same-type attack bonus from 1.5× to 2×.","gen":"generation-iv","holders":["eevee","corphish","crawdaunt","feebas","porygon-z","basculin-red-striped","skrelp","dragalge","yungoos","gumshoos","basculegion-male","basculin-blue-striped"]},"anticipation":{"name":"anticipation","eff":"Notifies all trainers upon entering battle if an opponent has a super-effective move, Self-Destruct, Explosion, or a one-hit KO move.","gen":"generation-iv","holders":["eevee","barboach","whiscash","wormadam-plant","croagunk","toxicroak","ferrothorn","hatenna","hattrem","hatterene","flittle","wormadam-sandy"]}},"items":{"potion":{"name":"potion","cat":"healing","eff":"Restores 20 HP.","attrs":["countable","consumable","usable-overworld","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png","fling":30},"super-potion":{"name":"super-potion","cat":"healing","eff":"Restores 50 HP.","attrs":["countable","consumable","usable-overworld","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png","fling":30},"ultra-ball":{"name":"ultra-ball","cat":"standard-balls","eff":"Tries to catch a wild Pokémon.  Success rate is 2×.","attrs":["countable","consumable","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png","fling":null},"great-ball":{"name":"great-ball","cat":"standard-balls","eff":"Tries to catch a wild Pokémon.  Success rate is 1.5×.","attrs":["countable","consumable","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png","fling":null},"poke-ball":{"name":"poke-ball","cat":"standard-balls","eff":"Tries to catch a wild Pokémon.","attrs":["countable","consumable","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png","fling":null},"rare-candy":{"name":"rare-candy","cat":"vitamins","eff":"Causes a level-up and raises happiness.","attrs":["countable","consumable","usable-overworld","usable-in-battle","holdable"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png","fling":30},"thunder-stone":{"name":"thunder-stone","cat":"evolution","eff":"Evolves an Eelektrik into Eelektross, an Eevee into Jolteon, or a Pikachu into Raichu.","attrs":["underground"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/thunder-stone.png","fling":30},"water-stone":{"name":"water-stone","cat":"evolution","eff":"Evolves an Eevee into Vaporeon, a Lombre into Ludicolo, a Panpour into Simipour, a Poliwhirl into Poliwrath, a Shellder into Cloyster, or a Staryu into Starmie.","attrs":["underground"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/water-stone.png","fling":30},"fire-stone":{"name":"fire-stone","cat":"evolution","eff":"Evolves an Eevee into Flareon, a Growlithe into Arcanine, a Pansear into Simisear, or a Vulpix into Ninetales.","attrs":["underground"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fire-stone.png","fling":30},"leaf-stone":{"name":"leaf-stone","cat":"evolution","eff":"Evolves an Exeggcute into Exeggutor, a Gloom into Vileplume, a Nuzleaf into Shiftry, a Pansage into Simisage, or a Weepinbell into Victreebel.","attrs":["underground"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/leaf-stone.png","fling":30},"ice-stone":{"name":"ice-stone","cat":"evolution","eff":"Evolves an Alola Sandshrew into Alola Sandslash or an Alola Vulpix into Alola Ninetales.","attrs":[],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ice-stone.png","fling":30},"leftovers":{"name":"leftovers","cat":"held-items","eff":"Held: Restores 1/16 (6.25%) holder’s max HP at the end of each turn.","attrs":["holdable","holdable-active"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/leftovers.png","fling":10},"tm26":{"name":"tm26","cat":"all-machines","eff":"Teaches Earthquake to a compatible Pokémon.","attrs":[],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-normal.png","fling":null},"tm01":{"name":"tm01","cat":"all-machines","eff":"Teaches Hone Claws to a compatible Pokémon. (Gen IV & III: Focus Punch Gen II: DynamicPunch Gen I: Mega Punch)","attrs":[],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-normal.png","fling":null},"oran-berry":{"name":"oran-berry","cat":"medicine","eff":"Held: Consumed at 1/2 max HP to recover 10 HP.","attrs":["holdable-active"],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oran-berry.png","fling":10},"escape-rope":{"name":"escape-rope","cat":"spelunking","eff":"Transports user to the outside entrance of a cave.","attrs":[],"sprite":"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/escape-rope.png","fling":30}},"kanto":["celadon-city","cerulean-city","cinnabar-island","digletts-cave","fuchsia-city","mt-moon","pallet-town","rock-tunnel","kanto-route-1","kanto-route-10","kanto-route-11","kanto-route-12","kanto-route-13","kanto-route-14","kanto-route-15","kanto-route-16","kanto-route-17","kanto-route-18","kanto-sea-route-19","kanto-route-2","kanto-sea-route-20","kanto-sea-route-21","kanto-route-22","kanto-route-24","kanto-route-25","kanto-route-26","kanto-route-27","kanto-route-28","kanto-route-3","kanto-route-4","kanto-route-5","kanto-route-6","kanto-route-7","kanto-route-8","kanto-route-9","seafoam-islands","cerulean-cave","vermilion-city","kanto-victory-road-1","viridian-city","viridian-forest","kanto-route-23","kanto-power-plant","kanto-victory-road-2","pokemon-tower","pokemon-mansion","kanto-safari-zone","pewter-city","lavender-town","indigo-plateau","saffron-city","monean-chamber","liptoo-chamber","weepth-chamber","dilford-chamber","scufib-chamber","rixy-chamber","viapos-chamber","ss-anne","mt-ember","berry-forest","icefall-cave","pattern-bush","lost-cave","kindle-road","treasure-beach","cape-brink","bond-bridge","three-isle-port","resort-gorgeous","water-labyrinth","five-isle-meadow","memorial-pillar","outcast-island","green-path","water-path","ruin-valley","trainer-tower","canyon-entrance","sevault-canyon","tanoby-ruins","one-island","four-island","five-island","kanto-altering-cave","roaming-kanto","two-island","three-island","three-isle-path","six-island","seven-island","birth-island","navel-rock","kanto-pokemart","kanto-pokecenter","kanto-underground-path"],"areas":{"kanto-route-1":{"label":"Route 1","key":"kanto-route-1-area","mons":{"charizard":[{"version":"lets-go-pikachu","e":[{"m":"overworld-flying-special","ch":100,"lo":3,"hi":56,"c":[]}]},{"version":"lets-go-eevee","e":[{"m":"overworld-flying-special","ch":100,"lo":3,"hi":56,"c":[]}]}]}},"pallet-town":{"label":"Pallet Town","key":"pallet-town-area","mons":{"pikachu":[{"version":"yellow","e":[{"m":"gift","ch":100,"lo":5,"hi":5,"c":[]}]},{"version":"lets-go-pikachu","e":[{"m":"gift","ch":100,"lo":5,"hi":5,"c":[]}]}],"magikarp":[{"version":"red","e":[{"m":"old-rod","ch":100,"lo":5,"hi":5,"c":[]}]},{"version":"blue","e":[{"m":"old-rod","ch":100,"lo":5,"hi":5,"c":[]}]},{"version":"yellow","e":[{"m":"old-rod","ch":100,"lo":5,"hi":5,"c":[]}]},{"version":"gold","e":[{"m":"old-rod","ch":70,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":15,"lo":10,"hi":10,"c":[]},{"m":"good-rod","ch":35,"lo":20,"hi":20,"c":[]}]},{"version":"silver","e":[{"m":"old-rod","ch":70,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":15,"lo":10,"hi":10,"c":[]},{"m":"good-rod","ch":35,"lo":20,"hi":20,"c":[]}]},{"version":"crystal","e":[{"m":"old-rod","ch":70,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":15,"lo":10,"hi":10,"c":[]},{"m":"good-rod","ch":35,"lo":20,"hi":20,"c":[]}]},{"version":"firered","e":[{"m":"good-rod","ch":20,"lo":5,"hi":15,"c":[]},{"m":"old-rod","ch":70,"lo":5,"hi":10,"c":[]},{"m":"old-rod","ch":30,"lo":5,"hi":10,"c":[]}]},{"version":"leafgreen","e":[{"m":"good-rod","ch":20,"lo":5,"hi":15,"c":[]},{"m":"old-rod","ch":70,"lo":5,"hi":10,"c":[]},{"m":"old-rod","ch":30,"lo":5,"hi":10,"c":[]}]},{"version":"heartgold","e":[{"m":"old-rod","ch":40,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":30,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":15,"lo":10,"hi":10,"c":[]},{"m":"good-rod","ch":40,"lo":20,"hi":20,"c":[]}]},{"version":"soulsilver","e":[{"m":"old-rod","ch":40,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":30,"lo":10,"hi":10,"c":[]},{"m":"old-rod","ch":15,"lo":10,"hi":10,"c":[]},{"m":"good-rod","ch":40,"lo":20,"hi":20,"c":[]}]},{"version":"red-japan","e":[{"m":"old-rod","ch":100,"lo":5,"hi":5,"c":[]}]},{"version":"green-japan","e":[{"m":"old-rod","ch":100,"lo":5,"hi":5,"c":[]}]}],"eevee":[{"version":"lets-go-eevee","e":[{"m":"gift","ch":100,"lo":5,"hi":5,"c":[]}]}]}}}};
+// ---------- constants ----------
+const SP = n => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + n + '.png';
+const T = {normal:['Normal','#9FA19F'],fire:['Fire','#FF9D5C'],water:['Water','#5BA7F7'],electric:['Electric','#F0C33C'],
+grass:['Grass','#5BC98F'],ice:['Ice','#6ECBD2'],fighting:['Fighting','#E8685D'],poison:['Poison','#B368C9'],
+ground:['Ground','#D79B4A'],flying:['Flying','#8FA9F0'],psychic:['Psychic','#FF7BA6'],bug:['Bug','#9DB945'],
+rock:['Rock','#BFA967'],ghost:['Ghost','#7B6BB5'],dragon:['Dragon','#6A5BD6'],dark:['Dark','#6E6059'],
+steel:['Steel','#8FA0B5'],fairy:['Fairy','#EE97CE']};
+const ORDER = Object.keys(T);
+const CHART = {normal:{rock:.5,ghost:0,steel:.5},fire:{fire:.5,water:.5,grass:2,ice:2,bug:2,rock:.5,dragon:.5,steel:2},
+water:{fire:2,water:.5,grass:.5,ground:2,rock:2,dragon:.5},electric:{water:2,electric:.5,grass:.5,ground:0,flying:2,dragon:.5},
+grass:{fire:.5,water:2,grass:.5,poison:.5,ground:2,flying:.5,bug:.5,rock:2,dragon:.5,steel:.5},
+ice:{fire:.5,water:.5,grass:2,ice:.5,ground:2,flying:2,dragon:2,steel:.5},
+fighting:{normal:2,ice:2,poison:.5,flying:.5,psychic:.5,bug:.5,rock:2,ghost:0,dark:2,steel:2,fairy:.5},
+poison:{grass:2,poison:.5,ground:.5,rock:.5,ghost:.5,steel:0,fairy:2},
+ground:{fire:2,electric:2,grass:.5,poison:2,flying:0,bug:.5,rock:2,steel:2},
+flying:{electric:.5,grass:2,fighting:2,bug:2,rock:.5,steel:.5},
+psychic:{fighting:2,poison:2,psychic:.5,dark:0,steel:.5},
+bug:{fire:.5,grass:2,fighting:.5,poison:.5,flying:.5,psychic:2,ghost:.5,dark:2,steel:.5,fairy:.5},
+rock:{fire:2,ice:2,fighting:.5,ground:.5,flying:2,bug:2,steel:.5},
+ghost:{normal:0,psychic:2,ghost:2,dark:.5},dragon:{dragon:2,steel:.5,fairy:0},
+dark:{fighting:.5,psychic:2,ghost:2,dark:.5,fairy:.5},
+steel:{fire:.5,water:.5,electric:.5,ice:2,rock:2,steel:.5,fairy:2},
+fairy:{fire:.5,fighting:2,poison:.5,dragon:2,dark:2,steel:.5}};
+
+const TILES = [['Pokedex','#4ECDA5','dex'],['Moves','#F2645E','moves'],['Abilities','#56A7F4','abilities'],
+  ['Items','#FFC84A','items'],['Locations','#7A5BC9','regions'],['Type Chart','#C77B6B','types'],
+  ['Team Builder','#5C4EE5','team'],['Compare','#3FAE72','compare']];
+const KVER = [['R','Red','GB / GBC'],['B','Blue','GB / GBC'],['Y','Yellow','GB / GBC'],
+  ['G','Gold','GB / GBC'],['S','Silver','GB / GBC'],['C','Crystal','GB / GBC'],
+  ['FR','FireRed','GBA'],['LG','LeafGreen','GBA'],['HG','HeartGold','DS'],['SS','SoulSilver','DS'],
+  ['LP','Let’s Go Pikachu','Switch'],['LE','Let’s Go Eevee','Switch']];
+const VKEY = {red:'R',blue:'B',yellow:'Y',gold:'G',silver:'S',crystal:'C',firered:'FR',leafgreen:'LG',
+  heartgold:'HG',soulsilver:'SS','lets-go-pikachu':'LP','lets-go-eevee':'LE'};
+const GROWS = ['Switch','DS','GBA','GB / GBC'];
+const METHOD = {walk:['Tall grass','#3FAE72'],'old-rod':['Old Rod','#6ECBD2'],'good-rod':['Good Rod','#4FB6C4'],
+  'super-rod':['Super Rod','#3A9BB0'],surf:['Surf','#5BA7F7'],gift:['Gift','#C58B3C'],'gift-egg':['Gift egg','#C58B3C'],
+  headbutt:['Headbutt tree','#8a9b52'],'rock-smash':['Rock Smash','#BFA967'],overworld:['Overworld','#4FA98C'],
+  'overworld-water':['Overworld (water)','#4FA98C'],'overworld-flying':['Overworld (flying)','#4FA98C'],
+  'overworld-special':['Overworld (rare)','#7A5BC9'],'overworld-flying-special':['Sky (rare)','#7A5BC9'],
+  'overworld-water-special':['Water (rare)','#7A5BC9'],'npc-trade':['In-game trade','#C05C8E'],
+  sos:['SOS call','#7A5BC9'],'max-raid':['Max Raid','#5C4EE5'],wanderer:['Roaming','#59b08a'],
+  'wanderer-water':['Roaming (water)','#59b08a'],static:['Static encounter','#7A5BC9'],
+  seaweed:['Seaweed','#4FB6C4'],'berry-trees':['Berry tree','#8a9b52']};
+const meth = m => METHOD[m] || [m.replace(/-/g,' '), '#9095ad'];
+const cap = s => s.replace(/-/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+const pad3 = n => '#' + String(n).padStart(3,'0');
+const tp = t => '<span class="tp" style="background:' + T[t][1] + '">' + T[t][0] + '</span>';
+const tag = t => '<span class="tag">' + T[t][0] + '</span>';
+
+// ---------- state ----------
+let stack = [{s:'home'}], backing = false, sheet = null, q = '', mode = 'def';
+let teams = {Main:['charizard','blastoise','pikachu'], Water:['blastoise','magikarp']};
+let curTeam = 'Main', team = teams.Main.slice();
+let cmp = [null, null];                       // Compare opens empty
+let saves = [['charizard','blastoise']];      // saved comparisons, like teams
+const cur = () => stack[stack.length-1];
+function go(s,p){ backing=false; stack.push({s,p,tab:null,form:null,ver:null}); render(); }
+function back(){ if(stack.length>1){ backing=true; stack.pop(); render(); } }
+function setTab(t){ cur().tab=t; backing=false; render(); }
+function setForm(f){ cur().form=f; backing=false; render(); }
+function setVer(v){ cur().ver=v; backing=false; render(); }
+
+// ---------- chrome ----------
+function page(title, sub, opts){
+  opts = opts || {};
+  return '<div class="page"><div class="pwhite"></div>'
+   + '<div class="pnav"><div class="ic" onclick="' + (opts.home ? '' : 'back()') + '">' + (opts.home ? '' : '&larr;') + '</div>'
+   + '<div class="ic" style="text-align:right">' + (opts.action || '') + '</div></div>'
+   + '<div class="ptitle">' + title + '</div>'
+   + (sub ? '<div class="psub">' + sub + '</div>' : '') + '</div>';
+}
+function monColor(m){ return T[m.types[0]][1]; }
+function variant(slug, form){
+  const m = DATA.mons[slug];
+  if(!form || form === slug) return {...m, sprite:m.dex, label:'Standard'};
+  const f = DATA.forms[form];
+  return {...m, types:f.types, stats:f.stats, abilities:f.abilities, height:f.height, weight:f.weight, sprite:f.id};
+}
+function playCry(slug, el){
+  const m = DATA.mons[slug];
+  if(!m || !m.cry) return;
+  try { const a = new Audio(m.cry); a.volume = .55; a.play().catch(()=>{}); } catch(e){}
+  if(el){ el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+}
+function kv(k,v){ return '<div class="kv"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>'; }
+
+// ---------- home ----------
+function scrHome(){
+  return '<div class="page"><div class="pwhite"></div>'
+   + '<div class="ptitle" style="margin-top:24px">What Pokémon<br>are you looking for?</div>'
+   + '<div class="sbar" onclick="go(\'search\')"><span>🔍</span><span>Search Pokémon, Move, Ability etc</span></div>'
+   + '<div class="tiles">' + TILES.map((t,i) =>
+      '<div class="tile" style="background:' + t[1] + ';animation-delay:' + (i*.045).toFixed(2) + 's" onclick="go(\'' + t[2] + '\')">'
+      + '<div class="ring" style="right:-22px;top:-14px;width:86px;height:86px"></div>' + t[0] + '</div>').join('')
+   + '</div>'
+   + '<div class="muted"><b>Prototype scope.</b> Six Pokémon carry complete data; Kanto lists all 96 locations, with Route 1 and Pallet Town fully mapped.</div>'
+   + '<div class="row" style="margin-top:6px" onclick="go(\'credits\')"><div class="tx"><div class="n">Credits &amp; licences</div>'
+   + '<div class="d">Unofficial fan project</div></div><div class="cv">›</div></div>'
+   + '</div>';
+}
+
+// ---------- dex ----------
+function dexCard(slug, i){
+  const m = DATA.mons[slug];
+  return '<div class="card" style="background:' + monColor(m) + ';animation-delay:' + (i*.045).toFixed(2)
+   + 's" onclick="go(\'mon\',\'' + slug + '\')">'
+   + '<div class="ring" style="right:-16px;bottom:-20px;width:74px;height:74px;border-width:11px"></div>'
+   + '<div class="no">' + pad3(m.dex) + '</div><div class="n">' + cap(slug) + '</div>'
+   + '<div class="tg">' + m.types.map(tag).join('') + '</div>'
+   + '<div class="art" style="background-image:url(' + SP(m.dex) + ')"></div></div>';
+}
+function scrDex(){
+  const list = Object.keys(DATA.mons);
+  return page('Pokedex','' , {action:'☰'})
+   + '<div class="pbody"><div class="dex">' + list.map(dexCard).join('') + '</div>'
+   + '<div class="muted">' + list.length + ' of 1,025 mapped in this prototype. The full app lists every species plus regional forms as their own cards, sharing a Dex number.</div></div>';
+}
+
+// ---------- Pokémon detail ----------
+function scrMon(slug){
+  const c = cur(), m = DATA.mons[slug], v = variant(slug, c.form);
+  const tab = c.tab || 'About';
+  const tabs = ['About','Base Stats','Location','Moves'];
+  let b = '';
+
+  if(tab === 'About'){
+    b = '<div class="prose">' + m.desc + '</div>'
+     + '<div class="inset"><div class="c"><div class="k">Height</div><div class="v">' + v.height + ' m</div></div>'
+     + '<div class="c"><div class="k">Weight</div><div class="v">' + v.weight + ' kg</div></div></div>'
+     + '<h4>Breeding</h4>'
+     + kv('Gender', m.genderRate < 0 ? 'Genderless' : (100 - m.genderRate*12.5) + '% ♂, ' + (m.genderRate*12.5) + '% ♀')
+     + kv('Egg Groups', m.eggs.map(cap).join(', '))
+     + kv('Egg Cycle', m.hatch + ' cycles')
+     + '<h4>Training</h4>'
+     // Abilities deliberately live only in the Moves tab — About is the summary,
+     // Moves is "what it can do", and listing them twice read as redundant.
+     + kv('Catch Rate', m.catch) + kv('Growth', cap(m.growth))
+     + evoBlock(m);
+  }
+  else if(tab === 'Base Stats'){
+    const L = ['HP','Attack','Defense','Sp. Atk','Sp. Def','Speed'];
+    b = v.stats.map((s,i) => '<div class="srow"><div class="slab">' + L[i] + '</div><div class="sval">' + s + '</div>'
+        + '<div class="lane"><div class="bar" style="width:' + Math.min(s/160*100,100) + '%;background:' + monColor(m)
+        + ';animation-delay:' + (.1+i*.06).toFixed(2) + 's"></div></div></div>').join('')
+     + '<div class="srow" style="margin-top:14px"><div class="slab" style="font-weight:700;color:#2b2f45">Total</div>'
+     + '<div class="sval">' + v.stats.reduce((a,x)=>a+x,0) + '</div><div></div></div>'
+     + '<h4>Type Defenses</h4>'
+     + '<div class="prose" style="font-size:11.5px;margin-bottom:12px">Damage taken from each attacking type. Neutral matchups are omitted.</div>'
+     + '<div style="display:flex;flex-wrap:wrap;gap:5px">'
+     + ORDER.map(att => {
+        const x = v.types.reduce((a,t)=>a*(CHART[att][t]===undefined?1:CHART[att][t]),1);
+        if(x===1) return '';
+        const c2 = x===0?['0','#fff','#3b4066']:x===4?['×4','#fff','#c2402f']:x===2?['×2','#9e3a33','#fbdcd7']
+                 :x===.5?['½','#1f7a52','#dff2e8']:['¼','#fff','#1f7a52'];
+        return '<div style="border-radius:9px;padding:6px 9px;background:' + c2[2] + ';color:' + c2[1]
+          + ';font-size:9px;font-weight:700">' + T[att][0] + ' ' + c2[0] + '</div>';
+       }).join('') + '</div>';
+  }
+  else if(tab === 'Location'){ b = monLocation(slug); }
+  else { b = monMovesTab(slug, v); }
+
+  const pills = (m.forms && m.forms.length > 1)
+    ? '<div class="fpills">' + m.forms.map(f =>
+        '<div class="fp' + ((c.form||slug)===f[0]?' on':'') + '" onclick="setForm(\'' + f[0] + '\')">' + f[1] + '</div>').join('')
+      + (m.cosmetic > 0 ? '<div class="fp" style="border-style:dashed;cursor:default">+' + m.cosmetic + ' cosmetic</div>' : '')
+      + '</div>' : '';
+
+  return '<div class="hero" style="background:' + monColor(m) + '">'
+   + '<div class="hring"></div><div class="hdots"></div>'
+   + '<div class="hnav"><div class="ic" onclick="back()">&larr;</div><div class="ic">♡</div></div>'
+   + '<div class="hrow"><div class="hname">' + cap(slug) + '</div><div class="hnum">' + pad3(m.dex) + '</div></div>'
+   + '<div class="hrow2"><div class="htypes">' + v.types.map(tag).join('') + '</div>'
+   + '<div class="hgenus">' + (m.genus||'').replace(' Pokémon','') + '</div></div>'
+   + '<div class="hart" style="background-image:url(' + SP(v.sprite) + ')" onclick="playCry(\'' + slug + '\',this)"></div>'
+   + '</div>'
+   + '<div class="sheet2">' + pills
+   + '<div class="dtabs">' + tabs.map(t => '<div class="dtab' + (t===tab?' on':'') + '" onclick="setTab(\'' + t + '\')">' + t + '</div>').join('') + '</div>'
+   + b + '</div>';
+}
+
+function evoBlock(m){
+  const ch = m.chain;
+  if(ch.length < 2) return '';
+  const node = n => '<div class="node"' + (DATA.mons[n.name] ? ' onclick="go(\'mon\',\'' + n.name + '\')"' : '') + '>'
+    + '<div class="c" style="background-image:url(' + SP(dexOf(n.name)) + ')"></div>'
+    + '<div class="n">' + cap(n.name) + '</div></div>';
+  const arrow = n => {
+    const d = n.dets.find(x=>x.def) || n.dets[0] || {};
+    let primary = '—', extra = [];
+    if(d.min_level) primary = 'Lv ' + d.min_level;
+    else if(d.item) primary = cap(d.item);
+    else if(d.trigger === 'trade') primary = 'Trade';
+    else if(d.min_happiness) primary = 'Friendship';
+    else if(d.trigger) primary = cap(d.trigger);
+    if(d.known_move_type) extra.push('knowing a ' + T[d.known_move_type][0] + ' move');
+    if(d.time_of_day) extra.push('at ' + d.time_of_day);
+    if(d.min_happiness && primary !== 'Friendship') extra.push('high friendship');
+    if(d.location) extra.push('near ' + cap(d.location));
+    return '<div class="arr"><div class="a">→</div><div class="c">' + primary + '</div>'
+      + (extra.length ? '<div class="x">' + extra.join('<br>') + '</div>' : '') + '</div>';
+  };
+  const base = ch[0], kids = ch.filter(n => n.from === base.name);
+  let html = '<h4>Evolution</h4>';
+  if(kids.length > 1){
+    html += '<div style="text-align:center">' + node(base) + '</div>'
+      + '<div class="branch">' + kids.map(k => '<div style="text-align:center">' + arrow(k) + node(k) + '</div>').join('') + '</div>';
+  } else {
+    const line = [base]; let p = base.name;
+    while(true){ const nx = ch.find(n=>n.from===p); if(!nx) break; line.push(nx); p = nx.name; }
+    html += '<div class="evo">' + line.map((n,i) => (i ? arrow(n) : '') + node(n)).join('') + '</div>';
+  }
+  return html;
+}
+function dexOf(name){
+  if(DATA.mons[name]) return DATA.mons[name].dex;
+  const k = {charmander:4,charmeleon:5,bulbasaur:1,ivysaur:2,squirtle:7,wartortle:8,pichu:172,raichu:26,
+    gyarados:130,vaporeon:134,jolteon:135,flareon:136,espeon:196,umbreon:197,leafeon:470,glaceon:471,sylveon:700};
+  return k[name] || 0;
+}
+
+function monLocation(slug){
+  const c = cur();
+  const byVer = {};
+  Object.keys(DATA.areas).forEach(k => (DATA.areas[k].mons[slug]||[]).forEach(v => {
+    const code = VKEY[v.version]; if(!code) return;
+    (byVer[code] = byVer[code] || []).push({place:DATA.areas[k].label, e:v.e});
+  }));
+  const has = Object.keys(byVer);
+  const caps = [];
+  if(has.length) caps.push(['Wild Catch','#3FAE72']);
+  if(DATA.mons[slug].chain.some(n => n.from)) caps.push(['Evolve','#5C4EE5']);
+  if(!has.length) caps.push(['Transfer Only','#8FA0B5']);
+
+  let out = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">'
+    + caps.map((p,i)=>'<div class="tp" style="background:' + p[1] + ';animation:pop .34s both ' + (i*.05).toFixed(2) + 's">' + p[0] + '</div>').join('')
+    + '</div><h4>Available in — Kanto games</h4>';
+
+  if(!c.ver){
+    out += '<div class="grid">' + GROWS.map(r =>
+      '<div class="grow2"><div class="glab">' + r + '</div><div class="cells">'
+      + KVER.filter(v=>v[2]===r).map((v,i) =>
+        '<div class="cell' + (byVer[v[0]]?'':' no') + '" style="animation-delay:' + (i*.02).toFixed(2)
+        + 's" onclick="setVer(\'' + v[0] + '\')">' + v[0] + '</div>').join('') + '</div></div>').join('')
+      + '<div class="legend"><span><i style="background:#3FAE72"></i>Obtainable</span>'
+      + '<span><i style="background:#f4f5f9"></i>Not available</span></div></div>'
+      + '<div class="muted">Twelve cells, not thirty — Kanto has no 3DS game, so that row does not exist.</div>';
+  } else {
+    const v = KVER.find(x=>x[0]===c.ver), rows = byVer[c.ver];
+    out += '<div class="bar2" onclick="setVer(null)"><div class="tok' + (rows?'':' no') + '">' + v[0] + '</div>'
+      + '<div class="tx"><div class="t1">' + v[1] + '</div><div class="t2">' + v[2]
+      + (rows ? ' · ' + rows.length + ' place' + (rows.length>1?'s':'') : ' · not obtainable') + '</div></div>'
+      + '<div class="cv">▲</div></div>';
+    out += rows
+      ? '<div style="margin-top:6px">' + rows.map(r => r.e.map(e => {
+          const mm = meth(e.m);
+          return '<div class="enc"><div class="tx"><div class="n">' + r.place + '</div>'
+           + '<div class="d">Lv ' + (e.lo===e.hi?e.lo:e.lo+'–'+e.hi) + (e.ch?' · ' + e.ch + '%':'') + '</div></div>'
+           + '<div class="m" style="background:' + mm[1] + '">' + mm[0] + '</div></div>';
+        }).join('')).join('') + '</div>'
+      : '<div class="none">Not obtainable in <b>' + v[1] + '</b>.<br>Transfer it in from another game.</div>';
+  }
+  return out;
+}
+
+// ---------- catalogues ----------
+function rowMon(slug,i){
+  const m = DATA.mons[slug];
+  return '<div class="row" style="animation-delay:' + (i*.04).toFixed(2) + 's" onclick="go(\'mon\',\'' + slug + '\')">'
+   + '<div class="sp" style="background-image:url(' + SP(m.dex) + ')"></div>'
+   + '<div class="tx"><div class="n">' + cap(slug) + '</div><div class="d">' + pad3(m.dex) + ' · ' + m.types.map(t=>T[t][0]).join(' / ') + '</div></div>'
+   + '<div class="cv">›</div></div>';
+}
+// ---------- regions ----------
+const REGIONS = [['Kanto','カントー','#E8685D','Gen I','151 species',[6,9]],
+  ['Johto','ジョウト','#F0C33C','Gen II','100 species',[250,249]],
+  ['Hoenn','ホウエン','#5BC98F','Gen III','135 species',[383,382]],
+  ['Sinnoh','シンオウ','#5BA7F7','Gen IV','107 species',[483,484]],
+  ['Unova','イッシュ','#6E6059','Gen V','156 species',[643,644]],
+  ['Kalos','カロス','#B368C9','Gen VI','72 species',[716,717]],
+  ['Alola','アローラ','#FF9D5C','Gen VII','88 species',[791,792]],
+  ['Galar','ガラル','#7A5BC9','Gen VIII','400 species',[888,889]],
+  ['Hisui','ヒスイ','#9DB945','Gen VIII','242 species',[493]],
+  ['Paldea','パルデア','#EE97CE','Gen IX','400 species',[1007,1008]],
+  ['Orre','オーレ','#8FA0B5','Gen III','—',[196,197]]];
+function scrRegions(){
+  return page('Locations','Eleven regions')
+   + '<div class="pbody"><div class="dex">' + REGIONS.map((r,i) =>
+      '<div class="card" style="background:' + r[2] + ';animation-delay:' + (i*.04).toFixed(2) + 's"'
+      + (r[0]==='Kanto' ? ' onclick="go(\'region\')"' : '') + '>'
+      + '<div class="ring" style="right:-16px;bottom:-20px;width:74px;height:74px;border-width:11px"></div>'
+      + '<div class="no">' + r[1] + '</div><div class="n">' + r[0] + '</div>'
+      + '<div style="font-size:9px;opacity:.85;margin-top:5px;position:relative;z-index:3">' + r[3] + '<br>' + r[4] + '</div>'
+      + r[5].map((id,j) => '<div class="art" style="background-image:url(' + SP(id) + ');'
+        + (r[5].length>1 ? (j?'right:-10px;bottom:-12px;width:50px;height:50px':'right:14px;bottom:-2px;width:56px;height:56px') : '') + '"></div>').join('')
+      + '</div>').join('') + '</div>'
+   + '<div class="muted">Only Kanto is navigable in this prototype.</div></div>';
+}
+function scrRegion(){
+  const c = cur(), tab = c.tab || 'About';
+  let b = '';
+  if(tab === 'About'){
+    b = '<div class="prose">The region where it started. A long eastern peninsula of quiet towns, dense forest and a volcanic island in the south — compact enough to cross on foot, and the only region revisited in a later generation.</div>'
+     + '<div class="inset"><div class="c"><div class="k">Pokédex</div><div class="v">151</div></div>'
+     + '<div class="c"><div class="k">Locations</div><div class="v">' + DATA.kanto.length + '</div></div>'
+     + '<div class="c"><div class="k">Games</div><div class="v">9</div></div></div>'
+     + '<h4>Details</h4>'
+     + kv('Introduced','Generation I') + kv('Native name','カントー')
+     + kv('Set here','Red · Blue · Yellow · FireRed · LeafGreen · Let’s Go')
+     + kv('Also in','Gold · Silver · Crystal · HeartGold · SoulSilver');
+  } else if(tab === 'Locations'){
+    const list = DATA.kanto.filter(l => l.replace(/-/g,' ').includes(q.toLowerCase()));
+    b = '<div class="sbar" style="margin:0 0 8px"><span>🔍</span>'
+      + '<input id="q" placeholder="Search ' + DATA.kanto.length + ' locations…" value="' + q + '" oninput="q=this.value;render()"></div>'
+      + list.map((l,i) => {
+        const mapped = DATA.areas[l];
+        return '<div class="row" style="animation-delay:' + Math.min(i*.01,.3).toFixed(2) + 's"'
+         + (mapped ? ' onclick="go(\'loc\',\'' + l + '\')"' : '') + '>'
+         + '<div class="tx"><div class="n">' + cap(l.replace('kanto-','')) + '</div>'
+         + '<div class="d">' + (mapped ? 'Encounter data mapped' : 'Listed only') + '</div></div>'
+         + '<div class="cv">' + (mapped ? '›' : '') + '</div></div>';
+      }).join('')
+      + '<div class="muted">Showing ' + list.length + ' of ' + DATA.kanto.length + '.</div>';
+  } else {
+    b = '<div class="dex">' + Object.keys(DATA.mons).map(dexCard).join('') + '</div>'
+      + '<div class="muted"><b>#037 would be the Kantonian Vulpix, not the Alolan one.</b> A regional dex shows the variant native to that region — issue #5.</div>';
+  }
+  return page('Kanto','Generation I · 9 games')
+   + '<div style="padding:0 22px"><div class="dtabs">' + ['About','Locations','Pokédex'].map(t =>
+      '<div class="dtab' + (t===tab?' on':'') + '" onclick="setTab(\'' + t + '\')">' + t + '</div>').join('') + '</div></div>'
+   + '<div class="pbody" style="padding-top:14px">' + b + '</div>';
+}
+function scrLoc(key){
+  const c = cur(), area = DATA.areas[key], byVer = {};
+  Object.keys(area.mons).forEach(slug => area.mons[slug].forEach(v => {
+    const code = VKEY[v.version]; if(!code) return;
+    (byVer[code] = byVer[code] || []).push({slug, e:v.e});
+  }));
+  let out = '<h4 style="margin-top:0">Available in — Kanto games</h4>';
+  if(!c.ver){
+    out += '<div class="grid">' + GROWS.map(r =>
+      '<div class="grow2"><div class="glab">' + r + '</div><div class="cells">'
+      + KVER.filter(v=>v[2]===r).map((v,i) =>
+        '<div class="cell' + (byVer[v[0]]?'':' no') + '" style="animation-delay:' + (i*.02).toFixed(2)
+        + 's" onclick="setVer(\'' + v[0] + '\')">' + v[0] + '</div>').join('') + '</div></div>').join('')
+      + '<div class="legend"><span><i style="background:#3FAE72"></i>Has encounters</span>'
+      + '<span><i style="background:#f4f5f9"></i>None</span></div></div>'
+      + '<div class="muted">Only the six mapped Pokémon are counted — the real place has more.</div>';
+  } else {
+    const v = KVER.find(x=>x[0]===c.ver), rows = byVer[c.ver];
+    out += '<div class="bar2" onclick="setVer(null)"><div class="tok' + (rows?'':' no') + '">' + v[0] + '</div>'
+      + '<div class="tx"><div class="t1">' + v[1] + '</div><div class="t2">' + v[2]
+      + (rows ? ' · ' + rows.length + ' species' : ' · none mapped') + '</div></div><div class="cv">▲</div></div>';
+    out += rows
+      ? '<div style="margin-top:6px">' + rows.map(r => r.e.map(e => {
+          const mm = meth(e.m), m = DATA.mons[r.slug];
+          return '<div class="enc" onclick="go(\'mon\',\'' + r.slug + '\')" style="cursor:pointer">'
+           + '<div class="sp" style="background-image:url(' + SP(m.dex) + ')"></div>'
+           + '<div class="tx"><div class="n">' + cap(r.slug) + '</div>'
+           + '<div class="d">Lv ' + (e.lo===e.hi?e.lo:e.lo+'–'+e.hi) + (e.ch?' · ' + e.ch + '%':'') + '</div></div>'
+           + '<div class="m" style="background:' + mm[1] + '">' + mm[0] + '</div></div>';
+        }).join('')).join('') + '</div>'
+      : '<div class="none">None of the six mapped Pokémon appear here in <b>' + v[1] + '</b>.</div>';
+  }
+  return page(area.label,'Kanto') + '<div class="pbody">' + out + '</div>';
+}
+
+// ---------- type chart ----------
+function scrTypes(){
+  return page('Type Chart','Attacker → defender')
+   + '<div class="pbody"><div class="chart"><div style="min-width:' + (52 + 18*21) + 'px">'
+   + '<div class="crow"><div class="ck" style="background:#fff"></div>'
+   + ORDER.map(d => '<div class="ch" style="background:' + T[d][1] + '">' + T[d][0].slice(0,3) + '</div>').join('') + '</div>'
+   + ORDER.map(att => '<div class="crow"><div class="ck" style="background:' + T[att][1] + '">' + T[att][0] + '</div>'
+      + ORDER.map(def => {
+        const x = CHART[att][def];
+        if(x === undefined) return '<div class="cc"></div>';
+        const s = x===0?['0','#fff','#3b4066']:x===2?['2','#fff','#1f7a52']:['½','#9e3a33','#fbdcd7'];
+        return '<div class="cc" style="background:' + s[2] + ';color:' + s[1] + '">' + s[0] + '</div>';
+      }).join('') + '</div>').join('')
+   + '</div></div><div class="muted">Blank is neutral. Scroll sideways for all 18 columns.</div></div>';
+}
+
+// ---------- team builder ----------
+const defMult = (att, slug) => DATA.mons[slug].types.reduce((a,t)=>a*(CHART[att][t]===undefined?1:CHART[att][t]),1);
+function cellOf(v){
+  if(v===0) return ['0','#fff','#3b4066'];
+  if(v===4) return ['×4','#fff','#c2402f'];
+  if(v===2) return ['×2','#9e3a33','#fbdcd7'];
+  if(v===.5) return ['½','#1f7a52','#dff2e8'];
+  if(v===.25) return ['¼','#fff','#1f7a52'];
+  return ['','#c8ccda','#fafbfd'];
+}
+function miniStack(list){
+  return '<div style="display:flex">' + list.map((s,j) =>
+    '<div style="width:30px;height:30px;border-radius:50%;background:#f4f5f9;background-size:76%;'
+    + 'background-repeat:no-repeat;background-position:center;border:2px solid #fff;margin-left:' + (j?-9:0) + 'px;'
+    + 'background-image:url(' + SP(DATA.mons[s].dex) + ')"></div>').join('') + '</div>';
+}
+function scrTeam(){
+  return page('Team Builder', Object.keys(teams).length + ' teams · saved automatically')
+   + '<div class="pbody">' + Object.keys(teams).map((k,i) =>
+      '<div class="row" style="animation-delay:' + (i*.05).toFixed(2) + 's" onclick="openTeam(\'' + k + '\')">'
+      + miniStack(teams[k])
+      + '<div class="tx"><div class="n">' + k + '</div><div class="d">' + teams[k].length + ' of 6</div></div>'
+      + '<div class="cv">›</div></div>').join('')
+   + '<div class="row" style="justify-content:center;color:#b0b4c6" onclick="newTeam()">+ New team</div></div>';
+}
+function scrTeamEdit(){
+  const t = team, pad = n => Array.from({length:6-n},()=>'<div class="mc empty"></div>').join('');
+  const headRow = '<div class="mrow"><div class="mlab" style="background:transparent"></div>'
+    + t.map(s => '<div class="mhc" style="background-image:url(' + SP(DATA.mons[s].dex) + ')"></div>').join('')
+    + Array.from({length:6-t.length},()=>'<div class="mhc empty"></div>').join('') + '</div>';
+  const rows = ORDER.map((att,i) => {
+    const cells = t.map(s => {
+      const c = mode==='def' ? cellOf(defMult(att,s))
+        : (Math.max(...DATA.mons[s].types.map(ty=>CHART[ty][att]??1))>=2 ? ['×2','#fff','#1f7a52'] : ['','#c8ccda','#fafbfd']);
+      return '<div class="mc" style="color:' + c[1] + ';background:' + c[2] + '">' + c[0] + '</div>';
+    }).join('') + pad(t.length);
+    return '<div class="mrow" style="animation-delay:' + (i*.018).toFixed(3) + 's">'
+      + '<div class="mlab" style="background:' + T[att][1] + '">' + T[att][0] + '</div>' + cells + '</div>';
+  }).join('');
+  return page(curTeam, t.length + ' of 6 · saved automatically')
+   + '<div class="pbody"><div class="slots">'
+   + Array.from({length:6},(_,i) => {
+      const s = t[i];
+      if(!s) return '<div class="slot" onclick="pickFor(\'team\')">+</div>';
+      const m = DATA.mons[s];
+      return '<div class="slot filled" style="background-color:' + monColor(m) + '2e;background-image:url(' + SP(m.dex)
+        + ');animation-delay:' + (i*.05).toFixed(2) + 's" onclick="dropSlot(' + i + ')"><div class="nm">' + cap(s) + '</div></div>';
+     }).join('') + '</div>'
+   + '<h4>Type coverage</h4>'
+   + '<div class="modes"><div class="mo' + (mode==='def'?' on':'') + '" onclick="mode=\'def\';render()">Damage taken</div>'
+   + '<div class="mo' + (mode==='off'?' on':'') + '" onclick="mode=\'off\';render()">Damage dealt</div></div>'
+   + '<div class="prose" style="font-size:11px;margin-bottom:10px">' + (mode==='def'
+      ? 'How hard each attacking type hits each member. Blank is neutral.'
+      : 'How hard each member’s own types hit — <b>STAB only</b>; moves are not tracked.') + '</div>'
+   + '<div class="matrix">' + headRow + rows + '</div>'
+   + '<div class="muted">No verdicts, no scores — issue #16.</div></div>';
+}
+
+// ---------- compare ----------
+function scrCompare(){
+  const [a,b] = cmp, A = a && DATA.mons[a], B = b && DATA.mons[b];
+  const L = ['HP','Attack','Defense','Sp. Atk','Sp. Def','Speed'];
+  let body = '';
+  if(A && B){
+    body = '<h4 style="margin-top:4px">Base Stats</h4>'
+     + L.map((lab,i) => {
+        const lv = A.stats[i], rv = B.stats[i], lw = lv>rv, rw = rv>lv;
+        return '<div class="divrow"><div class="dnum l ' + (lw?'':'lose') + '" style="color:' + (lw?monColor(A):'') + '">' + lv + '</div>'
+         + '<div class="dlane l"><div class="dbar" style="width:' + (lv/160*100) + '%;background:' + monColor(A)
+         + ';opacity:' + (lw?1:.4) + ';animation-delay:' + (.2+i*.06).toFixed(2) + 's"></div></div>'
+         + '<div class="dk">' + lab + '</div>'
+         + '<div class="dlane r"><div class="dbar" style="width:' + (rv/160*100) + '%;background:' + monColor(B)
+         + ';opacity:' + (rw?1:.4) + ';animation-delay:' + (.2+i*.06).toFixed(2) + 's"></div></div>'
+         + '<div class="dnum r ' + (rw?'':'lose') + '" style="color:' + (rw?monColor(B):'') + '">' + rv + '</div></div>';
+       }).join('')
+     + drow('Total', A.stats.reduce((x,y)=>x+y,0), B.stats.reduce((x,y)=>x+y,0), A, B)
+     + '<h4>Abilities</h4>'
+     + drow('Ability', cap(A.abilities[0].n), cap(B.abilities[0].n), A, B)
+     + drow('Hidden', cap((A.abilities.find(x=>x.h)||{n:'—'}).n), cap((B.abilities.find(x=>x.h)||{n:'—'}).n), A, B)
+     + '<h4>Details</h4>'
+     + drow('Height', A.height+' m', B.height+' m', A, B)
+     + drow('Weight', A.weight+' kg', B.weight+' kg', A, B)
+     + drow('Egg groups', A.eggs.map(cap).join(', '), B.eggs.map(cap).join(', '), A, B)
+     + drow('Catch rate', A.catch, B.catch, A, B)
+     + drow('Growth', cap(A.growth), cap(B.growth), A, B)
+     + drow('Hatch', A.hatch+' cycles', B.hatch+' cycles', A, B)
+     + '<div class="row" style="justify-content:center;color:#5C4EE5;font-weight:600;margin-top:10px" onclick="saveCmp()">♡ Save this comparison</div>';
+  } else {
+    body = '<div class="none">Pick two Pokémon to compare.<br>Tap either side above.</div>'
+     + (saves.length ? '<h4>Saved comparisons</h4>' + saves.map((p,i) =>
+        '<div class="row" style="animation-delay:' + (i*.05).toFixed(2) + 's" onclick="loadCmp(' + i + ')">'
+        + miniStack(p) + '<div class="tx"><div class="n">' + cap(p[0]) + ' vs ' + cap(p[1]) + '</div>'
+        + '<div class="d">Saved comparison</div></div><div class="cv">›</div></div>').join('') : '');
+  }
+  const side = (m,slug,idx) => m
+    ? '<div class="cmon" onclick="pickFor(\'cmp' + idx + '\')">'
+      + '<div class="a" style="background-image:url(' + SP(m.dex) + ')"></div>'
+      + '<div class="n">' + cap(slug) + '</div></div>'
+    : '<div class="cmon" onclick="pickFor(\'cmp' + idx + '\')"><div class="e">+</div>'
+      + '<div class="n" style="opacity:.85">Choose</div></div>';
+  return '<div class="cmp">'
+   + '<div class="half l" style="background:' + (A?monColor(A):'#b6bac9') + '"></div>'
+   + '<div class="half r" style="background:' + (B?monColor(B):'#cfd3de') + '"></div>'
+   + '<div style="position:absolute;left:22px;top:50px;z-index:7;color:#fff;font-size:19px;cursor:pointer" onclick="back()">←</div>'
+   + '<div style="position:absolute;right:22px;top:50px;z-index:7;color:#fff;font-size:19px;cursor:pointer" onclick="swapCmp()">⇄</div>'
+   + '<div style="position:absolute;left:0;right:0;top:78px;text-align:center;z-index:7;color:#fff;font-size:14px;font-weight:600;opacity:.9">Compare</div>'
+   + '<div class="cmons">' + side(A,a,0) + side(B,b,1) + '</div>'
+   + '<div class="vs">VS</div></div>'
+   + '<div class="pbody" style="padding-top:18px">' + body + '</div>';
+}
+function drow(k,l,r,A,B){
+  const same = String(l)===String(r);
+  return '<div class="drow"><span class="dl" style="color:' + (same?'#c8ccda':monColor(A)) + '">' + l + '</span>'
+   + '<span class="dk">' + k + (same?'<i>same</i>':'') + '</span>'
+   + '<span class="dr" style="color:' + (same?'#c8ccda':monColor(B)) + '">' + r + '</span></div>';
+}
+function swapCmp(){ cmp = [cmp[1], cmp[0]]; render(); }
+function saveCmp(){ if(cmp[0]&&cmp[1] && !saves.some(s=>s[0]===cmp[0]&&s[1]===cmp[1])) saves.push([cmp[0],cmp[1]]); render(); }
+function loadCmp(i){ cmp = saves[i].slice(); render(); }
+
+// ---------- search ----------
+function scrSearch(){
+  const s = q.toLowerCase().trim(), groups = [];
+  if(s){
+    const add = (label, arr, fn) => { if(arr.length) groups.push([label, arr.slice(0,5).map(fn), arr.length]); };
+    add('Pokémon', Object.keys(DATA.mons).filter(n=>n.includes(s)), (n,i)=>rowMon(n,i));
+    add('Moves', Object.keys(DATA.moves).filter(n=>n.includes(s)), n=>'<div class="row" onclick="go(\'move\',\'' + n + '\')"><div class="tx"><div class="n">' + cap(n) + '</div><div class="d">' + cap(DATA.moves[n].cat) + '</div></div>' + tp(DATA.moves[n].type) + '</div>');
+    add('Abilities', Object.keys(DATA.abilities).filter(n=>n.includes(s)), n=>'<div class="row" onclick="go(\'ability\',\'' + n + '\')"><div class="tx"><div class="n">' + cap(n) + '</div><div class="d">' + DATA.abilities[n].eff.slice(0,42) + '…</div></div><div class="cv">›</div></div>');
+    add('Items', Object.keys(DATA.items).filter(n=>n.includes(s)), n=>'<div class="row" onclick="go(\'item\',\'' + n + '\')"><div class="tx"><div class="n">' + cap(n) + '</div><div class="d">' + cap(DATA.items[n].cat) + '</div></div><div class="cv">›</div></div>');
+    add('Locations', DATA.kanto.filter(n=>n.includes(s)), n=>'<div class="row"' + (DATA.areas[n]?' onclick="go(\'loc\',\'' + n + '\')"':'') + '><div class="tx"><div class="n">' + cap(n.replace('kanto-','')) + '</div><div class="d">Kanto</div></div><div class="cv">' + (DATA.areas[n]?'›':'') + '</div></div>');
+    add('Types', ORDER.filter(n=>n.includes(s)), n=>'<div class="row">' + tp(n) + '</div>');
+  }
+  return page('Search','')
+   + '<div class="pbody" style="padding-top:4px">'
+   + '<div class="sbar" style="margin:0 0 10px"><span>🔍</span><input id="q" placeholder="Try pika, thunder, stone, route…" value="' + q + '" oninput="q=this.value;render()"></div>'
+   + (!s ? '<div class="muted">Grouped by type in a fixed order, five per section. Sections with no matches hide themselves — issue #25.</div>'
+        : (groups.length ? groups.map(g => '<h4>' + g[0] + (g[2]>5?' · ' + g[2] + ' matches':'') + '</h4>' + g[1].join('')).join('')
+                         : '<div class="none">No results for “' + q + '”.</div>'))
+   + '</div>';
+}
+
+function scrCredits(){
+  return page('Credits','Tall Grass')
+   + '<div class="pbody"><div class="prose">Tall Grass is an unofficial, fan-made application. It is not affiliated with, endorsed, sponsored or approved by Nintendo, Creatures Inc., GAME FREAK Inc. or The Pokémon Company. Pokémon and all related names are trademarks of their respective owners.</div>'
+   + '<h4>With thanks to</h4>'
+   + kv('Saepul Nahwan','Original concept') + kv('hungps','flutter_pokedex · MIT + Apache 2.0')
+   + kv('PokéAPI','Game data · BSD-3-Clause') + kv('PokéAPI cries','Audio')
+   + '<div class="muted">No ads, no in-app purchases, no analytics.</div></div>';
+}
+
+// ---------- picker ----------
+function pickFor(target){ sheet = {target}; render(); }
+function closeSheet(){ sheet = null; render(); }
+function pick(slug){
+  const t = sheet.target;
+  if(t === 'team'){ if(team.length < 6) team.push(slug); teams[curTeam] = team; }
+  else if(t === 'cmp0') cmp[0] = slug;
+  else if(t === 'cmp1') cmp[1] = slug;
+  sheet = null; render();
+}
+function dropSlot(i){ team.splice(i,1); teams[curTeam] = team; render(); }
+function openTeam(k){ curTeam = k; team = teams[k].slice(); go('teamedit'); }
+function newTeam(){ const n = 'Team ' + (Object.keys(teams).length+1); teams[n] = []; openTeam(n); }
+function sheetHtml(){
+  if(!sheet) return '';
+  return '<div class="scrim" onclick="closeSheet()"></div><div class="picker">'
+   + '<div class="sh"><div class="grab"></div><div class="t">Choose a Pokémon</div></div>'
+   + '<div class="sb"><div class="dex">' + Object.keys(DATA.mons).map((s,i) => {
+      const m = DATA.mons[s];
+      return '<div class="card" style="background:' + monColor(m) + ';animation-delay:' + (i*.04).toFixed(2)
+       + 's" onclick="pick(\'' + s + '\')">'
+       + '<div class="ring" style="right:-16px;bottom:-20px;width:74px;height:74px;border-width:11px"></div>'
+       + '<div class="no">' + pad3(m.dex) + '</div><div class="n">' + cap(s) + '</div>'
+       + '<div class="tg">' + m.types.map(tag).join('') + '</div>'
+       + '<div class="art" style="background-image:url(' + SP(m.dex) + ')"></div></div>';
+     }).join('') + '</div></div></div>';
+}
+
+// ---------- router ----------
+function render(){
+  const c = cur();
+  const S = {home:scrHome,dex:scrDex,moves:scrMoves,abilities:scrAbilities,items:scrItems,
+    regions:scrRegions,region:scrRegion,types:scrTypes,team:scrTeam,teamedit:scrTeamEdit,
+    compare:scrCompare,search:scrSearch,credits:scrCredits};
+  const P = {mon:scrMon,move:scrMove,ability:scrAbility,item:scrItem,loc:scrLoc};
+  const html = S[c.s] ? S[c.s]() : P[c.s](c.p);
+  const el = document.getElementById('screen');
+  el.innerHTML = '<div class="pane' + (backing?' back':'') + '">' + html + '</div>' + sheetHtml();
+  el.scrollTop = 0;
+  const inp = document.getElementById('q');
+  if(inp && (c.s === 'search' || (c.s === 'region' && c.tab === 'Locations'))){
+    inp.focus(); inp.setSelectionRange(q.length, q.length);
+  }
+}
+// ability categories — PokeAPI has no category field, so these are assigned for the six mapped Pokemon
+const ACLASS = {
+  overgrow:['Pinch','#5C4EE5','◆'], blaze:['Pinch','#5C4EE5','◆'], torrent:['Pinch','#5C4EE5','◆'],
+  chlorophyll:['Weather','#E08A3C','☀'], 'swift-swim':['Weather','#E08A3C','☀'],
+  'rain-dish':['Weather','#E08A3C','☀'], 'solar-power':['Weather','#E08A3C','☀'],
+  static:['Contact','#4A7FBF','✦'], 'lightning-rod':['Defensive','#4A7FBF','✦'],
+  rattled:['Utility','#2FA97C','✚'], 'run-away':['Utility','#2FA97C','✚'],
+  anticipation:['Utility','#2FA97C','✚'], adaptability:['Offensive','#C05C8E','⚔']
+};
+const acls = n => ACLASS[n] || ['Ability','#7A5BC9','◆'];
+const tint = (hex,a) => hex + Math.round(a*255).toString(16).padStart(2,'0');
+
+function scrMoves(){
+  const s = q.toLowerCase().trim();
+  const names = Object.keys(DATA.moves).sort().filter(n => n.includes(s));
+  return '<div class="lpage"><div class="sqbk" onclick="back()">←</div>'
+   + '<div class="ltitle">Moves</div>'
+   + '<div class="lsearch"><span class="o"></span>'
+   + '<input id="q" placeholder="Search moves" value="' + q + '" oninput="q=this.value;render()"></div>'
+   + '<div class="lcount">' + names.length + ' move' + (names.length===1?'':'s') + ' mapped in this prototype</div>'
+   + '<div class="llist">' + names.map((n,i) => {
+      const d = DATA.moves[n], col = T[d.type][1];
+      return '<div class="mvcard" style="background:' + col + ';box-shadow:0 16px 30px -20px ' + tint(col,.95)
+       + ';animation-delay:' + Math.min(i*.03,.5).toFixed(2) + 's" onclick="go(\'move\',\'' + n + '\')">'
+       + '<div class="b1"></div><div class="b2"></div>'
+       + '<div class="in"><div style="min-width:0"><div class="nm">' + cap(n) + '</div>'
+       + '<div class="ps"><span>' + T[d.type][0] + '</span><span>' + cap(d.cat) + '</span></div></div>'
+       + '<div style="text-align:right;flex:0 0 auto"><div class="pw">' + (d.power || '—') + '</div>'
+       + '<div class="pl">POWER</div></div></div></div>';
+     }).join('')
+   + (names.length ? '' : '<div class="none">No moves match “' + q + '”.</div>')
+   + '</div></div>';
+}
+
+function scrMove(n){
+  const d = DATA.moves[n], col = T[d.type][1];
+  const users = Object.keys(DATA.mons).filter(s => DATA.mons[s].moves.some(m=>m.name===n));
+  const bars = [
+    ['Power', d.power || '—', d.power ? Math.min(d.power/150*100,100) : 0],
+    ['Accuracy', d.acc ? d.acc + '%' : '—', d.acc || 0],
+    ['PP', d.pp, Math.min(d.pp/40*100,100)]
+  ];
+  return '<div class="chero" style="background:' + col + '">'
+   + '<div class="c1"></div><div class="c2"></div>'
+   + '<div class="nav"><div class="bk2" onclick="back()">←</div><div class="fav">♡</div></div>'
+   + '<div class="nm">' + cap(n) + '</div>'
+   + '<div class="ps"><span>' + T[d.type][0] + '</span><span>' + cap(d.cat) + '</span><span>' + d.pp + ' PP</span></div>'
+   + '</div>'
+   + '<div class="cbody">'
+   + '<div class="wcard" style="animation-delay:.14s"><div class="h">Battle Data</div>'
+   + bars.map((b,i) => '<div class="wbar"><div class="t"><span>' + b[0] + '</span><b>' + b[1] + '</b></div>'
+      + '<div class="tr"><div class="fl" style="width:' + b[2] + '%;background:' + col
+      + ';animation-delay:' + (.2+i*.08).toFixed(2) + 's"></div></div></div>').join('')
+   + '</div>'
+   + '<div class="wcard" style="animation-delay:.2s"><div class="h" style="margin-bottom:8px">Effect</div>'
+   + '<div class="wdesc">' + d.eff + '</div>'
+   + '<div class="wins"><div class="c"><div class="k">TARGET</div><div class="v">' + cap(d.target) + '</div></div>'
+   + '<div class="c"><div class="k">PRIORITY</div><div class="v">' + (d.prio > 0 ? '+' + d.prio : d.prio) + '</div></div></div>'
+   + '</div>'
+   + (users.length ? '<div style="animation:rise .45s .26s both"><div class="sechead">Learned by</div>'
+      + '<div class="hscroll">' + users.map((u,i) => {
+          const m = DATA.mons[u], lv = m.moves.find(x=>x.name===n);
+          return '<div class="ucard" style="animation-delay:' + (.3+i*.05).toFixed(2) + 's" onclick="go(\'mon\',\'' + u + '\')">'
+           + '<div class="sp2" style="background-image:url(' + SP(m.dex) + ')"></div>'
+           + '<div class="n">' + cap(u) + '</div>'
+           + '<div class="h">' + (lv && lv.level ? 'Lv ' + lv.level : 'Level up') + '</div></div>';
+        }).join('') + '</div></div>' : '')
+   + '</div>';
+}
+
+function scrAbilities(){
+  const names = Object.keys(DATA.abilities).sort();
+  return '<div class="lpage"><div class="sqbk" onclick="back()">←</div>'
+   + '<div class="ltitle">Abilities</div>'
+   + '<div class="lsub">Passive effects that shape a battle</div>'
+   + '<div class="llist" style="padding-top:18px">' + names.map((n,i) => {
+      const a = DATA.abilities[n], k = acls(n);
+      return '<div class="abcard" style="animation-delay:' + (i*.04).toFixed(2) + 's" onclick="go(\'ability\',\'' + n + '\')">'
+       + '<div class="in"><div class="ic2" style="background:' + tint(k[1],.14) + ';color:' + k[1] + '">' + k[2] + '</div>'
+       + '<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px">'
+       + '<span class="nm">' + cap(n) + '</span>'
+       + '<span class="tg2" style="background:' + tint(k[1],.14) + ';color:' + k[1] + '">' + k[0] + '</span></div>'
+       + '<div class="sh2">' + a.eff + '</div></div>'
+       + '<span style="color:#c8ccdd;font-size:16px">›</span></div></div>';
+     }).join('') + '</div></div>';
+}
+
+function scrAbility(n){
+  const a = DATA.abilities[n], k = acls(n);
+  const mine = Object.keys(DATA.mons).filter(s => DATA.mons[s].abilities.some(x=>x.n===n));
+  const hidden = mine.filter(s => DATA.mons[s].abilities.find(x=>x.n===n).h).length;
+  return '<div class="chero" style="background:' + k[1] + '">'
+   + '<div class="c3"></div><div class="c1"></div>'
+   + '<div class="nav"><div class="bk2" onclick="back()">←</div><div class="fav">♡</div></div>'
+   + '<div class="nm">' + cap(n) + '</div>'
+   + '<div class="sh3">' + a.eff + '</div></div>'
+   + '<div class="cbody">'
+   + '<div class="wtrio" style="animation-delay:.12s">'
+   + [[k[0],'CATEGORY'], [a.gen.replace('generation-','').toUpperCase(),'INTRODUCED'], [a.holders.length + '+','HOLDERS']]
+      .map(s => '<div class="c"><div class="v">' + s[0] + '</div><div class="k">' + s[1] + '</div></div>').join('')
+   + '</div>'
+   + '<div class="wcard" style="animation-delay:.18s"><div class="h" style="margin-bottom:8px">In depth</div>'
+   + '<div class="wdesc">' + a.eff + ' ' + (hidden ? 'Among the Pokémon mapped here it appears as a hidden ability, which means it is only found on specimens from particular encounters.' : 'It is a standard ability slot, so most specimens will have it.') + '</div></div>'
+   + (mine.length ? '<div style="animation:rise .45s .24s both"><div class="sechead">Pokémon with this ability</div>'
+      + '<div class="ugrid">' + mine.map((u,i) => {
+          const m = DATA.mons[u], isH = m.abilities.find(x=>x.n===n).h;
+          return '<div class="u" style="animation-delay:' + (.3+i*.05).toFixed(2) + 's" onclick="go(\'mon\',\'' + u + '\')">'
+           + '<div class="t2" style="background:' + tint(monColor(m),.16) + '">'
+           + '<div class="sp2" style="background-image:url(' + SP(m.dex) + ')"></div></div>'
+           + '<div style="min-width:0"><div class="n">' + cap(u) + '</div>'
+           + '<div class="h">' + (isH ? 'Hidden' : 'Standard') + '</div></div></div>';
+        }).join('') + '</div></div>' : '')
+   + '<div class="muted" style="margin:0">Other holders: ' + a.holders.filter(h=>!DATA.mons[h]).slice(0,6).map(cap).join(', ') + '…</div>'
+   + '</div>';
+}
+// ---------- items, per the design: 2-col grid of tinted sprite tiles ----------
+const ICAT = {healing:'#3FAE72',medicine:'#3FAE72','standard-balls':'#F2645E','special-balls':'#F2645E',
+  evolution:'#5C4EE5','all-machines':'#C77B6B','held-items':'#56A7F4','effort-training':'#56A7F4',
+  'stat-boosts':'#56A7F4','other':'#FFC84A','picky-healing':'#3FAE72','in-a-pinch':'#E08A3C',
+  'type-enhancement':'#B368C9','choice':'#B368C9','field-effects':'#7A5BC9','spelunking':'#8FA0B5'};
+const icat = c => ICAT[c] || '#FFC84A';
+
+function scrItems(){
+  const names = Object.keys(DATA.items);
+  return '<div class="lpage"><div class="sqbk" onclick="back()">←</div>'
+   + '<div class="ltitle">Items</div>'
+   + '<div class="lsub">' + names.length + ' mapped in this prototype</div>'
+   + '<div class="igrid">' + names.map((n,i) => {
+      const it = DATA.items[n], col = icat(it.cat);
+      return '<div class="icard" style="animation-delay:' + (i*.04).toFixed(2) + 's" onclick="go(\'item\',\'' + n + '\')">'
+       + '<div class="itile" style="background:' + tint(col,.14) + '">'
+       + '<div class="isp" style="background-image:url(' + (it.sprite||'') + ')"></div></div>'
+       + '<div class="inm">' + cap(n) + '</div>'
+       + '<div class="ict">' + cap(it.cat) + '</div></div>';
+     }).join('') + '</div></div>';
+}
+
+function scrItem(n){
+  const it = DATA.items[n], col = icat(it.cat);
+  return '<div class="lpage"><div class="sqbk" onclick="back()">←</div>'
+   + '<div class="ihead">'
+   + '<div class="ibig" style="background:' + tint(col,.14) + '">'
+   + '<div class="isp" style="width:38px;height:38px;background-image:url(' + (it.sprite||'') + ')"></div></div>'
+   + '<div><div class="inm2">' + cap(n) + '</div>'
+   + '<div class="ict2">' + cap(it.cat) + (it.fling ? ' · fling ' + it.fling : '') + '</div></div></div>'
+   + '<div class="wdesc" style="margin-top:14px">' + it.eff + '</div>'
+   + '<div class="wins" style="margin-top:16px">'
+   + '<div class="c"><div class="k">ATTRIBUTES</div><div class="v" style="font-size:11px">'
+   + (it.attrs.map(a=>a.replace(/-/g,' ')).join(', ') || '—') + '</div></div></div>'
+   + '<div class="muted">Holders, per-game prices and TM mappings are out of v1 scope — issue #11. '
+   + 'The design showed this as a bottom sheet; it is a screen here so every entity stays deep-linkable.</div>'
+   + '</div>';
+}
+
+// ---------- Pokémon detail: Moves tab, abilities included ----------
+function monMovesTab(slug, v){
+  const m = DATA.mons[slug];
+  let out = '<div class="sechead" style="margin-top:2px">Abilities</div>'
+   + '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">'
+   + v.abilities.map((a,i) => {
+      const k = acls(a.n), d = DATA.abilities[a.n];
+      return '<div class="abrow" style="animation-delay:' + (i*.05).toFixed(2) + 's"'
+       + (d ? ' onclick="go(\'ability\',\'' + a.n + '\')"' : '') + '>'
+       + '<div class="ic2" style="background:' + tint(k[1],.14) + ';color:' + k[1] + '">' + k[2] + '</div>'
+       + '<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px">'
+       + '<span class="nm">' + cap(a.n) + '</span>'
+       + '<span class="tg2" style="background:' + tint(a.h?'#8FA0B5':k[1],.14) + ';color:' + (a.h?'#6d7a8a':k[1]) + '">'
+       + (a.h ? 'Hidden' : k[0]) + '</span></div>'
+       + '<div class="sh2">' + (d ? d.eff : 'Passive effect') + '</div></div>'
+       + '<span style="color:#c8ccdd;font-size:15px">›</span></div>';
+     }).join('') + '</div>';
+
+  out += '<div class="sechead">Moves</div><div style="display:flex;flex-direction:column;gap:10px">'
+   + m.moves.map((mv,i) => {
+      const d = DATA.moves[mv.name] || {};
+      const col = d.type ? T[d.type][1] : '#B6BAC9';
+      return '<div class="mvrow" style="background:' + col + ';animation-delay:' + Math.min(i*.035,.5).toFixed(2)
+       + 's" onclick="go(\'move\',\'' + mv.name + '\')">'
+       + '<div><div class="n">' + cap(mv.name) + '</div>'
+       + '<div class="meta">' + (d.type ? T[d.type][0] + ' · ' + cap(d.cat) : 'Move data pending') + '</div></div>'
+       + '<div style="text-align:right"><div class="how">Lv ' + mv.level + '</div>'
+       + '<div class="pw2">' + (d.power ? d.power + ' pow' : '') + '</div></div></div>';
+     }).join('') + '</div>'
+   + '<div class="muted">Level-up moves only. TM and egg lists are out of prototype scope.</div>';
+  return out;
+}
+render();
+</script>
+</body>
+</html>

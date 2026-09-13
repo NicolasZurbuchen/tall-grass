@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Availability → collapse — v4</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e7e9f1;font-family:Poppins,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#2b2f45}
+  .stage{display:flex;gap:28px;align-items:flex-start;justify-content:center;padding:28px 18px 56px;flex-wrap:wrap}
+  .phone{width:360px;height:748px;background:#fff;border-radius:38px;overflow:hidden;position:relative;
+         box-shadow:0 40px 90px -40px rgba(40,44,80,.6),0 0 0 9px #1a1d2b;flex:0 0 auto}
+  .scroll{position:absolute;inset:0;overflow-y:auto}
+  .scroll::-webkit-scrollbar{width:0}
+
+  .hero{position:relative;height:130px;padding:42px 20px 0;background:#F0C33C;border-radius:0 0 26px 26px}
+  .hero .nm{color:#fff;font-size:21px;font-weight:600}
+  .hero .no{position:absolute;right:20px;top:48px;color:rgba(255,255,255,.82);font-size:12px;font-weight:700}
+  .hero .art{position:absolute;right:16px;bottom:-16px;width:90px;height:90px;background-size:contain;
+             background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 12px 16px rgba(0,0,0,.25))}
+  .tabs{display:flex;gap:18px;padding:12px 20px 0;border-bottom:1.5px solid #f0f2f8}
+  .tab{font-size:11.5px;font-weight:600;color:#b0b4c6;padding-bottom:9px}
+  .tab.on{color:#2b2f45;border-bottom:2.5px solid #2b2f45}
+
+  .body{padding:14px 16px 40px}
+  .sect{font-size:9px;font-weight:700;letter-spacing:.09em;color:#b0b4c6;margin:0 0 8px 2px}
+
+  /* ---- expanded grid ---- */
+  .grid{background:#fff;border:1.5px solid #f0f2f8;border-radius:16px;padding:13px 12px 9px;
+        animation:expand .34s cubic-bezier(.22,.9,.24,1) both}
+  .grow{display:grid;grid-template-columns:42px 1fr;gap:9px;align-items:start;margin-bottom:11px}
+  .grow:last-child{margin-bottom:3px}
+  .glab{font-size:8.5px;font-weight:700;color:#b0b4c6;letter-spacing:.04em;padding-top:7px;text-align:right}
+  .cells{display:flex;gap:5px;flex-wrap:wrap}
+  .cell{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+        font-size:9.5px;font-weight:700;cursor:pointer;animation:pop .3s both;
+        background:#3FAE72;color:#fff}
+  .cell.no{background:#f2f4f9;color:#c8ccda;cursor:default}
+  .cell.sel{outline:2.5px solid #2b2f45;outline-offset:1.5px}
+  .legend{display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #f6f7fb}
+  .lg{display:flex;align-items:center;gap:5px;font-size:9px;color:#9095ad}
+  .lg i{width:9px;height:9px;border-radius:3px;display:block}
+
+  /* ---- collapsed bar ---- */
+  .bar{display:flex;align-items:center;gap:11px;background:#2b2f45;border-radius:15px;padding:12px 14px;
+       cursor:pointer;animation:collapse .34s cubic-bezier(.22,.9,.24,1) both}
+  .bar .tok{width:30px;height:30px;border-radius:8px;background:#3FAE72;color:#fff;flex:0 0 30px;
+            display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700}
+  .bar .tok.no{background:#565b78;color:#a8adc6}
+  .bar .tx{flex:1;line-height:1.3}
+  .bar .t1{font-size:12.5px;font-weight:600;color:#fff}
+  .bar .t2{font-size:9.5px;color:#9298b8;margin-top:1px}
+  .bar .cv{font-size:9px;color:#8c92b0}
+
+  .detail{background:#fff;border:1.5px solid #f0f2f8;border-radius:15px;padding:3px 13px;margin-top:12px;
+          animation:slidein .34s cubic-bezier(.22,.9,.24,1) both .06s}
+  .loc{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f6f7fb}
+  .loc:last-child{border-bottom:0}
+  .loc .l{font-size:11.5px}
+  .loc .sub{font-size:9px;color:#b0b4c6;margin-top:1px}
+  .loc .m{font-size:8.5px;font-weight:700;padding:3px 8px;border-radius:999px;color:#fff}
+  .dnone{font-size:11.5px;color:#9095ad;padding:18px 0;text-align:center;line-height:1.5}
+
+  .pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+  .pill{font-size:10px;font-weight:600;padding:5px 11px;border-radius:999px;color:#fff}
+
+  .panel{width:300px;flex:0 0 auto;padding-top:4px}
+  .panel h3{font-size:14px;margin:0 0 4px}
+  .panel p{font-size:12.5px;line-height:1.6;color:#5b6079;margin:0 0 13px}
+  .panel .tip{font-size:11.5px;line-height:1.6;color:#6d7288;background:#fff;border-radius:14px;padding:13px 14px;border:1.5px solid #f0f2f8;margin-bottom:12px}
+  .panel .tip b{color:#2b2f45}
+  .opt{border:1.5px solid #dcdfeb;background:#fff;border-radius:11px;padding:8px 12px;font-family:inherit;
+       font-size:11.5px;font-weight:600;cursor:pointer;color:#6d7288}
+  .opt.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+
+  @keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+  @keyframes expand{from{opacity:0;transform:translateY(-6px) scaleY(.94);transform-origin:top}to{opacity:1;transform:none}}
+  @keyframes collapse{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  @keyframes slidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><div class="scroll" id="screen"></div></div>
+  <div class="panel">
+    <h3>Availability → collapse</h3>
+    <p>Tap any coloured cell: the grid collapses into a breadcrumb and the locations appear. Tap the dark bar to reopen the grid.</p>
+    <div class="tip"><b>Every version is its own cell</b> — FireRed and LeafGreen are separate, as are Red and Blue, Sun and Moon. 38 versions, five console rows.</div>
+    <div class="tip"><b>Grey cells are tappable too</b>, so you can confirm a negative — try Scarlet or Black.</div>
+    <div class="tip">Location data here is illustrative, not verified — the layout is the point.</div>
+    <div style="font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#b0b4c6;margin-bottom:7px">POKÉMON</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px" id="monsel"></div>
+    <button class="opt" onclick="reset()">Reset to unselected</button>
+  </div>
+</div>
+
+<script>
+const SP=n=>'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/'+n+'.png';
+// method -> [display label, colour, group]
+const M={
+  walk:      ['Tall grass','#3FAE72','Walking'],
+  cave:      ['Cave','#7d8a5e','Walking'],
+  overworld: ['Overworld','#4FA98C','Walking'],
+  wanderer:  ['Roaming','#59b08a','Walking'],
+  headbutt:  ['Headbutt tree','#8a9b52','Walking'],
+  rocksmash: ['Rock Smash','#BFA967','Walking'],
+  surf:      ['Surf','#5BA7F7','Surf'],
+  oldrod:    ['Old Rod','#6ECBD2','Fishing'],
+  goodrod:   ['Good Rod','#4FB6C4','Fishing'],
+  superrod:  ['Super Rod','#3A9BB0','Fishing'],
+  raid:      ['Max Raid','#5C4EE5','Special'],
+  sos:       ['SOS call','#7A5BC9','Special'],
+  horde:     ['Horde','#8B6BD6','Special'],
+  gift:      ['Gift','#C58B3C','Special'],
+  trade:     ['In-game trade','#C05C8E','Special']
+};
+
+// [abbrev, full name, console row, locations[[name, method, level, condition]]]
+const PK={
+ pikachu:{id:25,name:'Pikachu',no:'#025',color:'#F0C33C'},
+ magikarp:{id:129,name:'Magikarp',no:'#129',color:'#5BA7F7'}
+};
+const LOC={magikarp:{
+ R:[['Any water','oldrod','Lv 5','100%',''],['Any water','goodrod','Lv 10','55%','']],
+ B:[['Any water','oldrod','Lv 5','100%','']],
+ Y:[['Any water','oldrod','Lv 5','100%','']],
+ G:[['Route 30','oldrod','Lv 10','90%',''],['Route 30','surf','Lv 10','10%','']],
+ S:[['Route 30','oldrod','Lv 10','90%','']],
+ C:[['Route 30','oldrod','Lv 10','90%','']],
+ Ru:[['Route 102','oldrod','Lv 5','70%',''],['Route 118','goodrod','Lv 20','60%','']],
+ Sa:[['Route 102','oldrod','Lv 5','70%','']],
+ E:[['Route 102','oldrod','Lv 5','70%',''],['Route 119','superrod','Lv 30','40%','']],
+ FR:[['Any water','oldrod','Lv 5','100%','']],
+ LG:[['Any water','oldrod','Lv 5','100%',''],['Berry Forest','goodrod','Lv 15','55%','']],
+ D:[['Canalave City','oldrod','Lv 5','100%',''],['Canalave City','goodrod','Lv 15','55%',''],['Lake Verity','surf','Lv 20','5%','']],
+ P:[['Canalave City','oldrod','Lv 5','100%',''],['Canalave City','goodrod','Lv 15','55%','']],
+ Pt:[['Canalave City','oldrod','Lv 5','100%','']],
+ HG:[['Route 30','oldrod','Lv 10','90%','']],
+ SS:[['Route 30','oldrod','Lv 10','90%','']],
+ Bk:[['Route 1','oldrod','Lv 5','70%','']],
+ W:[['Route 1','oldrod','Lv 5','70%','']],
+ B2:[['Route 19','oldrod','Lv 5','70%','']],
+ W2:[['Route 19','oldrod','Lv 5','70%','']],
+ X:[['Route 3','oldrod','Lv 5','65%',''],['Route 3','horde','Lv 4','5%','5 at once']],
+ Y2:[['Route 3','oldrod','Lv 5','65%','']],
+ OR:[['Route 102','oldrod','Lv 5','70%','']],
+ AS:[['Route 102','oldrod','Lv 5','70%','']],
+ Su:[['Melemele Sea','oldrod','Lv 9','60%',''],['Kalae Bay','sos','Lv 10','—','SOS ally']],
+ Mo:[['Melemele Sea','oldrod','Lv 9','60%','']],
+ US:[['Melemele Sea','oldrod','Lv 9','60%','']],
+ UM:[['Melemele Sea','oldrod','Lv 9','60%','']],
+ LP:[['Any water','surf','Lv 10','25%','']],
+ LE:[['Any water','surf','Lv 10','25%','']],
+ Sw:[['Lake of Outrage','surf','Lv 40','20%','Overcast'],['Route 2','oldrod','Lv 12','60%',''],['Max Raid Dens','raid','1–2★','—','']],
+ Sh:[['Lake of Outrage','surf','Lv 40','20%','Overcast'],['Max Raid Dens','raid','1–2★','—','']],
+ BD:[],SP:[],LA:[],Sc:[],Vi:[]
+}};
+// [abbrev, full name, console row, locations[[name, method, level, rate, condition]]]
+const V=[
+ ['R','Red','GB / GBC',[['Viridian Forest','walk','Lv 3–5','5%',''],['Power Plant','walk','Lv 22–26','25%','']]],
+ ['B','Blue','GB / GBC',[['Viridian Forest','walk','Lv 3–5','5%',''],['Power Plant','walk','Lv 22–26','25%','']]],
+ ['Y','Yellow','GB / GBC',[['Pallet Town','gift','Lv 5','100%','Starter']]],
+ ['G','Gold','GB / GBC',[['Route 2','walk','Lv 2–4','5%',''],['Bug-Catching Contest','walk','Lv 7–18','5%','Tue / Thu / Sat']]],
+ ['S','Silver','GB / GBC',[['Route 2','walk','Lv 2–4','5%','']]],
+ ['C','Crystal','GB / GBC',[['Route 2','walk','Lv 2–4','5%',''],['Bug-Catching Contest','walk','Lv 7–18','5%','Tue / Thu / Sat']]],
+
+ ['Ru','Ruby','GBA',[['Safari Zone','walk','Lv 22–26','20%','']]],
+ ['Sa','Sapphire','GBA',[['Safari Zone','walk','Lv 22–26','20%','']]],
+ ['E','Emerald','GBA',[['Safari Zone','walk','Lv 22–26','20%','']]],
+ ['FR','FireRed','GBA',[['Viridian Forest','walk','Lv 3–5','5%',''],['Power Plant','walk','Lv 22–26','25%','']]],
+ ['LG','LeafGreen','GBA',[['Viridian Forest','walk','Lv 3–5','5%',''],['Power Plant','walk','Lv 22–26','25%',''],['Berry Forest','walk','Lv 20','10%','']]],
+
+ ['D','Diamond','DS',[['Trophy Garden','walk','Lv 16–18','9%','Backlot pick']]],
+ ['P','Pearl','DS',[['Trophy Garden','walk','Lv 16–18','9%','Backlot pick']]],
+ ['Pt','Platinum','DS',[['Trophy Garden','walk','Lv 16–18','9%','Backlot pick']]],
+ ['HG','HeartGold','DS',[['Viridian Forest','walk','Lv 3–5','5%',''],['Headbutt trees','headbutt','Lv 5–15','10%','']]],
+ ['SS','SoulSilver','DS',[['Viridian Forest','walk','Lv 3–5','5%','']]],
+ ['Bk','Black','DS',[]],
+ ['W','White','DS',[]],
+ ['B2','Black 2','DS',[]],
+ ['W2','White 2','DS',[]],
+
+ ['X','X','3DS',[['Route 3','walk','Lv 4–5','20%',''],['Santalune Forest','walk','Lv 3–4','10%',''],['Route 3','horde','Lv 4','5%','5 at once']]],
+ ['Y2','Y','3DS',[['Route 3','walk','Lv 4–5','20%',''],['Santalune Forest','walk','Lv 3–4','10%','']]],
+ ['OR','Omega Ruby','3DS',[['Safari Zone','walk','Lv 22–26','20%','']]],
+ ['AS','Alpha Sapphire','3DS',[['Safari Zone','walk','Lv 22–26','20%','']]],
+ ['Su','Sun','3DS',[['Route 1','walk','Lv 4–6','10%',''],['Hauoli City','walk','Lv 6–8','10%',''],['Route 1','sos','Lv 5','—','SOS ally']]],
+ ['Mo','Moon','3DS',[['Route 1','walk','Lv 4–6','10%',''],['Hauoli City','walk','Lv 6–8','10%','']]],
+ ['US','Ultra Sun','3DS',[['Route 1','walk','Lv 4–6','10%','']]],
+ ['UM','Ultra Moon','3DS',[['Route 1','walk','Lv 4–6','10%','']]],
+
+ ['LP','Lets Go Pikachu','Switch',[['Viridian Forest','overworld','Lv 3–5','30%',''],['Partner','gift','Lv 5','100%','Starter']]],
+ ['LE','Lets Go Eevee','Switch',[['Viridian Forest','overworld','Lv 3–5','30%',''],['Route 4','trade','Lv 10','—','For Nidorino']]],
+ ['Sw','Sword','Switch',[['Route 3','walk','Lv 6–9','20%','All weather'],['Rolling Fields','overworld','Lv 12–15','10%','Overcast'],['Max Raid Dens','raid','1–3★','—','']]],
+ ['Sh','Shield','Switch',[['Route 3','walk','Lv 6–9','20%','All weather'],['Max Raid Dens','raid','1–3★','—','']]],
+ ['BD','Brilliant Diamond','Switch',[]],
+ ['SP','Shining Pearl','Switch',[]],
+ ['LA','Legends: Arceus','Switch',[]],
+ ['Sc','Scarlet','Switch',[]],
+ ['Vi','Violet','Switch',[]]
+];
+const ROWS=['Switch','3DS','DS','GBA','GB / GBC'];
+
+// coarse capture summary — includes sources that are NOT encounters
+const CAP={
+  wildcatch:['Wild Catch','#3FAE72'],
+  evolve:   ['Evolve','#5C4EE5'],
+  tradecap: ['Trade','#C05C8E'],
+  giftcap:  ['Gift / Event','#C58B3C'],
+  transfer: ['Transfer Only','#8FA0B5']
+};
+const CAPS={ pikachu:['wildcatch','evolve','tradecap','giftcap'], magikarp:['wildcatch'] };
+
+let sel=null, mon='pikachu';
+const locs=a=>mon==='pikachu'?((V.find(v=>v[0]===a)||[,,,[]])[3]||[]):(LOC.magikarp[a]||[]);
+const hasAny=a=>locs(a).length>0;
+
+function detail(a){
+  const v=V.find(x=>x[0]===a), rows=locs(a);
+  if(!rows.length) return '<div class="dnone">Not obtainable in <b>'+v[1]+'</b>.<br>'
+    + (['Sc','Vi','BD','SP','LA'].includes(a)
+       ? 'Encounter data for this game is not available yet.'
+       : 'Transfer it in from another game.')+'</div>';
+  return rows.map(r=>{
+    const m=M[r[1]], sub=[r[2],r[3],r[4]].filter(x=>x&&x!=='—').join(' &middot; ');
+    return '<div class="loc"><span><span class="l">'+r[0]+'</span><div class="sub">'+sub+'</div></span>'
+      +'<span class="m" style="background:'+m[1]+'">'+m[0]+'</span></div>';
+  }).join('');
+}
+
+function groupsFor(a){
+  const s=[...new Set(locs(a).map(r=>M[r[1]][2]))];
+  return s.length?s:null;
+}
+
+function render(){
+  const p=PK[mon];
+  const caps='<div class="sect">HOW YOU GET IT</div><div class="pills">'
+    + CAPS[mon].map((k,i)=>'<div class="pill" style="background:'+CAP[k][1]
+      +';animation:pop .34s both '+(i*.05).toFixed(2)+'s">'+CAP[k][0]+'</div>').join('')
+    +'</div>';
+
+  let mid;
+  if(!sel){
+    mid='<div class="sect" style="margin-top:20px">AVAILABILITY</div><div class="grid">'
+     + ROWS.map(r=>'<div class="grow"><div class="glab">'+r+'</div><div class="cells">'
+        + V.filter(v=>v[2]===r).map((v,i)=>'<div class="cell'+(hasAny(v[0])?'':' no')
+          +'" style="animation-delay:'+(i*.018).toFixed(3)+'s" onclick="pick(\''+v[0]+'\')">'+v[0]+'</div>').join('')
+        +'</div></div>').join('')
+     +'<div class="legend"><div class="lg"><i style="background:#3FAE72"></i>Obtainable</div>'
+     +'<div class="lg"><i style="background:#f2f4f9"></i>Not available</div></div></div>';
+  } else {
+    const v=V.find(x=>x[0]===sel), g=groupsFor(sel);
+    mid='<div class="sect" style="margin-top:20px">AVAILABILITY</div>'
+     +'<div class="bar" onclick="reset()"><div class="tok'+(hasAny(sel)?'':' no')+'">'+sel+'</div>'
+     +'<div class="tx"><div class="t1">'+v[1]+'</div><div class="t2">'+v[2]
+       +(g?' &middot; '+g.join(', '):'')+'</div></div>'
+     +'<div class="cv">▲</div></div>'
+     +'<div class="detail">'+detail(sel)+'</div>';
+  }
+
+  document.getElementById('screen').innerHTML=
+    '<div class="hero" style="background:'+p.color+'"><div class="nm">'+p.name+'</div><div class="no">'+p.no+'</div>'
+    +'<div class="art" style="background-image:url('+SP(p.id)+')"></div></div>'
+    +'<div class="tabs"><div class="tab">About</div><div class="tab">Base Stats</div>'
+    +'<div class="tab on">Location</div><div class="tab">Moves</div></div>'
+    +'<div class="body">'+caps+mid+'</div>';
+  document.getElementById('monsel').innerHTML=Object.keys(PK).map(k=>
+    '<button class="opt'+(k===mon?' on':'')+'" onclick="setMon(\''+k+'\')">'+PK[k].name+'</button>').join('');
+}
+function pick(a){sel=a;render()}
+function reset(){sel=null;render()}
+function setMon(m){mon=m;sel=null;render()}
+render();
+</script>
+</body>
+</html>
