@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=[];var B=false;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#eef0f6;font-family:Poppins,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#F2645E}a:hover{color:#d94f49}
+*{box-sizing:border-box}
+::-webkit-scrollbar{width:0;height:0}
+@keyframes scrIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes scrBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:none}}
+@keyframes heroUp{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes artIn{from{opacity:0;transform:translateY(22px) scale(.86)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}70%{transform:scale(2.4);opacity:0}100%{opacity:0}}
+@keyframes sheetUp{from{transform:translateY(110%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;align-items:flex-start;justify-content:center;gap:28px;padding:40px 24px 64px">
+
+<div style="width:390px;height:844px;background:#f7f8fc;border-radius:44px;box-shadow:0 40px 90px -30px rgba(30,34,60,.45),0 0 0 10px #14161f,0 0 0 12px #2c303f;position:relative;overflow:hidden;flex:0 0 auto">
+
+  <div style="position:absolute;top:0;left:0;right:0;height:52px;z-index:30;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;font-size:12px;font-weight:600">
+    <span style="color:#2b2f45">9:41</span>
+    <span style="display:flex;gap:5px;align-items:center">
+      <span style="width:16px;height:9px;border-radius:2px;background:#2b2f45;display:inline-block"></span>
+      <span style="width:22px;height:10px;border-radius:3px;border:1.5px solid #2b2f45;display:inline-block"></span>
+    </span>
+  </div>
+
+  <div style="position:absolute;inset:0;overflow:hidden">
+    <div style="position:absolute;inset:0;animation: {{screenAnim}} .42s cubic-bezier(.22,.9,.24,1) both">
+
+      <sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+        <div style="height:100%;overflow-y:auto;padding:66px 22px 40px">
+          <div style="font-size:27px;line-height:1.25;font-weight:700;color:#2b2f45;letter-spacing:-.4px;animation:rise .5s both">What Pokémon<br>are you looking for?</div>
+          <div style="margin-top:20px;display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 10px 24px -14px rgba(40,44,80,.35);animation:rise .5s .05s both">
+            <span style="width:16px;height:16px;border-radius:50%;border:2.5px solid #b9bdd0;display:block;position:relative"><span style="position:absolute;width:2.5px;height:7px;background:#b9bdd0;border-radius:2px;right:-3px;bottom:-4px;transform:rotate(-45deg)"></span></span>
+            <span style="color:#b0b4c8;font-size:14px">Search Pokémon, Move, Ability etc</span>
+          </div>
+
+          <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <sc-for list="{{tiles}}" as="t" hint-placeholder-count="6">
+              <div onClick="{{ t.go }}" style="position:relative;overflow:hidden;border-radius:18px;padding:16px 14px;height:64px;display:flex;align-items:center;background: {{t.color}};box-shadow:0 14px 24px -16px {{t.color}};cursor:pointer;animation:rise .5s {{t.delay}} both;transition:transform .18s" style-hover="transform:translateY(-3px)" style-active="transform:scale(.96)">
+                <div style="position:absolute;right:-14px;top:-14px;width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.16)"></div>
+                <div style="position:absolute;right:2px;top:16px;width:30px;height:30px;border-radius:50%;border:6px solid rgba(255,255,255,.5);background:#fff"></div>
+                <span style="color:#fff;font-weight:600;font-size:15px;position:relative">{{t.label}}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:28px;display:flex;align-items:baseline;justify-content:space-between;animation:rise .5s .3s both">
+            <span style="font-size:17px;font-weight:600;color:#2b2f45">Pokémon News</span>
+            <span style="font-size:12px;color:#8f93ab">View All</span>
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{news}}" as="n" hint-placeholder-count="2">
+              <div style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:12px;box-shadow:0 12px 26px -20px rgba(40,44,80,.5);animation:rise .5s {{n.delay}} both">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;font-weight:600;color:#2b2f45;line-height:1.35">{{n.title}}</div>
+                  <div style="font-size:11px;color:#a2a6bd;margin-top:5px">{{n.date}}</div>
+                </div>
+                <div style="width:74px;height:54px;border-radius:12px;flex:0 0 auto;background: {{n.tint}};display:flex;align-items:center;justify-content:center;overflow:hidden">
+                  <div style="width:56px;height:56px;background-size:contain;background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 6px 8px rgba(0,0,0,.18));background-image: {{n.bg}}"></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isDex}}">
+        <div style="height:100%;display:flex;flex-direction:column;position:relative">
+          <div style="padding:62px 22px 0;flex:0 0 auto">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both;font-size:18px;color:#2b2f45" style-active="transform:scale(.9)">←</div>
+              <div style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#2b2f45">☰</div>
+            </div>
+            <div style="margin-top:10px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Pokedex</div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 10px 24px -18px rgba(40,44,80,.5);animation:rise .45s .08s both">
+              <span style="width:14px;height:14px;border-radius:50%;border:2.5px solid #c3c7d8;display:block"></span>
+              <input value="{{dq}}" onChange="{{onDq}}" placeholder="Search Pokémon" style="border:0;outline:0;font-family:Poppins;font-size:13.5px;color:#2b2f45;width:100%;background:transparent">
+            </div>
+            <div style="margin-top:10px;display:flex;align-items:center;gap:8px;min-height:24px">
+              <span style="font-size:11.5px;color:#a2a6bd">{{dexCount}}</span>
+              <sc-if value="{{dexHasFilter}}">
+                <span onClick="{{dexClear}}" style="margin-left:auto;padding:5px 11px;border-radius:14px;background: {{dexFilterTint}};color: {{dexFilterColor}};font-size:11px;font-weight:600;cursor:pointer" style-active="transform:scale(.94)">{{dexFilterLabel}} ✕</span>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="flex:1;overflow-y:auto;padding:14px 22px 40px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start">
+            <sc-for list="{{dexList}}" as="p" hint-placeholder-count="8">
+              <div onClick="{{p.open}}" style="position:relative;overflow:hidden;height:116px;border-radius:20px;padding:13px 14px;cursor:pointer;background: {{p.color}};box-shadow: {{p.shadow}};animation:rise .45s {{p.delay}} both;transition:transform .18s" style-hover="transform:translateY(-3px)" style-active="transform:scale(.96)">
+                <div style="position:absolute;right:-22px;bottom:-26px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.14)"></div>
+                <div style="position:absolute;right:6px;bottom:4px;width:72px;height:72px;background-size:contain;background-repeat:no-repeat;background-position:bottom right;filter:drop-shadow(0 6px 10px rgba(0,0,0,.22));background-image: {{p.bg}}"></div>
+                <div style="position:absolute;right:12px;top:12px;font-size:12px;font-weight:700;color:rgba(255,255,255,.4)">{{p.num}}</div>
+                <div style="position:relative;font-size:14px;font-weight:700;color:#fff">{{p.name}}</div>
+                <div style="position:relative;display:flex;flex-direction:column;gap:4px;align-items:flex-start;margin-top:8px">
+                  <sc-for list="{{p.types}}" as="ty" hint-placeholder-count="2">
+                    <span style="padding:3px 10px;border-radius:10px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.28)">{{ty.name}}</span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{dexFabOpen}}">
+            <div onClick="{{dexCloseFab}}" style="position:absolute;inset:0;background:rgba(22,25,44,.42);animation:fadeIn .22s both;z-index:38"></div>
+          </sc-if>
+          <div style="position:absolute;right:20px;bottom:26px;z-index:39;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+            <sc-if value="{{dexFabOpen}}">
+              <sc-for list="{{dexFabItems}}" as="a" hint-placeholder-count="2">
+                <div onClick="{{a.act}}" style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:22px;padding:9px 10px 9px 18px;cursor:pointer;box-shadow:0 14px 26px -18px rgba(30,34,70,.9);animation:pop .3s {{a.delay}} both" style-active="transform:scale(.95)">
+                  <span style="font-size:12.5px;font-weight:600;color:#2b2f45;white-space:nowrap">{{a.label}}</span>
+                  <span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background: {{a.tint}};color: {{a.color}}">{{a.icon}}</span>
+                </div>
+              </sc-for>
+            </sc-if>
+            <div onClick="{{dexToggleFab}}" style="width:56px;height:56px;border-radius:50%;background:#5C4EE5;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 16px 30px -12px rgba(92,78,229,.7);transition:transform .28s cubic-bezier(.2,.9,.2,1);transform: {{dexFabSpin}}">
+              <span style="color:#fff;font-size:22px;line-height:1;font-weight:300">{{dexFabIcon}}</span>
+            </div>
+          </div>
+
+          <sc-if value="{{dexPickerOpen}}">
+            <div onClick="{{dexClosePicker}}" style="position:absolute;inset:0;background:rgba(22,25,44,.42);animation:fadeIn .25s both;z-index:44"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;max-height:74%;overflow-y:auto;background:#fff;border-top-left-radius:30px;border-top-right-radius:30px;padding:16px 20px 32px;z-index:45;animation:sheetUp .38s cubic-bezier(.2,.9,.2,1) both">
+              <div style="width:42px;height:5px;border-radius:4px;background:#e4e6f0;margin:0 auto 14px"></div>
+              <div style="text-align:center;font-size:17px;font-weight:700;color:#2b2f45;margin-bottom:16px">Filter by type</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <sc-for list="{{dexPickerItems}}" as="p" hint-placeholder-count="6">
+                  <div onClick="{{p.pick}}" style="display:flex;align-items:center;gap:10px;border-radius:16px;padding:12px 13px;cursor:pointer;background: {{p.bg}};animation:pop .32s {{p.delay}} both" style-active="transform:scale(.95)">
+                    <span style="width:14px;height:14px;border-radius:50%;flex:0 0 auto;background: {{p.dot}}"></span>
+                    <span style="font-size:12.5px;font-weight:600;color: {{p.fg}}">{{p.label}}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isDexDetail}}">
+        <div style="height:100%;position:relative;background: {{pk.color}};display:flex;flex-direction:column">
+          <div style="position:absolute;right:-46px;top:-56px;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+          <div style="position:relative;padding:62px 24px 0;flex:0 0 auto">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px" style-active="transform:scale(.9)">←</div>
+              <div onClick="{{pk.toggleFav}}" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px" style-active="transform:scale(.85)">{{pk.favIcon}}</div>
+            </div>
+            <div style="margin-top:16px;display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-.6px;animation:rise .45s .05s both">{{pk.name}}</div>
+                <div style="display:flex;gap:7px;margin-top:10px;animation:rise .45s .1s both">
+                  <sc-for list="{{pk.types}}" as="ty" hint-placeholder-count="2">
+                    <span style="padding:5px 14px;border-radius:14px;background:rgba(255,255,255,.26);color:#fff;font-size:11.5px;font-weight:600">{{ty.name}}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:15px;font-weight:700;color:#fff;animation:rise .45s .05s both">{{pk.num}}</div>
+                <div style="font-size:11.5px;color:rgba(255,255,255,.85);margin-top:6px">{{pk.sp}}</div>
+              </div>
+            </div>
+          </div>
+          <div style="position:relative;height:150px;flex:0 0 auto;display:flex;align-items:center;justify-content:center">
+            <div style="width:150px;height:150px;background-size:contain;background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 16px 18px rgba(0,0,0,.25));animation:artIn .5s .12s both,floaty 5s 1s ease-in-out infinite;background-image: {{pk.bg}}"></div>
+          </div>
+
+          <div style="position:relative;flex:1;min-height:0;background:#fff;border-top-left-radius:32px;border-top-right-radius:32px;display:flex;flex-direction:column;animation:rise .45s .1s both">
+            <sc-if value="{{hasForms}}">
+              <div style="flex:0 0 auto;display:flex;gap:8px;overflow-x:auto;padding:14px 18px 2px">
+                <sc-for list="{{formPills}}" as="fm" hint-placeholder-count="2">
+                  <div onClick="{{fm.pick}}" style="flex:0 0 auto;padding:7px 15px;border-radius:18px;font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;background: {{fm.bg}};color: {{fm.fg}};border:1.5px solid {{fm.border}};transition:transform .16s" style-active="transform:scale(.94)">{{fm.label}}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <div style="flex:0 0 auto;display:flex;padding:0 14px;border-bottom:1px solid #f1f2f7">
+              <sc-for list="{{pkTabs}}" as="t" hint-placeholder-count="4">
+                <div onClick="{{t.pick}}" style="flex:1;text-align:center;padding:16px 0 12px;cursor:pointer;position:relative;font-size:13px;font-weight: {{t.weight}};color: {{t.color}}">
+                  {{t.name}}
+                  <sc-if value="{{t.on}}"><div style="position:absolute;left:22%;right:22%;bottom:0;height:3px;border-radius:3px;background:#5C4EE5;animation:pop .3s both"></div></sc-if>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="flex:1;overflow-y:auto;padding:18px 22px 34px">
+              <sc-if value="{{tabAbout}}">
+                <div style="font-size:13px;line-height:1.7;color:#6f7490;text-wrap:pretty;animation:rise .4s both">{{pk.desc}}</div>
+                <div style="display:flex;gap:12px;margin-top:16px;background:#f7f8fc;border-radius:18px;padding:16px;animation:rise .4s .06s both">
+                  <div style="flex:1"><div style="font-size:11px;color:#a3a7bd">Height</div><div style="font-size:13.5px;font-weight:600;color:#2b2f45;margin-top:4px">{{pk.h}}</div></div>
+                  <div style="flex:1"><div style="font-size:11px;color:#a3a7bd">Weight</div><div style="font-size:13.5px;font-weight:600;color:#2b2f45;margin-top:4px">{{pk.w}}</div></div>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:#2b2f45;margin:20px 0 12px;animation:rise .4s .1s both">Breeding</div>
+                <div style="display:flex;flex-direction:column;gap:11px;animation:rise .4s .14s both">
+                  <div style="display:flex;font-size:12.5px"><span style="width:96px;color:#a3a7bd">Gender</span><span style="color:#5C4EE5;font-weight:600">♂ {{pk.gm}}%</span><span style="color:#E87AB8;font-weight:600;margin-left:14px">♀ {{pk.gf}}%</span></div>
+                  <div style="display:flex;font-size:12.5px"><span style="width:96px;color:#a3a7bd">Egg Groups</span><span style="color:#2b2f45">{{pk.eg}}</span></div>
+                  <div style="display:flex;font-size:12.5px"><span style="width:96px;color:#a3a7bd">Egg Cycle</span><span style="color:#2b2f45">{{pk.ec}}</span></div>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:#2b2f45;margin:20px 0 12px;animation:rise .4s .18s both">Training</div>
+                <div style="display:flex;font-size:12.5px;animation:rise .4s .2s both"><span style="width:96px;color:#a3a7bd">Base EXP</span><span style="color:#2b2f45">{{pk.exp}}</span></div>
+                <sc-if value="{{hasEvo}}">
+                  <div style="font-size:15px;font-weight:700;color:#2b2f45;margin:22px 0 12px;animation:rise .4s .24s both">Evolution</div>
+                  <div style="background:#f7f8fc;border-radius:20px;padding:16px 12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;animation:rise .4s .28s both">
+                    <sc-if value="{{evoBranched}}">
+                      <div onClick="{{evoBase.open}}" style="width:74px;text-align:center;cursor:pointer;animation:pop .4s both">
+                        <div style="width:58px;height:58px;margin:0 auto;border-radius:50%;background:#fff;box-shadow:0 8px 18px -12px rgba(40,44,80,.9);background-size:70% 70%;background-repeat:no-repeat;background-position:center;background-image: {{evoBase.bg}}"></div>
+                        <div style="font-size:10.5px;font-weight:600;color:#2b2f45;margin-top:6px;line-height:1.3">{{evoBase.name}}</div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:10px">
+                        <sc-for list="{{evoBranches}}" as="b" hint-placeholder-count="3">
+                          <div style="display:flex;align-items:center;gap:6px;animation:pop .4s {{b.delay}} both">
+                            <div style="width:66px;text-align:center">
+                              <div style="font-size:14px;color:#c9cddb;line-height:1">→</div>
+                              <div style="font-size:9.5px;color:#9095ad;margin-top:2px;line-height:1.3">{{b.how}}</div>
+                            </div>
+                            <div onClick="{{b.open}}" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                              <div style="width:44px;height:44px;flex:0 0 auto;border-radius:50%;background:#fff;box-shadow:0 8px 18px -12px rgba(40,44,80,.9);background-size:70% 70%;background-repeat:no-repeat;background-position:center;background-image: {{b.bg}}"></div>
+                              <div style="font-size:10.5px;font-weight:600;color:#2b2f45;line-height:1.3">{{b.name}}</div>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-for list="{{evoNodes}}" as="n" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:flex-start;gap:4px">
+                        <sc-if value="{{n.arrow}}">
+                          <div style="width:52px;padding-top:18px;text-align:center">
+                            <div style="font-size:14px;color:#c9cddb;line-height:1">→</div>
+                            <div style="font-size:9.5px;color:#9095ad;margin-top:3px;line-height:1.3">{{n.how}}</div>
+                          </div>
+                        </sc-if>
+                        <div onClick="{{n.open}}" style="width:74px;text-align:center;cursor:pointer;animation:pop .4s {{n.delay}} both">
+                          <div style="width:58px;height:58px;margin:0 auto;border-radius:50%;background:#fff;box-shadow:0 8px 18px -12px rgba(40,44,80,.9);background-size:70% 70%;background-repeat:no-repeat;background-position:center;background-image: {{n.bg}}"></div>
+                          <div style="font-size:10.5px;font-weight:600;color:#2b2f45;margin-top:6px;line-height:1.3">{{n.name}}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </sc-if>
+
+              <sc-if value="{{tabStats}}">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <sc-for list="{{pk.stats}}" as="s" hint-placeholder-count="7">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="width:70px;flex:0 0 auto;font-size:12px;color:#a3a7bd">{{s.k}}</span>
+                      <span style="width:34px;flex:0 0 auto;font-size:12.5px;font-weight:600;color:#2b2f45">{{s.v}}</span>
+                      <span style="flex:1;height:6px;border-radius:5px;background:#f3f0f4;overflow:hidden;display:block">
+                        <span style="display:block;height:100%;border-radius:5px;transform-origin:left;background: {{s.color}};width: {{s.pct}};animation:grow .75s {{s.delay}} cubic-bezier(.2,.9,.2,1) both"></span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="font-size:15px;font-weight:700;color:#2b2f45;margin:22px 0 6px">Type defenses</div>
+                <div style="font-size:12px;color:#a3a7bd;margin-bottom:12px">The effectiveness of each type on {{pk.name}}.</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{pk.defenses}}" as="dfn" hint-placeholder-count="18">
+                    <span style="padding:6px 12px;border-radius:14px;font-size:11px;font-weight:600;background: {{dfn.bg}};color: {{dfn.fg}};animation:pop .3s {{dfn.delay}} both">{{dfn.name}} {{dfn.mult}}</span>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{tabLoc}}">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;animation:rise .4s both">
+                  <sc-for list="{{capBadges}}" as="c" hint-placeholder-count="2">
+                    <span style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:18px;font-size:11.5px;font-weight:600;background: {{c.bg}};color: {{c.color}};animation:pop .34s {{c.delay}} both"><span style="font-size:9px">{{c.icon}}</span>{{c.label}}</span>
+                  </sc-for>
+                </div>
+                <div style="margin-top:16px;border-radius:20px;padding:18px;background: {{pk.tint}};animation:rise .4s .08s both">
+                  <div style="font-size:10.5px;font-weight:700;letter-spacing:.7px;color: {{pk.color}}">LATEST GENERATION</div>
+                  <div style="font-size:16px;font-weight:700;color:#2b2f45;margin-top:8px">{{curGame}}</div>
+                  <div style="font-size:13px;color:#6f7490;margin-top:5px;line-height:1.55">{{curPlace}}</div>
+                </div>
+                <div style="font-size:11px;color:#a3a7bd;margin:20px 0 10px;letter-spacing:.4px">EARLIER GAMES</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{eras}}" as="e" hint-placeholder-count="2">
+                    <div style="border-radius:16px;background:#f7f8fc;overflow:hidden;animation:rise .4s {{e.delay}} both">
+                      <div onClick="{{e.toggle}}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer" style-active="transform:scale(.99)">
+                        <span style="font-size:12.5px;font-weight:600;color:#6f7490">{{e.label}}</span>
+                        <span style="font-size:12px;color:#b3b7c9;transition:transform .25s;transform: {{e.caret}}">⌄</span>
+                      </div>
+                      <sc-if value="{{e.open}}">
+                        <div style="padding:0 16px 14px;display:flex;flex-direction:column;gap:10px;animation:fadeIn .3s both">
+                          <sc-for list="{{e.rows}}" as="r" hint-placeholder-count="2">
+                            <div style="display:flex;gap:12px;font-size:12px">
+                              <span style="width:92px;flex:0 0 auto;color:#a3a7bd">{{r.game}}</span>
+                              <span style="color:#2b2f45;line-height:1.45">{{r.place}}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{tabMoves}}">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <sc-for list="{{pk.moves}}" as="m" hint-placeholder-count="4">
+                    <div onClick="{{m.open}}" style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;border-radius:16px;padding:13px 15px;cursor:pointer;background: {{m.color}};animation:rise .42s {{m.delay}} both;transition:transform .16s" style-active="transform:scale(.97)">
+                      <div>
+                        <div style="font-size:14px;font-weight:600;color:#fff">{{m.name}}</div>
+                        <div style="font-size:10.5px;color:rgba(255,255,255,.85);margin-top:3px;white-space:nowrap">{{m.meta}}</div>
+                      </div>
+                      <div style="text-align:right">
+                        <div style="font-size:11px;font-weight:600;color:#fff">{{m.how}}</div>
+                        <div style="font-size:10px;color:rgba(255,255,255,.8);margin-top:3px;white-space:nowrap">{{m.powerTxt}}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isMoves}}">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="padding:62px 22px 0">
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both" style-active="transform:scale(.9)">
+              <span style="font-size:18px;color:#2b2f45;line-height:1">←</span>
+            </div>
+            <div style="margin-top:14px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Moves</div>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 10px 24px -18px rgba(40,44,80,.5);animation:rise .45s .08s both">
+              <span style="width:14px;height:14px;border-radius:50%;border:2.5px solid #c3c7d8;display:block"></span>
+              <input value="{{q}}" onChange="{{onQ}}" placeholder="Search moves" style="border:0;outline:0;font-family:Poppins;font-size:13.5px;color:#2b2f45;width:100%;background:transparent">
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:0 22px;display:flex;align-items:center;gap:8px;flex:0 0 auto;animation:rise .45s .12s both">
+            <span style="font-size:11.5px;color:#a2a6bd">{{resultLabel}}</span>
+            <sc-if value="{{hasFilter}}">
+              <span onClick="{{clearFilters}}" style="margin-left:auto;display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:14px;background: {{filterTint}};color: {{filterColor}};font-size:11px;font-weight:600;cursor:pointer" style-active="transform:scale(.94)">{{filterLabel}} ✕</span>
+            </sc-if>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:10px 22px 40px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{moveList}}" as="m" hint-placeholder-count="6">
+              <div onClick="{{m.open}}" style="flex:0 0 auto;position:relative;overflow:hidden;border-radius:20px;padding:16px 18px;cursor:pointer;background: {{m.color}};box-shadow: {{m.shadow}};animation:rise .45s {{m.delay}} both;transition:transform .18s" style-hover="transform:translateY(-3px)" style-active="transform:scale(.97)">
+                <div style="position:absolute;right:-26px;top:-30px;width:104px;height:104px;border-radius:50%;background:rgba(255,255,255,.13)"></div>
+                <div style="position:absolute;right:14px;top:18px;width:44px;height:44px;border-radius:50%;border:8px solid rgba(255,255,255,.22);background:transparent"></div>
+                <div style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                  <div style="min-width:0">
+                    <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.2px">{{m.name}}</div>
+                    <div style="display:flex;gap:6px;margin-top:9px">
+                      <span style="padding:4px 11px;border-radius:12px;font-size:10.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.26)">{{m.typeName}}</span>
+                      <span style="padding:4px 11px;border-radius:12px;font-size:10.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.26)">{{m.cat}}</span>
+                      <sc-if value="{{m.fav}}">
+                        <span style="padding:4px 9px;border-radius:12px;font-size:10.5px;background:rgba(255,255,255,.26);color:#fff">♥</span>
+                      </sc-if>
+                    </div>
+                  </div>
+                  <div style="text-align:right;flex:0 0 auto">
+                    <div style="font-size:22px;font-weight:700;color:#fff;line-height:1">{{m.powerTxt}}</div>
+                    <div style="font-size:9.5px;color:rgba(255,255,255,.8);letter-spacing:.7px;margin-top:3px">POWER</div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{fabOpen}}">
+            <div onClick="{{closeFab}}" style="position:absolute;inset:0;background:rgba(22,25,44,.42);animation:fadeIn .22s both;z-index:38"></div>
+          </sc-if>
+          <div style="position:absolute;right:20px;bottom:26px;z-index:39;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+            <sc-if value="{{fabOpen}}">
+              <sc-for list="{{fabItems}}" as="a" hint-placeholder-count="3">
+                <div onClick="{{a.act}}" style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:22px;padding:9px 10px 9px 18px;cursor:pointer;box-shadow:0 14px 26px -18px rgba(30,34,70,.9);animation:pop .3s {{a.delay}} both" style-active="transform:scale(.95)">
+                  <span style="font-size:12.5px;font-weight:600;color:#2b2f45;white-space:nowrap">{{a.label}}</span>
+                  <span style="width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background: {{a.tint}};color: {{a.color}}">{{a.icon}}</span>
+                </div>
+              </sc-for>
+            </sc-if>
+            <div onClick="{{toggleFab}}" style="width:56px;height:56px;border-radius:50%;background:#5C4EE5;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 16px 30px -12px rgba(92,78,229,.7);transition:transform .28s cubic-bezier(.2,.9,.2,1);transform: {{fabSpin}}" style-active="transform:scale(.92)">
+              <span style="color:#fff;font-size:22px;line-height:1;font-weight:300">{{fabIcon}}</span>
+            </div>
+          </div>
+
+          <sc-if value="{{pickerOpen}}">
+            <div onClick="{{closePicker}}" style="position:absolute;inset:0;background:rgba(22,25,44,.42);animation:fadeIn .25s both;z-index:44"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;max-height:74%;overflow-y:auto;background:#fff;border-top-left-radius:30px;border-top-right-radius:30px;padding:16px 20px 32px;z-index:45;animation:sheetUp .38s cubic-bezier(.2,.9,.2,1) both;box-shadow:0 -20px 50px -30px rgba(20,24,50,.8)">
+              <div style="width:42px;height:5px;border-radius:4px;background:#e4e6f0;margin:0 auto 14px"></div>
+              <div style="text-align:center;font-size:17px;font-weight:700;color:#2b2f45;margin-bottom:16px">{{pickerTitle}}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <sc-for list="{{pickerItems}}" as="p" hint-placeholder-count="6">
+                  <div onClick="{{p.pick}}" style="display:flex;align-items:center;gap:10px;border-radius:16px;padding:12px 13px;cursor:pointer;background: {{p.bg}};animation:pop .32s {{p.delay}} both" style-active="transform:scale(.95)">
+                    <span style="width:14px;height:14px;border-radius:50%;flex:0 0 auto;background: {{p.dot}}"></span>
+                    <span style="font-size:12.5px;font-weight:600;color: {{p.fg}}">{{p.label}}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isMove}}">
+        <div style="height:100%;overflow-y:auto">
+          <div style="position:relative;overflow:hidden;background: {{mv.color}};border-bottom-left-radius:34px;border-bottom-right-radius:34px;padding:62px 24px 30px;animation:heroUp .45s both">
+            <div style="position:absolute;right:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.13)"></div>
+            <div style="position:absolute;right:30px;top:100px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;position:relative">
+              <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px" style-active="transform:scale(.9)">←</div>
+              <div onClick="{{mv.toggleFav}}" style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;transition:transform .2s" style-active="transform:scale(.85)">{{mv.favIcon}}</div>
+            </div>
+            <div style="margin-top:22px;position:relative">
+              <div style="font-size:31px;font-weight:700;color:#fff;letter-spacing:-.6px;animation:rise .45s .06s both">{{mv.name}}</div>
+              <div style="display:flex;gap:8px;margin-top:12px;animation:rise .45s .12s both">
+                <span style="padding:6px 14px;border-radius:16px;background:rgba(255,255,255,.26);color:#fff;font-size:12px;font-weight:600">{{mv.typeName}}</span>
+                <span style="padding:6px 14px;border-radius:16px;background:rgba(255,255,255,.26);color:#fff;font-size:12px;font-weight:600">{{mv.cat}}</span>
+                <span style="padding:6px 14px;border-radius:16px;background:rgba(255,255,255,.26);color:#fff;font-size:12px;font-weight:600">{{mv.tm}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:20px 22px 44px;display:flex;flex-direction:column;gap:16px">
+            <div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 16px 34px -26px rgba(40,44,80,.8);animation:rise .45s .14s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:14px">Battle Data</div>
+              <div style="display:flex;flex-direction:column;gap:13px">
+                <sc-for list="{{mv.bars}}" as="b" hint-placeholder-count="3">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#8b8fa6;margin-bottom:6px"><span>{{b.label}}</span><span style="color:#2b2f45;font-weight:600">{{b.val}}</span></div>
+                    <div style="height:7px;border-radius:6px;background:#f0f1f7;overflow:hidden">
+                      <div style="height:100%;border-radius:6px;transform-origin:left;background: {{mv.color}};width: {{b.pct}};animation:grow .7s {{b.delay}} cubic-bezier(.2,.9,.2,1) both"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 16px 34px -26px rgba(40,44,80,.8);animation:rise .45s .2s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:8px">Effect</div>
+              <div style="font-size:13px;line-height:1.65;color:#6f7490;text-wrap:pretty">{{mv.desc}}</div>
+              <div style="display:flex;gap:10px;margin-top:14px">
+                <div style="flex:1;background:#f6f7fb;border-radius:14px;padding:11px 13px">
+                  <div style="font-size:10px;color:#a3a7bd;letter-spacing:.5px">TARGET</div>
+                  <div style="font-size:12.5px;font-weight:600;color:#2b2f45;margin-top:3px">{{mv.target}}</div>
+                </div>
+                <div style="flex:1;background:#f6f7fb;border-radius:14px;padding:11px 13px">
+                  <div style="font-size:10px;color:#a3a7bd;letter-spacing:.5px">PRIORITY</div>
+                  <div style="font-size:12.5px;font-weight:600;color:#2b2f45;margin-top:3px">{{mv.prio}}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="animation:rise .45s .26s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:10px">Learned by</div>
+              <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px">
+                <sc-for list="{{mv.users}}" as="u" hint-placeholder-count="4">
+                  <div style="flex:0 0 auto;width:92px;background:#fff;border-radius:16px;padding:10px 8px;text-align:center;box-shadow:0 14px 28px -24px rgba(40,44,80,.9);animation:pop .45s {{u.delay}} both">
+                    <div style="width:56px;height:56px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image: {{u.bg}}"></div>
+                    <div style="font-size:11px;font-weight:600;color:#2b2f45;margin-top:2px">{{u.name}}</div>
+                    <div style="font-size:9.5px;color:#a6aac0;margin-top:2px">{{u.how}}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isAbilities}}">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="padding:62px 22px 0">
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both;font-size:18px;color:#2b2f45" style-active="transform:scale(.9)">←</div>
+            <div style="margin-top:14px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Abilities</div>
+            <div style="margin-top:6px;font-size:13px;color:#9095ad;animation:rise .45s .08s both">Passive effects that shape a battle</div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:18px 22px 40px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{abilityList}}" as="a" hint-placeholder-count="6">
+              <div onClick="{{a.open}}" style="flex:0 0 auto;background:#fff;border-radius:20px;padding:16px;cursor:pointer;box-shadow:0 14px 30px -24px rgba(40,44,80,.8);animation:rise .45s {{a.delay}} both;transition:transform .18s" style-hover="transform:translateY(-2px)" style-active="transform:scale(.98)">
+                <div style="display:flex;align-items:center;gap:13px">
+                  <div style="width:44px;height:44px;border-radius:14px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:16px;background: {{a.tint}};color: {{a.color}}">{{a.icon}}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:7px">
+                      <span style="font-size:15.5px;font-weight:600;color:#2b2f45">{{a.name}}</span>
+                      <span style="padding:2px 8px;border-radius:10px;font-size:9.5px;font-weight:600;background: {{a.tint}};color: {{a.color}}">{{a.tag}}</span>
+                    </div>
+                    <div style="font-size:12px;color:#8b8fa6;margin-top:4px;line-height:1.5">{{a.short}}</div>
+                  </div>
+                  <span style="color:#c8ccdd;font-size:16px">›</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isAbility}}">
+        <div style="height:100%;overflow-y:auto">
+          <div style="position:relative;overflow:hidden;background: {{ab.color}};border-bottom-left-radius:34px;border-bottom-right-radius:34px;padding:62px 24px 30px;animation:heroUp .45s both">
+            <div style="position:absolute;left:-30px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12)"></div>
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.24);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px" style-active="transform:scale(.9)">←</div>
+            <div style="margin-top:22px;position:relative">
+              <div style="font-size:31px;font-weight:700;color:#fff;letter-spacing:-.6px;animation:rise .45s .06s both">{{ab.name}}</div>
+              <div style="font-size:13.5px;color:rgba(255,255,255,.9);margin-top:8px;animation:rise .45s .1s both">{{ab.short}}</div>
+            </div>
+          </div>
+          <div style="padding:20px 22px 44px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;gap:12px;animation:rise .45s .12s both">
+              <sc-for list="{{ab.stats}}" as="s" hint-placeholder-count="3">
+                <div style="flex:1;background:#fff;border-radius:18px;padding:14px 12px;text-align:center;box-shadow:0 16px 32px -28px rgba(40,44,80,.9)">
+                  <div style="font-size:19px;font-weight:700;color:#2b2f45">{{s.v}}</div>
+                  <div style="font-size:10px;color:#a3a7bd;margin-top:3px;letter-spacing:.4px">{{s.k}}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#fff;border-radius:20px;padding:18px;box-shadow:0 16px 34px -26px rgba(40,44,80,.8);animation:rise .45s .18s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:8px">In depth</div>
+              <div style="font-size:13px;line-height:1.65;color:#6f7490;text-wrap:pretty">{{ab.long}}</div>
+            </div>
+            <div style="animation:rise .45s .24s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:10px">Pokémon with this ability</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <sc-for list="{{ab.users}}" as="u" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:10px;box-shadow:0 14px 28px -26px rgba(40,44,80,.9);animation:pop .45s {{u.delay}} both">
+                    <div style="width:40px;height:40px;border-radius:12px;background: {{u.tint}};display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                      <div style="width:36px;height:36px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image: {{u.bg}}"></div>
+                    </div>
+                    <div style="min-width:0">
+                      <div style="font-size:12.5px;font-weight:600;color:#2b2f45">{{u.name}}</div>
+                      <div style="font-size:10px;color:#a6aac0">{{u.how}}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isLocations}}">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="padding:62px 22px 0">
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both;font-size:18px;color:#2b2f45" style-active="transform:scale(.9)">←</div>
+            <div style="margin-top:14px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Locations</div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;overflow-x:auto;padding:2px 22px 4px;flex:0 0 auto">
+            <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+              <div onClick="{{r.pick}}" style="flex:0 0 auto;padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;background: {{r.bg}};color: {{r.fg}};animation:pop .4s {{r.delay}} both" style-active="transform:scale(.93)">{{r.name}}</div>
+            </sc-for>
+          </div>
+
+          <div style="margin:14px 22px 0;position:relative;height:186px;border-radius:24px;overflow:hidden;background:#dfeee3;box-shadow:0 18px 36px -28px rgba(40,60,50,.9);animation:rise .5s .1s both">
+            <div style="position:absolute;left:-24px;top:-30px;width:170px;height:150px;border-radius:60px;background:#cfe6d6;transform:rotate(-12deg)"></div>
+            <div style="position:absolute;right:-30px;top:20px;width:150px;height:120px;border-radius:54px;background:#c6e0f5;transform:rotate(9deg)"></div>
+            <div style="position:absolute;left:60px;bottom:-34px;width:190px;height:110px;border-radius:48px;background:#e7dcc4;transform:rotate(-5deg)"></div>
+            <div style="position:absolute;left:26px;top:118px;width:120px;height:16px;border-radius:10px;background:rgba(255,255,255,.55)"></div>
+            <sc-for list="{{pins}}" as="p" hint-placeholder-count="4">
+              <div onClick="{{p.open}}" style="position:absolute;left: {{p.x}};top: {{p.y}};transform:translate(-50%,-50%);cursor:pointer;animation:pop .5s {{p.delay}} both">
+                <div style="position:absolute;inset:-6px;border-radius:50%;background: {{p.color}};opacity:.4;animation:ping 2.4s {{p.delay}} infinite"></div>
+                <div style="position:relative;width:16px;height:16px;border-radius:50%;background: {{p.color}};border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.22)"></div>
+              </div>
+            </sc-for>
+            <div style="position:absolute;left:14px;bottom:12px;padding:6px 12px;border-radius:14px;background:rgba(255,255,255,.85);font-size:11px;font-weight:600;color:#3e5a49">{{regionName}} · {{locCount}} areas</div>
+          </div>
+
+          <div style="flex:1;overflow-y:auto;padding:16px 22px 40px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{locationList}}" as="l" hint-placeholder-count="5">
+              <div onClick="{{l.open}}" style="flex:0 0 auto;display:flex;align-items:center;gap:13px;background:#fff;border-radius:20px;padding:14px;cursor:pointer;box-shadow:0 14px 30px -24px rgba(40,44,80,.8);animation:rise .45s {{l.delay}} both;transition:transform .18s" style-hover="transform:translateY(-2px)" style-active="transform:scale(.98)">
+                <div style="width:52px;height:52px;border-radius:16px;flex:0 0 auto;position:relative;overflow:hidden;background: {{l.tint}}">
+                  <div style="position:absolute;left:8px;top:10px;width:36px;height:14px;border-radius:8px;background:rgba(255,255,255,.6)"></div>
+                  <div style="position:absolute;left:14px;top:28px;width:24px;height:12px;border-radius:8px;background:rgba(255,255,255,.4)"></div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:15px;font-weight:600;color:#2b2f45">{{l.name}}</div>
+                  <div style="font-size:11.5px;color:#9095ad;margin-top:3px">{{l.kind}} · {{l.count}} Pokémon</div>
+                </div>
+                <span style="color:#c8ccdd;font-size:16px">›</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isLocation}}">
+        <div style="height:100%;overflow-y:auto">
+          <div style="position:relative;overflow:hidden;height:230px;background: {{loc.color}};border-bottom-left-radius:34px;border-bottom-right-radius:34px;animation:heroUp .45s both">
+            <div style="position:absolute;left:-40px;top:30px;width:200px;height:170px;border-radius:70px;background:rgba(255,255,255,.16);transform:rotate(-14deg)"></div>
+            <div style="position:absolute;right:-50px;top:90px;width:190px;height:150px;border-radius:64px;background:rgba(255,255,255,.12);transform:rotate(10deg)"></div>
+            <div style="position:absolute;left:22px;top:62px"><div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.26);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px" style-active="transform:scale(.9)">←</div></div>
+            <div style="position:absolute;left:24px;bottom:26px;right:24px">
+              <div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:-.5px;animation:rise .45s .06s both">{{loc.name}}</div>
+              <div style="display:flex;gap:8px;margin-top:10px;animation:rise .45s .12s both">
+                <span style="padding:5px 13px;border-radius:15px;background:rgba(255,255,255,.26);color:#fff;font-size:11.5px;font-weight:600">{{loc.kind}}</span>
+                <span style="padding:5px 13px;border-radius:15px;background:rgba(255,255,255,.26);color:#fff;font-size:11.5px;font-weight:600">Lv. {{loc.lvRange}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:18px 22px 44px">
+            <div style="display:flex;gap:8px;animation:rise .45s .14s both">
+              <sc-for list="{{methods}}" as="m" hint-placeholder-count="3">
+                <div onClick="{{m.pick}}" style="flex:1;text-align:center;padding:10px 4px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;background: {{m.bg}};color: {{m.fg}};transition:transform .16s" style-active="transform:scale(.95)">{{m.name}}</div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{encounters}}" as="e" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 14px 30px -26px rgba(40,44,80,.9);animation:rise .42s {{e.delay}} both">
+                  <div style="width:52px;height:52px;border-radius:14px;background: {{e.tint}};display:flex;align-items:center;justify-content:center;flex:0 0 auto">
+                    <div style="width:46px;height:46px;background-size:contain;background-repeat:no-repeat;background-position:center;animation:floaty 3.6s {{e.delay}} ease-in-out infinite;background-image: {{e.bg}}"></div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline">
+                      <span style="font-size:14px;font-weight:600;color:#2b2f45">{{e.name}}</span>
+                      <span style="font-size:11px;font-weight:600;color: {{loc.color}}">{{e.rate}}</span>
+                    </div>
+                    <div style="font-size:10.5px;color:#a0a4ba;margin-top:2px">Lv. {{e.lv}} · {{e.time}}</div>
+                    <div style="height:5px;border-radius:4px;background:#f0f1f7;margin-top:7px;overflow:hidden">
+                      <div style="height:100%;border-radius:4px;transform-origin:left;background: {{loc.color}};width: {{e.rate}};animation:grow .8s {{e.delay}} cubic-bezier(.2,.9,.2,1) both"></div>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:20px;background:#fff;border-radius:20px;padding:18px;box-shadow:0 16px 34px -28px rgba(40,44,80,.9);animation:rise .45s .3s both">
+              <div style="font-size:13px;font-weight:600;color:#2b2f45;margin-bottom:12px">Items found here</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{loc.items}}" as="i" hint-placeholder-count="3">
+                  <span style="padding:7px 13px;border-radius:14px;background:#f5f6fb;color:#6f7490;font-size:11.5px;font-weight:500">{{i.name}}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isTypes}}">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="padding:62px 22px 0">
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both;font-size:18px;color:#2b2f45" style-active="transform:scale(.9)">←</div>
+            <div style="margin-top:14px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Type Chart</div>
+            <div style="margin-top:6px;font-size:13px;color:#9095ad;animation:rise .45s .08s both">Rows attack · columns defend</div>
+          </div>
+
+          <div style="flex:1;overflow-y:auto;padding:16px 0 40px">
+            <div style="overflow-x:auto;padding:0 22px;animation:fadeIn .5s .1s both">
+              <div style="display:inline-block;background:#fff;border-radius:18px;padding:10px;box-shadow:0 16px 34px -28px rgba(40,44,80,.9)">
+                <div style="display:flex;gap:2px;margin-left:26px;margin-bottom:2px">
+                  <sc-for list="{{typeCols}}" as="c" hint-placeholder-count="18">
+                    <div onClick="{{c.pick}}" title="{{c.name}}" style="width:22px;height:22px;border-radius:7px;cursor:pointer;background: {{c.color}};opacity: {{c.op}};animation:pop .4s {{c.delay}} both;transition:opacity .2s"></div>
+                  </sc-for>
+                </div>
+                <sc-for list="{{typeRows}}" as="r" hint-placeholder-count="18">
+                  <div style="display:flex;gap:2px;margin-bottom:2px;align-items:center">
+                    <div onClick="{{r.pick}}" title="{{r.name}}" style="width:22px;height:22px;border-radius:7px;margin-right:2px;cursor:pointer;flex:0 0 auto;background: {{r.color}};opacity: {{r.op}};animation:pop .4s {{r.delay}} both"></div>
+                    <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="18">
+                      <div style="width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:JetBrains Mono,monospace;background: {{c.bg}};color: {{c.fg}};opacity: {{c.op}};transition:opacity .25s">{{c.txt}}</div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="padding:18px 22px 0">
+              <div style="display:flex;gap:8px;margin-bottom:14px">
+                <div onClick="{{setAtk}}" style="flex:1;text-align:center;padding:10px;border-radius:14px;font-size:12.5px;font-weight:600;cursor:pointer;background: {{atkBg}};color: {{atkFg}}" style-active="transform:scale(.96)">Attacking</div>
+                <div onClick="{{setDef}}" style="flex:1;text-align:center;padding:10px;border-radius:14px;font-size:12.5px;font-weight:600;cursor:pointer;background: {{defBg}};color: {{defFg}}" style-active="transform:scale(.96)">Defending</div>
+              </div>
+
+              <div style="position:relative;overflow:hidden;border-radius:22px;padding:18px;background: {{sel.color}};box-shadow:0 20px 40px -30px {{sel.color}};animation:heroUp .4s both">
+                <div style="position:absolute;right:-30px;top:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.14)"></div>
+                <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+                  <div>
+                    <div style="font-size:22px;font-weight:700;color:#fff">{{sel.name}}</div>
+                    <div style="font-size:11.5px;color:rgba(255,255,255,.85);margin-top:3px">{{modeLabel}}</div>
+                  </div>
+                  <div style="width:40px;height:40px;border-radius:50%;border:6px solid rgba(255,255,255,.6);background:#fff"></div>
+                </div>
+                <div style="position:relative;margin-top:16px;display:flex;flex-direction:column;gap:12px">
+                  <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+                    <div style="animation:rise .4s {{g.delay}} both">
+                      <div style="font-size:10.5px;font-weight:600;letter-spacing:.6px;color:rgba(255,255,255,.9);margin-bottom:7px">{{g.label}}</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px">
+                        <sc-for list="{{g.items}}" as="t" hint-placeholder-count="4">
+                          <span style="padding:6px 12px;border-radius:14px;background:rgba(255,255,255,.94);color: {{t.color}};font-size:11px;font-weight:600;animation:pop .35s {{t.delay}} both">{{t.name}}</span>
+                        </sc-for>
+                        <sc-if value="{{g.empty}}">
+                          <span style="padding:6px 12px;border-radius:14px;background:rgba(255,255,255,.22);color:#fff;font-size:11px;font-weight:500">None</span>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isItems}}">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="padding:62px 22px 0">
+            <div onClick="{{back}}" style="width:38px;height:38px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -14px rgba(40,44,80,.6);cursor:pointer;animation:pop .35s both;font-size:18px;color:#2b2f45" style-active="transform:scale(.9)">←</div>
+            <div style="margin-top:14px;font-size:30px;font-weight:700;color:#2b2f45;letter-spacing:-.5px;animation:rise .45s .04s both">Items</div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:18px 22px 40px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start">
+            <sc-for list="{{itemList}}" as="i" hint-placeholder-count="6">
+              <div onClick="{{i.open}}" style="background:#fff;border-radius:20px;padding:14px;cursor:pointer;box-shadow:0 14px 30px -26px rgba(40,44,80,.9);animation:rise .45s {{i.delay}} both;transition:transform .18s" style-hover="transform:translateY(-3px)" style-active="transform:scale(.97)">
+                <div style="height:56px;border-radius:14px;background: {{i.tint}};display:flex;align-items:center;justify-content:center">
+                  <div style="width:34px;height:34px;background-size:contain;background-repeat:no-repeat;background-position:center;image-rendering:pixelated;background-image: {{i.bg}}"></div></div>
+                <div style="font-size:13.5px;font-weight:600;color:#2b2f45;margin-top:10px">{{i.name}}</div>
+                <div style="font-size:10.5px;color:#a3a7bd;margin-top:2px">{{i.cat}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{sheetOpen}}">
+            <div onClick="{{closeSheet}}" style="position:absolute;inset:0;background:rgba(25,28,45,.35);animation:fadeIn .25s both;z-index:40"></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top-left-radius:30px;border-top-right-radius:30px;padding:20px 24px 34px;z-index:41;animation:sheetUp .38s cubic-bezier(.2,.9,.2,1) both;box-shadow:0 -20px 50px -30px rgba(20,24,50,.8)">
+              <div style="width:42px;height:5px;border-radius:4px;background:#e4e6f0;margin:0 auto 16px"></div>
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="width:60px;height:60px;border-radius:18px;background: {{sheet.tint}};display:flex;align-items:center;justify-content:center">
+                  <div style="width:38px;height:38px;background-size:contain;background-repeat:no-repeat;background-position:center;image-rendering:pixelated;background-image: {{sheet.bg}}"></div>
+                </div>
+                <div>
+                  <div style="font-size:19px;font-weight:700;color:#2b2f45">{{sheet.name}}</div>
+                  <div style="font-size:11.5px;color:#a3a7bd;margin-top:2px">{{sheet.cat}} · {{sheet.price}}</div>
+                </div>
+              </div>
+              <div style="font-size:13px;line-height:1.65;color:#6f7490;margin-top:14px;text-wrap:pretty">{{sheet.desc}}</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <div style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:130px;height:5px;border-radius:4px;background:#2b2f45;opacity:.25;z-index:50"></div>
+</div>
+
+<div style="width:250px;flex:0 0 auto;padding-top:14px">
+  <div style="font-size:13px;font-weight:600;color:#2b2f45">Missing screens</div>
+  <div style="font-size:12px;line-height:1.7;color:#7e8299;margin-top:8px">Tap the tiles to walk the flows. Every push, list and bar is animated: staggered card rises, spring-scaled chips, bars that grow on entry, pinging map markers and a bottom sheet for items.</div>
+  <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px">
+    <sc-for list="{{legend}}" as="l" hint-placeholder-count="5">
+      <div onClick="{{l.go}}" style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:12px;color:#5d6178;padding:7px 10px;border-radius:12px;background:#fff;box-shadow:0 10px 22px -20px rgba(40,44,80,.9)" style-hover="transform:translateX(2px)">
+        <span style="width:9px;height:9px;border-radius:50%;background: {{l.color}}"></span>{{l.label}}
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:720,&quot;height&quot;:940}}">
+const T = {
+  normal:['Normal','#9FA19F'], fire:['Fire','#FF9D5C'], water:['Water','#5BA7F7'], electric:['Electric','#F0C33C'],
+  grass:['Grass','#5BC98F'], ice:['Ice','#6ECBD2'], fighting:['Fighting','#E8685D'], poison:['Poison','#B368C9'],
+  ground:['Ground','#D79B4A'], flying:['Flying','#8FA9F0'], psychic:['Psychic','#FF7BA6'], bug:['Bug','#9DB945'],
+  rock:['Rock','#BFA967'], ghost:['Ghost','#7B6BB5'], dragon:['Dragon','#6A5BD6'], dark:['Dark','#6E6059'],
+  steel:['Steel','#8FA0B5'], fairy:['Fairy','#EE97CE']
+};
+const ORDER = Object.keys(T);
+const CHART = {
+  normal:{rock:.5,ghost:0,steel:.5},
+  fire:{fire:.5,water:.5,grass:2,ice:2,bug:2,rock:.5,dragon:.5,steel:2},
+  water:{fire:2,water:.5,grass:.5,ground:2,rock:2,dragon:.5},
+  electric:{water:2,electric:.5,grass:.5,ground:0,flying:2,dragon:.5},
+  grass:{fire:.5,water:2,grass:.5,poison:.5,ground:2,flying:.5,bug:.5,rock:2,dragon:.5,steel:.5},
+  ice:{fire:.5,water:.5,grass:2,ice:.5,ground:2,flying:2,dragon:2,steel:.5},
+  fighting:{normal:2,ice:2,poison:.5,flying:.5,psychic:.5,bug:.5,rock:2,ghost:0,dark:2,steel:2,fairy:.5},
+  poison:{grass:2,poison:.5,ground:.5,rock:.5,ghost:.5,steel:0,fairy:2},
+  ground:{fire:2,electric:2,grass:.5,poison:2,flying:0,bug:.5,rock:2,steel:2},
+  flying:{electric:.5,grass:2,fighting:2,bug:2,rock:.5,steel:.5},
+  psychic:{fighting:2,poison:2,psychic:.5,dark:0,steel:.5},
+  bug:{fire:.5,grass:2,fighting:.5,poison:.5,flying:.5,psychic:2,ghost:.5,dark:2,steel:.5,fairy:.5},
+  rock:{fire:2,ice:2,fighting:.5,ground:.5,flying:2,bug:2,steel:.5},
+  ghost:{normal:0,psychic:2,ghost:2,dark:.5},
+  dragon:{dragon:2,steel:.5,fairy:0},
+  dark:{fighting:.5,psychic:2,ghost:2,dark:.5,fairy:.5},
+  steel:{fire:.5,water:.5,electric:.5,ice:2,rock:2,steel:.5,fairy:2},
+  fairy:{fire:.5,fighting:2,poison:.5,dragon:2,dark:2,steel:.5}
+};
+const URLB = u => 'url("' + u + '")';
+const SP = n => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + n + '.png';
+const ITEM = s => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/' + s + '.png';
+
+const DEX = [
+  {id:1,name:'Bulbasaur',t:['grass','poison'],sp:'Seed',st:[45,49,49,65,65,45],desc:'Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun\u2019s rays, the seed grows progressively larger.',h:'2\u2032 04\u2033 (0.70 m)',w:'15.2 lbs (6.9 kg)',gm:'87.5',eg:'Grass, Monster',ec:'20 (5,140 steps)',exp:'64',chain:[[1,'Bulbasaur','Level 16',2,'Ivysaur'],[2,'Ivysaur','Level 32',3,'Venusaur']],mv:[['Leaf Storm','Lv. 50'],['Sludge Bomb','TM'],['Earthquake','TM'],['Synthesis','Egg']]},
+  {id:2,name:'Ivysaur',t:['grass','poison'],sp:'Seed',st:[60,62,63,80,80,60],desc:'When the bud on its back starts swelling, a sweet aroma drifts to indicate the flower is coming soon.',h:'3\u2032 03\u2033 (0.99 m)',w:'28.7 lbs (13.0 kg)',gm:'87.5',eg:'Grass, Monster',ec:'20 (5,140 steps)',exp:'142',chain:[[1,'Bulbasaur','Level 16',2,'Ivysaur'],[2,'Ivysaur','Level 32',3,'Venusaur']],mv:[['Razor Leaf','Lv. 20'],['Sludge Bomb','TM'],['Sleep Powder','Lv. 15']]},
+  {id:3,name:'Venusaur',t:['grass','poison'],sp:'Seed',st:[80,82,83,100,100,80],desc:'Its plant blooms when it is absorbing solar energy. It stays on the move to seek sunlight.',h:'6\u2032 07\u2033 (2.01 m)',w:'220.5 lbs (100.0 kg)',gm:'87.5',eg:'Grass, Monster',ec:'20 (5,140 steps)',exp:'236',chain:[[1,'Bulbasaur','Level 16',2,'Ivysaur'],[2,'Ivysaur','Level 32',3,'Venusaur']],mv:[['Leaf Storm','Egg'],['Petal Blizzard','Lv. 53'],['Earthquake','TM']]},
+  {id:4,name:'Charmander',t:['fire'],sp:'Lizard',st:[39,52,43,60,50,65],desc:'It has a preference for hot things. When it rains, steam is said to spout from the tip of its tail.',h:'2\u2032 00\u2033 (0.61 m)',w:'18.7 lbs (8.5 kg)',gm:'87.5',eg:'Dragon, Monster',ec:'20 (5,140 steps)',exp:'62',chain:[[4,'Charmander','Level 16',5,'Charmeleon'],[5,'Charmeleon','Level 36',6,'Charizard']],mv:[['Flamethrower','Lv. 38'],['Dragon Dance','Egg'],['Iron Head','TM']]},
+  {id:5,name:'Charmeleon',t:['fire'],sp:'Flame',st:[58,64,58,80,65,80],desc:'It has a barbaric nature. In battle, it whips its fiery tail around and slashes away with sharp claws.',h:'3\u2032 07\u2033 (1.09 m)',w:'41.9 lbs (19.0 kg)',gm:'87.5',eg:'Dragon, Monster',ec:'20 (5,140 steps)',exp:'142',chain:[[4,'Charmander','Level 16',5,'Charmeleon'],[5,'Charmeleon','Level 36',6,'Charizard']],mv:[['Flamethrower','Lv. 41'],['Slash','Lv. 30']]},
+  {id:6,name:'Charizard',t:['fire','flying'],sp:'Flame',st:[78,84,78,109,85,100],desc:'It spits fire that is hot enough to melt boulders. It may cause forest fires by blowing flames.',h:'5\u2032 07\u2033 (1.70 m)',w:'199.5 lbs (90.5 kg)',gm:'87.5',eg:'Dragon, Monster',ec:'20 (5,140 steps)',exp:'240',chain:[[4,'Charmander','Level 16',5,'Charmeleon'],[5,'Charmeleon','Level 36',6,'Charizard']],mv:[['Flamethrower','Lv. 46'],['Dragon Dance','Egg'],['Earthquake','TM']]},
+  {id:7,name:'Squirtle',t:['water'],sp:'Tiny Turtle',st:[44,48,65,50,64,43],desc:'When it retracts its long neck into its shell, it squirts out water with vigorous force.',h:'1\u2032 08\u2033 (0.51 m)',w:'19.8 lbs (9.0 kg)',gm:'87.5',eg:'Monster, Water 1',ec:'20 (5,140 steps)',exp:'63',chain:[[7,'Squirtle','Level 16',8,'Wartortle'],[8,'Wartortle','Level 36',9,'Blastoise']],mv:[['Surf','TM'],['Ice Beam','TM'],['Iron Head','Egg']]},
+  {id:8,name:'Wartortle',t:['water'],sp:'Turtle',st:[59,63,80,65,80,58],desc:'Its tail is large and covered with a rich, thick fur. The tail becomes increasingly deeper in color.',h:'3\u2032 03\u2033 (0.99 m)',w:'49.6 lbs (22.5 kg)',gm:'87.5',eg:'Monster, Water 1',ec:'20 (5,140 steps)',exp:'142',chain:[[7,'Squirtle','Level 16',8,'Wartortle'],[8,'Wartortle','Level 36',9,'Blastoise']],mv:[['Surf','TM'],['Ice Beam','TM']]},
+  {id:9,name:'Blastoise',t:['water'],sp:'Shellfish',st:[79,83,100,85,105,78],desc:'The rocket cannons on its shell fire jets of water capable of punching holes through thick steel.',h:'5\u2032 03\u2033 (1.60 m)',w:'188.5 lbs (85.5 kg)',gm:'87.5',eg:'Monster, Water 1',ec:'20 (5,140 steps)',exp:'239',chain:[[7,'Squirtle','Level 16',8,'Wartortle'],[8,'Wartortle','Level 36',9,'Blastoise']],mv:[['Surf','Lv. 42'],['Ice Beam','TM'],['Earthquake','TM']]},
+  {id:25,name:'Pikachu',t:['electric'],sp:'Mouse',st:[35,55,40,50,50,90],desc:'Whenever Pikachu comes across something new, it blasts it with a jolt of electricity. If you come across a blackened berry, it\u2019s evidence that this Pok\u00e9mon mistook the intensity of its charge.',h:'1\u2032 04\u2033 (0.41 m)',w:'13.2 lbs (6.0 kg)',gm:'50',eg:'Fairy, Field',ec:'10 (2,570 steps)',exp:'112',chain:[[172,'Pichu','Friendship',25,'Pikachu'],[25,'Pikachu','Thunder Stone',26,'Raichu']],mv:[['Thunderbolt','Lv. 42'],['Iron Tail','TM'],['Surf','Event']]},
+  {id:94,name:'Gengar',t:['ghost','poison'],sp:'Shadow',st:[60,65,60,130,75,110],desc:'On the night of a full moon, if shadows move on their own and laugh, it must be Gengar\u2019s doing.',h:'4\u2032 11\u2033 (1.50 m)',w:'89.3 lbs (40.5 kg)',gm:'50',eg:'Amorphous',ec:'20 (5,140 steps)',exp:'250',chain:[[92,'Gastly','Level 25',93,'Haunter'],[93,'Haunter','Trade',94,'Gengar']],mv:[['Shadow Ball','Lv. 44'],['Sludge Bomb','Lv. 38'],['Psychic','TM']]},
+  {id:130,name:'Gyarados',t:['water','flying'],sp:'Atrocious',st:[95,125,79,60,100,81],desc:'Once it appears, its rage never settles until it has razed the fields and mountains around it.',h:'21\u2032 04\u2033 (6.50 m)',w:'518.1 lbs (235.0 kg)',gm:'50',eg:'Water 2, Dragon',ec:'5 (1,285 steps)',exp:'189',chain:[[129,'Magikarp','Level 20',130,'Gyarados']],mv:[['Dragon Dance','Lv. 44'],['Surf','TM'],['Iron Head','TM']]},
+  {id:143,name:'Snorlax',t:['normal'],sp:'Sleeping',st:[160,110,65,65,110,30],desc:'What sounds like its cry may actually be its snores or the rumblings of its hungry belly.',h:'6\u2032 11\u2033 (2.11 m)',w:'1014.1 lbs (460.0 kg)',gm:'87.5',eg:'Monster',ec:'40 (10,280 steps)',exp:'189',chain:[[446,'Munchlax','Friendship',143,'Snorlax']],mv:[['Earthquake','TM'],['Close Combat','Lv. 50'],['Ice Beam','TM']]},
+  {id:149,name:'Dragonite',t:['dragon','flying'],sp:'Dragon',st:[91,134,95,100,100,80],desc:'It is said to make its home somewhere in the sea. It guides crews of shipwrecks to shore.',h:'7\u2032 03\u2033 (2.21 m)',w:'463.0 lbs (210.0 kg)',gm:'50',eg:'Water 1, Dragon',ec:'40 (10,280 steps)',exp:'300',chain:[[147,'Dratini','Level 30',148,'Dragonair'],[148,'Dragonair','Level 55',149,'Dragonite']],mv:[['Dragon Dance','Lv. 56'],['Earthquake','TM'],['Ice Beam','TM']]},
+  {id:133,name:'Eevee',t:['normal'],sp:'Evolution',st:[55,55,50,45,65,55],desc:'Its genetic code is irregular. It may mutate if it is exposed to radiation from elemental stones.',h:'1\u2032 00\u2033 (0.30 m)',w:'14.3 lbs (6.5 kg)',gm:'87.5',eg:'Field',ec:'35 (8,995 steps)',exp:'65',chain:[[133,'Eevee','Water Stone',134,'Vaporeon'],[133,'Eevee','Thunder Stone',135,'Jolteon'],[133,'Eevee','Fire Stone',136,'Flareon']],mv:[['Iron Head','Egg'],['Shadow Ball','TM']]},
+  {id:37,name:'Vulpix',t:['fire'],sp:'Fox',st:[38,41,40,50,65,65],desc:'Inside its body burns a flame that never goes out. During the daytime, when the temperatures rise, this Pok\u00e9mon releases flames from its mouth to prevent its body from overheating.',h:'2\u2032 00\u2033 (0.61 m)',w:'21.8 lbs (9.9 kg)',gm:'25',eg:'Field',ec:'20 (5,140 steps)',exp:'60',chain:[[37,'Vulpix','Fire Stone',38,'Ninetales']],mv:[['Flamethrower','Lv. 38'],['Will-O-Wisp','Lv. 29']]},
+  {id:131,name:'Lapras',t:['water','ice'],sp:'Transport',st:[130,85,80,85,95,60],desc:'A gentle soul that can read the minds of people. It can ferry them across the sea on its back.',h:'8\u2032 02\u2033 (2.49 m)',w:'485.0 lbs (220.0 kg)',gm:'50',eg:'Monster, Water 1',ec:'40 (10,280 steps)',exp:'187',chain:[],mv:[['Ice Beam','Lv. 46'],['Surf','Lv. 37'],['Psychic','TM']]}
+];
+
+const FORMS = {
+  3:[{k:'Mega',id:10033,t:['grass','poison'],st:[80,100,123,122,120,80]}],
+  6:[{k:'Mega X',id:10034,t:['fire','dragon'],st:[78,130,111,130,85,100]},{k:'Mega Y',id:10035,t:['fire','flying'],st:[78,104,78,159,115,100]}],
+  9:[{k:'Mega',id:10036,t:['water'],st:[79,103,120,135,115,78]}],
+  94:[{k:'Mega',id:10038,t:['ghost','poison'],st:[60,65,80,170,95,130]}],
+  130:[{k:'Mega',id:10041,t:['water','dark'],st:[95,155,109,70,130,81]}],
+  37:[{k:'Alolan Form',id:10103,t:['ice'],st:[38,41,40,50,65,65],mv:[['Ice Beam','TM'],['Aurora Veil','Lv. 33'],['Moonblast','Egg']],desc:'It lives on snowy mountains, using its breath to freeze the air and form ice crystals it sprays to conceal its tracks. Six of these Pok\u00e9mon will sometimes gather to cool a mountain trail.',chain:[[10103,'Vulpix','Ice Stone',10104,'Ninetales']]}]
+};
+
+const CAP = { wild:['Wild Catch','#3FAE72','\u25CF'], evolve:['Evolve','#5C4EE5','\u2699'], transfer:['Transfer Only','#C58B3C','\u2913'], trade:['Trade / Event','#C05C8E','\u21C4'], fossil:['Revive / Gift','#4A7FBF','\u2726'] };
+
+const LOCDATA = {
+  1:{m:['wild','transfer'],cur:['Scarlet / Violet','Not native \u2014 HOME transfer only'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Lumiose City gift'],['Sun / Moon','Not available']]],['DS Era (Gen 4\u20135)',[['HeartGold','Pallet Town gift'],['Black 2','Castelia City trade']]]]},
+  2:{m:['evolve'],cur:['Scarlet / Violet','Evolve Bulbasaur at Lv. 16'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Bulbasaur']]]]},
+  3:{m:['evolve'],cur:['Scarlet / Violet','Evolve Ivysaur at Lv. 32'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Ivysaur']]]]},
+  4:{m:['wild','transfer'],cur:['Scarlet / Violet','Not native \u2014 HOME transfer only'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Lumiose City gift'],['Sun / Moon','Not available']]],['DS Era (Gen 4\u20135)',[['HeartGold','Pallet Town gift']]]]},
+  5:{m:['evolve'],cur:['Scarlet / Violet','Evolve Charmander at Lv. 16'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Charmander']]]]},
+  6:{m:['evolve'],cur:['Scarlet / Violet','Evolve Charmeleon at Lv. 36'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Charmeleon \u00b7 Mega Stone: Tower of Mastery']]]]},
+  7:{m:['wild','transfer'],cur:['Scarlet / Violet','Not native \u2014 HOME transfer only'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Lumiose City gift']]],['DS Era (Gen 4\u20135)',[['HeartGold','Pallet Town gift']]]]},
+  8:{m:['evolve'],cur:['Scarlet / Violet','Evolve Squirtle at Lv. 16'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Squirtle']]]]},
+  9:{m:['evolve'],cur:['Scarlet / Violet','Evolve Wartortle at Lv. 36'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Wartortle']]]]},
+  25:{m:['wild','evolve'],cur:['Scarlet / Violet','South Province (Area One), Poco Path'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Route 3, Santalune Forest'],['Sun / Moon','Route 1, Hau\u2019oli City']]],['DS Era (Gen 4\u20135)',[['Platinum','Trophy Garden'],['Black 2','Castelia City']]]]},
+  37:{m:['wild'],cur:['Scarlet / Violet','Not native \u2014 HOME transfer only'],eras:[['3DS Era (Gen 6\u20137)',[['Sun / Moon','Mount Lanakila (Alolan Form)'],['X / Y','Route 8']]],['DS Era (Gen 4\u20135)',[['HeartGold','Route 7, Burned Tower']]]]},
+  94:{m:['evolve','trade'],cur:['Scarlet / Violet','Evolve Haunter by trade \u00b7 Tera Raids'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Trade Haunter'],['Sun / Moon','Trade Haunter']]],['DS Era (Gen 4\u20135)',[['Platinum','Old Chateau (Haunter)']]]]},
+  130:{m:['wild','evolve'],cur:['Scarlet / Violet','Casseroya Lake, North Province'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Route 21 (Surf)'],['Sun / Moon','Melemele Sea']]],['DS Era (Gen 4\u20135)',[['HeartGold','Lake of Rage (red)']]]]},
+  131:{m:['wild','transfer'],cur:['Scarlet / Violet','Not native \u2014 HOME transfer only'],eras:[['3DS Era (Gen 6\u20137)',[['Sun / Moon','Route 15 gift']]],['DS Era (Gen 4\u20135)',[['HeartGold','Union Cave (Fri. only)']]]]},
+  133:{m:['wild','trade'],cur:['Scarlet / Violet','South Province (Area Three)'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Route 10 gift'],['Sun / Moon','Route 4']]],['DS Era (Gen 4\u20135)',[['Platinum','Trophy Garden']]]]},
+  143:{m:['wild','evolve'],cur:['Scarlet / Violet','Tera Raid Dens \u00b7 South Province'],eras:[['3DS Era (Gen 6\u20137)',[['Sun / Moon','Route 1 (SOS)']]],['DS Era (Gen 4\u20135)',[['HeartGold','Route 11, Vermilion City']]]]},
+  149:{m:['evolve','wild'],cur:['Scarlet / Violet','Casseroya Lake (rare, Lv. 55+)'],eras:[['3DS Era (Gen 6\u20137)',[['X / Y','Evolve Dragonair']]],['DS Era (Gen 4\u20135)',[['HeartGold','Dragon\u2019s Den (evolve)']]]]}
+};
+
+const EXTRA = { 'Sludge Bomb':['poison','Special',90], 'Synthesis':['grass','Status',0], 'Razor Leaf':['grass','Physical',55],
+  'Sleep Powder':['grass','Status',0], 'Petal Blizzard':['grass','Physical',90], 'Slash':['normal','Physical',70], 'Iron Tail':['steel','Physical',100], 'Aurora Veil':['ice','Status',0], 'Will-O-Wisp':['fire','Status',0] };
+
+const MOVES = [
+  {name:'Flamethrower',t:'fire',cat:'Special',pow:90,acc:100,pp:15,tm:'TM125',prio:'0',target:'Single',desc:'The target is scorched with an intense blast of fire. This may also leave the target with a burn.',users:[[6,'Charizard','Lv. 55'],[59,'Arcanine','TM'],[157,'Typhlosion','Lv. 48'],[38,'Ninetales','TM']]},
+  {name:'Thunderbolt',t:'electric',cat:'Special',pow:90,acc:100,pp:15,tm:'TM126',prio:'0',target:'Single',desc:'A strong electric blast crashes down on the target. This may also leave the target with paralysis.',users:[[25,'Pikachu','Lv. 42'],[145,'Zapdos','TM'],[181,'Ampharos','Lv. 42'],[135,'Jolteon','TM']]},
+  {name:'Close Combat',t:'fighting',cat:'Physical',pow:120,acc:100,pp:5,tm:'TM167',prio:'0',target:'Single',desc:'The user fights the target up close without guarding itself. This also lowers the user\u2019s Defense and Sp. Def.',users:[[68,'Machamp','Egg'],[448,'Lucario','Lv. 57'],[658,'Greninja','TM']]},
+  {name:'Earthquake',t:'ground',cat:'Physical',pow:100,acc:100,pp:10,tm:'TM149',prio:'0',target:'All adjacent',desc:'The user sets off an earthquake that strikes every Pok\u00e9mon around it. Doubles damage against Dig users.',users:[[445,'Garchomp','Lv. 48'],[143,'Snorlax','TM'],[95,'Onix','Lv. 40'],[31,'Nidoqueen','TM']]},
+  {name:'Ice Beam',t:'ice',cat:'Special',pow:90,acc:100,pp:10,tm:'TM135',prio:'0',target:'Single',desc:'The target is struck with an icy-cold beam of energy. This may also leave the target frozen.',users:[[131,'Lapras','Lv. 46'],[91,'Cloyster','TM'],[144,'Articuno','Lv. 50']]},
+  {name:'Shadow Ball',t:'ghost',cat:'Special',pow:80,acc:100,pp:15,tm:'TM114',prio:'0',target:'Single',desc:'The user hurls a shadowy blob at the target. This may also lower the target\u2019s Sp. Def stat.',users:[[94,'Gengar','Lv. 44'],[197,'Umbreon','TM'],[478,'Froslass','Lv. 40']]},
+  {name:'Moonblast',t:'fairy',cat:'Special',pow:95,acc:100,pp:15,tm:'\u2014',prio:'0',target:'Single',desc:'Borrowing the power of the moon, the user attacks the target. This may also lower the target\u2019s Sp. Atk.',users:[[36,'Clefable','Lv. 50'],[282,'Gardevoir','Lv. 52'],[700,'Sylveon','Lv. 45']]},
+  {name:'Leaf Storm',t:'grass',cat:'Special',pow:130,acc:90,pp:5,tm:'\u2014',prio:'0',target:'Single',desc:'A storm of sharp leaves is whipped up. This harshly lowers the user\u2019s Sp. Atk stat.',users:[[3,'Venusaur','Egg'],[497,'Serperior','Lv. 60'],[724,'Decidueye','Lv. 55']]},
+  {name:'Dragon Dance',t:'dragon',cat:'Status',pow:0,acc:0,pp:20,tm:'\u2014',prio:'0',target:'Self',desc:'The user vigorously performs a mystic, powerful dance that raises its Attack and Speed stats.',users:[[130,'Gyarados','Lv. 44'],[149,'Dragonite','Lv. 56'],[373,'Salamence','Egg']]},
+  {name:'Iron Head',t:'steel',cat:'Physical',pow:80,acc:100,pp:15,tm:'TM099',prio:'0',target:'Single',desc:'The user slams the target with its steel-hard head. This may also make the target flinch.',users:[[208,'Steelix','Lv. 42'],[376,'Metagross','TM'],[485,'Heatran','TM']]},
+  {name:'Surf',t:'water',cat:'Special',pow:90,acc:100,pp:15,tm:'TM123',prio:'0',target:'All adjacent',desc:'The user attacks everything around it by swamping its surroundings with a giant wave.',users:[[9,'Blastoise','Lv. 42'],[130,'Gyarados','TM'],[131,'Lapras','Lv. 37']]},
+  {name:'Psychic',t:'psychic',cat:'Special',pow:90,acc:100,pp:10,tm:'TM120',prio:'0',target:'Single',desc:'The target is hit by a strong telekinetic force. This may also lower the target\u2019s Sp. Def stat.',users:[[65,'Alakazam','Lv. 40'],[282,'Gardevoir','TM'],[196,'Espeon','Lv. 42']]}
+];
+
+const ABILITIES = [
+  {name:'Levitate',t:'flying',tag:'Common',short:'Immune to Ground-type moves.',long:'By floating in the air, the Pok\u00e9mon receives full immunity to all Ground-type moves. It also ignores the effects of Spikes, Toxic Spikes, Sticky Web and Arena Trap.',stats:[['48','Pok\u00e9mon'],['Gen 3','Introduced'],['\u2014','Hidden']],users:[[94,'Gengar','Standard'],[92,'Gastly','Standard'],[437,'Bronzong','Standard'],[606,'Beheeyem','Standard']]},
+  {name:'Intimidate',t:'dark',tag:'Common',short:'Lowers the foe\u2019s Attack on entry.',long:'When the Pok\u00e9mon enters battle, it lowers the Attack stat of all opposing Pok\u00e9mon by one stage. Blocked by Clear Body, Hyper Cutter, White Smoke and a Clear Amulet.',stats:[['33','Pok\u00e9mon'],['Gen 3','Introduced'],['4','Hidden']],users:[[130,'Gyarados','Standard'],[59,'Arcanine','Standard'],[295,'Exploud','Hidden'],[675,'Pangoro','Standard']]},
+  {name:'Drought',t:'fire',tag:'Weather',short:'Summons harsh sunlight on entry.',long:'Turns the sunlight harsh for five turns when the Pok\u00e9mon enters battle. Fire moves gain 50% power, Water moves lose 50%, and Solar Beam charges instantly.',stats:[['9','Pok\u00e9mon'],['Gen 3','Introduced'],['3','Hidden']],users:[[383,'Groudon','Standard'],[38,'Ninetales','Hidden'],[851,'Centiskorch','Hidden']]},
+  {name:'Speed Boost',t:'bug',tag:'Snowball',short:'Speed rises at the end of each turn.',long:'Raises the Pok\u00e9mon\u2019s Speed by one stage at the end of every turn it is on the field, up to the usual +6 cap. Resets when the Pok\u00e9mon switches out.',stats:[['7','Pok\u00e9mon'],['Gen 3','Introduced'],['5','Hidden']],users:[[291,'Ninjask','Standard'],[309,'Electrike','Hidden'],[767,'Wimpod','Standard']]},
+  {name:'Regenerator',t:'grass',tag:'Recovery',short:'Restores HP when switching out.',long:'The Pok\u00e9mon restores one third of its maximum HP when it is withdrawn from battle. Works with pivot moves such as U-turn, Volt Switch and Flip Turn.',stats:[['14','Pok\u00e9mon'],['Gen 5','Introduced'],['9','Hidden']],users:[[113,'Chansey','Hidden'],[591,'Amoonguss','Standard'],[195,'Quagsire','Hidden']]},
+  {name:'Sturdy',t:'rock',tag:'Defensive',short:'Survives a KO hit with 1 HP.',long:'If the Pok\u00e9mon is at full HP, any attack that would knock it out leaves it with 1 HP instead. Also grants immunity to OHKO moves such as Fissure.',stats:[['40','Pok\u00e9mon'],['Gen 3','Introduced'],['6','Hidden']],users:[[74,'Geodude','Standard'],[208,'Steelix','Standard'],[597,'Ferroseed','Standard']]},
+  {name:'Adaptability',t:'water',tag:'Offensive',short:'STAB bonus rises to 2\u00d7.',long:'Moves matching the Pok\u00e9mon\u2019s own type deal double damage instead of the usual 1.5\u00d7 same-type attack bonus.',stats:[['11','Pok\u00e9mon'],['Gen 4','Introduced'],['4','Hidden']],users:[[658,'Greninja','Standard'],[133,'Eevee','Standard'],[318,'Carvanha','Standard']]},
+  {name:'Protean',t:'psychic',tag:'Signature',short:'Becomes the type of the move used.',long:'Before attacking, the Pok\u00e9mon changes to the type of the move it is about to use, granting same-type attack bonus on every move. Activates once per switch-in from Gen 9 onward.',stats:[['4','Pok\u00e9mon'],['Gen 6','Introduced'],['2','Hidden']],users:[[656,'Froakie','Hidden'],[658,'Greninja','Hidden'],[862,'Obstagoon','Hidden']]}
+];
+
+const CLASSES = { Common:['#5C4EE5','\u25C6'], Weather:['#E08A3C','\u2600'], Recovery:['#2FA97C','\u271A'], Defensive:['#4A7FBF','\u2756'], Offensive:['#D65A63','\u2726'], Signature:['#8A55C7','\u2605'], Snowball:['#3E9AA8','\u27F3'] };
+
+const REGIONS = ['Kanto','Johto','Hoenn','Sinnoh'];
+const LOCS = {
+  Kanto:[
+    {name:'Viridian Forest',kind:'Forest',color:'#5BC98F',lv:'3-7',x:'22%',y:'34%',items:['Potion','Antidote','Pok\u00e9 Ball'],enc:{Walking:[[10,'Caterpie','40%','3-5','Any'],[13,'Weedle','35%','3-5','Any'],[25,'Pikachu','5%','3-6','Any'],[16,'Pidgey','20%','3-5','Day']],Surf:[],Fishing:[[129,'Magikarp','100%','5-10','Any']]}},
+    {name:'Mt. Moon',kind:'Cave',color:'#BFA967',lv:'6-12',x:'46%',y:'22%',items:['Moon Stone','Escape Rope','TM Rock Slide'],enc:{Walking:[[41,'Zubat','55%','6-10','Any'],[74,'Geodude','30%','7-11','Any'],[35,'Clefairy','10%','8-12','Night'],[46,'Paras','5%','8-10','Any']],Surf:[],Fishing:[[129,'Magikarp','100%','5-10','Any']]}},
+    {name:'Cerulean Cave',kind:'Deep Cave',color:'#7B6BB5',lv:'46-70',x:'68%',y:'46%',items:['Full Restore','Ultra Ball','PP Up'],enc:{Walking:[[42,'Golbat','30%','46-55','Any'],[47,'Parasect','20%','46-52','Any'],[64,'Kadabra','20%','48-56','Any'],[105,'Marowak','15%','50-58','Night']],Surf:[[55,'Golduck','60%','50-60','Any'],[130,'Gyarados','15%','52-62','Any']],Fishing:[[130,'Gyarados','40%','55-65','Any']]}},
+    {name:'Route 10',kind:'Route',color:'#F0C33C',lv:'12-18',x:'56%',y:'68%',items:['Super Potion','Great Ball'],enc:{Walking:[[100,'Voltorb','25%','12-16','Any'],[81,'Magnemite','30%','12-18','Any'],[21,'Spearow','25%','12-15','Day'],[66,'Machop','20%','13-17','Any']],Surf:[[54,'Psyduck','80%','15-20','Any']],Fishing:[[118,'Goldeen','60%','12-18','Any']]}},
+    {name:'Seafoam Islands',kind:'Sea Cave',color:'#5BA7F7',lv:'28-40',x:'32%',y:'76%',items:['Ice Heal','Nugget','TM Blizzard'],enc:{Walking:[[86,'Seel','35%','28-34','Any'],[41,'Zubat','30%','28-32','Any'],[54,'Psyduck','20%','30-36','Any']],Surf:[[87,'Dewgong','50%','32-40','Any'],[80,'Slowbro','30%','30-38','Any']],Fishing:[[116,'Horsea','55%','28-35','Any']]}},
+    {name:'Safari Zone',kind:'Reserve',color:'#E8685D',lv:'22-32',x:'80%',y:'62%',items:['Safari Ball','Leaf Stone','Protein'],enc:{Walking:[[111,'Rhyhorn','15%','25-30','Any'],[123,'Scyther','4%','23-28','Day'],[128,'Tauros','8%','25-32','Any'],[102,'Exeggcute','25%','22-27','Any']],Surf:[[54,'Psyduck','60%','22-28','Any']],Fishing:[[118,'Goldeen','70%','20-28','Any']]}}
+  ],
+  Johto:[
+    {name:'Ilex Forest',kind:'Forest',color:'#5BC98F',lv:'5-9',x:'30%',y:'40%',items:['Revive','X Attack'],enc:{Walking:[[10,'Caterpie','30%','5-7','Any'],[163,'Hoothoot','30%','5-8','Night'],[46,'Paras','25%','6-9','Any']],Surf:[[194,'Wooper','80%','5-10','Any']],Fishing:[[129,'Magikarp','100%','5-10','Any']]}},
+    {name:'Union Cave',kind:'Cave',color:'#BFA967',lv:'6-14',x:'52%',y:'30%',items:['X Defend','Awakening'],enc:{Walking:[[41,'Zubat','45%','6-10','Any'],[74,'Geodude','30%','6-11','Any'],[95,'Onix','10%','8-12','Any']],Surf:[[194,'Wooper','75%','10-15','Any']],Fishing:[[118,'Goldeen','60%','10-16','Any']]}},
+    {name:'Lake of Rage',kind:'Lake',color:'#5BA7F7',lv:'15-30',x:'66%',y:'58%',items:['Red Scale','Elixir'],enc:{Walking:[[161,'Sentret','35%','15-18','Day'],[19,'Rattata','30%','15-18','Night']],Surf:[[130,'Gyarados','70%','15-30','Any'],[129,'Magikarp','30%','15-25','Any']],Fishing:[[129,'Magikarp','80%','15-22','Any']]}}
+  ],
+  Hoenn:[
+    {name:'Petalburg Woods',kind:'Forest',color:'#5BC98F',lv:'5-8',x:'26%',y:'44%',items:['Great Ball','Ether'],enc:{Walking:[[265,'Wurmple','40%','5-6','Any'],[261,'Poochyena','25%','5-7','Any'],[285,'Shroomish','20%','5-8','Any']],Surf:[],Fishing:[[129,'Magikarp','100%','5-10','Any']]}},
+    {name:'Meteor Falls',kind:'Waterfall Cave',color:'#7B6BB5',lv:'16-40',x:'58%',y:'26%',items:['Moon Stone','TM Dragon Claw'],enc:{Walking:[[41,'Zubat','60%','16-20','Any'],[371,'Bagon','5%','25-35','Any'],[338,'Solrock','20%','18-24','Day']],Surf:[[42,'Golbat','70%','25-35','Any']],Fishing:[[129,'Magikarp','70%','20-30','Any']]}},
+    {name:'Route 119',kind:'Rainforest Route',color:'#E8685D',lv:'24-30',x:'72%',y:'64%',items:['Hyper Potion','Zinc'],enc:{Walking:[[43,'Oddish','30%','24-26','Night'],[357,'Tropius','10%','26-28','Any'],[352,'Kecleon','5%','28-30','Any']],Surf:[[183,'Marill','60%','20-30','Any']],Fishing:[[318,'Carvanha','65%','25-30','Any']]}}
+  ],
+  Sinnoh:[
+    {name:'Eterna Forest',kind:'Forest',color:'#5BC98F',lv:'8-12',x:'34%',y:'36%',items:['Dusk Ball','Super Potion'],enc:{Walking:[[406,'Budew','30%','9-11','Day'],[265,'Wurmple','25%','8-10','Any'],[427,'Buneary','20%','8-12','Any']],Surf:[],Fishing:[[129,'Magikarp','100%','5-12','Any']]}},
+    {name:'Mt. Coronet',kind:'Mountain',color:'#8FA0B5',lv:'14-45',x:'56%',y:'40%',items:['Rare Candy','Escape Rope','TM Earthquake'],enc:{Walking:[[41,'Zubat','40%','14-18','Any'],[74,'Geodude','30%','14-20','Any'],[433,'Chingling','10%','16-22','Night']],Surf:[[55,'Golduck','60%','20-30','Any']],Fishing:[[129,'Magikarp','80%','15-25','Any']]}},
+    {name:'Lake Verity',kind:'Lake',color:'#5BA7F7',lv:'20-28',x:'24%',y:'70%',items:['Water Stone','Full Heal'],enc:{Walking:[[399,'Bidoof','45%','20-23','Any'],[403,'Shinx','30%','20-24','Any']],Surf:[[418,'Buizel','70%','20-28','Any'],[129,'Magikarp','30%','20-25','Any']],Fishing:[[456,'Finneon','60%','22-28','Any']]}}
+  ]
+};
+
+const ITEMS = [
+  {name:'Pok\u00e9 Ball',s:'poke-ball',cat:'Ball',price:'\u20bd200',desc:'A device for catching wild Pok\u00e9mon. It is thrown like a ball at the target and comfortably encapsulates its target.'},
+  {name:'Ultra Ball',s:'ultra-ball',cat:'Ball',price:'\u20bd800',desc:'An ultra-high-performance Pok\u00e9 Ball that provides a higher catch rate than a Great Ball.'},
+  {name:'Master Ball',s:'master-ball',cat:'Ball',price:'\u2014',desc:'The best Pok\u00e9 Ball with the ultimate level of performance. It will catch any wild Pok\u00e9mon without fail.'},
+  {name:'Rare Candy',s:'rare-candy',cat:'Medicine',price:'\u20bd4800',desc:'A candy that is packed with energy. It raises the level of a single Pok\u00e9mon by one.'},
+  {name:'Leftovers',s:'leftovers',cat:'Held',price:'\u20bd4000',desc:'An item to be held by a Pok\u00e9mon. The holder\u2019s HP is slowly but steadily restored throughout every battle.'},
+  {name:'Potion',s:'potion',cat:'Medicine',price:'\u20bd200',desc:'A spray-type wound medicine. It restores the HP of one Pok\u00e9mon by just 20 points.'},
+  {name:'Revive',s:'revive',cat:'Medicine',price:'\u20bd2000',desc:'A medicine that revives a fainted Pok\u00e9mon and restores half of its maximum HP.'},
+  {name:'Choice Band',s:'choice-band',cat:'Held',price:'\u20bd4000',desc:'An item to be held by a Pok\u00e9mon. This curious headband boosts Attack but only allows the use of one move.'}
+];
+
+const tint = (hex, a) => {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba(' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(',') + ',' + a + ')';
+};
+
+class Component extends DCLogic {
+  state = { stack:[{s:'home'}], anim:'scrIn', q:'', chip:'All', cat:'All', favs:[], onlyFav:false, fab:false, picker:null, dq:'', dchip:'All', dfav:[], donlyFav:false, dfab:false, dpicker:false, pkTab:'About', pkForm:0, era:null, region:'Kanto', method:'Walking', sel:'fire', mode:'attack', sheet:null };
+  cur(){ return this.state.stack[this.state.stack.length-1]; }
+  go(s,p){ this.setState(st => ({ stack: st.stack.concat([{s,p}]), anim:'scrIn', sheet:null, pkForm:0, era:null, pkTab:'About' })); }
+  back(){ this.setState(st => ({ stack: st.stack.length>1 ? st.stack.slice(0,-1) : st.stack, anim:'scrBack', sheet:null })); }
+
+  renderVals(){
+    const st = this.state, cur = this.cur(), s = cur.s;
+    const d = i => (i*0.055).toFixed(2) + 's';
+    const tiles = [
+      ['Pokedex','#4ECDA5','dex'], ['Moves','#F2645E','moves'], ['Abilities','#56A7F4','abilities'],
+      ['Items','#FFC84A','items'], ['Locations','#7A5BC9','locations'], ['Type Charts','#C77B6B','types']
+    ].map((t,i) => ({ label:t[0], color:t[1], delay:d(i+2), go:()=>this.go(t[2]) }));
+
+    const v = { screenAnim: st.anim, back: ()=>this.back(), tiles,
+      isHome:s==='home', isDex:s==='dex', isDexDetail:s==='pk', isMoves:s==='moves', isMove:s==='move', isAbilities:s==='abilities',
+      isAbility:s==='ability', isLocations:s==='locations', isLocation:s==='location', isTypes:s==='types', isItems:s==='items',
+      news:[
+        {title:'Pok\u00e9mon Rumble Rush arrives on mobile', date:'15 May 2026', bg:URLB(SP(143)), tint:'#FFE9C7', delay:'.34s'},
+        {title:'Detective Pikachu sleuths into Pok\u00e9mon GO', date:'02 May 2026', bg:URLB(SP(25)), tint:'#E4EEFB', delay:'.4s'}
+      ],
+      legend:[['Pokedex','#4ECDA5','dex'],['Moves','#F2645E','moves'],['Abilities','#56A7F4','abilities'],['Locations','#7A5BC9','locations'],['Type Chart','#C77B6B','types'],['Items','#FFC84A','items']]
+        .map(l=>({label:l[0],color:l[1],go:()=>this.go(l[2])}))
+    };
+
+    if (s === 'dex') {
+      v.dq = st.dq;
+      v.onDq = e => this.setState({ dq: e.target.value });
+      const list = DEX.filter(p => (st.dchip==='All'||p.t.indexOf(st.dchip)>-1) && (!st.donlyFav||st.dfav.indexOf(p.id)>-1) && p.name.toLowerCase().includes(st.dq.toLowerCase()));
+      v.dexList = list.map((p,i)=>({ name:p.name, num:'#'+String(p.id).padStart(3,'0'), color:T[p.t[0]][1], shadow:'0 16px 30px -20px '+tint(T[p.t[0]][1],.95),
+        bg:URLB(SP(p.id)), types:p.t.map(k=>({name:T[k][0]})), delay:d(i), open:()=>this.go('pk',p.id) }));
+      v.dexCount = list.length + ' Pokémon';
+      const dl = st.donlyFav ? 'Favourites' : st.dchip!=='All' ? T[st.dchip][0] : '';
+      v.dexHasFilter = !!dl; v.dexFilterLabel = dl;
+      v.dexFilterColor = st.dchip!=='All' ? T[st.dchip][1] : '#5C4EE5';
+      v.dexFilterTint = tint(v.dexFilterColor,.14);
+      v.dexClear = ()=>this.setState({dchip:'All',donlyFav:false});
+      v.dexFabOpen = st.dfab; v.dexFabIcon = st.dfab?'\u2715':'\u2261'; v.dexFabSpin = st.dfab?'rotate(90deg)':'rotate(0deg)';
+      v.dexToggleFab = ()=>this.setState(x=>({dfab:!x.dfab}));
+      v.dexCloseFab = ()=>this.setState({dfab:false});
+      v.dexFabItems = [
+        { label: st.donlyFav?'All Pokémon':'Favourite Pokémon', icon:'\u2665', color:'#5C4EE5', tint:'#ECE9FD', delay:d(1), act:()=>this.setState(x=>({donlyFav:!x.donlyFav,dfab:false})) },
+        { label:'Filter by type', icon:'\u25C6', color:'#E8685D', tint:'#FDE8E6', delay:d(0), act:()=>this.setState({dpicker:true,dfab:false}) }
+      ];
+      v.dexPickerOpen = st.dpicker;
+      v.dexClosePicker = ()=>this.setState({dpicker:false});
+      if (st.dpicker) {
+        const used = ORDER.filter(k => DEX.some(p=>p.t.indexOf(k)>-1));
+        v.dexPickerItems = [{k:'All',label:'All types'}].concat(used.map(k=>({k:k,label:T[k][0]}))).map((o,i)=>{
+          const col = o.k==='All'?'#2b2f45':T[o.k][1], on = st.dchip===o.k;
+          return { label:o.label, dot:col, bg:on?tint(col,.2):'#f6f7fb', fg:on?col:'#6f7490', delay:d(i), pick:()=>this.setState({dchip:o.k,dpicker:false}) };
+        });
+      }
+    }
+    if (s === 'pk') {
+      const base = DEX.find(x=>x.id===cur.p) || DEX[0];
+      const variants = [{k:'Standard',id:base.id,t:base.t,st:base.st,mv:base.mv}].concat((FORMS[base.id]||[]).map(fo=>Object.assign({}, fo, {mv: fo.mv || base.mv})));
+      const fi = Math.min(st.pkForm, variants.length-1), form = variants[fi];
+      const p = Object.assign({}, base, { t:form.t, st:form.st, mv:form.mv, desc: form.desc || base.desc, chain: form.chain || base.chain });
+      v.hasForms = variants.length > 1;
+      v.formPills = variants.map((fo,i)=>{
+        const on = i===fi, col = T[fo.t[0]][1];
+        return { label:fo.k, bg: on?tint(col,.16):'#fff', fg: on?col:'#9095ad', border: on?col:'#eceef5', pick:()=>this.setState({pkForm:i}) };
+      });
+      const names = ['Hp','Attack','Defense','Sp. Atk','Sp. Def','Speed'];
+      const total = p.st.reduce((a,b)=>a+b,0);
+      const barColor = x => x >= 100 ? '#4CC48B' : x >= 60 ? '#F0B247' : '#E8685D';
+      const defs = ORDER.map((k,i)=>{
+        let m = 1;
+        p.t.forEach(dt => { const row = CHART[k]; if (row && row[dt] !== undefined) m *= row[dt]; });
+        const col = m > 1 ? '#E8685D' : (m < 1 && m > 0) ? '#4CC48B' : m === 0 ? '#6E6059' : '#9FA19F';
+        return { name:T[k][0], mult:'x'+(m===.25?'0.25':m===.5?'0.5':String(m)), bg:tint(col, m===1?.08:.16), fg: m===1?'#8b8fa6':col, delay:d(i) };
+      });
+      v.pk = {
+        name:p.name, num:'#'+String(p.id).padStart(3,'0'), sp:p.sp+' Pokémon', color:T[p.t[0]][1], tint:tint(T[p.t[0]][1],.12), bg:URLB(SP(form.id)),
+        types:p.t.map(k=>({name:T[k][0]})), desc:p.desc, h:p.h, w:p.w, gm:p.gm, gf:(100-parseFloat(p.gm)).toFixed(1), eg:p.eg, ec:p.ec, exp:p.exp,
+        favIcon: st.dfav.indexOf(p.id)>-1?'\u2665':'\u2661',
+        toggleFav: ()=>this.setState(x=>({dfav: x.dfav.indexOf(p.id)>-1 ? x.dfav.filter(n=>n!==p.id) : x.dfav.concat([p.id])})),
+        stats: names.map((n,i)=>({ k:n, v:p.st[i], pct:Math.min(100,p.st[i]/1.8)+'%', color:barColor(p.st[i]), delay:d(i) }))
+          .concat([{ k:'Total', v:total, pct:Math.min(100,total/6)+'%', color:'#5C4EE5', delay:d(6) }]),
+        defenses: defs,
+        chain: p.chain.map((c,i)=>({ a:c[1], b:c[4], how:c[2], bgA:URLB(SP(c[0])), bgB:URLB(SP(c[3])), delay:d(i),
+          openA: ()=>{ if (DEX.some(x=>x.id===c[0])) this.go('pk',c[0]); }, openB: ()=>{ if (DEX.some(x=>x.id===c[3])) this.go('pk',c[3]); } })),
+        moves: p.mv.map((mm,i)=>{
+          const src = MOVES.find(x=>x.name===mm[0]);
+          const ex = EXTRA[mm[0]];
+          const tk = src ? src.t : ex ? ex[0] : null;
+          const cat = src ? src.cat : ex ? ex[1] : '';
+          const pow = src ? src.pow : ex ? ex[2] : null;
+          return { name:mm[0], how:mm[1], color: tk?T[tk][1]:'#B6BAC9', meta: tk ? T[tk][0]+' \u00b7 '+cat : 'Move data pending',
+            powerTxt: pow ? pow + ' pow' : '', delay:d(i), open: ()=>{ if (src) this.go('move',src.name); } };
+        })
+      };
+      const ch = p.chain || [];
+      v.hasEvo = ch.length > 0;
+      const node = (id,name,how,i)=>({ name:name, how:how, arrow: i>0, bg:URLB(SP(id)), delay:d(i),
+        open: ()=>{ if (DEX.some(x=>x.id===id)) this.go('pk', id); } });
+      v.evoLinear = false; v.evoBranched = false;
+      if (ch.length) {
+        const linear = ch.every((c,i)=> i===0 || c[0]===ch[i-1][3]);
+        if (linear) {
+          v.evoLinear = true;
+          v.evoNodes = [node(ch[0][0], ch[0][1], null, 0)].concat(ch.map((c,i)=>node(c[3], c[4], c[2], i+1)));
+        } else {
+          v.evoBranched = true;
+          v.evoBase = node(ch[0][0], ch[0][1], null, 0);
+          v.evoBranches = ch.map((c,i)=>node(c[3], c[4], c[2], i+1));
+        }
+      }
+      const L = LOCDATA[base.id];
+      if (L) {
+        v.capBadges = L.m.map((k,i)=>({ label:CAP[k][0], color:CAP[k][1], bg:tint(CAP[k][1],.13), icon:CAP[k][2], delay:d(i) }));
+        v.curGame = L.cur[0]; v.curPlace = L.cur[1];
+        v.eras = L.eras.map((e,i)=>({ label:e[0], open: st.era===e[0], caret: st.era===e[0]?'rotate(180deg)':'rotate(0deg)', delay:d(i),
+          rows: e[1].map(r=>({ game:r[0], place:r[1] })),
+          toggle: ()=>this.setState(x=>({ era: x.era===e[0] ? null : e[0] })) }));
+      } else {
+        v.capBadges = [{ label:CAP.transfer[0], color:CAP.transfer[1], bg:tint(CAP.transfer[1],.13), icon:CAP.transfer[2], delay:'0s' }];
+        v.curGame = 'Scarlet / Violet'; v.curPlace = 'No encounter data recorded'; v.eras = [];
+      }
+      if (st.pkTab === 'Evolution') st.pkTab = 'About';
+      v.pkTabs = ['About','Base Stats','Location','Moves'].map(t=>({ name:t, on: st.pkTab===t, weight: st.pkTab===t?'600':'500', color: st.pkTab===t?'#2b2f45':'#b3b7c9', pick:()=>this.setState({pkTab:t}) }));
+      v.tabAbout = st.pkTab==='About'; v.tabStats = st.pkTab==='Base Stats'; v.tabLoc = st.pkTab==='Location'; v.tabMoves = st.pkTab==='Moves';
+    }
+    if (s === 'moves') {
+      v.q = st.q;
+      v.onQ = e => this.setState({ q: e.target.value });
+      const list = MOVES.filter(m =>
+        (st.chip==='All'||m.t===st.chip) && (st.cat==='All'||m.cat===st.cat) &&
+        (!st.onlyFav || st.favs.indexOf(m.name)>-1) &&
+        m.name.toLowerCase().includes(st.q.toLowerCase()));
+      v.moveList = list.map((m,i)=>({ name:m.name, color:T[m.t][1], shadow:'0 16px 30px -20px '+tint(T[m.t][1],.95), typeName:T[m.t][0], cat:m.cat,
+        fav: st.favs.indexOf(m.name)>-1, powerTxt: m.pow?String(m.pow):'\u2014', delay:d(i), open:()=>this.go('move',m.name) }));
+      v.resultLabel = list.length + (list.length===1?' move':' moves');
+      const fl = st.onlyFav ? 'Favourites' : st.chip!=='All' ? T[st.chip][0] : st.cat!=='All' ? st.cat : '';
+      v.hasFilter = !!fl; v.filterLabel = fl;
+      v.filterColor = st.chip!=='All' ? T[st.chip][1] : '#5C4EE5';
+      v.filterTint = tint(v.filterColor, .14);
+      v.clearFilters = ()=>this.setState({chip:'All',cat:'All',onlyFav:false});
+      v.fabOpen = st.fab;
+      v.fabIcon = st.fab ? '\u2715' : '\u2261';
+      v.fabSpin = st.fab ? 'rotate(90deg)' : 'rotate(0deg)';
+      v.toggleFab = ()=>this.setState(x=>({fab:!x.fab}));
+      v.closeFab = ()=>this.setState({fab:false});
+      v.fabItems = [
+        { label: st.onlyFav?'All moves':'Favourite moves', icon:'\u2665', color:'#5C4EE5', tint:'#ECE9FD', delay:d(2), act:()=>this.setState(x=>({onlyFav:!x.onlyFav,fab:false})) },
+        { label:'Filter by type', icon:'\u25C6', color:'#E8685D', tint:'#FDE8E6', delay:d(1), act:()=>this.setState({picker:'type',fab:false}) },
+        { label:'Damage class', icon:'\u26A1', color:'#D79B4A', tint:'#FBEEDA', delay:d(0), act:()=>this.setState({picker:'cat',fab:false}) }
+      ];
+      v.pickerOpen = st.picker !== null;
+      v.closePicker = ()=>this.setState({picker:null});
+      if (st.picker === 'type') {
+        v.pickerTitle = 'Filter by type';
+        const used = ORDER.filter(k => MOVES.some(m=>m.t===k));
+        v.pickerItems = [{k:'All',label:'All types'}].concat(used.map(k=>({k,label:T[k][0]}))).map((o,i)=>{
+          const col = o.k==='All' ? '#2b2f45' : T[o.k][1], on = st.chip===o.k;
+          return { label:o.label, dot:col, bg: on?tint(col,.2):'#f6f7fb', fg: on?col:'#6f7490', delay:d(i), pick:()=>this.setState({chip:o.k,picker:null}) };
+        });
+      } else if (st.picker === 'cat') {
+        v.pickerTitle = 'Damage class';
+        v.pickerItems = ['All','Physical','Special','Status'].map((c,i)=>{
+          const col = c==='Physical'?'#E8685D':c==='Special'?'#5BA7F7':c==='Status'?'#9FA19F':'#2b2f45', on = st.cat===c;
+          return { label: c==='All'?'All classes':c, dot:col, bg:on?tint(col,.2):'#f6f7fb', fg:on?col:'#6f7490', delay:d(i), pick:()=>this.setState({cat:c,picker:null}) };
+        });
+      }
+    }
+    if (s === 'move') {
+      const m = MOVES.find(x=>x.name===cur.p) || MOVES[0];
+      v.mv = { favIcon: st.favs.indexOf(m.name)>-1 ? '\u2665' : '\u2661', toggleFav: ()=>this.setState(x=>({favs: x.favs.indexOf(m.name)>-1 ? x.favs.filter(n=>n!==m.name) : x.favs.concat([m.name])})), name:m.name, color:T[m.t][1], typeName:T[m.t][0], cat:m.cat, tm:m.tm==='\u2014'?'No TM':m.tm, desc:m.desc, target:m.target, prio:m.prio,
+        bars:[ {label:'Power', val:m.pow?m.pow:'\u2014', pct:(m.pow?Math.min(100,m.pow/1.5):0)+'%', delay:'.2s'},
+               {label:'Accuracy', val:m.acc?m.acc+'%':'\u2014', pct:(m.acc||0)+'%', delay:'.28s'},
+               {label:'PP', val:m.pp, pct:Math.min(100,m.pp*4)+'%', delay:'.36s'} ],
+        users:m.users.map((u,i)=>({ bg:URLB(SP(u[0])), name:u[1], how:u[2], delay:d(i+5) })) };
+    }
+    if (s === 'abilities') {
+      v.abilityList = ABILITIES.map((a,i)=>({ name:a.name, tag:a.tag, short:a.short, icon:CLASSES[a.tag][1], color:CLASSES[a.tag][0], tint:tint(CLASSES[a.tag][0],.13), delay:d(i), open:()=>this.go('ability',a.name) }));
+    }
+    if (s === 'ability') {
+      const a = ABILITIES.find(x=>x.name===cur.p) || ABILITIES[0];
+      v.ab = { name:a.name, short:a.short, long:a.long, color:CLASSES[a.tag][0],
+        stats:a.stats.map(x=>({v:x[0],k:x[1]})),
+        users:a.users.map((u,i)=>({ bg:URLB(SP(u[0])), name:u[1], how:u[2], tint:tint(CLASSES[a.tag][0],.12), delay:d(i+4) })) };
+    }
+    if (s === 'locations') {
+      const list = LOCS[st.region];
+      v.regionName = st.region; v.locCount = list.length;
+      v.regions = REGIONS.map((r,i)=>({ name:r, delay:d(i), bg: st.region===r?'#2b2f45':'#fff', fg: st.region===r?'#fff':'#8b8fa6', pick:()=>this.setState({region:r}) }));
+      v.pins = list.map((l,i)=>({ x:l.x, y:l.y, color:l.color, delay:d(i+2), open:()=>this.go('location',l.name) }));
+      v.locationList = list.map((l,i)=>({ name:l.name, kind:l.kind, tint:tint(l.color,.35), count:(l.enc.Walking.length+l.enc.Surf.length+l.enc.Fishing.length), delay:d(i), open:()=>this.go('location',l.name) }));
+    }
+    if (s === 'location') {
+      const l = (LOCS[st.region].find(x=>x.name===cur.p)) || LOCS[st.region][0];
+      v.loc = { name:l.name, kind:l.kind, color:l.color, lvRange:l.lv, items:l.items.map(n=>({name:n})) };
+      v.methods = ['Walking','Surf','Fishing'].map(m=>({ name:m, bg: st.method===m?l.color:'#fff', fg: st.method===m?'#fff':'#8b8fa6', pick:()=>this.setState({method:m}) }));
+      const list = l.enc[st.method] || [];
+      v.encounters = list.map((e,i)=>({ bg:URLB(SP(e[0])), name:e[1], rate:e[2], lv:e[3], time:e[4], tint:tint(l.color,.16), delay:d(i+2) }));
+    }
+    if (s === 'types') {
+      const sel = st.sel, atk = st.mode==='attack';
+      const dim = k => (sel===k ? 1 : .32);
+      v.typeCols = ORDER.map((k,i)=>({ name:T[k][0], color:T[k][1], op: dim(k), delay:d(i), pick:()=>this.setState({sel:k}) }));
+      v.typeRows = ORDER.map((k,i)=>({ name:T[k][0], color:T[k][1], op: dim(k), delay:d(i), pick:()=>this.setState({sel:k}),
+        cells: ORDER.map(j=>{
+          const m = (CHART[k] && CHART[k][j] !== undefined) ? CHART[k][j] : 1;
+          const on = (k===sel || j===sel);
+          const bg = m===2 ? '#d7f3e6' : m===.5 ? '#fde3d5' : m===0 ? '#e3e5ee' : '#f8f9fc';
+          const fg = m===2 ? '#1f9d6f' : m===.5 ? '#d9703f' : m===0 ? '#71768e' : '#eceef5';
+          return { txt: m===2?'2':m===.5?'\u00bd':m===0?'0':'\u00b7', bg, fg, op: on?1:.42 };
+        }) }));
+      const rel = {};
+      ORDER.forEach(k=>{
+        const m = atk ? ((CHART[sel]&&CHART[sel][k])!==undefined?CHART[sel][k]:1)
+                      : ((CHART[k]&&CHART[k][sel])!==undefined?CHART[k][sel]:1);
+        (rel[m] = rel[m] || []).push(k);
+      });
+      const mk = (mult,label) => {
+        const items = (rel[mult]||[]).map((k,i)=>({ name:T[k][0], color:T[k][1], delay:d(i+1) }));
+        return { label, items, empty: items.length===0 };
+      };
+      v.groups = atk
+        ? [ Object.assign(mk(2,'SUPER EFFECTIVE AGAINST'),{delay:'.1s'}), Object.assign(mk(.5,'NOT VERY EFFECTIVE AGAINST'),{delay:'.16s'}), Object.assign(mk(0,'NO EFFECT ON'),{delay:'.22s'}) ]
+        : [ Object.assign(mk(2,'WEAK TO'),{delay:'.1s'}), Object.assign(mk(.5,'RESISTS'),{delay:'.16s'}), Object.assign(mk(0,'IMMUNE TO'),{delay:'.22s'}) ];
+      v.sel = { name:T[sel][0], color:T[sel][1] };
+      v.modeLabel = atk ? 'When attacking' : 'When defending';
+      v.atkBg = atk?'#2b2f45':'#fff'; v.atkFg = atk?'#fff':'#8b8fa6';
+      v.defBg = !atk?'#2b2f45':'#fff'; v.defFg = !atk?'#fff':'#8b8fa6';
+      v.setAtk = ()=>this.setState({mode:'attack'}); v.setDef = ()=>this.setState({mode:'defend'});
+    }
+    if (s === 'items') {
+      const tints = ['#FFE3E1','#E2ECFD','#E3F6EC','#FFF1D6','#EFE6FB','#FDE7F3','#E5F4F6','#F0F1F8'];
+      v.itemList = ITEMS.map((it,i)=>({ name:it.name, cat:it.cat, bg:URLB(ITEM(it.s)), tint:tints[i%tints.length], delay:d(i), open:()=>this.setState({sheet:i}) }));
+      v.sheetOpen = st.sheet !== null;
+      v.closeSheet = ()=>this.setState({sheet:null});
+      if (st.sheet !== null) {
+        const it = ITEMS[st.sheet];
+        v.sheet = { name:it.name, cat:it.cat, price:it.price, desc:it.desc, bg:URLB(ITEM(it.s)), tint:tints[st.sheet%tints.length] };
+      }
+    }
+    return v;
+  }
+}
+</script>
+</body>
+</html>

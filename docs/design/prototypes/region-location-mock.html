@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Regions &amp; locations — mock</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e7e9f1;font-family:Poppins,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#2b2f45}
+  .stage{display:flex;gap:28px;align-items:flex-start;justify-content:center;padding:28px 18px 56px;flex-wrap:wrap}
+  .phone{width:360px;height:748px;background:#fff;border-radius:38px;overflow:hidden;position:relative;
+         box-shadow:0 40px 90px -40px rgba(40,44,80,.6),0 0 0 9px #1a1d2b;flex:0 0 auto}
+  .scroll{position:absolute;inset:0;overflow-y:auto}
+  .scroll::-webkit-scrollbar{width:0}
+
+  .hd{position:relative;padding:44px 20px 18px;border-radius:0 0 26px 26px;overflow:hidden}
+  .hd .bk{position:absolute;left:16px;top:46px;width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.24);
+          color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
+  .hd .t{color:#fff;font-size:22px;font-weight:600;margin-top:2px}
+  .hd .s{color:rgba(255,255,255,.82);font-size:11px;font-weight:600;margin-top:3px}
+  .hd .jp{position:absolute;right:18px;top:52px;color:rgba(255,255,255,.5);font-size:26px;font-weight:700}
+  .hd.ind{padding-left:56px}
+  /* decorative abstract band, not a real map */
+  .hd .deco{position:absolute;right:-30px;bottom:-46px;width:190px;height:190px;border-radius:50%;
+            background:rgba(255,255,255,.09)}
+  .hd .deco2{position:absolute;right:36px;bottom:-74px;width:150px;height:150px;border-radius:50%;
+             background:rgba(255,255,255,.07)}
+
+  .tabs{display:flex;gap:20px;padding:13px 20px 0;border-bottom:1.5px solid #f0f2f8}
+  .tab{font-size:12px;font-weight:600;color:#b0b4c6;padding-bottom:10px;cursor:pointer}
+  .tab.on{color:#2b2f45;border-bottom:2.5px solid #2b2f45}
+
+  .body{padding:16px 16px 40px}
+  .sect{font-size:9px;font-weight:700;letter-spacing:.09em;color:#b0b4c6;margin:16px 0 9px 2px}
+  .sect:first-child{margin-top:0}
+
+  /* region list */
+  .rcard{border-radius:17px;padding:14px 15px;margin-bottom:9px;color:#fff;cursor:pointer;position:relative;
+         overflow:hidden;animation:rise .42s both}
+  .rcard .rn{font-size:15px;font-weight:600}
+  .rcard .rs{font-size:10px;opacity:.85;margin-top:3px;font-weight:500}
+  .rcard .rj{position:absolute;right:14px;top:12px;font-size:19px;font-weight:700;opacity:.32}
+  .rcard .rb{position:absolute;right:-18px;bottom:-34px;width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.12)}
+
+  /* region list — mascot grid */
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mcard{position:relative;border-radius:18px;padding:74px 12px 13px;color:#fff;cursor:pointer;overflow:hidden;
+         animation:pop .44s cubic-bezier(.22,.9,.24,1) both}
+  .mcard .mart{position:absolute;background-size:contain;background-repeat:no-repeat;background-position:center;
+               filter:drop-shadow(0 8px 12px rgba(0,0,0,.32));animation:floaty 5s ease-in-out infinite}
+  .mcard .mart.solo{right:-8px;top:2px;width:92px;height:92px}
+  .mcard .mart.a{right:22px;top:4px;width:74px;height:74px;z-index:2}
+  .mcard .mart.b{right:-14px;top:26px;width:66px;height:66px;opacity:.95;z-index:1}
+  .mcard .mglow{position:absolute;right:-24px;top:-20px;width:120px;height:120px;border-radius:50%;
+                background:rgba(255,255,255,.16)}
+  .mcard .mjp{position:absolute;left:12px;top:11px;font-size:12px;font-weight:700;opacity:.45}
+  .mcard .mn{font-size:15px;font-weight:600;position:relative}
+  .mcard .ms{font-size:9.5px;opacity:.85;margin-top:2px;font-weight:500;position:relative}
+
+  /* region list — starter trio */
+  .scard{display:flex;align-items:center;gap:11px;background:#fff;border:1.5px solid #f0f2f8;border-radius:16px;
+         padding:11px 13px 11px 0;margin-bottom:8px;cursor:pointer;position:relative;overflow:hidden;
+         animation:rise .4s both}
+  .scard .sband{position:absolute;left:0;top:0;bottom:0;width:5px}
+  .scard .strio{display:flex;align-items:center;margin-left:16px}
+  .scard .stri{width:38px;height:38px;background-size:contain;background-repeat:no-repeat;background-position:center;
+               border-radius:50%;background-color:#f7f8fc;position:relative}
+  .scard .sn{font-size:13px;font-weight:600}
+  .scard .ss{font-size:9.5px;color:#9095ad;margin-top:2px;font-weight:500}
+  .scard .sjp{font-size:11px;color:#d2d6e3;font-weight:700}
+
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+  /* stats strip */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .st{background:#f7f8fc;border-radius:14px;padding:12px 10px;text-align:center;animation:pop .4s both}
+  .st .v{font-size:18px;font-weight:700}
+  .st .k{font-size:8.5px;color:#9095ad;margin-top:3px;font-weight:600;letter-spacing:.03em}
+  .lore{font-size:12px;line-height:1.62;color:#5b6079;margin-top:12px}
+  .card{background:#fff;border:1.5px solid #f0f2f8;border-radius:16px;padding:4px 13px;animation:rise .42s both}
+  .kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f6f7fb;font-size:11.5px}
+  .kv:last-child{border-bottom:0}
+  .kv .k{color:#9095ad}
+  .kv .v{font-weight:600;text-align:right;max-width:62%}
+
+  .search{width:100%;border:1.6px solid #eceef5;border-radius:12px;padding:10px 13px;font-size:12px;
+          font-family:inherit;outline:none;margin-bottom:11px}
+  .lrow{display:flex;align-items:center;gap:11px;padding:11px 13px;background:#fff;border:1.5px solid #f0f2f8;
+        border-radius:13px;margin-bottom:7px;cursor:pointer;animation:rise .36s both}
+  .lrow .ic{width:28px;height:28px;border-radius:9px;flex:0 0 28px;display:flex;align-items:center;
+            justify-content:center;font-size:12px}
+  .lrow .ln{flex:1;font-size:12px;font-weight:600}
+  .lrow .lg{font-size:9px;color:#b0b4c6;margin-top:1px;font-weight:500}
+  .lrow .cv{font-size:10px;color:#d2d6e3}
+
+  /* dex grid */
+  .dex{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .dcard{border-radius:13px;padding:38px 6px 8px;text-align:center;color:#fff;font-size:10px;font-weight:600;
+         background-size:52% 52%;background-repeat:no-repeat;background-position:center 5px;animation:pop .38s both}
+
+  /* availability grid (reused component) */
+  .grid{background:#fff;border:1.5px solid #f0f2f8;border-radius:16px;padding:13px 12px 9px;animation:expand .32s both}
+  .grow{display:grid;grid-template-columns:42px 1fr;gap:9px;align-items:start;margin-bottom:11px}
+  .grow:last-child{margin-bottom:3px}
+  .glab{font-size:8.5px;font-weight:700;color:#b0b4c6;padding-top:7px;text-align:right}
+  .cells{display:flex;gap:5px;flex-wrap:wrap}
+  .cell{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+        font-size:9.5px;font-weight:700;cursor:pointer;animation:pop .3s both;background:#3FAE72;color:#fff}
+  .cell.no{background:#f2f4f9;color:#c8ccda}
+  .bar{display:flex;align-items:center;gap:11px;background:#2b2f45;border-radius:15px;padding:12px 14px;
+       cursor:pointer;animation:collapse .32s both}
+  .bar .tok{width:30px;height:30px;border-radius:8px;background:#3FAE72;color:#fff;flex:0 0 30px;
+            display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700}
+  .bar .t1{font-size:12.5px;font-weight:600;color:#fff}
+  .bar .t2{font-size:9.5px;color:#9298b8;margin-top:1px}
+  .bar .tx{flex:1;line-height:1.3}
+  .bar .cv{font-size:9px;color:#8c92b0}
+
+  /* method tabs + encounter rows */
+  .mtabs{display:flex;gap:5px;margin:14px 0 10px;flex-wrap:wrap}
+  .mt{font-size:10px;font-weight:700;padding:6px 12px;border-radius:999px;border:1.5px solid #eceef5;
+      background:#fff;color:#9095ad;cursor:pointer}
+  .mt.on{color:#fff;border-color:transparent}
+  .erow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f6f7fb}
+  .erow:last-child{border-bottom:0}
+  .erow .sp{width:34px;height:34px;flex:0 0 34px;background-size:contain;background-repeat:no-repeat;background-position:center}
+  .erow .en{font-size:11.5px;font-weight:600}
+  .erow .el{font-size:9px;color:#b0b4c6;margin-top:1px}
+  .erow .rt{width:74px;flex:0 0 74px}
+  .erow .rv{font-size:10px;font-weight:700;text-align:right}
+  .erow .track{height:5px;background:#f0f2f8;border-radius:3px;margin-top:4px;overflow:hidden}
+  .erow .fill{height:100%;border-radius:3px;transform-origin:left;animation:grow .55s cubic-bezier(.22,.9,.24,1) both}
+  .scope{font-size:9.5px;color:#b0b4c6;margin-top:9px;line-height:1.5}
+  .upto{font-size:8px;font-weight:600;color:#b0b4c6;letter-spacing:.01em}
+  .cbar{display:flex;align-items:center;gap:9px;background:#f7f8fc;border-radius:12px;padding:9px 12px;
+        margin-bottom:9px;cursor:pointer}
+  .cbar .cl{font-size:8.5px;font-weight:700;letter-spacing:.07em;color:#b0b4c6}
+  .cbar .cv2{flex:1;font-size:10.5px;font-weight:600;text-align:right}
+  .cbar .cc{font-size:9px;color:#b0b4c6;transition:transform .25s}
+  .cbar.set{background:#2b2f45}.cbar.set .cl{color:#8c92b0}.cbar.set .cv2{color:#fff}.cbar.set .cc{color:#8c92b0}
+  .caxes{background:#f7f8fc;border-radius:12px;padding:10px 12px;margin:-4px 0 10px}
+  .cax{margin-bottom:9px}.cax:last-child{margin-bottom:0}
+  .caxl{font-size:8.5px;font-weight:700;letter-spacing:.06em;color:#b0b4c6;margin-bottom:5px}
+  .caxo{display:flex;gap:5px;flex-wrap:wrap}
+  .co{font-size:10px;font-weight:600;padding:5px 10px;border-radius:999px;background:#fff;
+      border:1.5px solid #eceef5;color:#9095ad;cursor:pointer}
+  .co.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+
+  .panel{width:300px;flex:0 0 auto;padding-top:4px}
+  .panel h3{font-size:14px;margin:0 0 4px}
+  .panel p{font-size:12.5px;line-height:1.6;color:#5b6079;margin:0 0 13px}
+  .glab2{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#b0b4c6;margin-bottom:7px}
+  .opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:15px}
+  .opt{border:1.5px solid #dcdfeb;background:#fff;border-radius:11px;padding:8px 12px;font-family:inherit;
+       font-size:11.5px;font-weight:600;cursor:pointer;color:#6d7288}
+  .opt.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+  .note{font-size:11.5px;line-height:1.6;color:#6d7288;background:#fff;border-radius:14px;padding:13px 14px;border:1.5px solid #f0f2f8}
+  .note b{color:#2b2f45}
+
+  @keyframes pop{from{opacity:0;transform:scale(.76)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
+  @keyframes expand{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  @keyframes collapse{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone"><div class="scroll" id="screen"></div></div>
+  <div class="panel">
+    <h3>Regions &amp; locations</h3>
+    <p>Tap through: region list → Kanto → Route 1. Everything is live — region tabs, location search, the availability grid, method tabs.</p>
+    <div class="glab2">JUMP TO</div>
+    <div class="opts" id="nav"></div>
+    <div class="glab2">REGION LIST LAYOUT</div>
+    <div class="opts" id="rlayout"></div>
+    <div class="glab2">LOCATION</div>
+    <div class="opts" id="placesel"></div>
+    <div class="note" id="explain"></div>
+  </div>
+</div>
+
+<script>
+const SP=n=>'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/'+n+'.png';
+
+// name, jp, colour, gen, dex, locations, games, BOX-ART PAIR (verified ids), starter ids, box-art note
+const REGIONS=[
+ ['Kanto','カントー','#E8685D','Gen I','151 species','96 locations',9,[6,9],[1,4,7],'Red / Blue'],
+ ['Johto','ジョウト','#F0C33C','Gen II','100 species','88 locations',4,[250,249],[152,155,158],'Gold / Silver'],
+ ['Hoenn','ホウエン','#5BC98F','Gen III','135 species','106 locations',5,[383,382],[252,255,258],'Ruby / Sapphire'],
+ ['Sinnoh','シンオウ','#5BA7F7','Gen IV','107 species','130 locations',5,[483,484],[387,390,393],'Diamond / Pearl'],
+ ['Unova','イッシュ','#6E6059','Gen V','156 species','116 locations',4,[643,644],[495,498,501],'Black / White'],
+ ['Kalos','カロス','#B368C9','Gen VI','72 species','120 locations',2,[716,717],[650,653,656],'X / Y'],
+ ['Alola','アローラ','#FF9D5C','Gen VII','88 species','103 locations',4,[791,792],[722,725,728],'Sun / Moon'],
+ ['Galar','ガラル','#7A5BC9','Gen VIII','400 species','66 locations',3,[888,889],[810,813,816],'Sword / Shield'],
+ ['Hisui','ヒスイ','#9DB945','Gen VIII','242 species','30 locations',1,[493],[722,155,501],'Legends: Arceus — no pair, fallback'],
+ ['Paldea','パルデア','#EE97CE','Gen IX','400 species','84 locations',2,[1007,1008],[906,909,912],'Scarlet / Violet'],
+ ['Orre','オーレ','#8FA0B5','Gen III','—','32 locations',2,[196,197],[],'Colosseum — no legendary pair, fallback']
+];
+
+const KANTO_LOCS=[
+ ['Pallet Town','city','🏘','Starting town'],
+ ['Route 1','route','🛣','Pallet Town → Viridian City'],
+ ['Viridian City','city','🏘','Gym: Giovanni'],
+ ['Viridian Forest','forest','🌲','Bug Pokémon, maze'],
+ ['Route 2','route','🛣','Viridian → Pewter'],
+ ['Pewter City','city','🏘','Gym: Brock'],
+ ['Mt. Moon','cave','⛰','Fossil choice'],
+ ['Cerulean City','city','🏘','Gym: Misty'],
+ ['Route 4','route','🛣','Cerulean → Mt. Moon'],
+ ['Rock Tunnel','cave','⛰','Needs Flash'],
+ ['Lavender Town','city','🏘','Pokémon Tower'],
+ ['Celadon City','city','🏘','Gym: Erika'],
+ ['Safari Zone','park','🦌','500 steps, 30 balls'],
+ ['Fuchsia City','city','🏘','Gym: Koga'],
+ ['Seafoam Islands','cave','⛰','Articuno'],
+ ['Cinnabar Island','city','🏘','Gym: Blaine'],
+ ['Power Plant','cave','⚡','Zapdos'],
+ ['Berry Forest','forest','🌲','FireRed / LeafGreen only'],
+ ['Treasure Beach','beach','🏖','Sevii Islands'],
+ ['One Island','city','🏘','Sevii Islands']
+];
+const LICON={city:'#5BA7F7',route:'#3FAE72',forest:'#5BC98F',cave:'#BFA967',park:'#9DB945',beach:'#6ECBD2'};
+
+// Kanto regional dex — note #037 resolves to the KANTONIAN Vulpix, not the Alolan form
+const DEX=[[1,'Bulbasaur','#5BC98F'],[4,'Charmander','#FF9D5C'],[7,'Squirtle','#5BA7F7'],
+  [25,'Pikachu','#F0C33C'],[35,'Clefairy','#EE97CE'],[37,'Vulpix','#FF9D5C'],
+  [58,'Growlithe','#FF9D5C'],[63,'Abra','#FF7BA6'],[129,'Magikarp','#5BA7F7']];
+
+// Kanto's version groups only — derived from region.version_groups.
+// Sword, Scarlet, Diamond etc. are NOT Kanto games and never appear here.
+const KANTO_VERSIONS=[
+ ['LP','Let’s Go Pikachu','Switch'],['LE','Let’s Go Eevee','Switch'],
+ ['HG','HeartGold','DS'],['SS','SoulSilver','DS'],
+ ['FR','FireRed','GBA'],['LG','LeafGreen','GBA'],
+ ['R','Red','GB / GBC'],['B','Blue','GB / GBC'],['Y','Yellow','GB / GBC'],
+ ['G','Gold','GB / GBC'],['S','Silver','GB / GBC'],['C','Crystal','GB / GBC']
+];
+// rows are data-driven: Kanto has no 3DS game, so no 3DS row is rendered
+const GROWS=[...new Set(KANTO_VERSIONS.map(v=>v[2]))];
+
+const PLACES={
+ 'Route 1':{sub:'Kanto · Pallet Town → Viridian City',
+   has:['LP','LE','HG','SS','FR','LG','R','B','Y','G','S','C']},
+ 'Berry Forest':{sub:'Kanto · Sevii Islands, Three Island',
+   has:['FR','LG']}
+};
+
+// keyed by the ACTUAL encounter method, never by group — each method is its own 100% table
+const ENC={
+ 'Route 1':{
+  FR:{'Tall grass':[[16,'Pidgey','Lv 2–5',55],[19,'Rattata','Lv 2–4',45]]},
+  LG:{'Tall grass':[[16,'Pidgey','Lv 2–5',55],[19,'Rattata','Lv 2–4',45]]},
+  R:{'Tall grass':[[16,'Pidgey','Lv 2–5',55],[19,'Rattata','Lv 2–4',45]]},
+  B:{'Tall grass':[[16,'Pidgey','Lv 2–5',55],[19,'Rattata','Lv 2–4',45]]},
+  Y:{'Tall grass':[[16,'Pidgey','Lv 2–5',55],[19,'Rattata','Lv 2–4',45]]},
+  G:{'Tall grass':[[16,'Pidgey','Lv 2–4',60],[19,'Rattata','Lv 2–4',40]]},
+  S:{'Tall grass':[[16,'Pidgey','Lv 2–4',60],[19,'Rattata','Lv 2–4',40]]},
+  C:{'Tall grass':[[16,'Pidgey','Lv 2–4',60],[19,'Rattata','Lv 2–4',40]]},
+  LP:{'Overworld':[[16,'Pidgey','Lv 2–4',25],[21,'Spearow','Lv 3–5',20],[19,'Rattata','Lv 2–4',20],
+      [10,'Caterpie','Lv 2–4',15],[13,'Weedle','Lv 2–4',15],[25,'Pikachu','Lv 3–5',5]]},
+  LE:{'Overworld':[[16,'Pidgey','Lv 2–4',25],[21,'Spearow','Lv 3–5',20],[19,'Rattata','Lv 2–4',20],
+      [10,'Caterpie','Lv 2–4',15],[13,'Weedle','Lv 2–4',15],[133,'Eevee','Lv 3–5',5]]},
+  HG:{'Tall grass':'SLOTS',
+      'Headbutt tree':[[163,'Hoothoot','Lv 6–8',50],[204,'Pineco','Lv 6–8',30],[265,'Wurmple','Lv 6–8',20]]},
+  SS:{'Tall grass':'SLOTS'}
+ },
+ 'Berry Forest':{
+  FR:{'Tall grass':[[43,'Oddish','Lv 20',30],[46,'Paras','Lv 20',25],[16,'Pidgey','Lv 18',20],
+      [25,'Pikachu','Lv 20',15],[63,'Abra','Lv 20',10]],
+      'Surf':[[54,'Psyduck','Lv 20',60],[60,'Poliwag','Lv 15',40]],
+      'Old Rod':[[129,'Magikarp','Lv 5',100]],
+      'Good Rod':[[129,'Magikarp','Lv 15',55],[60,'Poliwag','Lv 15',45]],
+      'Super Rod':[[60,'Poliwag','Lv 25',60],[61,'Poliwhirl','Lv 30',40]]},
+  LG:{'Tall grass':[[69,'Bellsprout','Lv 20',30],[46,'Paras','Lv 20',25],[16,'Pidgey','Lv 18',20],
+      [25,'Pikachu','Lv 20',15],[63,'Abra','Lv 20',10]],
+      'Surf':[[54,'Psyduck','Lv 20',60],[60,'Poliwag','Lv 15',40]],
+      'Old Rod':[[129,'Magikarp','Lv 5',100]],
+      'Good Rod':[[129,'Magikarp','Lv 15',55],[60,'Poliwag','Lv 15',45]],
+      'Super Rod':[[60,'Poliwag','Lv 25',60],[61,'Poliwhirl','Lv 30',40]]}
+ }
+};
+const MCOL={'Tall grass':'#3FAE72','Overworld':'#4FA98C','Headbutt tree':'#8a9b52',
+  'Surf':'#5BA7F7','Old Rod':'#6ECBD2','Good Rod':'#4FB6C4','Super Rod':'#3A9BB0','Max Raid':'#5C4EE5'};
+
+// ---- REAL slot data, copied verbatim from PokeAPI: kanto-route-1-area, heartgold, method=walk.
+// Each slot carries AND-conditions. A slot counts iff EVERY one of its tags is in the chosen state.
+const SLOTS=[
+ ['rattata',19,10,['radio-off']],
+ ['pidgey',16,10,['radio-off','time-day']],['sentret',161,10,['radio-off','time-day']],['sentret',161,10,['radio-off','time-day']],
+ ['pidgey',16,10,['radio-off','time-morning']],['sentret',161,10,['radio-off','time-morning']],['sentret',161,10,['radio-off','time-morning']],
+ ['rattata',19,10,['radio-off','time-night']],['rattata',19,10,['radio-off','time-night']],['hoothoot',163,10,['radio-off','time-night']],
+ ['plusle',311,10,['radio-hoenn']],['plusle',311,10,['radio-hoenn']],['minun',312,10,['radio-hoenn']],['minun',312,10,['radio-hoenn']],
+ ['shinx',403,10,['radio-sinnoh']],['shinx',403,10,['radio-sinnoh']],['shinx',403,10,['radio-sinnoh']],['shinx',403,10,['radio-sinnoh']],
+ ['rattata',19,20,['swarm-no']],
+ ['pidgey',16,20,['swarm-no','time-day']],
+ ['pidgey',16,20,['swarm-no','time-morning']],
+ ['hoothoot',163,20,['swarm-no','time-night']],
+ ['poochyena',261,20,['swarm-yes']],['poochyena',261,20,['swarm-yes']],
+ ['pidgey',16,5,['time-day']],['pidgey',16,5,['time-day']],['pidgey',16,4,['time-day']],['pidgey',16,1,['time-day']],
+ ['furret',162,4,['time-day']],['furret',162,1,['time-day']],
+ ['pidgey',16,5,['time-morning']],['pidgey',16,5,['time-morning']],['pidgey',16,4,['time-morning']],['pidgey',16,1,['time-morning']],
+ ['furret',162,4,['time-morning']],['furret',162,1,['time-morning']],
+ ['rattata',19,4,['time-night']],['rattata',19,1,['time-night']],
+ ['hoothoot',163,5,['time-night']],['hoothoot',163,5,['time-night']],['hoothoot',163,4,['time-night']],['hoothoot',163,1,['time-night']]
+];
+const AXES=[
+ ['Time',['time-morning','time-day','time-night'],['Morning','Day','Night']],
+ ['Swarm',['swarm-no','swarm-yes'],['No swarm','Swarm']],
+ ['Radio',['radio-off','radio-hoenn','radio-sinnoh'],['Radio off','Hoenn','Sinnoh']]
+];
+// null on an axis means "any" — the table then shows the best case across every state still possible
+let cond=[null,null,null], condOpen=false;
+const condExact=()=>cond.every(c=>c!==null);
+
+function statesMatching(){
+  const opts=AXES.map((a,i)=>cond[i]?[cond[i]]:a[1]);
+  const out=[];
+  for(const t of opts[0]) for(const s of opts[1]) for(const r of opts[2]) out.push([t,s,r]);
+  return out;
+}
+
+function slotTable(){
+  const best={};
+  for(const st of statesMatching()){
+    const agg={};
+    for(const s of SLOTS){
+      if(!s[3].every(c=>st.includes(c))) continue;
+      agg[s[0]]=agg[s[0]]||{id:s[1],ch:0}; agg[s[0]].ch+=s[2];
+    }
+    for(const k in agg){ if(!best[k]||agg[k].ch>best[k].ch) best[k]={id:agg[k].id,ch:agg[k].ch}; }
+  }
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  return Object.entries(best).sort((a,b)=>b[1].ch-a[1].ch)
+    .map(([k,v])=>[v.id,cap(k),'Lv 2–4',v.ch]);
+}
+
+let view='regions', rtab='About', locSel=null, mtab='Walking', q='', rlay='mascot', place='Route 1';
+
+const NAV={regions:'Region list',region:'Kanto',location:'Route 1'};
+const EXPL={
+ regions:'<b>Region list.</b> Eleven regions, each carrying facts derived straight from the API — generation, regional Pokédex size, location count, number of games set there. The Japanese name is free in <code>names[]</code> and adds character at zero cost.',
+ region:'<b>Region detail, three tabs.</b> Same tab idiom as the Pokémon detail. <b>About</b> holds the wiki-ish facts plus one hand-written blurb — eleven of those is trivial to write and, being original, sidesteps the flavour-text copyright problem. <b>Locations</b> is the searchable list. <b>Pokédex</b> reuses the existing dex grid, filtered to the regional dex.',
+ location:'<b>Location detail.</b> The <b>same availability grid component</b> as the Pokémon side, pointed at a route instead. Tap a game, it collapses to a breadcrumb, and the encounter list appears — method tabs here because one route yields many Pokémon, and rate bars <b>scoped to the active method</b> so they always sum to 100%.'
+};
+
+function head(title,sub,color,jp,back){
+  return '<div class="hd'+(back?' ind':'')+'" style="background:'+color+'">'
+   +(back?'<div class="bk" onclick="go(\''+back+'\')">←</div>':'')
+   +(jp?'<div class="jp">'+jp+'</div>':'')
+   +'<div class="deco"></div><div class="deco2"></div>'
+   +'<div class="t">'+title+'</div><div class="s">'+sub+'</div></div>';
+}
+
+function render(){
+  let h='';
+  if(view==='regions'){
+    h=head('Regions','Eleven worlds, eleven Pokédex','#5C4EE5','')+'<div class="body">';
+    if(rlay==='flat'){
+      h+=REGIONS.map((r,i)=>'<div class="rcard" style="background:'+r[2]+';animation-delay:'+(i*.04).toFixed(2)
+        +'s" onclick="'+(r[0]==='Kanto'?'go(\'region\')':'')+'">'
+        +'<div class="rb"></div><div class="rj">'+r[1]+'</div>'
+        +'<div class="rn">'+r[0]+'</div><div class="rs">'+r[3]+' &middot; '+r[4]+' &middot; '+r[6]+' games</div></div>').join('');
+    }
+    else if(rlay==='mascot'){
+      h+='<div class="mgrid">'+REGIONS.map((r,i)=>{
+        const pair=r[7];
+        const art=pair.map((id,j)=>'<div class="mart'+(pair.length>1?(j?' b':' a'):' solo')
+          +'" style="background-image:url('+SP(id)+');animation-delay:'+(j*.6).toFixed(1)+'s"></div>').join('');
+        return '<div class="mcard" style="background:'+r[2]+';animation-delay:'+(i*.05).toFixed(2)+'s" onclick="'
+        +(r[0]==='Kanto'?'go(\'region\')':'')+'" title="'+r[9]+'">'
+        +'<div class="mglow"></div>'+art
+        +'<div class="mjp">'+r[1]+'</div>'
+        +'<div class="mn">'+r[0]+'</div><div class="ms">'+r[3]+' &middot; '+r[4]+'</div></div>';
+      }).join('')+'</div>'
+      +'<div class="scope">Box-art pair per region &mdash; no arbitrary "defining game" pick to defend. <b>Hisui</b> and <b>Orre</b> have no legendary pair and fall back (Arceus; Espeon + Umbreon from Colosseum). There is no API field for box art &mdash; this is a hand-authored 11-row table.</div>';
+    }
+    else{
+      h+=REGIONS.map((r,i)=>'<div class="scard" style="animation-delay:'+(i*.04).toFixed(2)+'s" onclick="'
+        +(r[0]==='Kanto'?'go(\'region\')':'')+'">'
+        +'<div class="sband" style="background:'+r[2]+'"></div>'
+        +'<div class="strio">'+(r[8].length?r[8].map((s,j)=>'<div class="stri" style="background-image:url('+SP(s)
+          +');z-index:'+(3-j)+';margin-left:'+(j?-14:0)+'px"></div>').join(''):'<div class="stri" style="background-image:url('+SP(r[7])+')"></div>')+'</div>'
+        +'<div style="flex:1"><div class="sn">'+r[0]+'</div><div class="ss">'+r[3]+' &middot; '+r[4]+' &middot; '+r[6]+' games</div></div>'
+        +'<div class="sjp">'+r[1]+'</div></div>').join('');
+    }
+    h+='</div>';
+  }
+  else if(view==='region'){
+    const tabs=['About','Locations','Pokédex'];
+    h=head('Kanto','Generation I &middot; 9 games','#E8685D','カントー','regions')
+     +'<div class="tabs">'+tabs.map(t=>'<div class="tab'+(t===rtab?' on':'')+'" onclick="setTab(\''+t+'\')">'+t+'</div>').join('')+'</div>'
+     +'<div class="body">';
+    if(rtab==='About'){
+      h+='<div class="stats">'
+       +[['151','POKÉDEX'],['96','LOCATIONS'],['9','GAMES']].map((s,i)=>
+         '<div class="st" style="animation-delay:'+(i*.06).toFixed(2)+'s"><div class="v">'+s[0]+'</div><div class="k">'+s[1]+'</div></div>').join('')
+       +'</div>'
+       +'<div class="lore">The region where it started. A long eastern peninsula of quiet towns, dense forest and a volcanic island in the south — compact enough to cross on foot, and the only region revisited in a later generation.</div>'
+       +'<div class="sect">DETAILS</div><div class="card">'
+       +[['Introduced','Generation I'],['Native name','カントー'],
+         ['Regional Pokédex','151 species'],['Second Pokédex','Let’s Go Kanto'],
+         ['Games set here','Red · Blue · Yellow · FireRed · LeafGreen · Let’s Go'],
+         ['Also reachable in','Gold · Silver · Crystal · HeartGold · SoulSilver']]
+        .map(k=>'<div class="kv"><span class="k">'+k[0]+'</span><span class="v">'+k[1]+'</span></div>').join('')
+       +'</div>';
+    }
+    else if(rtab==='Locations'){
+      const list=KANTO_LOCS.filter(l=>l[0].toLowerCase().includes(q.toLowerCase()));
+      h+='<input class="search" placeholder="Search 96 locations…" value="'+q+'" oninput="setQ(this.value)">'
+       + list.map((l,i)=>'<div class="lrow" style="animation-delay:'+(i*.03).toFixed(2)+'s" onclick="'
+          +(l[0]==='Route 1'?'go(\'location\')':'')+'">'
+          +'<div class="ic" style="background:'+LICON[l[1]]+'22">'+l[2]+'</div>'
+          +'<div style="flex:1"><div class="ln">'+l[0]+'</div><div class="lg">'+l[3]+'</div></div>'
+          +'<div class="cv">›</div></div>').join('')
+       +'<div class="scope">Showing '+list.length+' of 96. Berry Forest and the Sevii Islands appear here even though only FireRed and LeafGreen have data for them — that absence is itself information.</div>';
+    }
+    else{
+      h+='<div class="dex">'+DEX.map((d,i)=>'<div class="dcard" style="background:'+d[2]
+        +';background-image:url('+SP(d[0])+');animation-delay:'+(i*.04).toFixed(2)+'s">'+d[1]+'</div>').join('')+'</div>'
+       +'<div class="scope"><b>#037 is the Kantonian Vulpix, not the Alolan one.</b> PokéAPI’s pokedex entries are <i>species-level</i>, so they cannot distinguish forms — the naive implementation silently shows an Alolan Vulpix in the Kanto dex. Rule: in a regional dex, show the variant whose form matches that region, else the default. Kanto → <code>vulpix</code>; Alola → <code>vulpix-alola</code>; National → both cards at #037.<br><br>Otherwise this reuses the main dex grid component, filtered to Kanto’s 151. Nothing new to build.</div>';
+    }
+    h+='</div>';
+  }
+  else{
+    const P=PLACES[place];
+    const g=KANTO_VERSIONS.find(x=>x[0]===locSel);
+    const enc=(ENC[place]||{})[locSel]||{};
+    const methods=Object.keys(enc);
+    const active=methods.includes(mtab)?mtab:methods[0];
+    h=head(place,P.sub,'#3FAE72','','region')
+     +'<div class="body">'
+     +'<div class="sect">AVAILABLE IN &mdash; KANTO GAMES ONLY</div>';
+    if(!locSel){
+      h+='<div class="grid">'+GROWS.map(r=>'<div class="grow"><div class="glab">'+r+'</div><div class="cells">'
+        +KANTO_VERSIONS.filter(v=>v[2]===r).map((v,i)=>'<div class="cell'+(P.has.includes(v[0])?'':' no')
+          +'" style="animation-delay:'+(i*.02).toFixed(2)
+          +'s" onclick="pickGame(\''+v[0]+'\')">'+v[0]+'</div>').join('')+'</div></div>').join('')+'</div>'
+        +'<div class="scope">Twelve cells, not thirty. Sword, Scarlet and Diamond are not Kanto games, so they are never shown &mdash; derived from the region&rsquo;s version groups. Kanto has no 3DS game, so that row does not exist at all.</div>';
+    } else {
+      h+='<div class="bar" onclick="pickGame(null)"><div class="tok">'+g[0]+'</div>'
+       +'<div class="tx"><div class="t1">'+g[1]+'</div><div class="t2">'+g[2]
+       +' &middot; '+(methods.length?methods.join(', '):'no data')+'</div></div><div class="cv">▲</div></div>';
+      if(methods.length){
+        const isSlots=enc[active]==='SLOTS';
+        const rows=isSlots?slotTable():enc[active];
+        h+='<div class="mtabs">'+methods.map(m=>'<div class="mt'+(m===active?' on':'')
+          +'" style="'+(m===active?'background:'+MCOL[m]:'')+'" onclick="setM(\''+m+'\')">'+m+'</div>').join('')+'</div>';
+        if(isSlots){
+          const any=cond.every(c=>c===null);
+          const label=any?'Any conditions'
+            :AXES.map((a,i)=>cond[i]?a[2][a[1].indexOf(cond[i])]:'Any').join(' &middot; ');
+          h+='<div class="cbar'+(any?'':' set')+'" onclick="toggleCond()"><span class="cl">CONDITIONS</span>'
+           +'<span class="cv2">'+label+'</span>'
+           +'<span class="cc" style="transform:rotate('+(condOpen?180:0)+'deg)">▾</span></div>';
+          if(condOpen){
+            h+='<div class="caxes">'+AXES.map((a,i)=>'<div class="cax"><div class="caxl">'+a[0]+'</div><div class="caxo">'
+              +'<div class="co'+(cond[i]===null?' on':'')+'" onclick="setCond('+i+',null)">Any</div>'
+              +a[1].map((v,j)=>'<div class="co'+(cond[i]===v?' on':'')+'" onclick="setCond('+i+',\''+v+'\')">'
+              +a[2][j]+'</div>').join('')+'</div></div>').join('')+'</div>';
+          }
+        }
+        h+='<div class="card">'+rows.map((e,i)=>
+            '<div class="erow"><div class="sp" style="background-image:url('+SP(e[0])+')"></div>'
+            +'<div style="flex:1"><div class="en">'+e[1]+'</div><div class="el">'+e[2]+'</div></div>'
+            +'<div class="rt"><div class="rv" style="color:'+MCOL[active]+'">'
+              +(e[3]?(isSlots&&!condExact()?'<span class="upto">up to </span>':'')+e[3]+'%':'—')+'</div>'
+            +'<div class="track"><div class="fill" style="width:'+e[3]+'%;background:'+MCOL[active]
+            +';animation-delay:'+(.1+i*.06).toFixed(2)+'s"></div></div></div></div>').join('')+'</div>'
+         +'<div class="scope">Tabs are the <b>actual method</b>, never a group &mdash; Old Rod and Good Rod are separate 100% tables, so merging them into one &ldquo;Fishing&rdquo; tab would produce bars summing to 255%.'
+         +(isSlots
+           ? (condExact()
+              ? ' Conditions are fully specified, so these are <b>exact</b> and sum to 100%.'
+              : ' Conditions are tags that AND onto individual slots. With an axis left on <b>Any</b>, each figure is the <b>best case</b> across every state still possible &mdash; so they deliberately do not sum to 100%. Pin all three axes for exact numbers. Real PokéAPI slots for HeartGold, computed live.')
+           : ' This table is unconditioned, so the figures are exact.')+'</div>';
+      } else {
+        h+='<div class="scope" style="text-align:center;padding:26px 0;font-size:11.5px">'+place+' does not exist in '+g[1]+'.</div>';
+      }
+    }
+    h+='</div>';
+  }
+  document.getElementById('screen').innerHTML=h;
+  document.getElementById('nav').innerHTML=Object.keys(NAV).map(k=>
+    '<button class="opt'+(k===view?' on':'')+'" onclick="go(\''+k+'\')">'+NAV[k]+'</button>').join('');
+  document.getElementById('rlayout').innerHTML=[['flat','Flat'],['mascot','Mascot'],['starters','Starter trio']]
+    .map(o=>'<button class="opt'+(o[0]===rlay?' on':'')+'" onclick="setLay(\''+o[0]+'\')">'+o[1]+'</button>').join('');
+  document.getElementById('placesel').innerHTML=Object.keys(PLACES)
+    .map(p=>'<button class="opt'+(p===place?' on':'')+'" onclick="setPlace(\''+p+'\')">'+p+'</button>').join('');
+  document.getElementById('explain').innerHTML=EXPL[view];
+}
+function setLay(l){rlay=l;view='regions';render()}
+function toggleCond(){condOpen=!condOpen;render()}
+function setCond(i,v){ cond[i]=v; render(); }
+function setPlace(p){place=p;locSel=null;view='location';render()}
+function go(v){view=v;render()}
+function setTab(t){rtab=t;render()}
+function setQ(v){q=v;render();const i=document.querySelector('.search');if(i){i.focus();i.setSelectionRange(v.length,v.length)}}
+function pickGame(g){locSel=g;render()}
+function setM(m){mtab=m;render()}
+render();
+</script>
+</body>
+</html>
