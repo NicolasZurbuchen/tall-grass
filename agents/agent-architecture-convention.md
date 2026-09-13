@@ -1,6 +1,6 @@
 # Agent Architecture Convention
 
-This file exists so an agent can place a new file in the right package and shape a new screen or feature correctly, without re-deriving the architecture from scratch or asking a human. The worked examples throughout are drawn from the `pokemon-explorer` feature this template shipped with. **That feature has been deleted** — it was an example, not a dependency — so the file paths in the examples no longer resolve. The pattern is what is fixed, and it is unchanged; `feature/home/` is the only feature in the repo today and is deliberately minimal, so it demonstrates the stateless end of the shape and nothing more.
+This file exists so an agent can place a new file in the right package and shape a new screen or feature correctly, without re-deriving the architecture from scratch or asking a human. The worked examples throughout are drawn from the `pokemon-explorer` feature this template shipped with. **That feature has been deleted** — it was an example, not a dependency — so the file paths in the examples no longer resolve. The pattern is what is fixed, and it is unchanged; `feature/home/` is the only feature in the repo today and is deliberately minimal, so it demonstrates the stateless end of the shape and nothing more. For a worked example that still exists, read **Yadlo** — same author, same template, a shipped app roughly a hundred pull requests deep. See CLAUDE.md § Yadlo is the reference implementation for what in it transfers and what does not.
 
 ## Package placement — decision procedure
 

@@ -54,6 +54,38 @@ The ones that constrain implementation most:
 
 ---
 
+## Yadlo is the reference implementation
+
+`C:\Users\stari\Projects\Yadlo` — a shipped KMP/CMP app by the same author, forked from the same template, ~100 merged pull requests deep. **When the question is "how is this done here", read Yadlo before inventing an answer.**
+
+This matters more than it normally would: the template's `pokemon-explorer` example feature was deleted during the fork (#29), so this repository has no worked example of a feature with a data layer, a store, or a test suite. `feature/home/` is stateless and demonstrates the shape's shallow end only. Yadlo fills that gap and is a better reference than the deleted example was, because everything in it survived contact with a real product.
+
+**It is the source of truth for *how*, never for *what*.** Product decisions belong to this project's closed issues; where the two disagree about what Tall Grass should do, the issue wins. Copy the patterns, not the festival.
+
+### What is directly worth reading
+
+| Looking for | Read |
+|---|---|
+| A full feature, every layer | `feature/programme/`, `feature/search/` |
+| A `core/` slice modelling the subject | `core/content/`, `core/plan/`, `core/time/` |
+| Real `.sq` **and `.sqm`** migrations | `shared/src/commonMain/sqldelight/` |
+| A third-party singleton wrapped as a port | `infra/image/` |
+| Committed JSON content with a schema doc and a validator | `content/` |
+| Glossary and decision-record layout | `CONTEXT.md`, `DECISIONS.md` |
+
+**The migrations are the most valuable thing there right now.** This repository's `app.db` has no tables and no `.sqm` files yet, so the discipline CLAUDE.md warns about — a table added to a `.sq` with no matching `.sqm` compiles, runs and passes every other check — has never actually been exercised here. Yadlo has done it twice. Read those before writing the first migration, not after.
+
+`content/` is the closest existing thing to what #10 asks for: JSON committed to the repo as the reviewable source of truth, with a schema document and a validator that fails the build when the two disagree.
+
+### Two differences that will mislead if assumed away
+
+- **Yadlo fetches its content at launch. Tall Grass bakes its dataset into the binary.** So Yadlo's `content/` is a model for *committed, validated, reviewable JSON* and not for the generation pipeline, the bundled database, or the first-run asset copy. None of those exist there.
+- **Yadlo's `ImageCache` is not a prefetcher.** It reports a size and clears the cache. #32 needs prefetching, resumption and storage-exhaustion handling, and there is no prior art for it in either project — the port's *placement* is the lesson, not its contents.
+
+> The path is absolute and local to one machine, so it may simply not be there. If it is missing, say so and work from the conventions in `agents/` rather than guessing at what it would have shown.
+
+---
+
 ## Judgment calls not obvious from the code alone
 
 Everything structural, deterministic, or repeatable already lives in `agents/agent-architecture-convention.md` and is enforced by Konsist — it isn't restated here. What follows is the handful of things that came up as real corrections and are genuinely easy to get wrong once.
