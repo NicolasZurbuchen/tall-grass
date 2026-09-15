@@ -1,6 +1,6 @@
 [versions]
 # Kotlin / Compose Multiplatform
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 composeMultiplatform = "1.11.1"
 material3 = "1.9.0"
 materialIconsExtended = "1.7.3"
@@ -8,7 +8,7 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 
 # Android
-agp = "9.3.1"
+agp = "9.4.0"
 android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "37"
@@ -23,8 +23,8 @@ navigation3-lifecycle = "2.11.0"
 koin = "4.2.2"
 
 # Networking / Images
-ktor = "3.5.1"
-coil = "3.5.0"
+ktor = "3.5.2"
+coil = "3.6.2"
 
 # Persistence
 sqlDelight = "2.3.2"
@@ -35,7 +35,7 @@ mvikotlin = "4.4.0"
 # Lint / Static Analysis / Testing
 ktlint-engine = "1.8.0"
 ktlint-gradle = "14.2.0"
-compose-rules = "0.6.3"
+compose-rules = "0.6.6"
 konsist = "0.17.3"
 turbine = "1.2.1"
 
