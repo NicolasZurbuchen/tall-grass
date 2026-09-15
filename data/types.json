@@ -1,0 +1,696 @@
+{
+  "types": [
+    {
+      "slug": "bug",
+      "name": "Bug",
+      "generation": 1
+    },
+    {
+      "slug": "dark",
+      "name": "Dark",
+      "generation": 2
+    },
+    {
+      "slug": "dragon",
+      "name": "Dragon",
+      "generation": 1
+    },
+    {
+      "slug": "electric",
+      "name": "Electric",
+      "generation": 1
+    },
+    {
+      "slug": "fairy",
+      "name": "Fairy",
+      "generation": 6
+    },
+    {
+      "slug": "fighting",
+      "name": "Fighting",
+      "generation": 1
+    },
+    {
+      "slug": "fire",
+      "name": "Fire",
+      "generation": 1
+    },
+    {
+      "slug": "flying",
+      "name": "Flying",
+      "generation": 1
+    },
+    {
+      "slug": "ghost",
+      "name": "Ghost",
+      "generation": 1
+    },
+    {
+      "slug": "grass",
+      "name": "Grass",
+      "generation": 1
+    },
+    {
+      "slug": "ground",
+      "name": "Ground",
+      "generation": 1
+    },
+    {
+      "slug": "ice",
+      "name": "Ice",
+      "generation": 1
+    },
+    {
+      "slug": "normal",
+      "name": "Normal",
+      "generation": 1
+    },
+    {
+      "slug": "poison",
+      "name": "Poison",
+      "generation": 1
+    },
+    {
+      "slug": "psychic",
+      "name": "Psychic",
+      "generation": 1
+    },
+    {
+      "slug": "rock",
+      "name": "Rock",
+      "generation": 1
+    },
+    {
+      "slug": "steel",
+      "name": "Steel",
+      "generation": 2
+    },
+    {
+      "slug": "water",
+      "name": "Water",
+      "generation": 1
+    }
+  ],
+  "efficacies": [
+    {
+      "damage": "bug",
+      "target": "dark",
+      "factorPercent": 200
+    },
+    {
+      "damage": "bug",
+      "target": "fairy",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "fighting",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "flying",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "ghost",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "grass",
+      "factorPercent": 200
+    },
+    {
+      "damage": "bug",
+      "target": "poison",
+      "factorPercent": 50
+    },
+    {
+      "damage": "bug",
+      "target": "psychic",
+      "factorPercent": 200
+    },
+    {
+      "damage": "bug",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "dark",
+      "target": "dark",
+      "factorPercent": 50
+    },
+    {
+      "damage": "dark",
+      "target": "fairy",
+      "factorPercent": 50
+    },
+    {
+      "damage": "dark",
+      "target": "fighting",
+      "factorPercent": 50
+    },
+    {
+      "damage": "dark",
+      "target": "ghost",
+      "factorPercent": 200
+    },
+    {
+      "damage": "dark",
+      "target": "psychic",
+      "factorPercent": 200
+    },
+    {
+      "damage": "dragon",
+      "target": "dragon",
+      "factorPercent": 200
+    },
+    {
+      "damage": "dragon",
+      "target": "fairy",
+      "factorPercent": 0
+    },
+    {
+      "damage": "dragon",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "electric",
+      "target": "dragon",
+      "factorPercent": 50
+    },
+    {
+      "damage": "electric",
+      "target": "electric",
+      "factorPercent": 50
+    },
+    {
+      "damage": "electric",
+      "target": "flying",
+      "factorPercent": 200
+    },
+    {
+      "damage": "electric",
+      "target": "grass",
+      "factorPercent": 50
+    },
+    {
+      "damage": "electric",
+      "target": "ground",
+      "factorPercent": 0
+    },
+    {
+      "damage": "electric",
+      "target": "water",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fairy",
+      "target": "dark",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fairy",
+      "target": "dragon",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fairy",
+      "target": "fighting",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fairy",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fairy",
+      "target": "poison",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fairy",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "bug",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "dark",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fighting",
+      "target": "fairy",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "flying",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "ghost",
+      "factorPercent": 0
+    },
+    {
+      "damage": "fighting",
+      "target": "ice",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fighting",
+      "target": "normal",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fighting",
+      "target": "poison",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "psychic",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fighting",
+      "target": "rock",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fighting",
+      "target": "steel",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fire",
+      "target": "bug",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fire",
+      "target": "dragon",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fire",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fire",
+      "target": "grass",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fire",
+      "target": "ice",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fire",
+      "target": "rock",
+      "factorPercent": 50
+    },
+    {
+      "damage": "fire",
+      "target": "steel",
+      "factorPercent": 200
+    },
+    {
+      "damage": "fire",
+      "target": "water",
+      "factorPercent": 50
+    },
+    {
+      "damage": "flying",
+      "target": "bug",
+      "factorPercent": 200
+    },
+    {
+      "damage": "flying",
+      "target": "electric",
+      "factorPercent": 50
+    },
+    {
+      "damage": "flying",
+      "target": "fighting",
+      "factorPercent": 200
+    },
+    {
+      "damage": "flying",
+      "target": "grass",
+      "factorPercent": 200
+    },
+    {
+      "damage": "flying",
+      "target": "rock",
+      "factorPercent": 50
+    },
+    {
+      "damage": "flying",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ghost",
+      "target": "dark",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ghost",
+      "target": "ghost",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ghost",
+      "target": "normal",
+      "factorPercent": 0
+    },
+    {
+      "damage": "ghost",
+      "target": "psychic",
+      "factorPercent": 200
+    },
+    {
+      "damage": "grass",
+      "target": "bug",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "dragon",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "flying",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "grass",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "ground",
+      "factorPercent": 200
+    },
+    {
+      "damage": "grass",
+      "target": "poison",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "rock",
+      "factorPercent": 200
+    },
+    {
+      "damage": "grass",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "grass",
+      "target": "water",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ground",
+      "target": "bug",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ground",
+      "target": "electric",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ground",
+      "target": "fire",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ground",
+      "target": "flying",
+      "factorPercent": 0
+    },
+    {
+      "damage": "ground",
+      "target": "grass",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ground",
+      "target": "poison",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ground",
+      "target": "rock",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ground",
+      "target": "steel",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ice",
+      "target": "dragon",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ice",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ice",
+      "target": "flying",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ice",
+      "target": "grass",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ice",
+      "target": "ground",
+      "factorPercent": 200
+    },
+    {
+      "damage": "ice",
+      "target": "ice",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ice",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "ice",
+      "target": "water",
+      "factorPercent": 50
+    },
+    {
+      "damage": "normal",
+      "target": "ghost",
+      "factorPercent": 0
+    },
+    {
+      "damage": "normal",
+      "target": "rock",
+      "factorPercent": 50
+    },
+    {
+      "damage": "normal",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "poison",
+      "target": "fairy",
+      "factorPercent": 200
+    },
+    {
+      "damage": "poison",
+      "target": "ghost",
+      "factorPercent": 50
+    },
+    {
+      "damage": "poison",
+      "target": "grass",
+      "factorPercent": 200
+    },
+    {
+      "damage": "poison",
+      "target": "ground",
+      "factorPercent": 50
+    },
+    {
+      "damage": "poison",
+      "target": "poison",
+      "factorPercent": 50
+    },
+    {
+      "damage": "poison",
+      "target": "rock",
+      "factorPercent": 50
+    },
+    {
+      "damage": "poison",
+      "target": "steel",
+      "factorPercent": 0
+    },
+    {
+      "damage": "psychic",
+      "target": "dark",
+      "factorPercent": 0
+    },
+    {
+      "damage": "psychic",
+      "target": "fighting",
+      "factorPercent": 200
+    },
+    {
+      "damage": "psychic",
+      "target": "poison",
+      "factorPercent": 200
+    },
+    {
+      "damage": "psychic",
+      "target": "psychic",
+      "factorPercent": 50
+    },
+    {
+      "damage": "psychic",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "rock",
+      "target": "bug",
+      "factorPercent": 200
+    },
+    {
+      "damage": "rock",
+      "target": "fighting",
+      "factorPercent": 50
+    },
+    {
+      "damage": "rock",
+      "target": "fire",
+      "factorPercent": 200
+    },
+    {
+      "damage": "rock",
+      "target": "flying",
+      "factorPercent": 200
+    },
+    {
+      "damage": "rock",
+      "target": "ground",
+      "factorPercent": 50
+    },
+    {
+      "damage": "rock",
+      "target": "ice",
+      "factorPercent": 200
+    },
+    {
+      "damage": "rock",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "steel",
+      "target": "electric",
+      "factorPercent": 50
+    },
+    {
+      "damage": "steel",
+      "target": "fairy",
+      "factorPercent": 200
+    },
+    {
+      "damage": "steel",
+      "target": "fire",
+      "factorPercent": 50
+    },
+    {
+      "damage": "steel",
+      "target": "ice",
+      "factorPercent": 200
+    },
+    {
+      "damage": "steel",
+      "target": "rock",
+      "factorPercent": 200
+    },
+    {
+      "damage": "steel",
+      "target": "steel",
+      "factorPercent": 50
+    },
+    {
+      "damage": "steel",
+      "target": "water",
+      "factorPercent": 50
+    },
+    {
+      "damage": "water",
+      "target": "dragon",
+      "factorPercent": 50
+    },
+    {
+      "damage": "water",
+      "target": "fire",
+      "factorPercent": 200
+    },
+    {
+      "damage": "water",
+      "target": "grass",
+      "factorPercent": 50
+    },
+    {
+      "damage": "water",
+      "target": "ground",
+      "factorPercent": 200
+    },
+    {
+      "damage": "water",
+      "target": "rock",
+      "factorPercent": 200
+    },
+    {
+      "damage": "water",
+      "target": "water",
+      "factorPercent": 50
+    }
+  ]
+}

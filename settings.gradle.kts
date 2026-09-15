@@ -24,3 +24,4 @@ plugins {
 include(":androidApp")
 include(":shared")
 include(":konsistTest")
+include(":tools:datagen")

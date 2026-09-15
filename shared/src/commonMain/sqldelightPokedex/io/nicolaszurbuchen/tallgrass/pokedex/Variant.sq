@@ -1,0 +1,91 @@
+-- One battle-distinct form of a species: the thing that owns stats, types, abilities and artwork.
+--
+-- Keyed by slug, taken straight from upstream -- `vulpix`, `vulpix-alola`, `charizard-mega-x`.
+-- Not invented and not hand-maintained, which is what makes it safe to put in a route.
+--
+-- listedInDex decides grid representation and nothing else. Only regional forms get a card of their
+-- own; Megas, alternate forms, battle-only transformations, fusions and gender-distinct variants are
+-- all full rows here but are reached through the detail screen's form switcher. Cosmetic-only forms
+-- are not variants at all and never reach this table.
+CREATE TABLE variant (
+    slug             TEXT NOT NULL PRIMARY KEY,
+    speciesDexNumber INTEGER NOT NULL,
+    name             TEXT NOT NULL,
+    -- "Alolan", "Mega X", null for the ordinary form. Rendered as the card's chip.
+    formLabel        TEXT,
+    -- 0 or 1. SQLite has no boolean, and mapping it here would need a column adapter wired
+    -- identically in two modules; the domain mapper converts once instead.
+    isDefault        INTEGER NOT NULL,
+    listedInDex      INTEGER NOT NULL,
+    -- Decimetres and hectograms, upstream's units. Converted at the presentation edge.
+    height           INTEGER NOT NULL,
+    weight           INTEGER NOT NULL,
+    artworkUrl       TEXT NOT NULL,
+    sortOrder        INTEGER NOT NULL
+);
+
+CREATE INDEX variantBySpecies ON variant(speciesDexNumber);
+CREATE INDEX variantListedInDex ON variant(listedInDex);
+
+CREATE TABLE variantType (
+    variantSlug TEXT NOT NULL,
+    typeSlug    TEXT NOT NULL,
+    slot        INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, slot)
+);
+
+CREATE TABLE variantStat (
+    variantSlug TEXT NOT NULL,
+    statSlug    TEXT NOT NULL,
+    baseStat    INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, statSlug)
+);
+
+CREATE TABLE variantAbility (
+    variantSlug TEXT NOT NULL,
+    abilitySlug TEXT NOT NULL,
+    abilityName TEXT NOT NULL,
+    isHidden    INTEGER NOT NULL,
+    slot        INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, slot)
+);
+
+countVariants:
+SELECT count(*) FROM variant;
+
+countListedVariants:
+SELECT count(*) FROM variant WHERE listedInDex = 1;
+
+-- The dex grid, in National Dex order with a species' own forms adjacent.
+--
+-- The two type columns are correlated subqueries rather than joins because a variant has one or two
+-- types and the grid wants them as columns, not rows: joining would return a card twice and the
+-- caller would have to fold it back.
+selectDexEntries:
+SELECT
+    v.slug,
+    v.speciesDexNumber,
+    v.name,
+    v.formLabel,
+    v.artworkUrl,
+    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 1) AS primaryType,
+    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 2) AS secondaryType
+FROM variant v
+WHERE v.listedInDex = 1
+ORDER BY v.speciesDexNumber, v.sortOrder;
+
+selectVariantsBySpecies:
+SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
+
+insertVariant:
+INSERT INTO variant(slug, speciesDexNumber, name, formLabel, isDefault, listedInDex, height, weight, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertVariantType:
+INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
+
+insertVariantStat:
+INSERT INTO variantStat(variantSlug, statSlug, baseStat) VALUES (?, ?, ?);
+
+insertVariantAbility:
+INSERT INTO variantAbility(variantSlug, abilitySlug, abilityName, isHidden, slot) VALUES (?, ?, ?, ?, ?);
