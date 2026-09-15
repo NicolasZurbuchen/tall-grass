@@ -3,15 +3,33 @@ package io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home.HomeRoute
+import io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home.uimodel.HomeTileUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.NavKeyHandler
 
-class HomeNavKeyHandler : NavKeyHandler {
+class HomeNavKeyHandler(
+    private val navigator: HomeNavigator,
+) : NavKeyHandler {
     override fun EntryProviderScope<NavKey>.registerEntries() {
-        // Every tile's destination belongs to a feature that does not exist yet, so the callback is
-        // deliberately empty rather than absent: the seam is what later tickets attach a navigator
-        // to, and adding it now keeps them from reshaping this screen to get one.
         entry<HomeRootDestination> {
-            HomeRoute(onTileClick = { })
+            HomeRoute(
+                onTileClick = { tile ->
+                    when (tile) {
+                        HomeTileUiModel.POKEDEX -> navigator.navigateToPokedex()
+
+                        // Every other feature is still a ticket. The tiles render and do nothing,
+                        // which is better than hiding them: the home screen is the app's table of
+                        // contents and a shorter one would misrepresent what is coming.
+                        HomeTileUiModel.MOVES,
+                        HomeTileUiModel.ABILITIES,
+                        HomeTileUiModel.ITEMS,
+                        HomeTileUiModel.REGIONS,
+                        HomeTileUiModel.TYPE_CHART,
+                        HomeTileUiModel.TEAM_BUILDER,
+                        HomeTileUiModel.COMPARE,
+                        -> Unit
+                    }
+                },
+            )
         }
     }
 }
