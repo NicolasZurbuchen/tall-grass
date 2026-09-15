@@ -1,8 +1,11 @@
 package io.nicolaszurbuchen.tallgrass.app.navigation
 
 import androidx.navigation3.runtime.NavKey
+import io.nicolaszurbuchen.tallgrass.app.navigation.impl.HomeNavigatorImpl
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeNavKeyHandler
+import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeNavigator
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeRootDestination
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.PokedexNavKeyHandler
 import io.nicolaszurbuchen.tallgrass.infra.navigation.NavKeyHandler
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -17,5 +20,8 @@ val appNavigationModule =
     module {
         single<NavKey>(named("initialRoute")) { HomeRootDestination }
 
+        singleOf(::HomeNavigatorImpl) bind HomeNavigator::class
+
         singleOf(::HomeNavKeyHandler) { named("home") } bind NavKeyHandler::class
+        singleOf(::PokedexNavKeyHandler) { named("pokedex") } bind NavKeyHandler::class
     }

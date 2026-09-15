@@ -62,11 +62,13 @@ SELECT count(*) FROM variant;
 countListedVariants:
 SELECT count(*) FROM variant WHERE listedInDex = 1;
 
--- The dex grid, in National Dex order with a species' own forms adjacent.
+-- The dex grid, in National Dex order with a species own forms adjacent.
 --
--- The two type columns are correlated subqueries rather than joins because a variant has one or two
--- types and the grid wants them as columns, not rows: joining would return a card twice and the
--- caller would have to fold it back.
+-- LEFT JOIN rather than a correlated subquery for each type, which is what this started as. The
+-- primary key on (variantSlug, slot) means each join still matches at most one row, so no card is
+-- duplicated -- but SQLDelight infers a subquery column as NOT NULL and a left-joined one as
+-- nullable. The subquery version therefore typed secondaryType as String and threw on the first
+-- single-type Pokemon, which is most of them.
 selectDexEntries:
 SELECT
     v.slug,
@@ -74,9 +76,11 @@ SELECT
     v.name,
     v.formLabel,
     v.artworkUrl,
-    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 1) AS primaryType,
-    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 2) AS secondaryType
+    t1.typeSlug AS primaryType,
+    t2.typeSlug AS secondaryType
 FROM variant v
+LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
+LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
 WHERE v.listedInDex = 1
 ORDER BY v.speciesDexNumber, v.sortOrder;
 
