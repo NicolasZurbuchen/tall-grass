@@ -23,8 +23,11 @@ SELECT count(*) FROM typeEfficacy;
 selectAllTypes:
 SELECT * FROM type ORDER BY slug;
 
+-- Projected rather than `SELECT *` so the generated row type is the query's own: `SELECT *` on
+-- one table reuses the table class, which is named `TypeEfficacy` -- the same name as the domain
+-- model the mapper converts to, in a file that would then have to alias one of the two.
 selectEfficacyAgainst:
-SELECT * FROM typeEfficacy WHERE targetTypeSlug = ?;
+SELECT damageTypeSlug, factorPercent FROM typeEfficacy WHERE targetTypeSlug = ?;
 
 insertType:
 INSERT INTO type(slug, name, generation) VALUES (?, ?, ?);
