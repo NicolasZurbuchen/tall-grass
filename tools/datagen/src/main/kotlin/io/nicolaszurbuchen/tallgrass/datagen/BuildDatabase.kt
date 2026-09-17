@@ -79,8 +79,13 @@ fun main(args: Array<String>) {
             database.variantQueries.insertVariant(
                 slug = entry.slug,
                 speciesDexNumber = entry.speciesDexNumber.toLong(),
+                speciesSlug = entry.speciesSlug,
                 name = entry.name,
                 formLabel = entry.formLabel,
+                form = entry.form,
+                formKind = entry.formKind.name,
+                isMega = if (entry.isMega) 1L else 0L,
+                isBattleOnly = if (entry.isBattleOnly) 1L else 0L,
                 isDefault = if (entry.isDefault) 1L else 0L,
                 listedInDex = if (entry.listedInDex) 1L else 0L,
                 height = entry.height.toLong(),
@@ -98,7 +103,6 @@ fun main(args: Array<String>) {
                 database.variantQueries.insertVariantAbility(
                     variantSlug = entry.slug,
                     abilitySlug = ability.slug,
-                    abilityName = ability.name,
                     isHidden = if (ability.isHidden) 1L else 0L,
                     slot = ability.slot.toLong(),
                 )

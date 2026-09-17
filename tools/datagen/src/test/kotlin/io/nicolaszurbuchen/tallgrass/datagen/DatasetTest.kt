@@ -133,4 +133,72 @@ class DatasetTest {
         assertEquals(species.map { it.dexNumber }.sorted(), species.map { it.dexNumber })
         assertEquals(types.types.map { it.slug }.sorted(), types.types.map { it.slug })
     }
+
+    @Test
+    fun everyVariant_isClassified() {
+        // The partition must be total. A variant with no kind is one the classifier fell through,
+        // which is the failure the ordering in classifyForm exists to prevent.
+        assertEquals(
+            mapOf(
+                FormKind.NONE to 1025,
+                FormKind.MEGA to 97,
+                FormKind.ALTERNATE to 63,
+                FormKind.REGIONAL to 57,
+                FormKind.COSMETIC to 36,
+                FormKind.GIGANTAMAX to 34,
+                FormKind.BATTLE_ONLY to 23,
+                FormKind.TOTEM to 12,
+                FormKind.GENDER to 4,
+            ),
+            variants.groupingBy { it.formKind }.eachCount().toList().sortedByDescending { it.second }.toMap(),
+        )
+    }
+
+    @Test
+    fun onlyDefaultVariants_areClassifiedNone() {
+        assertEquals(
+            variants.count { it.isDefault },
+            variants.count { it.formKind == FormKind.NONE },
+        )
+    }
+
+    @Test
+    fun formsDifferingOnlyByAbility_areNotFiledAsCostumes() {
+        // The regression this pins: a COSMETIC test comparing stats and types alone puts all eight
+        // of these in COSMETIC, because an ability is the only thing that separates them from their
+        // base form.
+        listOf(
+            "greninja-battle-bond",
+            "rockruff-own-tempo",
+            "toxtricity-low-key",
+            "zygarde-50-power-construct",
+            "basculin-blue-striped",
+            "squawkabilly-yellow-plumage",
+            "squawkabilly-white-plumage",
+        ).forEach { slug ->
+            assertEquals(FormKind.ALTERNATE, variants.single { it.slug == slug }.formKind, slug)
+        }
+    }
+
+    @Test
+    fun costumesAndRideForms_areCosmetic() {
+        listOf("pikachu-rock-star", "pikachu-cosplay", "koraidon-sprinting-build", "miraidon-glide-mode")
+            .forEach { slug ->
+                assertEquals(FormKind.COSMETIC, variants.single { it.slug == slug }.formKind, slug)
+            }
+    }
+
+    @Test
+    fun everyVariant_namesItsSpeciesBySlug() {
+        val slugs = species.map { it.slug }.toSet()
+        val orphans = variants.filterNot { it.speciesSlug in slugs }
+        assertTrue(orphans.isEmpty(), "Variants naming an unknown species: ${orphans.map { it.slug }}")
+    }
+
+    @Test
+    fun abilities_carryNoName() {
+        // The name belongs to the ability table that arrives with #27. Storing it here repeated it
+        // across 2,943 rows holding 313 distinct abilities.
+        assertTrue(variants.all { variant -> variant.abilities.all { it.slug.isNotEmpty() } })
+    }
 }

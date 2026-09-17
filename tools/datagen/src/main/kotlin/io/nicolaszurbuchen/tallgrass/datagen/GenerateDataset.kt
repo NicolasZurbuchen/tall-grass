@@ -171,53 +171,95 @@ private fun buildVariants(
         source.read("pokemon_abilities")
             .groupBy { it.int("pokemon_id") }
 
-    return source.read("pokemon")
-        .filter { it.int("species_id") in knownSpecies }
-        .map { row ->
-            val id = row.int("id")
-            val speciesId = row.int("species_id")
-            val form = defaultForms[id]
-            val formName = form?.let { formNames[it.int("id")] }
+    val speciesSlugs =
+        source.read("pokemon_species").associate { it.int("id") to it["identifier"] }
 
-            VariantJson(
-                slug = row["identifier"],
-                speciesDexNumber = speciesId,
-                name = formName?.get("pokemon_name").orEmpty().ifEmpty { speciesNames[speciesId] ?: row["identifier"] },
-                formLabel = formName?.get("form_name").orEmpty().ifEmpty { null },
-                isDefault = row.bool("is_default"),
-                listedInDex =
-                    row.bool("is_default") ||
-                        isRegionalForm(
-                            formIdentifier = form?.get("form_identifier").orEmpty(),
-                            isBattleOnly = form?.bool("is_battle_only") ?: false,
-                        ),
-                height = row.int("height"),
-                weight = row.int("weight"),
-                artworkUrl = artworkUrl(id),
-                // The upstream `order` column would be the obvious choice and is empty for 139
-                // rows, most of Generation VIII and IX among them. The id works instead because of
-                // how upstream allocates it: an ordinary form keeps its Dex number and a
-                // non-default form is numbered from 10000, so within a species the base form leads
-                // and its variants follow.
-                sortOrder = id,
-                types = types[id].orEmpty().filterNotNull(),
-                stats =
-                    stats[id].orEmpty()
-                        .mapNotNull { stat -> statSlugs[stat.int("stat_id")]?.let { it to stat.int("base_stat") } }
-                        .sortedBy { it.first }
-                        .toMap(),
-                abilities =
-                    abilities[id].orEmpty()
-                        .mapNotNull { ability ->
-                            val abilityId = ability.int("ability_id")
-                            val slug = abilitySlugs[abilityId] ?: return@mapNotNull null
-                            AbilityRefJson(
-                                slug = slug,
-                                name = abilityNames[abilityId] ?: slug,
-                                isHidden = ability.bool("is_hidden"),
-                                slot = ability.int("slot"),
-                            )
-                        }.sortedBy { it.slot },
+    val drafts =
+        source.read("pokemon")
+            .filter { it.int("species_id") in knownSpecies }
+            .map { row ->
+                val id = row.int("id")
+                val speciesId = row.int("species_id")
+                val defaultForm = defaultForms[id]
+                val formName = defaultForm?.let { formNames[it.int("id")] }
+                val form = defaultForm?.get("form_identifier").orEmpty()
+                val isBattleOnly = defaultForm?.bool("is_battle_only") ?: false
+
+                VariantJson(
+                    slug = row["identifier"],
+                    speciesDexNumber = speciesId,
+                    speciesSlug = speciesSlugs[speciesId].orEmpty(),
+                    name = formName?.get("pokemon_name").orEmpty().ifEmpty { speciesNames[speciesId] ?: row["identifier"] },
+                    formLabel = formName?.get("form_name").orEmpty().ifEmpty { null },
+                    form = form.ifEmpty { null },
+                    // Replaced in the second pass below: classifying a form needs its species'
+                    // default variant, which does not exist yet while this one is being built.
+                    formKind = FormKind.NONE,
+                    isMega = defaultForm?.bool("is_mega") ?: false,
+                    isBattleOnly = isBattleOnly,
+                    isDefault = row.bool("is_default"),
+                    listedInDex = row.bool("is_default") || isRegionalForm(form, isBattleOnly),
+                    height = row.int("height"),
+                    weight = row.int("weight"),
+                    artworkUrl = artworkUrl(id),
+                    // The upstream `order` column would be the obvious choice and is empty for 139
+                    // rows, most of Generation VIII and IX among them. The id works instead because
+                    // of how upstream allocates it: an ordinary form keeps its Dex number and a
+                    // non-default form is numbered from 10000, so within a species the base form
+                    // leads and its variants follow.
+                    sortOrder = id,
+                    types = types[id].orEmpty().filterNotNull(),
+                    stats =
+                        stats[id].orEmpty()
+                            .mapNotNull { stat -> statSlugs[stat.int("stat_id")]?.let { it to stat.int("base_stat") } }
+                            .sortedBy { it.first }
+                            .toMap(),
+                    abilities =
+                        abilities[id].orEmpty()
+                            .mapNotNull { ability ->
+                                val abilityId = ability.int("ability_id")
+                                val slug = abilitySlugs[abilityId] ?: return@mapNotNull null
+                                AbilityRefJson(
+                                    slug = slug,
+                                    isHidden = ability.bool("is_hidden"),
+                                    slot = ability.int("slot"),
+                                )
+                            }.sortedBy { it.slot },
+                )
+            }
+
+    // Second pass. A form is cosmetic when it is indistinguishable from its species' default form,
+    // so every default form has to exist before anything can be classified.
+    val defaults = drafts.filter { it.isDefault }.associateBy { it.speciesDexNumber }
+
+    return drafts
+        .map { draft ->
+            val base = defaults[draft.speciesDexNumber]
+            draft.copy(
+                formKind =
+                    classifyForm(
+                        isDefault = draft.isDefault,
+                        form = draft.form.orEmpty(),
+                        isMega = draft.isMega,
+                        isBattleOnly = draft.isBattleOnly,
+                        differsFromBase = base == null || !draft.sharesBattleDataWith(base),
+                    ),
             )
         }.sortedWith(compareBy({ it.speciesDexNumber }, { it.sortOrder }, { it.slug }))
 }
+
+/**
+ * Whether two variants are indistinguishable in everything this dataset models about a battle.
+ *
+ * **Abilities are part of the comparison and cannot be left out.** Eight forms differ from their
+ * base by ability alone -- `greninja-battle-bond`, `rockruff-own-tempo`, `toxtricity-low-key`,
+ * `zygarde-50-power-construct`, `basculin-blue-striped` and two Squawkabilly plumages -- and a
+ * stats-and-types comparison files all of them as costumes.
+ *
+ * Moves are not compared because they are not ingested yet. That makes `keldeo-resolute` read as
+ * cosmetic when it really differs by learning Secret Sword; it stops being wrong when moves land.
+ */
+private fun VariantJson.sharesBattleDataWith(other: VariantJson): Boolean =
+    stats == other.stats &&
+        types == other.types &&
+        abilities.map { it.slug }.sorted() == other.abilities.map { it.slug }.sorted()

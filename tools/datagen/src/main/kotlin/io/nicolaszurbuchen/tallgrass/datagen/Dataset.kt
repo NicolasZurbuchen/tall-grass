@@ -40,8 +40,13 @@ data class SpeciesJson(
 data class VariantJson(
     val slug: String,
     val speciesDexNumber: Int,
+    val speciesSlug: String,
     val name: String,
     val formLabel: String?,
+    val form: String?,
+    val formKind: FormKind,
+    val isMega: Boolean,
+    val isBattleOnly: Boolean,
     val isDefault: Boolean,
     val listedInDex: Boolean,
     val height: Int,
@@ -56,7 +61,6 @@ data class VariantJson(
 @Serializable
 data class AbilityRefJson(
     val slug: String,
-    val name: String,
     val isHidden: Boolean,
     val slot: Int,
 )

@@ -10,9 +10,17 @@
 CREATE TABLE variant (
     slug             TEXT NOT NULL PRIMARY KEY,
     speciesDexNumber INTEGER NOT NULL,
+    speciesSlug      TEXT NOT NULL,
     name             TEXT NOT NULL,
     -- "Alolan", "Mega X", null for the ordinary form. Rendered as the card's chip.
     formLabel        TEXT,
+    -- The raw upstream identifier: "alola", "mega-x", "gmax". An open set of 164 values, 134 of
+    -- them used once, so it records what upstream said rather than anything queryable.
+    form             TEXT,
+    -- The closed taxonomy derived from it, which is what a screen filters on. See FormKind.kt.
+    formKind         TEXT NOT NULL,
+    isMega           INTEGER NOT NULL,
+    isBattleOnly     INTEGER NOT NULL,
     -- 0 or 1. SQLite has no boolean, and mapping it here would need a column adapter wired
     -- identically in two modules; the domain mapper converts once instead.
     isDefault        INTEGER NOT NULL,
@@ -26,6 +34,7 @@ CREATE TABLE variant (
 
 CREATE INDEX variantBySpecies ON variant(speciesDexNumber);
 CREATE INDEX variantListedInDex ON variant(listedInDex);
+CREATE INDEX variantByFormKind ON variant(formKind);
 
 CREATE TABLE variantType (
     variantSlug TEXT NOT NULL,
@@ -44,7 +53,6 @@ CREATE TABLE variantStat (
 CREATE TABLE variantAbility (
     variantSlug TEXT NOT NULL,
     abilitySlug TEXT NOT NULL,
-    abilityName TEXT NOT NULL,
     isHidden    INTEGER NOT NULL,
     slot        INTEGER NOT NULL,
     PRIMARY KEY (variantSlug, slot)
@@ -78,8 +86,8 @@ selectVariantsBySpecies:
 SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
 
 insertVariant:
-INSERT INTO variant(slug, speciesDexNumber, name, formLabel, isDefault, listedInDex, height, weight, artworkUrl, sortOrder)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertVariantType:
 INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
@@ -88,4 +96,4 @@ insertVariantStat:
 INSERT INTO variantStat(variantSlug, statSlug, baseStat) VALUES (?, ?, ?);
 
 insertVariantAbility:
-INSERT INTO variantAbility(variantSlug, abilitySlug, abilityName, isHidden, slot) VALUES (?, ?, ?, ?, ?);
+INSERT INTO variantAbility(variantSlug, abilitySlug, isHidden, slot) VALUES (?, ?, ?, ?);
