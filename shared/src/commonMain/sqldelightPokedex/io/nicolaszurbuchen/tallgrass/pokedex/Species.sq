@@ -1,0 +1,48 @@
+-- A Pokemon species: one row per National Dex number.
+--
+-- Species and Variant are separate because they have different cardinality. Egg groups and the
+-- evolution chain are true of Vulpix regardless of whether it is Kantonian or Alolan; stats and
+-- types are not. Without the split, Alcremie would repeat its breeding data 63 times.
+--
+-- dexNumber is the primary key because it is unique per species and is what the upstream data is
+-- keyed by. It is display-only everywhere above this table: routes key on the variant slug.
+CREATE TABLE species (
+    dexNumber        INTEGER NOT NULL PRIMARY KEY,
+    slug             TEXT NOT NULL UNIQUE,
+    name             TEXT NOT NULL,
+    genus            TEXT NOT NULL,
+    generation       INTEGER NOT NULL,
+    -- Eighths of a chance of being female, or -1 for a genderless species. Upstream's encoding,
+    -- kept rather than converted: -1 is a real third case and a percentage would have to invent a
+    -- value for it.
+    genderRate       INTEGER NOT NULL,
+    captureRate      INTEGER NOT NULL,
+    hatchCounter     INTEGER NOT NULL,
+    growthRate       TEXT NOT NULL,
+    -- Upstream facts, and the natural axes for filtering a dex.
+    isBaby           INTEGER AS kotlin.Boolean NOT NULL,
+    isLegendary      INTEGER AS kotlin.Boolean NOT NULL,
+    isMythical       INTEGER AS kotlin.Boolean NOT NULL
+);
+
+CREATE TABLE speciesEggGroup (
+    speciesDexNumber INTEGER NOT NULL,
+    eggGroup         TEXT NOT NULL,
+    PRIMARY KEY (speciesDexNumber, eggGroup)
+);
+
+CREATE INDEX speciesEggGroupBySpecies ON speciesEggGroup(speciesDexNumber);
+
+countSpecies:
+SELECT count(*) FROM species;
+
+selectSpeciesByDexNumber:
+SELECT * FROM species WHERE dexNumber = ?;
+
+insertSpecies:
+INSERT INTO species(dexNumber, slug, name, genus, generation, genderRate, captureRate, hatchCounter, growthRate, isBaby, isLegendary, isMythical)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertSpeciesEggGroup:
+INSERT INTO speciesEggGroup(speciesDexNumber, eggGroup)
+VALUES (?, ?);

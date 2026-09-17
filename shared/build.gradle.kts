@@ -108,8 +108,10 @@ dependencies {
 
 sqldelight {
     databases {
+        // The user-owned database. Migrated, never regenerated.
         create("AppDatabase") {
             packageName.set("io.nicolaszurbuchen.tallgrass.cache")
+            srcDirs.setFrom("src/commonMain/sqldelight")
 
             // Replays the migrations against the committed snapshot, which is the only thing that
             // catches a table added with no .sqm. Regenerate it with
@@ -117,5 +119,30 @@ sqldelight {
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
             verifyMigrations.set(true)
         }
+
+        // The generated dataset. Read-only to the app and replaced whole-file, so it has no
+        // migrations and wants none: SQLDelight takes the schema version from migration files, and
+        // there is no older copy of this database to upgrade -- a new build ships a new file.
+        //
+        // `tools/datagen` points its own SQLDelight at these same .sq files, which is what makes the
+        // shipped database unable to drift from the queries that read it.
+        create("PokedexDatabase") {
+            packageName.set("io.nicolaszurbuchen.tallgrass.pokedex")
+            srcDirs.setFrom("src/commonMain/sqldelightPokedex")
+            verifyMigrations.set(false)
+        }
     }
+}
+
+// The generated dataset is built, never committed, so it has to exist before anything reads
+// composeResources -- otherwise a clean checkout assembles an app with no Pokedex in it.
+//
+// Matched by name rather than by type: these tasks are created by the Android and Compose plugins
+// during their own configuration, so there is no typed handle to name here.
+tasks.matching { task ->
+    task.name.endsWith("Assets") ||
+        task.name.contains("ComposeResources") ||
+        task.name.contains("ResourcesFor")
+}.configureEach {
+    dependsOn(":tools:datagen:buildPokedexDatabase")
 }

@@ -1,0 +1,97 @@
+-- One battle-distinct form of a species: the thing that owns stats, types, abilities and artwork.
+--
+-- Keyed by slug, taken straight from upstream -- `vulpix`, `vulpix-alola`, `charizard-mega-x`.
+-- Not invented and not hand-maintained, which is what makes it safe to put in a route.
+--
+-- listedInDex decides grid representation and nothing else. Only regional forms get a card of their
+-- own; Megas, alternate forms, battle-only transformations, fusions and gender-distinct variants are
+-- all full rows here but are reached through the detail screen's form switcher. Cosmetic-only forms
+-- are not variants at all and never reach this table.
+CREATE TABLE variant (
+    slug             TEXT NOT NULL PRIMARY KEY,
+    speciesDexNumber INTEGER NOT NULL,
+    speciesSlug      TEXT NOT NULL,
+    name             TEXT NOT NULL,
+    -- "Alolan", "Mega X", null for the ordinary form. Rendered as the card's chip.
+    formLabel        TEXT,
+    -- The raw upstream identifier: "alola", "mega-x", "gmax". An open set of 164 values, 134 of
+    -- them used once, so it records what upstream said rather than anything queryable.
+    form             TEXT,
+    -- The closed taxonomy derived from it, which is what a screen filters on. See FormKind.kt.
+    formKind         TEXT NOT NULL,
+    isMega           INTEGER AS kotlin.Boolean NOT NULL,
+    isBattleOnly     INTEGER AS kotlin.Boolean NOT NULL,
+    isDefault        INTEGER AS kotlin.Boolean NOT NULL,
+    listedInDex      INTEGER AS kotlin.Boolean NOT NULL,
+    -- Decimetres and hectograms, upstream's units. Converted at the presentation edge.
+    height           INTEGER NOT NULL,
+    weight           INTEGER NOT NULL,
+    artworkUrl       TEXT NOT NULL,
+    sortOrder        INTEGER NOT NULL
+);
+
+CREATE INDEX variantBySpecies ON variant(speciesDexNumber);
+CREATE INDEX variantListedInDex ON variant(listedInDex);
+CREATE INDEX variantByFormKind ON variant(formKind);
+
+CREATE TABLE variantType (
+    variantSlug TEXT NOT NULL,
+    typeSlug    TEXT NOT NULL,
+    slot        INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, slot)
+);
+
+CREATE TABLE variantStat (
+    variantSlug TEXT NOT NULL,
+    statSlug    TEXT NOT NULL,
+    baseStat    INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, statSlug)
+);
+
+CREATE TABLE variantAbility (
+    variantSlug TEXT NOT NULL,
+    abilitySlug TEXT NOT NULL,
+    isHidden    INTEGER AS kotlin.Boolean NOT NULL,
+    slot        INTEGER NOT NULL,
+    PRIMARY KEY (variantSlug, slot)
+);
+
+countVariants:
+SELECT count(*) FROM variant;
+
+countListedVariants:
+SELECT count(*) FROM variant WHERE listedInDex = 1;
+
+-- The dex grid, in National Dex order with a species' own forms adjacent.
+--
+-- The two type columns are correlated subqueries rather than joins because a variant has one or two
+-- types and the grid wants them as columns, not rows: joining would return a card twice and the
+-- caller would have to fold it back.
+selectDexEntries:
+SELECT
+    v.slug,
+    v.speciesDexNumber,
+    v.name,
+    v.formLabel,
+    v.artworkUrl,
+    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 1) AS primaryType,
+    (SELECT vt.typeSlug FROM variantType vt WHERE vt.variantSlug = v.slug AND vt.slot = 2) AS secondaryType
+FROM variant v
+WHERE v.listedInDex = 1
+ORDER BY v.speciesDexNumber, v.sortOrder;
+
+selectVariantsBySpecies:
+SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
+
+insertVariant:
+INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertVariantType:
+INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
+
+insertVariantStat:
+INSERT INTO variantStat(variantSlug, statSlug, baseStat) VALUES (?, ?, ?);
+
+insertVariantAbility:
+INSERT INTO variantAbility(variantSlug, abilitySlug, isHidden, slot) VALUES (?, ?, ?, ?);
