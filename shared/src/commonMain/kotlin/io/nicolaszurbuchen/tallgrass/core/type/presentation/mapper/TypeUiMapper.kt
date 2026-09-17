@@ -4,10 +4,8 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 
 /**
- * The one place a [PokemonType] becomes something drawable.
- *
- * Exhaustive by construction: both enums list the same eighteen members, so adding a nineteenth type
- * to one breaks this `when` at compile time rather than leaving a card with no colour.
+ * Exhaustive by construction: both enums list the same eighteen members, so a nineteenth type breaks
+ * this at compile time rather than leaving a card with no colour.
  */
 fun PokemonType.toUiModel(): TypeUiModel =
     when (this) {

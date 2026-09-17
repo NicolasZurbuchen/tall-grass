@@ -47,8 +47,7 @@ fun DexScreen(
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
                 ) {
-                    // Keyed by slug so the grid keeps its scroll position and recycles correctly.
-                    // The Dex number would not do: Vulpix and Alolan Vulpix are both #037.
+                    // DECISIONS.md § The dex grid is three cards across, loaded whole
                     items(items = state.entries, key = { it.slug }) { entry ->
                         DexCard(
                             name = entry.name,
@@ -65,16 +64,9 @@ fun DexScreen(
     }
 }
 
-// Three across is what makes roughly eleven hundred cards feel like a reference rather than a list:
-// the artwork stays large enough to recognise at a glance and a generation is a few flicks apart.
+// DECISIONS.md § The dex grid is three cards across, loaded whole
 private const val DEX_GRID_COLUMNS = 3
 
-/**
- * The grid waiting as its own silhouette.
- *
- * A screenful of cards rather than the whole dex: nothing below the fold is visible, and eleven
- * hundred shimmering blocks would animate off-screen for no one.
- */
 @Composable
 private fun DexGridSkeleton() {
     ShimmerPulse {
@@ -91,4 +83,6 @@ private fun DexGridSkeleton() {
     }
 }
 
+// A screenful, not the whole dex: nothing below the fold is visible and eleven hundred shimmering
+// blocks would animate off-screen for no one.
 private const val SKELETON_CARDS = 12

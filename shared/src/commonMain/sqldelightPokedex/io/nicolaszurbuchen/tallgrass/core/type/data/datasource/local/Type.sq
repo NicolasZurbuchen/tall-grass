@@ -1,20 +1,12 @@
--- The eighteen types, and the full effectiveness chart between them.
---
--- Small enough to be free and load-bearing twice over: the grid tints every card by a variant's
--- primary type, and the detail screen's Stats tab reads the chart to work out what a variant takes
--- extra damage from.
+-- The eighteen types, and the effectiveness chart between them.
 CREATE TABLE type (
     slug       TEXT NOT NULL PRIMARY KEY,
     name       TEXT NOT NULL,
     generation INTEGER NOT NULL
 );
 
--- Upstream stores the factor as a percentage -- 0, 50, 100, 200 -- and so does this table. Kept as
--- an integer rather than a float because these are the only four values it ever takes, and a
--- multiplier of 0.5 stored as a float invites an equality comparison that will eventually be wrong.
---
--- Only rows that differ from 100 are stored. A missing pair is neutral damage, which is the
--- overwhelming majority of the 18x18 grid.
+-- A percentage, as upstream stores it: 0, 50, 200. Only non-neutral pairs are stored, so a missing
+-- pair means neutral damage.
 CREATE TABLE typeEfficacy (
     damageTypeSlug TEXT NOT NULL,
     targetTypeSlug TEXT NOT NULL,

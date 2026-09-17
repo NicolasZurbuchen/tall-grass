@@ -3,15 +3,8 @@ package io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel
 import androidx.compose.ui.graphics.Color
 
 /**
- * A type as it is drawn: a label and the colour everything tinted by that type uses.
- *
- * This lives in `core/` rather than `design/` because it owns a rule about the subject -- that Fire
- * is orange and Water is blue -- rather than a rule about appearance. `AppFireColor` would read
- * oddly in the design system; the colour belongs beside the type.
- *
- * It deliberately does not know about `PokemonType`. The domain crossing happens once, in
- * `TypeUiMapper`, which is the only place in a `core/` slice's presentation allowed to import the
- * domain at all.
+ * A type as it is drawn. Deliberately does not know about `PokemonType`; the domain crossing happens
+ * once, in `TypeUiMapper`.
  */
 enum class TypeUiModel(
     val label: String,

@@ -1,11 +1,8 @@
 package io.nicolaszurbuchen.tallgrass.datagen
 
 /**
- * A row of an upstream CSV, addressable by column name.
- *
- * Column names rather than indices because the upstream files gain columns between releases --
- * `pokemon_species.csv` alone carries twenty. An index-based reader keeps parsing happily when a
- * column is inserted in the middle and silently reads the wrong field.
+ * A row of an upstream CSV, addressed by column name because upstream gains columns between releases
+ * and an index-based reader would silently read the wrong field.
  */
 class CsvRow(
     private val header: Map<String, Int>,
@@ -26,14 +23,9 @@ class CsvRow(
 /**
  * Parses an upstream CSV.
  *
- * Hand-written rather than pulled from a library because the upstream dialect is narrow: comma
- * separated, `"` quoting, `""` for a literal quote. This module is a build tool whose dependencies
- * reach nobody's device, but one fewer is still one fewer.
- *
  * **A quoted field may contain newlines**, so this scans the whole text rather than splitting into
- * lines first. `growth_rates.csv` is the file that proves it: the experience formulas are multi-line
- * LaTeX, and a line-at-a-time reader tears row 5 into six broken rows whose first column is a
- * fragment of an equation.
+ * lines first: `growth_rates.csv` stores multi-line LaTeX, and a line-at-a-time reader tears one row
+ * into six whose first column is a fragment of an equation.
  */
 fun parseCsv(text: String): List<CsvRow> {
     val rows = splitCsvRows(text)

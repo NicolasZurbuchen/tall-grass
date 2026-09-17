@@ -137,3 +137,42 @@ So the wrapper is in `NavGraph.kt` from the first screen, with the scope publish
 **Rejected: passing the scope down as a parameter.** A shared element is declared deep inside a screen, on a card's image rather than on the screen composable, so a parameter would thread through every layer in between. The composition local is in the ktlint allowlist for that reason.
 
 **The local fails loudly rather than defaulting to null.** Reading it outside the host is a wiring mistake; a null default would turn that into a transition that silently does not run, which is the hardest kind of animation bug to notice.
+
+### The dex grid is three cards across, loaded whole
+
+Three columns keeps the artwork large enough to recognise at a glance while putting a generation a
+few flicks apart. Two reads as a list and wastes the width; four shrinks the artwork to the point
+where the tint is doing most of the identifying.
+
+The screen reads all ~1,080 rows in one query and holds them. Paging buys nothing here: the dataset
+is on the device, the rows are small, and a Pokédex that cannot be scrolled to its end without a
+round trip is worse than one costing a few hundred kilobytes of heap.
+
+**Rejected: keying the grid by Dex number.** Vulpix and Alolan Vulpix are both #037, so the key would
+collide and the list would lose its scroll position whenever a form was involved. The slug is unique
+and is already the route key.
+
+### A form's kind is derived and stored, not computed at read time
+
+`form` is upstream's raw identifier and is an open set — 164 values, 134 of them used once, so
+`alola` and `rock-star` sit at the same level and nothing can filter on it. `formKind` is a closed
+taxonomy derived from it once, at generation, and committed.
+
+Deriving it in the app instead would put the classification behind a release: a form filed wrongly
+would be wrong on every device until the next build, and invisible until someone noticed a Mega in
+the wrong list. Committed, it appears in a pull-request diff — the same mechanism the ability
+categories use.
+
+**The cosmetic test compares stats, types *and* abilities.** Stats and types alone file eight real
+forms as costumes, because an ability is the only thing separating them from their base form.
+
+### The database ships with its schema version stamped
+
+`Schema.create` builds the tables and leaves SQLite's `user_version` at 0, and that pragma is the
+only thing a driver reads to decide whether a database is empty. Shipped at 0, the app opened a
+populated file, concluded it was blank, and tried to create the tables a second time.
+
+It is unreachable from any host test: the generator writes the file, the tests build their own in
+memory through the same `create` path, and none of them re-open a populated database the way first
+run does. So the build stamps the version and reads it back, and the check was verified by shipping
+a deliberate 0 and watching it fail.

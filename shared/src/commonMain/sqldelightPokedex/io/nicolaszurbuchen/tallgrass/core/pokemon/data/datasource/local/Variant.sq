@@ -1,12 +1,5 @@
--- One battle-distinct form of a species: the thing that owns stats, types, abilities and artwork.
---
--- Keyed by slug, taken straight from upstream -- `vulpix`, `vulpix-alola`, `charizard-mega-x`.
--- Not invented and not hand-maintained, which is what makes it safe to put in a route.
---
--- listedInDex decides grid representation and nothing else. Only regional forms get a card of their
--- own; Megas, alternate forms, battle-only transformations, fusions and gender-distinct variants are
--- all full rows here but are reached through the detail screen's form switcher. Cosmetic-only forms
--- are not variants at all and never reach this table.
+-- One battle-distinct form of a species. Keyed by slug, which is upstream own identifier and what a
+-- route keys on. listedInDex decides grid representation and nothing else.
 CREATE TABLE variant (
     slug             TEXT NOT NULL PRIMARY KEY,
     speciesDexNumber INTEGER NOT NULL,
@@ -62,13 +55,9 @@ SELECT count(*) FROM variant;
 countListedVariants:
 SELECT count(*) FROM variant WHERE listedInDex = 1;
 
--- The dex grid, in National Dex order with a species own forms adjacent.
---
--- LEFT JOIN rather than a correlated subquery for each type, which is what this started as. The
--- primary key on (variantSlug, slot) means each join still matches at most one row, so no card is
--- duplicated -- but SQLDelight infers a subquery column as NOT NULL and a left-joined one as
--- nullable. The subquery version therefore typed secondaryType as String and threw on the first
--- single-type Pokemon, which is most of them.
+-- LEFT JOIN rather than a subquery per type column: SQLDelight infers a subquery column as NOT NULL,
+-- and a single-type Pokemon has no second type. The primary key on (variantSlug, slot) keeps each
+-- join to at most one row, so no card is duplicated.
 selectDexEntries:
 SELECT
     v.slug,
