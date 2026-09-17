@@ -20,13 +20,7 @@ import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
-/**
- * The navigation host, wrapped in a [SharedTransitionLayout].
- *
- * The wrapper is here from the first screen on purpose. A shared element needs matching keys on both
- * sides and source and target composables structured to share bounds, so adding the layout later
- * means reopening every screen that was written without it.
- */
+/** The navigation host. See CLAUDE.md § Animation is a constraint, not a finish for the wrapper. */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun NavGraph(

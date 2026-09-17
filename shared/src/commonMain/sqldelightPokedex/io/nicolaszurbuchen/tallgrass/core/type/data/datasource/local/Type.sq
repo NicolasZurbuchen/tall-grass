@@ -1,0 +1,33 @@
+-- The eighteen types, and the effectiveness chart between them.
+CREATE TABLE type (
+    slug       TEXT NOT NULL PRIMARY KEY,
+    name       TEXT NOT NULL,
+    generation INTEGER NOT NULL
+);
+
+-- A percentage, as upstream stores it: 0, 50, 200. Only non-neutral pairs are stored, so a missing
+-- pair means neutral damage.
+CREATE TABLE typeEfficacy (
+    damageTypeSlug TEXT NOT NULL,
+    targetTypeSlug TEXT NOT NULL,
+    factorPercent  INTEGER NOT NULL,
+    PRIMARY KEY (damageTypeSlug, targetTypeSlug)
+);
+
+countTypes:
+SELECT count(*) FROM type;
+
+countTypeEfficacies:
+SELECT count(*) FROM typeEfficacy;
+
+selectAllTypes:
+SELECT * FROM type ORDER BY slug;
+
+selectEfficacyAgainst:
+SELECT * FROM typeEfficacy WHERE targetTypeSlug = ?;
+
+insertType:
+INSERT INTO type(slug, name, generation) VALUES (?, ?, ?);
+
+insertTypeEfficacy:
+INSERT INTO typeEfficacy(damageTypeSlug, targetTypeSlug, factorPercent) VALUES (?, ?, ?);
