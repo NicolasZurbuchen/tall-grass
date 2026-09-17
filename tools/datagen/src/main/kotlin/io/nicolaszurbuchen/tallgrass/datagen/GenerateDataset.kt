@@ -160,11 +160,6 @@ private fun buildVariants(
         source.read("pokemon_stats")
             .groupBy { it.int("pokemon_id") }
 
-    val abilityNames =
-        source.read("ability_names")
-            .filter { it.int("local_language_id") == ENGLISH }
-            .associate { it.int("ability_id") to it["name"] }
-
     val abilitySlugs = source.read("abilities").associate { it.int("id") to it["identifier"] }
 
     val abilities =
@@ -232,8 +227,8 @@ private fun buildVariants(
     // so every default form has to exist before anything can be classified.
     val defaults = drafts.filter { it.isDefault }.associateBy { it.speciesDexNumber }
 
-    return drafts
-        .map { draft ->
+    val classified =
+        drafts.map { draft ->
             val base = defaults[draft.speciesDexNumber]
             draft.copy(
                 formKind =
@@ -245,7 +240,77 @@ private fun buildVariants(
                         differsFromBase = base == null || !draft.sharesBattleDataWith(base),
                     ),
             )
-        }.sortedWith(compareBy({ it.speciesDexNumber }, { it.sortOrder }, { it.slug }))
+        }
+
+    return (classified + typeChangingForms(source, defaults))
+        .sortedWith(compareBy({ it.speciesDexNumber }, { it.sortOrder }, { it.slug }))
+}
+
+/**
+ * Arceus's Plates and Silvally's Memories, which upstream models as forms rather than Pokemon.
+ *
+ * They get no `pokemon` row because their stats, abilities and moves are identical to the base form
+ * -- **only the type moves**, and `pokemon_form_types.csv` holds exactly 35 rows, all of them these
+ * two. Left out, the dataset says `arceus [normal]` and seventeen of its eighteen forms are
+ * unrepresentable, which would have the Stats tab report Fire Arceus as weak to Fighting.
+ *
+ * They are promoted here because the test for a variant is **battle-relevance, not different
+ * stats** -- the same rule that makes Gigantamax and Meowstic F variants despite carrying their base
+ * form's stats exactly. A type change is as battle-relevant as it gets.
+ *
+ * Everything except the type and the artwork is inherited from the base form, because upstream has
+ * nothing else to give: there is no per-form stat, ability or breeding table.
+ */
+private fun typeChangingForms(
+    source: UpstreamSource,
+    defaults: Map<Int, VariantJson>,
+): List<VariantJson> {
+    val typeSlugs =
+        source.read("types")
+            .filter { it.int("id") <= LAST_REAL_TYPE_ID }
+            .associate { it.int("id") to it["identifier"] }
+
+    val typesByForm =
+        source.read("pokemon_form_types")
+            .sortedBy { it.int("slot") }
+            .groupBy({ it.int("pokemon_form_id") }, { typeSlugs[it.int("type_id")] })
+
+    val formNames =
+        source.read("pokemon_form_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associateBy { it.int("pokemon_form_id") }
+
+    val speciesByPokemon =
+        source.read("pokemon").associate { it.int("id") to it.int("species_id") }
+
+    return source.read("pokemon_forms")
+        .filterNot { it.bool("is_default") }
+        .mapNotNull { form ->
+            val formId = form.int("id")
+            val types = typesByForm[formId]?.filterNotNull().orEmpty()
+            if (types.isEmpty()) return@mapNotNull null
+
+            val speciesId = speciesByPokemon[form.int("pokemon_id")] ?: return@mapNotNull null
+            val base = defaults[speciesId] ?: return@mapNotNull null
+            val formName = formNames[formId]
+
+            base.copy(
+                slug = form["identifier"],
+                name = formName?.get("pokemon_name").orEmpty().ifEmpty { base.name },
+                formLabel = formName?.get("form_name").orEmpty().ifEmpty { null },
+                form = form["form_identifier"].ifEmpty { null },
+                // Battle-relevant, and none of the earlier buckets name it.
+                formKind = FormKind.ALTERNATE,
+                isDefault = false,
+                // Eighteen Arceus in the grid would bury the other 1081 cards.
+                listedInDex = false,
+                types = types,
+                // Keyed by the form rather than the pokemon: every Plate has its own picture, and
+                // the pokemon id would give all eighteen the same one.
+                artworkUrl = artworkUrl(formId),
+                sortOrder = formId,
+            )
+        }
 }
 
 /**

@@ -142,7 +142,7 @@ class DatasetTest {
             mapOf(
                 FormKind.NONE to 1025,
                 FormKind.MEGA to 97,
-                FormKind.ALTERNATE to 63,
+                FormKind.ALTERNATE to 97,
                 FormKind.REGIONAL to 57,
                 FormKind.COSMETIC to 36,
                 FormKind.GIGANTAMAX to 34,
@@ -200,5 +200,34 @@ class DatasetTest {
         // The name belongs to the ability table that arrives with #27. Storing it here repeated it
         // across 2,943 rows holding 313 distinct abilities.
         assertTrue(variants.all { variant -> variant.abilities.all { it.slug.isNotEmpty() } })
+    }
+
+    @Test
+    fun arceusAndSilvally_keepTheirTypeChangingForms() {
+        // Upstream files these as forms rather than Pokemon because only the type moves. Left out,
+        // the dataset says arceus [normal] and the Stats tab reports Fire Arceus as weak to
+        // Fighting.
+        assertEquals(18, variants.count { it.slug.startsWith("arceus") })
+        assertEquals(18, variants.count { it.slug.startsWith("silvally") })
+
+        val fire = variants.single { it.slug == "arceus-fire" }
+        assertEquals(listOf("fire"), fire.types)
+        assertEquals(FormKind.ALTERNATE, fire.formKind)
+        assertTrue(!fire.listedInDex, "Eighteen Arceus would bury the rest of the grid")
+
+        // Artwork comes from the form id, not the pokemon id, or all eighteen share one picture.
+        assertTrue(fire.artworkUrl != variants.single { it.slug == "arceus" }.artworkUrl)
+    }
+
+    @Test
+    fun promotedForms_inheritWhatUpstreamCannotVary() {
+        // There is no per-form stat or ability table, so these carry the base form's. The type is
+        // the only thing that genuinely differs.
+        val base = variants.single { it.slug == "arceus" }
+        val fire = variants.single { it.slug == "arceus-fire" }
+
+        assertEquals(base.stats, fire.stats)
+        assertEquals(base.abilities.map { it.slug }, fire.abilities.map { it.slug })
+        assertEquals(base.speciesDexNumber, fire.speciesDexNumber)
     }
 }

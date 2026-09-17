@@ -27197,6 +27197,601 @@
     ]
   },
   {
+    "slug": "arceus-bug",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Bug Arceus",
+    "formLabel": "Bug Type",
+    "form": "bug",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10041.png",
+    "sortOrder": 10041,
+    "types": [
+      "bug"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-dark",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Dark Arceus",
+    "formLabel": "Dark Type",
+    "form": "dark",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10042.png",
+    "sortOrder": 10042,
+    "types": [
+      "dark"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-dragon",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Dragon Arceus",
+    "formLabel": "Dragon Type",
+    "form": "dragon",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10043.png",
+    "sortOrder": 10043,
+    "types": [
+      "dragon"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-electric",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Electric Arceus",
+    "formLabel": "Electric Type",
+    "form": "electric",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10044.png",
+    "sortOrder": 10044,
+    "types": [
+      "electric"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-fighting",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Fighting Arceus",
+    "formLabel": "Fighting Type",
+    "form": "fighting",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10045.png",
+    "sortOrder": 10045,
+    "types": [
+      "fighting"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-fire",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Fire Arceus",
+    "formLabel": "Fire Type",
+    "form": "fire",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10046.png",
+    "sortOrder": 10046,
+    "types": [
+      "fire"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-flying",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Flying Arceus",
+    "formLabel": "Flying Type",
+    "form": "flying",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10047.png",
+    "sortOrder": 10047,
+    "types": [
+      "flying"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-ghost",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Ghost Arceus",
+    "formLabel": "Ghost Type",
+    "form": "ghost",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10048.png",
+    "sortOrder": 10048,
+    "types": [
+      "ghost"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-grass",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Grass Arceus",
+    "formLabel": "Grass Type",
+    "form": "grass",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10049.png",
+    "sortOrder": 10049,
+    "types": [
+      "grass"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-ground",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Ground Arceus",
+    "formLabel": "Ground Type",
+    "form": "ground",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10050.png",
+    "sortOrder": 10050,
+    "types": [
+      "ground"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-ice",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Ice Arceus",
+    "formLabel": "Ice Type",
+    "form": "ice",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10051.png",
+    "sortOrder": 10051,
+    "types": [
+      "ice"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-poison",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Poison Arceus",
+    "formLabel": "Poison Type",
+    "form": "poison",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10052.png",
+    "sortOrder": 10052,
+    "types": [
+      "poison"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-psychic",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Psychic Arceus",
+    "formLabel": "Psychic Type",
+    "form": "psychic",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10053.png",
+    "sortOrder": 10053,
+    "types": [
+      "psychic"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-rock",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Rock Arceus",
+    "formLabel": "Rock Type",
+    "form": "rock",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10054.png",
+    "sortOrder": 10054,
+    "types": [
+      "rock"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-steel",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Steel Arceus",
+    "formLabel": "Steel Type",
+    "form": "steel",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10055.png",
+    "sortOrder": 10055,
+    "types": [
+      "steel"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-water",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Water Arceus",
+    "formLabel": "Water Type",
+    "form": "water",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10056.png",
+    "sortOrder": 10056,
+    "types": [
+      "water"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "arceus-fairy",
+    "speciesDexNumber": 493,
+    "speciesSlug": "arceus",
+    "name": "Fairy Arceus",
+    "formLabel": "Fairy Type",
+    "form": "fairy",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 32,
+    "weight": 3200,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10085.png",
+    "sortOrder": 10085,
+    "types": [
+      "fairy"
+    ],
+    "stats": {
+      "attack": 120,
+      "defense": 120,
+      "hp": 120,
+      "special-attack": 120,
+      "special-defense": 120,
+      "speed": 120
+    },
+    "abilities": [
+      {
+        "slug": "multitype",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
     "slug": "victini",
     "speciesDexNumber": 494,
     "speciesSlug": "victini",
@@ -42081,6 +42676,601 @@
     "sortOrder": 773,
     "types": [
       "normal"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-fighting",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Fighting",
+    "form": "fighting",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10232.png",
+    "sortOrder": 10232,
+    "types": [
+      "fighting"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-flying",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Flying",
+    "form": "flying",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10233.png",
+    "sortOrder": 10233,
+    "types": [
+      "flying"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-poison",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Poison",
+    "form": "poison",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10234.png",
+    "sortOrder": 10234,
+    "types": [
+      "poison"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-ground",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Ground",
+    "form": "ground",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10235.png",
+    "sortOrder": 10235,
+    "types": [
+      "ground"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-rock",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Rock",
+    "form": "rock",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10236.png",
+    "sortOrder": 10236,
+    "types": [
+      "rock"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-bug",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Bug",
+    "form": "bug",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10237.png",
+    "sortOrder": 10237,
+    "types": [
+      "bug"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-ghost",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Ghost",
+    "form": "ghost",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10238.png",
+    "sortOrder": 10238,
+    "types": [
+      "ghost"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-steel",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Steel",
+    "form": "steel",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10239.png",
+    "sortOrder": 10239,
+    "types": [
+      "steel"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-fire",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Fire",
+    "form": "fire",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10240.png",
+    "sortOrder": 10240,
+    "types": [
+      "fire"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-water",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Water",
+    "form": "water",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10241.png",
+    "sortOrder": 10241,
+    "types": [
+      "water"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-grass",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Grass",
+    "form": "grass",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10242.png",
+    "sortOrder": 10242,
+    "types": [
+      "grass"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-electric",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Electric",
+    "form": "electric",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10243.png",
+    "sortOrder": 10243,
+    "types": [
+      "electric"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-psychic",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Psychic",
+    "form": "psychic",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10244.png",
+    "sortOrder": 10244,
+    "types": [
+      "psychic"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-ice",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Ice",
+    "form": "ice",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10245.png",
+    "sortOrder": 10245,
+    "types": [
+      "ice"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-dragon",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Dragon",
+    "form": "dragon",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10246.png",
+    "sortOrder": 10246,
+    "types": [
+      "dragon"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-dark",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Dark",
+    "form": "dark",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10247.png",
+    "sortOrder": 10247,
+    "types": [
+      "dark"
+    ],
+    "stats": {
+      "attack": 95,
+      "defense": 95,
+      "hp": 95,
+      "special-attack": 95,
+      "special-defense": 95,
+      "speed": 95
+    },
+    "abilities": [
+      {
+        "slug": "rks-system",
+        "isHidden": false,
+        "slot": 1
+      }
+    ]
+  },
+  {
+    "slug": "silvally-fairy",
+    "speciesDexNumber": 773,
+    "speciesSlug": "silvally",
+    "name": "Silvally",
+    "formLabel": "Type: Fairy",
+    "form": "fairy",
+    "formKind": "ALTERNATE",
+    "isMega": false,
+    "isBattleOnly": false,
+    "isDefault": false,
+    "listedInDex": false,
+    "height": 23,
+    "weight": 1005,
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10248.png",
+    "sortOrder": 10248,
+    "types": [
+      "fairy"
     ],
     "stats": {
       "attack": 95,
