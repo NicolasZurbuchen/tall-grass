@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.datagen
 
+import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.nicolaszurbuchen.tallgrass.pokedex.PokedexDatabase
 import kotlinx.serialization.json.Json
@@ -33,6 +34,19 @@ fun main(args: Array<String>) {
 
     val driver = JdbcSqliteDriver("jdbc:sqlite:${outputFile.absolutePath}")
     PokedexDatabase.Schema.create(driver)
+
+    // Stamp the schema version into the file.
+    //
+    // `Schema.create` builds the tables but leaves SQLite's `user_version` at 0, and that pragma is
+    // the only thing a driver looks at to decide whether a database is empty. Ship it at 0 and
+    // AndroidSqliteDriver opens a fully populated file, reads "version 0", and runs `create` again
+    // -- which fails on the first CREATE TABLE because the table is already there.
+    //
+    // It cannot fail anywhere except on a device: the generator writes the file, the host tests
+    // build their own in memory through the same `create` path, and none of them re-open a
+    // pre-populated database the way the app does on first run.
+    driver.execute(null, "PRAGMA user_version = ${PokedexDatabase.Schema.version};", 0)
+
     val database = PokedexDatabase(driver)
 
     database.transaction {
@@ -103,6 +117,21 @@ fun main(args: Array<String>) {
             typeCount = database.typeQueries.countTypes().executeAsOne().toInt(),
         )
     check(written == manifest) { "Database disagrees with the manifest.\n  manifest: $manifest\n  database: $written" }
+
+    // Read the stamp back rather than trusting the write. A database that ships with the wrong
+    // version does not fail here, in a test, or on any host: it fails on a real device, on first
+    // run, as "something went wrong" on the dex screen.
+    val stamped =
+        driver
+            .executeQuery(null, "PRAGMA user_version;", { cursor ->
+                cursor.next()
+                QueryResult.Value(cursor.getLong(0))
+            }, 0)
+            .value
+    check(stamped == PokedexDatabase.Schema.version) {
+        "pokedex.db is stamped user_version=$stamped but the schema is version ${PokedexDatabase.Schema.version}. " +
+            "A driver would read that as an empty database and try to create the tables again."
+    }
 
     driver.close()
     println("Wrote ${outputFile.name} (${outputFile.length() / 1024} KiB) from ${manifest.sourceSha.take(7)}")
