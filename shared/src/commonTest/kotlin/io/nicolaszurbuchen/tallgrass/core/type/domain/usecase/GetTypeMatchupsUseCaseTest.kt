@@ -40,15 +40,15 @@ class GetTypeMatchupsUseCaseTest {
             ),
         )
 
-    private suspend fun charizard() = useCase(PokemonType.FIRE, PokemonType.FLYING).associate { it.attackingType to it.multiplier }
+    private suspend fun charizard() = useCase(PokemonType.FIRE, PokemonType.FLYING).associate { it.attackingType to it.factorPercent }
 
     @Test
     fun invoke_multipliesTheTwoHalvesTogether() =
         runTest {
             val matchups = charizard()
 
-            assertEquals(4f, matchups[PokemonType.ROCK])
-            assertEquals(0.25f, matchups[PokemonType.GRASS])
+            assertEquals(400, matchups[PokemonType.ROCK])
+            assertEquals(25, matchups[PokemonType.GRASS])
         }
 
     @Test
@@ -56,7 +56,7 @@ class GetTypeMatchupsUseCaseTest {
         runTest {
             // Ground is doubly effective on Fire and cannot touch Flying at all. Charizard takes
             // nothing -- the one case where multiplying in the wrong order would read as x2.
-            assertEquals(0f, charizard()[PokemonType.GROUND])
+            assertEquals(0, charizard()[PokemonType.GROUND])
         }
 
     @Test
@@ -64,8 +64,8 @@ class GetTypeMatchupsUseCaseTest {
         runTest {
             val matchups = charizard()
 
-            assertEquals(2f, matchups[PokemonType.WATER])
-            assertEquals(0.5f, matchups[PokemonType.FIGHTING])
+            assertEquals(200, matchups[PokemonType.WATER])
+            assertEquals(50, matchups[PokemonType.FIGHTING])
         }
 
     @Test
@@ -98,17 +98,17 @@ class GetTypeMatchupsUseCaseTest {
     @Test
     fun invoke_readsOnlyThePrimaryTypeWhenThereIsNoSecond() =
         runTest {
-            val matchups = useCase(PokemonType.FIRE, null).associate { it.attackingType to it.multiplier }
+            val matchups = useCase(PokemonType.FIRE, null).associate { it.attackingType to it.factorPercent }
 
-            assertEquals(2f, matchups[PokemonType.GROUND])
-            assertEquals(0.5f, matchups[PokemonType.GRASS])
+            assertEquals(200, matchups[PokemonType.GROUND])
+            assertEquals(50, matchups[PokemonType.GRASS])
         }
 
     @Test
     fun invoke_ordersTheWorstMatchupsFirst() =
         runTest {
-            val multipliers = useCase(PokemonType.FIRE, PokemonType.FLYING).map { it.multiplier }
+            val factors = useCase(PokemonType.FIRE, PokemonType.FLYING).map { it.factorPercent }
 
-            assertEquals(multipliers.sortedDescending(), multipliers)
+            assertEquals(factors.sortedDescending(), factors)
         }
 }
