@@ -105,8 +105,13 @@ private fun PokedexDatabase.insertVariant(
     variantQueries.insertVariant(
         slug = slug,
         speciesDexNumber = dexNumber,
+        speciesSlug = slug.substringBefore("-"),
         name = name,
         formLabel = formLabel,
+        form = formLabel?.let { slug.substringAfter("-", "") }?.ifEmpty { null },
+        formKind = if (formLabel == null) "NONE" else "ALTERNATE",
+        isMega = 0,
+        isBattleOnly = 0,
         isDefault = if (formLabel == null) 1L else 0L,
         listedInDex = if (listed) 1L else 0L,
         height = 7,
