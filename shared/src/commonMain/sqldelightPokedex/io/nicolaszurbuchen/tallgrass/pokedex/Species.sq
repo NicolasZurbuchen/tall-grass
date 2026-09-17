@@ -19,7 +19,10 @@ CREATE TABLE species (
     captureRate      INTEGER NOT NULL,
     hatchCounter     INTEGER NOT NULL,
     growthRate       TEXT NOT NULL,
-    evolutionChainId INTEGER NOT NULL
+    -- 0 or 1. Upstream facts, and the natural axes for filtering a dex.
+    isBaby           INTEGER NOT NULL,
+    isLegendary      INTEGER NOT NULL,
+    isMythical       INTEGER NOT NULL
 );
 
 CREATE TABLE speciesEggGroup (
@@ -37,8 +40,8 @@ selectSpeciesByDexNumber:
 SELECT * FROM species WHERE dexNumber = ?;
 
 insertSpecies:
-INSERT INTO species(dexNumber, slug, name, genus, generation, genderRate, captureRate, hatchCounter, growthRate, evolutionChainId)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO species(dexNumber, slug, name, genus, generation, genderRate, captureRate, hatchCounter, growthRate, isBaby, isLegendary, isMythical)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertSpeciesEggGroup:
 INSERT INTO speciesEggGroup(speciesDexNumber, eggGroup)

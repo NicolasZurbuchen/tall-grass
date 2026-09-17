@@ -112,7 +112,9 @@ private fun buildSpecies(source: UpstreamSource): List<SpeciesJson> {
                 captureRate = row.int("capture_rate"),
                 hatchCounter = row.int("hatch_counter"),
                 growthRate = growthRates.getValue(row.int("growth_rate_id")),
-                evolutionChainId = row.intOrNull("evolution_chain_id") ?: 0,
+                isBaby = row.bool("is_baby"),
+                isLegendary = row.bool("is_legendary"),
+                isMythical = row.bool("is_mythical"),
                 eggGroups = eggGroups[id].orEmpty().sorted(),
             )
         }.sortedBy { it.dexNumber }

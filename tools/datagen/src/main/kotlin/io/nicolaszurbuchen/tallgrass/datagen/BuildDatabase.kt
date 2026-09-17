@@ -66,7 +66,9 @@ fun main(args: Array<String>) {
                 captureRate = entry.captureRate.toLong(),
                 hatchCounter = entry.hatchCounter.toLong(),
                 growthRate = entry.growthRate,
-                evolutionChainId = entry.evolutionChainId.toLong(),
+                isBaby = if (entry.isBaby) 1L else 0L,
+                isLegendary = if (entry.isLegendary) 1L else 0L,
+                isMythical = if (entry.isMythical) 1L else 0L,
             )
             entry.eggGroups.forEach { group ->
                 database.speciesQueries.insertSpeciesEggGroup(entry.dexNumber.toLong(), group)

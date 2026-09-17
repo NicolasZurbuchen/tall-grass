@@ -30,7 +30,9 @@ data class SpeciesJson(
     val captureRate: Int,
     val hatchCounter: Int,
     val growthRate: String,
-    val evolutionChainId: Int,
+    val isBaby: Boolean,
+    val isLegendary: Boolean,
+    val isMythical: Boolean,
     val eggGroups: List<String>,
 )
 
