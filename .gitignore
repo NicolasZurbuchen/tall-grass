@@ -56,4 +56,4 @@ docs/superpowers/
 
 # The generated dataset. Built from the committed JSON in data/ by :tools:datagen, and deliberately
 # not committed: it is a derived artefact that would otherwise land in every diff as binary noise.
-shared/src/androidMain/assets/pokedex.db
+shared/src/commonMain/composeResources/files/pokedex.db

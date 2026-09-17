@@ -38,7 +38,7 @@ tasks.test {
 }
 
 val datasetDir = rootProject.file("data")
-val databaseFile = rootProject.file("shared/src/androidMain/assets/pokedex.db")
+val databaseFile = rootProject.file("shared/src/commonMain/composeResources/files/pokedex.db")
 
 // Fetches the pinned upstream CSVs and rewrites `data/*.json`.
 //

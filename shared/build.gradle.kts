@@ -134,12 +134,15 @@ sqldelight {
     }
 }
 
-// The generated dataset is built, never committed, so it has to exist before Android packages its
-// assets -- otherwise a clean checkout assembles an app with no Pokedex in it.
+// The generated dataset is built, never committed, so it has to exist before anything reads
+// composeResources -- otherwise a clean checkout assembles an app with no Pokedex in it.
 //
-// Matched by name rather than by type: the asset tasks are created by the Android plugin during its
-// own configuration, so there is no typed handle to name here, and `main` is not the only variant
-// that needs the file -- the host tests read it too.
-tasks.matching { it.name.endsWith("Assets") }.configureEach {
+// Matched by name rather than by type: these tasks are created by the Android and Compose plugins
+// during their own configuration, so there is no typed handle to name here.
+tasks.matching { task ->
+    task.name.endsWith("Assets") ||
+        task.name.contains("ComposeResources") ||
+        task.name.contains("ResourcesFor")
+}.configureEach {
     dependsOn(":tools:datagen:buildPokedexDatabase")
 }
