@@ -43,9 +43,23 @@ class DexStoreFactory(
 
         override fun executeIntent(intent: DexIntent) {
             when (intent) {
-                is DexIntent.EntryClicked -> publish(DexLabel.NavigateToDetail(intent.slug))
+                is DexIntent.EntryClicked -> navigateToDetail(intent.slug)
                 DexIntent.RetryClicked -> load()
             }
+        }
+
+        // The entry is read back out of state rather than carried on the Intent: what the hero opens
+        // with is a fact about the Pokemon that was tapped, and the Store is where that is known.
+        private fun navigateToDetail(slug: String) {
+            val entry = state().entries.firstOrNull { it.slug == slug } ?: return
+
+            publish(
+                DexLabel.NavigateToDetail(
+                    slug = entry.slug,
+                    artworkUrl = entry.artworkUrl,
+                    primaryTypeSlug = entry.primaryType.slug,
+                ),
+            )
         }
 
         private fun load() {

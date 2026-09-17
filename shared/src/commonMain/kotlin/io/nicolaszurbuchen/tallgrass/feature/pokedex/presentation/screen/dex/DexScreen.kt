@@ -54,6 +54,7 @@ fun DexScreen(
                             numberText = entry.numberText,
                             formLabel = entry.formLabel,
                             artworkUrl = entry.artworkUrl,
+                            artworkKey = entry.artworkKey,
                             tint = entry.tint,
                             onClick = { onEntryClick(entry.slug) },
                         )

@@ -2,16 +2,33 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.DetailRoute
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.DetailViewModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.DexRoute
 import io.nicolaszurbuchen.tallgrass.infra.navigation.NavKeyHandler
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-class PokedexNavKeyHandler : NavKeyHandler {
+class PokedexNavKeyHandler(
+    private val navigator: PokedexNavigator,
+) : NavKeyHandler {
     override fun EntryProviderScope<NavKey>.registerEntries() {
-        // Pokemon detail is #33's, so tapping a card does nothing yet. The callback stays rather
-        // than the screen being written without one: the slug it carries is what the detail route
-        // is keyed by, and the shared-element transition needs the tap to already be wired.
         entry<DexDestination> {
-            DexRoute(onNavigateToDetail = { })
+            DexRoute(onNavigateToDetail = navigator::navigateToDetail)
+        }
+
+        // Which Pokemon, and what its card was already showing, reach the screen through the
+        // ViewModel rather than through the Route: a Route may only take lambdas, a Modifier or a
+        // ViewModel. The destination survives process death, so a restored screen redraws the same
+        // hero it had.
+        entry<DetailDestination> { destination ->
+            DetailRoute(
+                onNavigateBack = { navigator.navigateBack() },
+                viewModel =
+                    koinViewModel<DetailViewModel>(
+                        parameters = { parametersOf(destination.slug, destination.hero) },
+                    ),
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class TypeUiMapperTest {
     @Test
@@ -22,5 +23,17 @@ class TypeUiMapperTest {
         assertEquals(TypeUiModel.FIRE, PokemonType.FIRE.toUiModel())
         assertEquals(TypeUiModel.FAIRY, PokemonType.FAIRY.toUiModel())
         assertEquals(TypeUiModel.WATER, PokemonType.WATER.toUiModel())
+    }
+
+    @Test
+    fun toTypeUiModel_readsTheDatasetSpelling() {
+        assertEquals(TypeUiModel.FIRE, "fire".toTypeUiModel())
+    }
+
+    @Test
+    fun toTypeUiModel_isNullForASlugThatIsNotOneOfTheEighteen() {
+        // Stellar is a Terastal type and has no column here. A destination carrying it is a saved
+        // back stack from another build, not a crash.
+        assertNull("stellar".toTypeUiModel())
     }
 }

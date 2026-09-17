@@ -82,14 +82,45 @@ class DexExecutorTest {
         }
 
     @Test
-    fun entryClicked_publishesTheSlugTheDetailRouteIsKeyedBy() =
+    fun entryClicked_publishesWhatTheDetailHeroOpensWith() =
         runTest {
+            // Not only the slug: the hero draws the artwork and the colour before it has read
+            // anything, and the card that was tapped is where both are already known.
+            val store = store(FakePokedexRepository(entries = listOf(entry)))
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            store.labels.test {
+                store.accept(DexIntent.EntryClicked("bulbasaur"))
+
+                assertEquals(
+                    DexLabel.NavigateToDetail(
+                        slug = "bulbasaur",
+                        artworkUrl = "https://example.invalid/1.png",
+                        primaryTypeSlug = "grass",
+                    ),
+                    awaitItem(),
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun entryClicked_saysNothingAboutACardTheDexDoesNotHave() =
+        runTest {
+            // Only reachable if a tap outlives the list it was made against. Publishing a label with
+            // no artwork behind it would open a detail screen with an empty hero.
             val store = store(FakePokedexRepository(entries = listOf(entry)))
 
             store.labels.test {
-                store.accept(DexIntent.EntryClicked("vulpix-alola"))
+                store.accept(DexIntent.EntryClicked("missingno"))
 
-                assertEquals(DexLabel.NavigateToDetail("vulpix-alola"), awaitItem())
+                expectNoEvents()
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

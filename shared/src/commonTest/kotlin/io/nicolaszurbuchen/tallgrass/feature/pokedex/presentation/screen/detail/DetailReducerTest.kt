@@ -1,0 +1,83 @@
+package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
+
+import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class DetailReducerTest {
+    private val reducer = DetailStoreFactory.ReducerImpl
+
+    private fun reduce(
+        state: DetailState,
+        message: DetailMessage,
+    ) = with(reducer) { state.reduce(message) }
+
+    private val initial = DetailState(entryVariantSlug = "charizard")
+
+    private val loaded = DetailMessage.DetailLoaded(detail = charizardDetail, matchups = emptyMap())
+
+    @Test
+    fun detailLoaded_opensOnTheFormThatWasTapped() {
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-x"), loaded)
+
+        assertEquals("charizard-mega-x", state.activeVariantSlug)
+        assertFalse(state.isLoading)
+    }
+
+    @Test
+    fun detailLoaded_fallsBackToTheFirstFormWhenTheTappedOneIsGone() {
+        // A saved back stack can name a slug a newer dataset no longer carries. The species is still
+        // worth a screen, so the switcher opens on its first form rather than on nothing.
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-z"), loaded)
+
+        assertEquals("charizard", state.activeVariantSlug)
+    }
+
+    @Test
+    fun formSwitched_movesTheActiveFormAndLeavesTheEntryOneAlone() {
+        // The two together are what decide whether the hero still owns the shared element it arrived
+        // with, so the entry slug has to survive the switch.
+        val state = reduce(reduce(initial, loaded), DetailMessage.FormSwitched("charizard-mega-x"))
+
+        assertEquals("charizard-mega-x", state.activeVariantSlug)
+        assertEquals("charizard", state.entryVariantSlug)
+    }
+
+    @Test
+    fun formSwitched_doesNotTouchTheDetailItSwitchesWithin() {
+        // Every form was read at once, so switching is a choice within what is already in hand.
+        val state = reduce(reduce(initial, loaded), DetailMessage.FormSwitched("charizard-mega-x"))
+
+        assertEquals(charizardDetail, state.detail)
+        assertFalse(state.isLoading)
+    }
+
+    @Test
+    fun tabSwitched_changesOnlyTheTab() {
+        val state = reduce(reduce(initial, loaded), DetailMessage.TabSwitched(DetailState.Tab.STATS))
+
+        assertEquals(DetailState.Tab.STATS, state.tab)
+        assertEquals("charizard", state.activeVariantSlug)
+    }
+
+    @Test
+    fun loadFailed_stopsLoadingAndKeepsTheError() {
+        val state = reduce(initial, DetailMessage.LoadFailed(AppError.Database.NotFound))
+
+        assertFalse(state.isLoading)
+        assertEquals(AppError.Database.NotFound, state.error)
+    }
+
+    @Test
+    fun loadStarted_clearsTheErrorSoARetryDoesNotShowTheOldOne() {
+        val failed = reduce(initial, DetailMessage.LoadFailed(AppError.Database.NotFound))
+
+        val state = reduce(failed, DetailMessage.LoadStarted)
+
+        assertTrue(state.isLoading)
+        assertNull(state.error)
+    }
+}

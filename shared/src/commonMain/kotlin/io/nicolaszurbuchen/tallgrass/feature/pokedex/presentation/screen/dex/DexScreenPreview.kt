@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 import androidx.compose.runtime.Composable
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
 
 @PreviewThemes
@@ -15,12 +16,60 @@ private fun DexScreenPreview() {
                     isLoading = false,
                     entries =
                         listOf(
-                            DexEntryUiModel("bulbasaur", "#001", "Bulbasaur", null, "", TypeUiModel.GRASS.color),
-                            DexEntryUiModel("charmander", "#004", "Charmander", null, "", TypeUiModel.FIRE.color),
-                            DexEntryUiModel("squirtle", "#007", "Squirtle", null, "", TypeUiModel.WATER.color),
-                            DexEntryUiModel("vulpix", "#037", "Vulpix", null, "", TypeUiModel.FIRE.color),
-                            DexEntryUiModel("vulpix-alola", "#037", "Alolan Vulpix", "Alolan", "", TypeUiModel.ICE.color),
-                            DexEntryUiModel("pikachu", "#025", "Pikachu", null, "", TypeUiModel.ELECTRIC.color),
+                            DexEntryUiModel(
+                                slug = "bulbasaur",
+                                numberText = "#001",
+                                name = "Bulbasaur",
+                                formLabel = null,
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("bulbasaur"),
+                                tint = TypeUiModel.GRASS.color,
+                            ),
+                            DexEntryUiModel(
+                                slug = "charmander",
+                                numberText = "#004",
+                                name = "Charmander",
+                                formLabel = null,
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("charmander"),
+                                tint = TypeUiModel.FIRE.color,
+                            ),
+                            DexEntryUiModel(
+                                slug = "squirtle",
+                                numberText = "#007",
+                                name = "Squirtle",
+                                formLabel = null,
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("squirtle"),
+                                tint = TypeUiModel.WATER.color,
+                            ),
+                            DexEntryUiModel(
+                                slug = "vulpix",
+                                numberText = "#037",
+                                name = "Vulpix",
+                                formLabel = null,
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("vulpix"),
+                                tint = TypeUiModel.FIRE.color,
+                            ),
+                            DexEntryUiModel(
+                                slug = "vulpix-alola",
+                                numberText = "#037",
+                                name = "Alolan Vulpix",
+                                formLabel = "Alolan",
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("vulpix-alola"),
+                                tint = TypeUiModel.ICE.color,
+                            ),
+                            DexEntryUiModel(
+                                slug = "pikachu",
+                                numberText = "#025",
+                                name = "Pikachu",
+                                formLabel = null,
+                                artworkUrl = "",
+                                artworkKey = dexArtworkKey("pikachu"),
+                                tint = TypeUiModel.ELECTRIC.color,
+                            ),
                         ),
                     error = null,
                 ),

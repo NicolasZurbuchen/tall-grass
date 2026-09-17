@@ -11,9 +11,15 @@ sealed interface DexIntent {
     data object RetryClicked : DexIntent
 }
 
+/**
+ * The card already knows the artwork and the colour the detail hero opens with, so the tap carries
+ * them rather than leaving the next screen to look them up. See `HeroHandoff`.
+ */
 sealed interface DexLabel {
     data class NavigateToDetail(
         val slug: String,
+        val artworkUrl: String,
+        val primaryTypeSlug: String,
     ) : DexLabel
 }
 
