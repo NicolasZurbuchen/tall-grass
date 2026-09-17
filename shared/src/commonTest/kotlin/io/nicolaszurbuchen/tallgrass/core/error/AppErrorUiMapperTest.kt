@@ -2,12 +2,15 @@ package io.nicolaszurbuchen.tallgrass.core.error
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.WifiOff
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.error_database_generic_subtitle
 import tallgrass.shared.generated.resources.error_database_insert_failed_title
+import tallgrass.shared.generated.resources.error_database_not_found_subtitle
+import tallgrass.shared.generated.resources.error_database_not_found_title
 import tallgrass.shared.generated.resources.error_database_query_failed_title
 import tallgrass.shared.generated.resources.error_network_http_subtitle_default
 import tallgrass.shared.generated.resources.error_network_http_title
@@ -72,6 +75,22 @@ class AppErrorUiMapperTest {
                 title = UiText.Resource(Res.string.error_network_http_title),
                 subtitle = UiText.Resource(Res.string.error_network_http_subtitle_default),
                 icon = Icons.Outlined.WifiOff,
+            ),
+            result,
+        )
+    }
+
+    @Test
+    fun toUiModel_databaseNotFound_readsAsAMissingEntryRatherThanAFailure() {
+        // A slug with no row is the dataset having moved on, not storage having broken, and the
+        // storage icon would tell the reader to check their phone.
+        val result = AppError.Database.NotFound.toUiModel()
+
+        assertEquals(
+            AppErrorUiModel(
+                title = UiText.Resource(Res.string.error_database_not_found_title),
+                subtitle = UiText.Resource(Res.string.error_database_not_found_subtitle),
+                icon = Icons.Outlined.SearchOff,
             ),
             result,
         )

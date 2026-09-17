@@ -40,8 +40,7 @@ class GetTypeMatchupsUseCaseTest {
             ),
         )
 
-    private suspend fun charizard() =
-        useCase(PokemonType.FIRE, PokemonType.FLYING).associate { it.attackingType to it.multiplier }
+    private suspend fun charizard() = useCase(PokemonType.FIRE, PokemonType.FLYING).associate { it.attackingType to it.multiplier }
 
     @Test
     fun invoke_multipliesTheTwoHalvesTogether() =

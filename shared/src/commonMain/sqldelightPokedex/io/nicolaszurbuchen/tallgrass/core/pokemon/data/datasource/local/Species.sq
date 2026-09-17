@@ -39,3 +39,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 insertSpeciesEggGroup:
 INSERT INTO speciesEggGroup(speciesDexNumber, eggGroup)
 VALUES (?, ?);
+
+-- The species a variant belongs to. Joined rather than taking a Dex number, because a route is
+-- keyed by slug and the number is what this query is for finding out.
+selectSpeciesByVariantSlug:
+SELECT s.* FROM species s
+JOIN variant v ON v.speciesDexNumber = s.dexNumber
+WHERE v.slug = ?;
+
+selectEggGroupsBySpecies:
+SELECT eggGroup FROM speciesEggGroup WHERE speciesDexNumber = ? ORDER BY eggGroup;

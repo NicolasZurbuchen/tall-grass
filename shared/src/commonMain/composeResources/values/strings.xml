@@ -23,6 +23,8 @@
     <string name="error_database_query_failed_title">Couldn\'t read from storage</string>
     <string name="error_database_generic_subtitle">Something went wrong. Try again.</string>
     <string name="error_database_insert_failed_title">Couldn\'t save to storage</string>
+    <string name="error_database_not_found_title">Not in this Pok&#233;dex</string>
+    <string name="error_database_not_found_subtitle">This entry is not part of the bundled dataset.</string>
     <string name="error_unexpected_title">Something went wrong</string>
     <string name="error_unexpected_subtitle">Please try again.</string>
 </resources>
