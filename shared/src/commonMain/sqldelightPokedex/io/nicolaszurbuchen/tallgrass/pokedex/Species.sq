@@ -19,10 +19,10 @@ CREATE TABLE species (
     captureRate      INTEGER NOT NULL,
     hatchCounter     INTEGER NOT NULL,
     growthRate       TEXT NOT NULL,
-    -- 0 or 1. Upstream facts, and the natural axes for filtering a dex.
-    isBaby           INTEGER NOT NULL,
-    isLegendary      INTEGER NOT NULL,
-    isMythical       INTEGER NOT NULL
+    -- Upstream facts, and the natural axes for filtering a dex.
+    isBaby           INTEGER AS kotlin.Boolean NOT NULL,
+    isLegendary      INTEGER AS kotlin.Boolean NOT NULL,
+    isMythical       INTEGER AS kotlin.Boolean NOT NULL
 );
 
 CREATE TABLE speciesEggGroup (

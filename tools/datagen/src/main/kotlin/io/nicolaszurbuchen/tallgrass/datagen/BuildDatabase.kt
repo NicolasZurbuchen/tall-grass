@@ -66,9 +66,9 @@ fun main(args: Array<String>) {
                 captureRate = entry.captureRate.toLong(),
                 hatchCounter = entry.hatchCounter.toLong(),
                 growthRate = entry.growthRate,
-                isBaby = if (entry.isBaby) 1L else 0L,
-                isLegendary = if (entry.isLegendary) 1L else 0L,
-                isMythical = if (entry.isMythical) 1L else 0L,
+                isBaby = entry.isBaby,
+                isLegendary = entry.isLegendary,
+                isMythical = entry.isMythical,
             )
             entry.eggGroups.forEach { group ->
                 database.speciesQueries.insertSpeciesEggGroup(entry.dexNumber.toLong(), group)
@@ -84,10 +84,10 @@ fun main(args: Array<String>) {
                 formLabel = entry.formLabel,
                 form = entry.form,
                 formKind = entry.formKind.name,
-                isMega = if (entry.isMega) 1L else 0L,
-                isBattleOnly = if (entry.isBattleOnly) 1L else 0L,
-                isDefault = if (entry.isDefault) 1L else 0L,
-                listedInDex = if (entry.listedInDex) 1L else 0L,
+                isMega = entry.isMega,
+                isBattleOnly = entry.isBattleOnly,
+                isDefault = entry.isDefault,
+                listedInDex = entry.listedInDex,
                 height = entry.height.toLong(),
                 weight = entry.weight.toLong(),
                 artworkUrl = entry.artworkUrl,
@@ -103,7 +103,7 @@ fun main(args: Array<String>) {
                 database.variantQueries.insertVariantAbility(
                     variantSlug = entry.slug,
                     abilitySlug = ability.slug,
-                    isHidden = if (ability.isHidden) 1L else 0L,
+                    isHidden = ability.isHidden,
                     slot = ability.slot.toLong(),
                 )
             }

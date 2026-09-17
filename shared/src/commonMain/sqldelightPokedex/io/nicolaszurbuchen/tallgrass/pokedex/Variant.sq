@@ -19,12 +19,10 @@ CREATE TABLE variant (
     form             TEXT,
     -- The closed taxonomy derived from it, which is what a screen filters on. See FormKind.kt.
     formKind         TEXT NOT NULL,
-    isMega           INTEGER NOT NULL,
-    isBattleOnly     INTEGER NOT NULL,
-    -- 0 or 1. SQLite has no boolean, and mapping it here would need a column adapter wired
-    -- identically in two modules; the domain mapper converts once instead.
-    isDefault        INTEGER NOT NULL,
-    listedInDex      INTEGER NOT NULL,
+    isMega           INTEGER AS kotlin.Boolean NOT NULL,
+    isBattleOnly     INTEGER AS kotlin.Boolean NOT NULL,
+    isDefault        INTEGER AS kotlin.Boolean NOT NULL,
+    listedInDex      INTEGER AS kotlin.Boolean NOT NULL,
     -- Decimetres and hectograms, upstream's units. Converted at the presentation edge.
     height           INTEGER NOT NULL,
     weight           INTEGER NOT NULL,
@@ -53,7 +51,7 @@ CREATE TABLE variantStat (
 CREATE TABLE variantAbility (
     variantSlug TEXT NOT NULL,
     abilitySlug TEXT NOT NULL,
-    isHidden    INTEGER NOT NULL,
+    isHidden    INTEGER AS kotlin.Boolean NOT NULL,
     slot        INTEGER NOT NULL,
     PRIMARY KEY (variantSlug, slot)
 );
