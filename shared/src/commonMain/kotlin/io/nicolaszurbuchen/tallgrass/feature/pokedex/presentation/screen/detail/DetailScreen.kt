@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +35,10 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
  * design is built around. It is laid out that way rather than offset with a z-index: the sheet fills
  * the space under the header and is inset from the top by half the artwork, and the artwork is drawn
  * after it in the same box, so it sits on top without anyone computing a screen height.
+ *
+ * The tint runs behind the status bar, so this screen takes the insets itself rather than inheriting
+ * them from the navigation host: the header clears the status bar and the sheet's content clears the
+ * navigation bar, while both backgrounds run to the edge.
  */
 @Composable
 fun DetailScreen(
@@ -44,7 +50,11 @@ fun DetailScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize().background(state.tint)) {
-        DetailHeader(content = state.content, onBackClick = onBackClick)
+        DetailHeader(
+            content = state.content,
+            onBackClick = onBackClick,
+            modifier = Modifier.statusBarsPadding(),
+        )
 
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -55,6 +65,7 @@ fun DetailScreen(
                         .clip(RoundedCornerShape(topStart = SHEET_CORNER, topEnd = SHEET_CORNER))
                         .background(MaterialTheme.appColors.surface)
                         .verticalScroll(rememberScrollState())
+                        .navigationBarsPadding()
                         .padding(top = ARTWORK_SIZE / 2 + MaterialTheme.spacing.md)
                         .padding(bottom = MaterialTheme.spacing.xxl),
             ) {
