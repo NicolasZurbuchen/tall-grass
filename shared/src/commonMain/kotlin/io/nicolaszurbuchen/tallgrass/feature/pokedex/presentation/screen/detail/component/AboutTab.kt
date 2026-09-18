@@ -44,13 +44,13 @@ fun AboutTab(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg),
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.appColors.surfaceRaised)
                     .padding(MaterialTheme.spacing.md),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg),
         ) {
             Measurement(label = Res.string.pokedex_detail_height, value = about.heightText, modifier = Modifier.weight(1f))
             Measurement(label = Res.string.pokedex_detail_weight, value = about.weightText, modifier = Modifier.weight(1f))
@@ -106,8 +106,8 @@ private fun KeyValueRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.sm),
     ) {
         Text(
             text = stringResource(label),

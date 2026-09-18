@@ -43,10 +43,10 @@ fun DexScreen(
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(DEX_GRID_COLUMNS),
-                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(MaterialTheme.spacing.md),
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     // DECISIONS.md § The dex grid is three cards across, loaded whole
                     items(items = state.entries, key = { it.slug }) { entry ->
@@ -74,11 +74,11 @@ private fun DexGridSkeleton() {
     ShimmerPulse {
         LazyVerticalGrid(
             columns = GridCells.Fixed(DEX_GRID_COLUMNS),
-            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(MaterialTheme.spacing.md),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
             userScrollEnabled = false,
+            modifier = Modifier.fillMaxSize(),
         ) {
             items(SKELETON_CARDS) { DexCardSkeleton() }
         }

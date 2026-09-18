@@ -28,21 +28,21 @@ fun HomeTile(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.aspectRatio(1f),
         shape = MaterialTheme.shapes.medium,
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ),
+        modifier = modifier.aspectRatio(1f),
     ) {
         Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(MaterialTheme.spacing.md),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = icon,

@@ -52,9 +52,9 @@ fun DetailHeader(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
+            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
         ) {
             if (content == null) {
                 Box(modifier = Modifier.width(NAME_SKELETON_WIDTH).height(NAME_SKELETON_HEIGHT).shimmerBlock())
@@ -77,13 +77,13 @@ fun DetailHeader(
         }
 
         Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(top = MaterialTheme.spacing.sm)
                     .heightIn(min = TYPES_ROW_MIN_HEIGHT),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
                 content?.types?.forEach { type -> TypePill(type = type) }

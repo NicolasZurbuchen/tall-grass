@@ -40,13 +40,13 @@ fun DexCard(
 
     Card(
         onClick = onClick,
-        modifier = modifier.aspectRatio(CARD_ASPECT_RATIO),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = tint, contentColor = Color.White),
+        modifier = modifier.aspectRatio(CARD_ASPECT_RATIO),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
             verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
         ) {
             Text(
                 text = numberText,
@@ -55,8 +55,8 @@ fun DexCard(
             )
 
             Box(
-                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 // The sending half of the transition into the detail hero. The key is the card's
                 // own, built once in the navigation package so both ends agree. See #11.

@@ -28,10 +28,10 @@ fun HomeScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(HOME_GRID_COLUMNS),
-        modifier = modifier.fillMaxSize().systemBarsPadding(),
         contentPadding = PaddingValues(MaterialTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+        modifier = modifier.fillMaxSize().systemBarsPadding(),
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             Text(

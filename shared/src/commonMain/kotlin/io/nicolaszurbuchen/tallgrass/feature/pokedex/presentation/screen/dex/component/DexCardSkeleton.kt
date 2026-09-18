@@ -29,13 +29,13 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 @Composable
 fun DexCardSkeleton(modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.aspectRatio(SKELETON_ASPECT_RATIO),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier.aspectRatio(SKELETON_ASPECT_RATIO),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
             verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
         ) {
             Box(modifier = Modifier.size(width = 32.dp, height = 10.dp).shimmerBlock())
 

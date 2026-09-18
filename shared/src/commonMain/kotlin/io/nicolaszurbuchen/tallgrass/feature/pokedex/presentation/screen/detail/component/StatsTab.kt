@@ -50,8 +50,8 @@ fun StatsTab(
         stats.bars.forEach { bar -> StatRow(bar = bar, tint = tint) }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm),
         ) {
             Text(
                 text = stringResource(Res.string.pokedex_detail_stat_total),
@@ -90,9 +90,9 @@ private fun StatRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.xs),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.xs),
     ) {
         Text(
             text = bar.label.asString(),
@@ -135,8 +135,8 @@ private fun MatchupGrid(
     // Chunked into rows by hand rather than drawn in a LazyVerticalGrid: this sits inside a column
     // that already scrolls, and nesting a scroller of the same direction inside one is unmeasurable.
     Column(
-        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
+        modifier = modifier.fillMaxWidth(),
     ) {
         matchups.chunked(MATCHUPS_PER_ROW).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
@@ -157,12 +157,12 @@ private fun MatchupChip(
     modifier: Modifier = Modifier,
 ) {
     Row(
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
         modifier =
             modifier
                 .clip(MaterialTheme.shapes.extraSmall)
                 .background(matchup.typeColor)
                 .padding(horizontal = MaterialTheme.spacing.sm, vertical = MaterialTheme.spacing.xs),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
     ) {
         Text(
             text = matchup.typeLabel,

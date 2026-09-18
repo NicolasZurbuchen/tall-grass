@@ -32,9 +32,9 @@ fun FormPillRow(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+        modifier = modifier.fillMaxWidth(),
     ) {
         items(items = forms, key = { it.slug }) { form ->
             val isActive = form.slug == activeSlug

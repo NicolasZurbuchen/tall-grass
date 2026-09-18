@@ -76,9 +76,9 @@ fun AppErrorBanner(
 
         if (onRetry != null || onDismiss != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 onRetry?.let {
                     TextButton(onClick = it) {

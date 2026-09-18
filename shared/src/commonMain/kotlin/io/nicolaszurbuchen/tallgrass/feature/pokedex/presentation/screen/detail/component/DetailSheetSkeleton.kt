@@ -25,8 +25,8 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 fun DetailSheetSkeleton(modifier: Modifier = Modifier) {
     ShimmerPulse {
         Column(
-            modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+            modifier = modifier.fillMaxWidth(),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg)) {
                 Box(modifier = Modifier.width(TAB_WIDTH).height(TAB_HEIGHT).shimmerBlock())

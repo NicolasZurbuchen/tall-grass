@@ -34,8 +34,8 @@ fun DetailTabRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg),
+        modifier = modifier.fillMaxWidth(),
     ) {
         DetailTabUiModel.entries.forEach { tab ->
             val isSelected = tab == selected
