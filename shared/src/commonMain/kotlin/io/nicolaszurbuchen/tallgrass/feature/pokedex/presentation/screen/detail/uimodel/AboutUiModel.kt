@@ -14,6 +14,5 @@ data class AboutUiModel(
     val genderText: UiText,
     val eggGroupsText: UiText,
     val eggCycleText: UiText,
-    val catchRateText: UiText,
     val growthText: UiText,
 )

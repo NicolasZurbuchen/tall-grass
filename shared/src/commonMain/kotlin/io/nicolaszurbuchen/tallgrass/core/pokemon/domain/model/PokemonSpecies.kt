@@ -13,6 +13,7 @@ data class PokemonSpecies(
     val genus: String,
     /** Eighths of a chance of being female, or -1 for a genderless species. Upstream's encoding. */
     val genderRate: Int,
+    /** Read by nothing yet: catch rate belongs with where a Pokemon is found, not with breeding. */
     val captureRate: Int,
     val hatchCounter: Int,
     val growthRate: GrowthRate,

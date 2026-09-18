@@ -58,7 +58,7 @@ class DetailUiMapperTest {
         assertNotEquals(ordinary.stats, mega.stats)
         assertEquals(ordinary.about.genderText, mega.about.genderText)
         assertEquals(ordinary.about.eggGroupsText, mega.about.eggGroupsText)
-        assertEquals(ordinary.about.catchRateText, mega.about.catchRateText)
+        assertEquals(ordinary.about.eggCycleText, mega.about.eggCycleText)
     }
 
     @Test

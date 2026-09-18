@@ -8,7 +8,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_genderless
+import tallgrass.shared.generated.resources.pokedex_detail_genderless
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -77,7 +77,7 @@ class AboutUiMapperTest {
     fun toAboutUiModel_saysGenderlessRatherThanDividingByNothing() {
         // Upstream writes -1 for a genderless species, which is a third case rather than a share.
         assertEquals(
-            UiText.Resource(Res.string.detail_genderless),
+            UiText.Resource(Res.string.pokedex_detail_genderless),
             species(genderRate = -1).toAboutUiModel(variant()).genderText,
         )
     }
@@ -97,10 +97,7 @@ class AboutUiMapperTest {
     }
 
     @Test
-    fun toAboutUiModel_carriesTheTrainingNumbersAsTheyAre() {
-        val about = species().toAboutUiModel(variant())
-
-        assertEquals(UiText.Raw("45"), about.catchRateText)
-        assertEquals(listOf("20"), argsOf(about.eggCycleText))
+    fun toAboutUiModel_countsTheEggCycleInCycles() {
+        assertEquals(listOf("20"), argsOf(species().toAboutUiModel(variant()).eggCycleText))
     }
 }

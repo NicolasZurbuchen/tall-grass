@@ -6,11 +6,11 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_egg_cycle_value
-import tallgrass.shared.generated.resources.detail_gender_value
-import tallgrass.shared.generated.resources.detail_genderless
-import tallgrass.shared.generated.resources.detail_height_value
-import tallgrass.shared.generated.resources.detail_weight_value
+import tallgrass.shared.generated.resources.pokedex_detail_egg_cycle_value
+import tallgrass.shared.generated.resources.pokedex_detail_gender_value
+import tallgrass.shared.generated.resources.pokedex_detail_genderless
+import tallgrass.shared.generated.resources.pokedex_detail_height_value
+import tallgrass.shared.generated.resources.pokedex_detail_weight_value
 
 /**
  * The species is the receiver and the form is a parameter, because that is the shape of the tab:
@@ -29,20 +29,19 @@ fun PokemonSpecies.toAboutUiModel(variant: PokemonVariant): AboutUiModel {
     }
 
     return AboutUiModel(
-        heightText = UiText.Resource(Res.string.detail_height_value, listOf(fromTenths(variant.height))),
-        weightText = UiText.Resource(Res.string.detail_weight_value, listOf(fromTenths(variant.weight))),
+        heightText = UiText.Resource(Res.string.pokedex_detail_height_value, listOf(fromTenths(variant.height))),
+        weightText = UiText.Resource(Res.string.pokedex_detail_weight_value, listOf(fromTenths(variant.weight))),
         genderText =
             if (genderRate < 0) {
-                UiText.Resource(Res.string.detail_genderless)
+                UiText.Resource(Res.string.pokedex_detail_genderless)
             } else {
                 UiText.Resource(
-                    Res.string.detail_gender_value,
+                    Res.string.pokedex_detail_gender_value,
                     listOf(share(EIGHTHS - genderRate), share(genderRate)),
                 )
             },
         eggGroupsText = UiText.Raw(eggGroups.joinToString { it.toUiModel().label }),
-        eggCycleText = UiText.Resource(Res.string.detail_egg_cycle_value, listOf(hatchCounter.toString())),
-        catchRateText = UiText.Raw(captureRate.toString()),
+        eggCycleText = UiText.Resource(Res.string.pokedex_detail_egg_cycle_value, listOf(hatchCounter.toString())),
         growthText = UiText.Raw(growthRate.toUiModel().label),
     )
 }

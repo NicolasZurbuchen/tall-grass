@@ -48,7 +48,6 @@ private fun DetailScreenPreview() {
                                     genderText = UiText.Raw("87.5% male, 12.5% female"),
                                     eggGroupsText = UiText.Raw("Monster, Dragon"),
                                     eggCycleText = UiText.Raw("20 cycles"),
-                                    catchRateText = UiText.Raw("45"),
                                     growthText = UiText.Raw("Medium Slow"),
                                 ),
                             stats =

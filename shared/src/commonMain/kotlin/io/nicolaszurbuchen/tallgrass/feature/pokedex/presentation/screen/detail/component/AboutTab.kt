@@ -21,15 +21,14 @@ import io.nicolaszurbuchen.tallgrass.infra.text.asString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_breeding
-import tallgrass.shared.generated.resources.detail_catch_rate
-import tallgrass.shared.generated.resources.detail_egg_cycle
-import tallgrass.shared.generated.resources.detail_egg_groups
-import tallgrass.shared.generated.resources.detail_gender
-import tallgrass.shared.generated.resources.detail_growth
-import tallgrass.shared.generated.resources.detail_height
-import tallgrass.shared.generated.resources.detail_training
-import tallgrass.shared.generated.resources.detail_weight
+import tallgrass.shared.generated.resources.pokedex_detail_breeding
+import tallgrass.shared.generated.resources.pokedex_detail_egg_cycle
+import tallgrass.shared.generated.resources.pokedex_detail_egg_groups
+import tallgrass.shared.generated.resources.pokedex_detail_gender
+import tallgrass.shared.generated.resources.pokedex_detail_growth
+import tallgrass.shared.generated.resources.pokedex_detail_height
+import tallgrass.shared.generated.resources.pokedex_detail_training
+import tallgrass.shared.generated.resources.pokedex_detail_weight
 
 /**
  * Height and weight belong to the form on screen; everything under them belongs to the species and
@@ -53,18 +52,17 @@ fun AboutTab(
                     .padding(MaterialTheme.spacing.md),
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg),
         ) {
-            Measurement(label = Res.string.detail_height, value = about.heightText, modifier = Modifier.weight(1f))
-            Measurement(label = Res.string.detail_weight, value = about.weightText, modifier = Modifier.weight(1f))
+            Measurement(label = Res.string.pokedex_detail_height, value = about.heightText, modifier = Modifier.weight(1f))
+            Measurement(label = Res.string.pokedex_detail_weight, value = about.weightText, modifier = Modifier.weight(1f))
         }
 
-        SectionTitle(title = Res.string.detail_breeding)
-        KeyValueRow(label = Res.string.detail_gender, value = about.genderText)
-        KeyValueRow(label = Res.string.detail_egg_groups, value = about.eggGroupsText)
-        KeyValueRow(label = Res.string.detail_egg_cycle, value = about.eggCycleText)
+        SectionTitle(title = Res.string.pokedex_detail_breeding)
+        KeyValueRow(label = Res.string.pokedex_detail_gender, value = about.genderText)
+        KeyValueRow(label = Res.string.pokedex_detail_egg_groups, value = about.eggGroupsText)
+        KeyValueRow(label = Res.string.pokedex_detail_egg_cycle, value = about.eggCycleText)
 
-        SectionTitle(title = Res.string.detail_training)
-        KeyValueRow(label = Res.string.detail_catch_rate, value = about.catchRateText)
-        KeyValueRow(label = Res.string.detail_growth, value = about.growthText)
+        SectionTitle(title = Res.string.pokedex_detail_training)
+        KeyValueRow(label = Res.string.pokedex_detail_growth, value = about.growthText)
     }
 }
 
