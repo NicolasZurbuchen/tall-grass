@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
@@ -8,9 +9,11 @@ import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_form_default
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class FormPillUiMapperTest {
     private fun variant(
+        formKind: FormKind = FormKind.MEGA,
         slug: String = "charizard-mega-x",
         name: String = "Mega Charizard X",
         formLabel: String? = "Mega Charizard X",
@@ -19,6 +22,7 @@ class FormPillUiMapperTest {
         slug = slug,
         name = name,
         formLabel = formLabel,
+        formKind = formKind,
         isDefault = isDefault,
         artworkUrl = "",
         height = 17,
@@ -82,5 +86,43 @@ class FormPillUiMapperTest {
     @Test
     fun toFormPillUiModel_carriesTheSlugTheTapSelects() {
         assertEquals("charizard-mega-x", variant().toFormPillUiModel("Charizard").slug)
+    }
+
+    @Test
+    fun toFormPillsUiModel_leavesTheCostumesOut() {
+        // Pikachu: Rock Star, Pop Star, Ph.D., Libre and eight hats, every one of them carrying
+        // Pikachu's types, stats and abilities exactly. Only Partner Pikachu and Gigantamax change
+        // anything, so the row is three pills rather than seventeen.
+        val pikachu =
+            listOf(
+                variant(FormKind.NONE, "pikachu", "Pikachu", null, isDefault = true),
+                variant(FormKind.COSMETIC, "pikachu-rock-star", "Pikachu Rock Star", "Pikachu Rock Star"),
+                variant(FormKind.COSMETIC, "pikachu-libre", "Pikachu Libre", "Pikachu Libre"),
+                variant(FormKind.COSMETIC, "pikachu-alola-cap", "Pikachu Alola Cap", "Alola Cap"),
+                variant(FormKind.ALTERNATE, "pikachu-starter", "Partner Pikachu", null),
+                variant(FormKind.GIGANTAMAX, "pikachu-gmax", "Gigantamax Pikachu", "Gigantamax Form"),
+            )
+
+        val pills = pikachu.toFormPillsUiModel("Pikachu")
+
+        assertEquals(listOf("pikachu", "pikachu-starter", "pikachu-gmax"), pills.map { it.slug })
+    }
+
+    @Test
+    fun toFormPillsUiModel_hasNoRowWhenOnlyOneFormSurvivesTheFilter() {
+        // Koraidon's four ride builds are all cosmetic, which leaves nothing to switch between.
+        val koraidon =
+            listOf(
+                variant(FormKind.NONE, "koraidon", "Koraidon", null, isDefault = true),
+                variant(FormKind.COSMETIC, "koraidon-limited-build", "Koraidon", null),
+                variant(FormKind.COSMETIC, "koraidon-sprinting-build", "Koraidon", null),
+            )
+
+        assertTrue(koraidon.toFormPillsUiModel("Koraidon").isEmpty())
+    }
+
+    @Test
+    fun toFormPillsUiModel_hasNoRowForASpeciesWithOneForm() {
+        assertTrue(listOf(variant(FormKind.NONE, "rattata", "Rattata", null, isDefault = true)).toFormPillsUiModel("Rattata").isEmpty())
     }
 }

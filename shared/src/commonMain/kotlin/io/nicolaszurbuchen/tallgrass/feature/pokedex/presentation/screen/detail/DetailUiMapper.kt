@@ -6,7 +6,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toAboutUiModel
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toFormPillUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toFormPillsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toStatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
@@ -35,13 +35,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                     numberText = "#" + detail.species.dexNumber.toString().padStart(DEX_NUMBER_DIGITS, '0'),
                     genusText = detail.species.genus,
                     types = listOfNotNull(variant.primaryType, variant.secondaryType).map { it.toUiModel() },
-                    // A species with one form has nothing to switch between.
-                    forms =
-                        if (detail.variants.size > 1) {
-                            detail.variants.map { it.toFormPillUiModel(detail.species.name) }
-                        } else {
-                            emptyList()
-                        },
+                    forms = detail.variants.toFormPillsUiModel(detail.species.name),
                     activeFormSlug = variant.slug,
                     tab =
                         when (tab) {

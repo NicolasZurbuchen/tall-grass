@@ -96,6 +96,7 @@ SELECT
     v.slug,
     v.name,
     v.formLabel,
+    v.formKind,
     v.isDefault,
     v.height,
     v.weight,

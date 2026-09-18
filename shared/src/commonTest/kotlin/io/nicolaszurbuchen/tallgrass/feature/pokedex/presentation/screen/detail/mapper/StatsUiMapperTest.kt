@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
@@ -15,6 +16,7 @@ class StatsUiMapperTest {
             slug = "charizard",
             name = "Charizard",
             formLabel = null,
+            formKind = FormKind.NONE,
             isDefault = true,
             artworkUrl = "",
             height = 17,

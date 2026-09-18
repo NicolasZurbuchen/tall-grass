@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.pokedex.PokedexDatabase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -57,6 +58,17 @@ class PokemonDetailLocalDataSourceImplTest {
         }
 
     @Test
+    fun detail_carriesEachFormsKindSoAScreenCanFilterOnIt() =
+        runTest {
+            // The column exists because upstream's `form` identifier cannot be filtered on. Reading
+            // it back through the join is the only thing that proves the two still agree.
+            val variants = source(StandardTestDispatcher(testScheduler)).detail("vulpix")?.variants?.associateBy { it.slug }
+
+            assertEquals(FormKind.NONE, variants?.getValue("vulpix")?.formKind)
+            assertEquals(FormKind.REGIONAL, variants?.getValue("vulpix-alola")?.formKind)
+        }
+
+    @Test
     fun detail_isNullForASlugNoVariantCarries() =
         runTest {
             assertNull(source(StandardTestDispatcher(testScheduler)).detail("missingno"))
@@ -100,6 +112,7 @@ private fun PokedexDatabase.insertVariant(
     name: String,
     formLabel: String?,
     isDefault: Boolean,
+    formKind: String = if (isDefault) "NONE" else "REGIONAL",
     sortOrder: Long,
     type: String,
     speed: Long,
@@ -111,7 +124,7 @@ private fun PokedexDatabase.insertVariant(
         name = name,
         formLabel = formLabel,
         form = if (isDefault) null else "alola",
-        formKind = if (isDefault) "NONE" else "REGIONAL",
+        formKind = formKind,
         isMega = false,
         isBattleOnly = false,
         isDefault = isDefault,

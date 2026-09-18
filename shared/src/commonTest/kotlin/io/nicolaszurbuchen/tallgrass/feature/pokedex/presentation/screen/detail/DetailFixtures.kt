@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
@@ -31,6 +32,7 @@ internal val charizard =
         slug = "charizard",
         name = "Charizard",
         formLabel = null,
+        formKind = FormKind.NONE,
         isDefault = true,
         artworkUrl = "https://example.invalid/6.png",
         height = 17,
@@ -45,6 +47,7 @@ internal val charizardMegaX =
         slug = "charizard-mega-x",
         name = "Mega Charizard X",
         formLabel = "Mega Charizard X",
+        formKind = FormKind.MEGA,
         isDefault = false,
         artworkUrl = "https://example.invalid/10034.png",
         height = 17,
@@ -61,4 +64,14 @@ internal val charizardHandoff =
         artworkUrl = charizard.artworkUrl,
         primaryTypeSlug = PokemonType.FIRE.slug,
         sharedElementKey = dexArtworkKey(charizard.slug),
+    )
+
+/** A costume: the switcher must not list it. Charizard has none, so this one is invented. */
+internal val charizardCostume =
+    charizard.copy(
+        slug = "charizard-party-hat",
+        name = "Charizard",
+        formLabel = "Party Hat",
+        formKind = FormKind.COSMETIC,
+        isDefault = false,
     )

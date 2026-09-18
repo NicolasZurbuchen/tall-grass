@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.SelectVa
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.Species
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.VariantStat
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
@@ -38,6 +39,7 @@ fun SelectVariantDetails.toDomain(stats: PokemonStats): PokemonVariant? {
         slug = slug,
         name = name,
         formLabel = formLabel,
+        formKind = FormKind.fromName(formKind),
         isDefault = isDefault,
         artworkUrl = artworkUrl,
         height = height.toInt(),

@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.SelectVa
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.Species
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.VariantStat
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
@@ -32,6 +33,7 @@ class PokemonDetailLocalMapperTest {
     private fun variantRow(
         slug: String = "vulpix-alola",
         formLabel: String? = "Alolan Form",
+        formKind: String = "REGIONAL",
         isDefault: Boolean = false,
         primaryType: String? = "ice",
         secondaryType: String? = null,
@@ -39,6 +41,7 @@ class PokemonDetailLocalMapperTest {
         slug = slug,
         name = "Alolan Vulpix",
         formLabel = formLabel,
+        formKind = formKind,
         isDefault = isDefault,
         height = 6,
         weight = 99,
@@ -133,5 +136,19 @@ class PokemonDetailLocalMapperTest {
     @Test
     fun toStatsByVariantDomain_isEmptyWhenThereAreNoRows() {
         assertTrue(emptyList<VariantStat>().toStatsByVariantDomain().isEmpty())
+    }
+
+    @Test
+    fun toDomain_readsTheFormKindTheSwitcherFiltersOn() {
+        assertEquals(FormKind.REGIONAL, variantRow(formKind = "REGIONAL").toDomain(stats)?.formKind)
+        assertEquals(FormKind.COSMETIC, variantRow(formKind = "COSMETIC").toDomain(stats)?.formKind)
+    }
+
+    @Test
+    fun toDomain_showsAFormWhoseKindThisBuildDoesNotKnow() {
+        // The opposite of how an unknown type is read, and deliberately so: an unrecognised kind
+        // means this build cannot say how the form differs, not that the form is not real. Dropping
+        // it -- or calling it cosmetic -- would lose a Pokemon from the switcher over a label.
+        assertEquals(FormKind.ALTERNATE, variantRow(formKind = "PARADOX").toDomain(stats)?.formKind)
     }
 }

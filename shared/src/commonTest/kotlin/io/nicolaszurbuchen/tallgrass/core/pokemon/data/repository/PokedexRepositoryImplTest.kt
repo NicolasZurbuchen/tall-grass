@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.DexLocal
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.PokemonDetailLocalDataSource
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
@@ -46,6 +47,7 @@ class PokedexRepositoryImplTest {
                         slug = "vulpix-alola",
                         name = "Alolan Vulpix",
                         formLabel = "Alolan Form",
+                        formKind = FormKind.NONE,
                         isDefault = false,
                         artworkUrl = "https://example.invalid/10103.png",
                         height = 6,

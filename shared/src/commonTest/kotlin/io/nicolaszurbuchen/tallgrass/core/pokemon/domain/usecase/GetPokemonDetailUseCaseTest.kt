@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexRepository
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
@@ -33,6 +34,7 @@ class GetPokemonDetailUseCaseTest {
                         slug = "vulpix",
                         name = "Vulpix",
                         formLabel = null,
+                        formKind = FormKind.NONE,
                         isDefault = true,
                         artworkUrl = "https://example.invalid/37.png",
                         height = 6,

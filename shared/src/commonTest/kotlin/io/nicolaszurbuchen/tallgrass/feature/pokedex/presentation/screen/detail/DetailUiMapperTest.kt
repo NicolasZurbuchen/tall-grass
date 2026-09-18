@@ -92,6 +92,18 @@ class DetailUiMapperTest {
     }
 
     @Test
+    fun toUiModel_keepsTheCostumesOutOfTheSwitcher() {
+        // Pikachu's fourteen cosmetic forms are in the dataset and must not reach the row. This
+        // asserts it through the whole State-to-UiModel path, because the filter is easy to drop
+        // when the mapper is next touched and nothing else on screen would look wrong.
+        val withCostume = charizardDetail.copy(variants = charizardDetail.variants + charizardCostume)
+
+        val content = assertNotNull(state().copy(detail = withCostume).toUiModel(charizardHandoff).content)
+
+        assertEquals(listOf("charizard", "charizard-mega-x"), content.forms.map { it.slug })
+    }
+
+    @Test
     fun toUiModel_hasNoSwitcherForASpeciesWithOneForm() {
         val single = charizardDetail.copy(variants = listOf(charizard))
 

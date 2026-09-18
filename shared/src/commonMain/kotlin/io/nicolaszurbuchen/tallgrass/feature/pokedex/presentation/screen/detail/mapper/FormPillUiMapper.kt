@@ -1,10 +1,28 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_form_default
+
+/**
+ * The forms worth switching between, which is not all of them.
+ *
+ * Cosmetic forms are left out. Pikachu has fourteen — Rock Star, Pop Star, Ph.D., Libre and eight
+ * hats — and every one of them has Pikachu's types, stats and abilities exactly. A row of eighteen
+ * pills that all show the same numbers is a worse screen than no row at all, and it buries the two
+ * that do change something.
+ *
+ * Empty when one form survives, because there is then nothing to switch between. That is most
+ * species, and also Koraidon and Miraidon, whose four ride builds are all cosmetic.
+ */
+fun List<PokemonVariant>.toFormPillsUiModel(speciesName: String): List<FormPillUiModel> {
+    val switchable = filterNot { it.formKind == FormKind.COSMETIC }
+
+    return if (switchable.size > 1) switchable.map { it.toFormPillUiModel(speciesName) } else emptyList()
+}
 
 /**
  * A pill says what makes this form different, and nothing else.
