@@ -10,7 +10,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DexRoute(
-    onNavigateToDetail: (String) -> Unit,
+    onNavigateToDetail: (slug: String, artworkUrl: String, primaryTypeSlug: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DexViewModel = koinViewModel(),
 ) {
@@ -20,7 +20,9 @@ fun DexRoute(
     LaunchedEffect(Unit) {
         viewModel.labels.collect { label ->
             when (label) {
-                is DexLabel.NavigateToDetail -> onNavigateToDetailUpdated(label.slug)
+                is DexLabel.NavigateToDetail -> {
+                    onNavigateToDetailUpdated(label.slug, label.artworkUrl, label.primaryTypeSlug)
+                }
             }
         }
     }

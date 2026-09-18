@@ -3,7 +3,6 @@ package io.nicolaszurbuchen.tallgrass.infra.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -43,12 +42,13 @@ fun NavGraph(
 
     SharedTransitionLayout {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+            // No inset padding here. The host used to hold every screen clear of the system bars,
+            // which made a screen that wants colour behind the status bar impossible to write --
+            // the padding is applied above the entry and cannot be undone below it. Insets are a
+            // screen's own business now, and every screen has to say what it does about them.
             NavDisplay(
                 backStack = backStack,
-                modifier =
-                    modifier
-                        .background(color = MaterialTheme.colorScheme.background)
-                        .systemBarsPadding(),
+                modifier = modifier.background(color = MaterialTheme.colorScheme.background),
                 onBack = { backStack.removeLastOrNull() },
                 entryDecorators =
                     listOf(

@@ -18,8 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.infra.navigation.LocalSharedTransitionScope
+import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 
 @Composable
 fun DexCard(
@@ -27,19 +30,23 @@ fun DexCard(
     numberText: String,
     formLabel: String?,
     artworkUrl: String,
+    artworkKey: SharedElementKey,
     tint: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalNavAnimatedContentScope.current
+
     Card(
         onClick = onClick,
-        modifier = modifier.aspectRatio(CARD_ASPECT_RATIO),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = tint, contentColor = Color.White),
+        modifier = modifier.aspectRatio(CARD_ASPECT_RATIO),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
             verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
         ) {
             Text(
                 text = numberText,
@@ -48,16 +55,26 @@ fun DexCard(
             )
 
             Box(
-                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                AsyncImage(
-                    model = artworkUrl,
-                    // The name is read out immediately below, so describing the artwork too would
-                    // have a screen reader say every Pokemon twice.
-                    contentDescription = null,
-                    modifier = Modifier.size(ARTWORK_SIZE),
-                )
+                // The sending half of the transition into the detail hero. The key is the card's
+                // own, built once in the navigation package so both ends agree. See #11.
+                with(sharedTransitionScope) {
+                    AsyncImage(
+                        model = artworkUrl,
+                        // The name is read out immediately below, so describing the artwork too
+                        // would have a screen reader say every Pokemon twice.
+                        contentDescription = null,
+                        modifier =
+                            Modifier
+                                .size(ARTWORK_SIZE)
+                                .sharedElement(
+                                    sharedContentState = rememberSharedContentState(artworkKey),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
+                    )
+                }
             }
 
             Column {

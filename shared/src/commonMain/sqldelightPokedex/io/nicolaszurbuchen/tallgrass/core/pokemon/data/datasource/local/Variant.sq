@@ -88,3 +88,31 @@ INSERT INTO variantStat(variantSlug, statSlug, baseStat) VALUES (?, ?, ?);
 
 insertVariantAbility:
 INSERT INTO variantAbility(variantSlug, abilitySlug, isHidden, slot) VALUES (?, ?, ?, ?);
+
+-- Every form of one species, for the detail screen's form switcher. The two type joins are the same
+-- shape as selectDexEntries and are LEFT for the same reason: a subquery would be typed NOT NULL.
+selectVariantDetails:
+SELECT
+    v.slug,
+    v.name,
+    v.formLabel,
+    v.formKind,
+    v.isDefault,
+    v.height,
+    v.weight,
+    v.artworkUrl,
+    t1.typeSlug AS primaryType,
+    t2.typeSlug AS secondaryType
+FROM variant v
+LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
+LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
+WHERE v.speciesDexNumber = ?
+ORDER BY v.sortOrder;
+
+-- Six rows per variant, read for the whole species in one go rather than per form: switching form
+-- must not hit the database, because the switch is what the transition between forms animates.
+selectStatsBySpecies:
+SELECT vs.variantSlug, vs.statSlug, vs.baseStat
+FROM variantStat vs
+JOIN variant v ON v.slug = vs.variantSlug
+WHERE v.speciesDexNumber = ?;

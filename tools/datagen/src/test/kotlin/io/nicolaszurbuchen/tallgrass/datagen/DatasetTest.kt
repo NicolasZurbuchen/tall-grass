@@ -60,6 +60,27 @@ class DatasetTest {
         assertTrue(variants.all { it.artworkUrl.endsWith(".png") })
     }
 
+    /**
+     * **The check that catches an id from the wrong table.**
+     *
+     * Upstream numbers `pokemon` and `pokemon_forms` separately and both run into the ten-thousands,
+     * so a form id pasted into an artwork URL resolves — to somebody else. Every Arceus Plate and
+     * Silvally Memory shipped with another Pokemon's picture that way: Dragon Arceus was Mega Mewtwo
+     * X, because 10043 is a real `pokemon` id belonging to it.
+     *
+     * Nothing else notices. The URL is well-formed, the image loads, and the only way to see it is
+     * to open the form switcher and recognise the Pokemon looking back.
+     */
+    @Test
+    fun noTwoVariants_shareOnePicture() {
+        val shared =
+            variants.groupBy { it.artworkUrl }
+                .filterValues { it.size > 1 }
+                .mapValues { (_, group) -> group.map { it.slug } }
+
+        assertTrue(shared.isEmpty(), "One picture used by several variants: $shared")
+    }
+
     @Test
     fun everySpecies_isListedInTheDex() {
         // A species with no listed variant would be a gap in the grid at that Dex number.

@@ -2,12 +2,15 @@ package io.nicolaszurbuchen.tallgrass.core.error
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.WifiOff
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.error_database_generic_subtitle
 import tallgrass.shared.generated.resources.error_database_insert_failed_title
+import tallgrass.shared.generated.resources.error_database_not_found_subtitle
+import tallgrass.shared.generated.resources.error_database_not_found_title
 import tallgrass.shared.generated.resources.error_database_query_failed_title
 import tallgrass.shared.generated.resources.error_network_http_subtitle_default
 import tallgrass.shared.generated.resources.error_network_http_title
@@ -43,6 +46,14 @@ fun AppError.toUiModel(): AppErrorUiModel =
                     serverMessage?.let { UiText.Raw(it) }
                         ?: UiText.Resource(Res.string.error_network_http_subtitle_default),
                 icon = Icons.Outlined.WifiOff,
+            )
+        }
+
+        is AppError.Database.NotFound -> {
+            AppErrorUiModel(
+                title = UiText.Resource(Res.string.error_database_not_found_title),
+                subtitle = UiText.Resource(Res.string.error_database_not_found_subtitle),
+                icon = Icons.Outlined.SearchOff,
             )
         }
 

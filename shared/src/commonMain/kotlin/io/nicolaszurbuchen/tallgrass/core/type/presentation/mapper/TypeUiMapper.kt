@@ -28,3 +28,11 @@ fun PokemonType.toUiModel(): TypeUiModel =
         PokemonType.STEEL -> TypeUiModel.STEEL
         PokemonType.FAIRY -> TypeUiModel.FAIRY
     }
+
+/**
+ * The same crossing from the dataset's spelling, for callers holding a slug rather than a type.
+ *
+ * A navigation destination is one: it is serialized, so it carries the tapped card's type as the
+ * string the dataset stores. Null means the two disagree about the eighteen.
+ */
+fun String.toTypeUiModel(): TypeUiModel? = PokemonType.fromSlug(this)?.toUiModel()

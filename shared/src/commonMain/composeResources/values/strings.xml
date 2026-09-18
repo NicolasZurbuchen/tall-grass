@@ -12,6 +12,41 @@
     <string name="home_tile_team_builder">Team Builder</string>
     <string name="home_tile_compare">Compare</string>
 
+    <string name="pokedex_detail_back">Back</string>
+    <string name="pokedex_detail_form_default">Standard</string>
+
+    <string name="pokedex_detail_tab_about">About</string>
+    <string name="pokedex_detail_tab_stats">Base Stats</string>
+
+    <string name="pokedex_detail_height">Height</string>
+    <string name="pokedex_detail_weight">Weight</string>
+    <string name="pokedex_detail_height_value">%1$s m</string>
+    <string name="pokedex_detail_weight_value">%1$s kg</string>
+
+    <string name="pokedex_detail_breeding">Breeding</string>
+    <string name="pokedex_detail_gender">Gender</string>
+    <string name="pokedex_detail_genderless">Genderless</string>
+    <!-- A lone % is literal. Compose's resource formatter substitutes %N$s and %N$d and nothing
+         else, so Android's %% escape renders as two percent signs rather than one. -->
+    <string name="pokedex_detail_gender_value">%1$s% male, %2$s% female</string>
+    <string name="pokedex_detail_egg_groups">Egg Groups</string>
+    <string name="pokedex_detail_egg_cycle">Egg Cycle</string>
+    <string name="pokedex_detail_egg_cycle_value">%1$s cycles</string>
+
+    <string name="pokedex_detail_training">Training</string>
+    <string name="pokedex_detail_growth">Growth</string>
+
+    <string name="pokedex_detail_stat_hp">HP</string>
+    <string name="pokedex_detail_stat_attack">Attack</string>
+    <string name="pokedex_detail_stat_defense">Defense</string>
+    <string name="pokedex_detail_stat_special_attack">Sp. Atk</string>
+    <string name="pokedex_detail_stat_special_defense">Sp. Def</string>
+    <string name="pokedex_detail_stat_speed">Speed</string>
+    <string name="pokedex_detail_stat_total">Total</string>
+
+    <string name="pokedex_detail_type_defenses">Type Defenses</string>
+    <string name="pokedex_detail_type_defenses_hint">Damage taken from each attacking type. Neutral matchups are left out.</string>
+
     <string name="error_retry">Retry</string>
     <string name="error_dismiss">Dismiss</string>
     <string name="error_network_unavailable_title">No internet connection</string>
@@ -23,6 +58,8 @@
     <string name="error_database_query_failed_title">Couldn\'t read from storage</string>
     <string name="error_database_generic_subtitle">Something went wrong. Try again.</string>
     <string name="error_database_insert_failed_title">Couldn\'t save to storage</string>
+    <string name="error_database_not_found_title">Not in this Pok&#233;dex</string>
+    <string name="error_database_not_found_subtitle">This entry is not part of the bundled dataset.</string>
     <string name="error_unexpected_title">Something went wrong</string>
     <string name="error_unexpected_subtitle">Please try again.</string>
 </resources>

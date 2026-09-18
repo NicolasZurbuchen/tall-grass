@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -27,10 +28,10 @@ fun HomeScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(HOME_GRID_COLUMNS),
-        modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(MaterialTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+        modifier = modifier.fillMaxSize().systemBarsPadding(),
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             Text(

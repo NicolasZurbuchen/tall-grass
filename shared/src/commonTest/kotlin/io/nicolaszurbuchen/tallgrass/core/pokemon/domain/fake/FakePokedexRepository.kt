@@ -1,10 +1,12 @@
 package io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.repository.PokedexRepository
 
 class FakePokedexRepository(
     private var entries: List<DexEntry> = emptyList(),
+    private var details: Map<String, PokemonDetail> = emptyMap(),
     private var failure: Throwable? = null,
 ) : PokedexRepository {
     var callCount: Int = 0
@@ -14,5 +16,11 @@ class FakePokedexRepository(
         callCount++
         failure?.let { throw it }
         return entries
+    }
+
+    override suspend fun pokemonDetail(variantSlug: String): PokemonDetail? {
+        callCount++
+        failure?.let { throw it }
+        return details[variantSlug]
     }
 }

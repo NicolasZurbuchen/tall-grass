@@ -290,24 +290,31 @@ private fun typeChangingForms(
             val types = typesByForm[formId]?.filterNotNull().orEmpty()
             if (types.isEmpty()) return@mapNotNull null
 
-            val speciesId = speciesByPokemon[form.int("pokemon_id")] ?: return@mapNotNull null
+            val pokemonId = form.int("pokemon_id")
+            val speciesId = speciesByPokemon[pokemonId] ?: return@mapNotNull null
             val base = defaults[speciesId] ?: return@mapNotNull null
             val formName = formNames[formId]
+            val formIdentifier = form["form_identifier"].ifEmpty { null }
 
             base.copy(
                 slug = form["identifier"],
                 name = formName?.get("pokemon_name").orEmpty().ifEmpty { base.name },
                 formLabel = formName?.get("form_name").orEmpty().ifEmpty { null },
-                form = form["form_identifier"].ifEmpty { null },
+                form = formIdentifier,
                 // Battle-relevant, and none of the earlier buckets name it.
                 formKind = FormKind.ALTERNATE,
                 isDefault = false,
                 // Eighteen Arceus in the grid would bury the other 1081 cards.
                 listedInDex = false,
                 types = types,
-                // Keyed by the form rather than the pokemon: every Plate has its own picture, and
-                // the pokemon id would give all eighteen the same one.
-                artworkUrl = artworkUrl(formId),
+                // Named, not numbered. These forms have no `pokemon` row, so there is no id that
+                // stands for them in the artwork set -- and the form id, which does exist, indexes
+                // a different table: `artworkUrl(formId)` handed Dragon Arceus a picture of Mega
+                // Mewtwo X, because 10043 is a real pokemon id belonging to someone else.
+                artworkUrl =
+                    formIdentifier
+                        ?.let { formArtworkUrl(pokemonId, it) }
+                        ?: base.artworkUrl,
                 sortOrder = formId,
             )
         }

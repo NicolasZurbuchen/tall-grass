@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 
 import io.nicolaszurbuchen.tallgrass.core.error.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 
 fun DexState.toUiModel(): DexUiModel =
     DexUiModel(
@@ -14,6 +15,7 @@ fun DexState.toUiModel(): DexUiModel =
                     name = entry.name,
                     formLabel = entry.formLabel?.removeSuffix(" Form"),
                     artworkUrl = entry.artworkUrl,
+                    artworkKey = dexArtworkKey(entry.slug),
                     tint = entry.primaryType.toUiModel().color,
                 )
             },

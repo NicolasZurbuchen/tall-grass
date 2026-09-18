@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.app.navigation
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeRootDestination
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexDestination
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -15,6 +16,7 @@ val navConfig =
                 polymorphic(NavKey::class) {
                     subclass(HomeRootDestination::class)
                     subclass(DexDestination::class)
+                    subclass(DetailDestination::class)
                 }
             }
     }

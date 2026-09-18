@@ -17,14 +17,36 @@ const val LAST_REAL_TYPE_ID: Int = 18
 
 private const val RAW_BASE = "https://raw.githubusercontent.com/PokeAPI/pokeapi"
 
-private const val ARTWORK_BASE =
-    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork"
+private const val SPRITE_BASE =
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other"
+
+private const val ARTWORK_BASE = "$SPRITE_BASE/official-artwork"
+
+private const val HOME_BASE = "$SPRITE_BASE/home"
 
 /**
  * Artwork is referenced, never downloaded. Tracks `master` rather than a pinned SHA: this string is
  * read months later on a device and is the URL upstream's own API hands out.
+ *
+ * [id] is a **`pokemon` id**, which is not the same number as a `pokemon_forms` id even though both
+ * run into the ten-thousands. Passing the wrong one produces a URL that resolves — to a different
+ * Pokemon. See [formArtworkUrl].
  */
 fun artworkUrl(id: Int): String = "$ARTWORK_BASE/$id.png"
+
+/**
+ * The HOME render of one form, for the forms that have no `pokemon` row and therefore no official
+ * artwork: `official-artwork/493-fighting.png` is a 404, while `home/493-fighting.png` is Arceus
+ * holding the Fist Plate.
+ *
+ * A second art style in an app built around official artwork, which is the price of showing all
+ * eighteen Arceus as themselves. It reaches only the detail hero, because none of these forms earns
+ * a card in the grid.
+ */
+fun formArtworkUrl(
+    pokemonId: Int,
+    formIdentifier: String,
+): String = "$HOME_BASE/$pokemonId-$formIdentifier.png"
 
 /** Reads one upstream CSV, caching it under `cacheDir` keyed by [SOURCE_SHA]. */
 class UpstreamSource(

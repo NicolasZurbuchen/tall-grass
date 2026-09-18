@@ -176,3 +176,123 @@ It is unreachable from any host test: the generator writes the file, the tests b
 memory through the same `create` path, and none of them re-open a populated database the way first
 run does. So the build stamps the version and reads it back, and the check was verified by shipping
 a deliberate 0 and watching it fail.
+
+### The destination carries what the tapped card was already drawing
+
+A `DetailDestination` holds a `HeroHandoff`: the artwork URL, the primary type's slug and the
+shared-element key. None of it is read from the database, and all of it is on screen before the tap.
+
+Both halves earn their place by removing a different flicker. Artwork resolved on arrival renders
+empty for a frame, which is the frame the shared element exists to hide. A tint learned from the
+database changes colour under the reader a moment after the screen opens — less obvious in a
+screenshot, more obvious in the hand.
+
+**The type travels as a slug, not as a packed colour.** Which colour a type is drawn in is a
+decision the design system makes; a destination that carried an ARGB value would be remembering the
+answer to a question it is not allowed to ask.
+
+**Rejected: loading the hero from the Store like everything else.** It would make the hero wait on
+an answer it already has, and the loading state of a five-query local read is one frame — exactly
+the frame that has to be right.
+
+### A shared-element key names its source
+
+`SharedElementKey(source, id)` rather than the id alone. The detail hero has four entry points under
+#11's rule — dex, search, locations, and later the team builder — and two of them can be composed at
+the same time, because the host cross-fades between screens rather than swapping them.
+
+With the id alone, a dex card and a search result for the same Pokemon would match while that
+cross-fade runs and animate a transition nobody asked for. The key is built by one function per
+source, so the sending and receiving halves cannot drift: a literal on each side would compile,
+run, and simply not animate.
+
+**The hero's key follows the form on screen, not the form that was tapped.** Switching to Mega
+Charizard X swaps the picture; a hero that kept `dex/charizard` would fly the Mega's artwork back
+into Charizard's card. Keyed by the active form, the key matches no card after a switch and the two
+screens cross-fade, which is the honest answer.
+
+**Rejected: dropping the modifier when the form is not the tapped one.** `rememberSharedContentState`
+is a `remember`, and moving it in and out of the composition on every tap of the switcher is a
+composition bug waiting for a slot to shift under it.
+
+### The About tab is a function of the species, with the form passed in
+
+`AboutUiModel` is built by an extension on `PokemonSpecies` that takes the variant as a parameter,
+and the variant is read for exactly two fields: height and weight. Everything else in the tab is
+breeding and training, which are true of Vulpix whichever region it is from.
+
+The rule is #5's, and the point of writing it into the mapper's signature is that it stops being a
+rule anyone has to remember. Breeding data moving when the form changes is the specific bug the
+Species/Variant split exists to prevent, and a mapper that cannot see the variant cannot cause it.
+
+### Which tab is open lives in the Store, as a nested enum
+
+The Contract may not name a `UiModel` and a Screen may not name a `State` — two Konsist rules that
+meet head-on over a tab, which is neither a domain type nor a rendering one. `DetailState.Tab` is
+nested inside the State rather than declared beside it, which is what keeps the Contract to the
+Store's own vocabulary.
+
+The crossing happens in the Route, which shares a package with the Contract and so needs no import
+to see both sides. It is the only place in the screen that sees both, and it is already the file
+that turns callbacks into Intents.
+
+**Rejected: keeping the tab in the Screen as `rememberSaveable` state.** It would work, and it would
+leave the form switcher — the same kind of choice — in the Store and the tab outside it, for no
+reason a reader could recover.
+
+### A stat bar is full at 160, not at 255
+
+Blissey's 255 HP is the real maximum and almost nothing else comes near it. Scaling every bar to it
+squashes the ordinary range into the left third, where the differences the tab exists to show stop
+being visible. The bars are drawn against 160 and clamped, so the handful above it read as full.
+
+This is a rendering choice and the number is in the mapper, not the domain: the stat is 255 whatever
+the bar does with it.
+
+### The preview harness opens the navigation host's scopes
+
+`TallGrassPreview` wraps its content in a `SharedTransitionLayout` and an `AnimatedContent` that
+never changes state, so `LocalSharedTransitionScope` and `LocalNavAnimatedContentScope` both resolve.
+
+Both composition locals fail rather than defaulting, which is deliberate — a null default turns a
+wiring mistake into a transition that silently does not run. The cost is that any screen carrying a
+shared element is unpreviewable without a host, and the transition is the point of several of them.
+The harness already stands in for the shell's theme and background; these are two more things the
+shell provides.
+
+### The form switcher lists forms that change something
+
+Cosmetic forms are in the dataset and out of the switcher.
+
+Pikachu is the case that forces it: seventeen variants, fourteen of them costumes — Rock Star, Pop
+Star, Ph.D., Libre, Cosplay and eight regional hats — all carrying Pikachu's types, stats and
+abilities exactly. A row of seventeen pills whose numbers never change is a worse screen than no row,
+and it buries Partner Pikachu and Gigantamax, which do change something.
+
+They stay in `PokemonDetail.variants` and are dropped at the presentation edge. Whether a costume is
+worth showing is a question about a screen rather than about the Pokemon, and a count of them — the
+dashed `+N cosmetic` pill in the prototype — needs them present to be counted.
+
+**An unknown `formKind` reads as `ALTERNATE`, not as null.** Every other enum read from the dataset
+here drops its row when it cannot parse the value, because an unreadable type or growth rate makes
+the row meaningless. A kind is different: it says how a form differs, not what it is. Failing to
+recognise one should cost a label, not a Pokemon.
+
+### Two art sources, because thirty-four forms have no official artwork
+
+Almost every variant points at PokeAPI's `official-artwork`, which is what the dex grid is designed
+around. The Arceus Plates and Silvally Memories point at the `home` renders instead.
+
+They have to. Those thirty-four forms have no `pokemon` row — they exist only in `pokemon_forms`,
+which is the whole reason they had to be promoted into variants in the first place — and the artwork
+set is keyed by `pokemon` id. `official-artwork/493-fighting.png` is a 404. The HOME set is keyed by
+form and has all thirty-four.
+
+**The alternative was showing the base form's picture eighteen times.** On a screen whose purpose is
+to show what changes between forms, that is a worse answer than a change of art style, and the style
+only ever appears in the detail hero: none of these forms earns a card in the grid.
+
+**Two id spaces, both in the ten-thousands.** `pokemon` and `pokemon_forms` are numbered separately,
+so an id from the wrong one produces a URL that resolves to another Pokemon rather than a 404 — Mega
+Mewtwo X for Dragon Arceus. `DatasetTest.noTwoVariants_shareOnePicture` is the tripwire, because
+nothing downstream can tell a right picture from a wrong one.

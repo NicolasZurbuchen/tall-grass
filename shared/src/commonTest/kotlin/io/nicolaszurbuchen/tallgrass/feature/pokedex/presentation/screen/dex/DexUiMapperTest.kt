@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -67,6 +68,15 @@ class DexUiMapperTest {
     @Test
     fun toUiModel_hasNoChipForAnOrdinaryForm() {
         assertNull(DexState(entries = listOf(entry())).toUiModel().entries.single().formLabel)
+    }
+
+    @Test
+    fun toUiModel_givesEachCardTheKeyItsArtworkFliesUnder() {
+        // Both halves of the transition build the key through the same function, so a card and the
+        // hero it opens agree by construction rather than by two literals staying in step.
+        val ui = DexState(entries = listOf(entry(slug = "vulpix-alola"))).toUiModel()
+
+        assertEquals(dexArtworkKey("vulpix-alola"), ui.entries.single().artworkKey)
     }
 
     @Test

@@ -27210,7 +27210,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10041.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-bug.png",
     "sortOrder": 10041,
     "types": [
       "bug"
@@ -27245,7 +27245,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10042.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-dark.png",
     "sortOrder": 10042,
     "types": [
       "dark"
@@ -27280,7 +27280,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10043.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-dragon.png",
     "sortOrder": 10043,
     "types": [
       "dragon"
@@ -27315,7 +27315,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10044.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-electric.png",
     "sortOrder": 10044,
     "types": [
       "electric"
@@ -27350,7 +27350,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10045.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-fighting.png",
     "sortOrder": 10045,
     "types": [
       "fighting"
@@ -27385,7 +27385,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10046.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-fire.png",
     "sortOrder": 10046,
     "types": [
       "fire"
@@ -27420,7 +27420,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10047.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-flying.png",
     "sortOrder": 10047,
     "types": [
       "flying"
@@ -27455,7 +27455,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10048.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-ghost.png",
     "sortOrder": 10048,
     "types": [
       "ghost"
@@ -27490,7 +27490,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10049.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-grass.png",
     "sortOrder": 10049,
     "types": [
       "grass"
@@ -27525,7 +27525,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10050.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-ground.png",
     "sortOrder": 10050,
     "types": [
       "ground"
@@ -27560,7 +27560,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10051.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-ice.png",
     "sortOrder": 10051,
     "types": [
       "ice"
@@ -27595,7 +27595,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10052.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-poison.png",
     "sortOrder": 10052,
     "types": [
       "poison"
@@ -27630,7 +27630,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10053.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-psychic.png",
     "sortOrder": 10053,
     "types": [
       "psychic"
@@ -27665,7 +27665,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10054.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-rock.png",
     "sortOrder": 10054,
     "types": [
       "rock"
@@ -27700,7 +27700,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10055.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-steel.png",
     "sortOrder": 10055,
     "types": [
       "steel"
@@ -27735,7 +27735,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10056.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-water.png",
     "sortOrder": 10056,
     "types": [
       "water"
@@ -27770,7 +27770,7 @@
     "listedInDex": false,
     "height": 32,
     "weight": 3200,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10085.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/493-fairy.png",
     "sortOrder": 10085,
     "types": [
       "fairy"
@@ -42707,7 +42707,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10232.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-fighting.png",
     "sortOrder": 10232,
     "types": [
       "fighting"
@@ -42742,7 +42742,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10233.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-flying.png",
     "sortOrder": 10233,
     "types": [
       "flying"
@@ -42777,7 +42777,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10234.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-poison.png",
     "sortOrder": 10234,
     "types": [
       "poison"
@@ -42812,7 +42812,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10235.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-ground.png",
     "sortOrder": 10235,
     "types": [
       "ground"
@@ -42847,7 +42847,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10236.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-rock.png",
     "sortOrder": 10236,
     "types": [
       "rock"
@@ -42882,7 +42882,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10237.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-bug.png",
     "sortOrder": 10237,
     "types": [
       "bug"
@@ -42917,7 +42917,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10238.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-ghost.png",
     "sortOrder": 10238,
     "types": [
       "ghost"
@@ -42952,7 +42952,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10239.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-steel.png",
     "sortOrder": 10239,
     "types": [
       "steel"
@@ -42987,7 +42987,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10240.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-fire.png",
     "sortOrder": 10240,
     "types": [
       "fire"
@@ -43022,7 +43022,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10241.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-water.png",
     "sortOrder": 10241,
     "types": [
       "water"
@@ -43057,7 +43057,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10242.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-grass.png",
     "sortOrder": 10242,
     "types": [
       "grass"
@@ -43092,7 +43092,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10243.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-electric.png",
     "sortOrder": 10243,
     "types": [
       "electric"
@@ -43127,7 +43127,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10244.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-psychic.png",
     "sortOrder": 10244,
     "types": [
       "psychic"
@@ -43162,7 +43162,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10245.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-ice.png",
     "sortOrder": 10245,
     "types": [
       "ice"
@@ -43197,7 +43197,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10246.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-dragon.png",
     "sortOrder": 10246,
     "types": [
       "dragon"
@@ -43232,7 +43232,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10247.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-dark.png",
     "sortOrder": 10247,
     "types": [
       "dark"
@@ -43267,7 +43267,7 @@
     "listedInDex": false,
     "height": 23,
     "weight": 1005,
-    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10248.png",
+    "artworkUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/773-fairy.png",
     "sortOrder": 10248,
     "types": [
       "fairy"
