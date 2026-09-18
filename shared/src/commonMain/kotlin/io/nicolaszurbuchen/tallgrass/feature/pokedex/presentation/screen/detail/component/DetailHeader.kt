@@ -22,6 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
+import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
+import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
+import io.nicolaszurbuchen.tallgrass.design.theme.heroUp
+import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.shimmerBlock
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
@@ -41,8 +45,12 @@ fun DetailHeader(
     content: DetailContentUiModel?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    elapsedMillis: Int = ENTRANCE_DONE,
 ) {
     Column(modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.md)) {
+        // Deliberately outside the entrance. It is the one control on this screen that has to work
+        // the instant the screen is up, and a target that is still sliding is a target that can be
+        // missed.
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -54,7 +62,11 @@ fun DetailHeader(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = MaterialTheme.spacing.md)
+                    .heroUp(entranceFraction(0, elapsedMillis)),
         ) {
             if (content == null) {
                 Box(modifier = Modifier.width(NAME_SKELETON_WIDTH).height(NAME_SKELETON_HEIGHT).shimmerBlock())
@@ -86,7 +98,9 @@ fun DetailHeader(
                     .heightIn(min = TYPES_ROW_MIN_HEIGHT),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
-                content?.types?.forEach { type -> TypePill(type = type) }
+                content?.types?.forEachIndexed { index, type ->
+                    TypePill(type = type, modifier = Modifier.pop(entranceFraction(index, elapsedMillis)))
+                }
             }
 
             if (content != null) {
@@ -94,6 +108,7 @@ fun DetailHeader(
                     text = content.genusText,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = GENUS_ALPHA),
+                    modifier = Modifier.heroUp(entranceFraction(1, elapsedMillis)),
                 )
             }
         }

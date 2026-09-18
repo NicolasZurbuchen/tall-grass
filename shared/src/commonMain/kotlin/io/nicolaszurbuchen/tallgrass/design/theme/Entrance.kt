@@ -1,0 +1,105 @@
+package io.nicolaszurbuchen.tallgrass.design.theme
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+
+/**
+ * One clock for a whole screen's entrance, in milliseconds since it began.
+ *
+ * **Not one animation per item, which is the trap a lazy list sets.** An entrance owned by the item
+ * re-runs every time that item scrolls back into composition, so the dex would re-animate cards the
+ * reader has already seen — and the fix people reach for, remembering a flag per item, does not
+ * survive the recycling either.
+ *
+ * A screen-level clock has neither problem. An item entering later reads a clock that has already
+ * finished, gets a fraction of 1, and draws normally with no animation state of its own.
+ *
+ * [key] restarts it. Pass whatever identifies the content, so a retry or a different Pokemon enters
+ * again and a recomposition does not.
+ */
+@Composable
+fun rememberEntranceClock(
+    key: Any?,
+    enabled: Boolean = true,
+): State<Int> {
+    val clock = remember(key) { Animatable(if (enabled) 0f else FINISHED) }
+
+    LaunchedEffect(key, enabled) {
+        if (!enabled) {
+            clock.snapTo(FINISHED)
+            return@LaunchedEffect
+        }
+
+        // Linear on purpose: this is a clock, and each item applies its own easing to its own slice
+        // of it. Easing the clock would ease every item twice.
+        clock.animateTo(FINISHED, tween(durationMillis = FINISHED.toInt(), easing = LinearEasing))
+    }
+
+    return remember(clock) { derivedStateOf { clock.value.toInt() } }
+}
+
+/**
+ * How far through its own entrance the item at [viewportIndex] is, read off a screen clock at
+ * [elapsedMillis].
+ *
+ * [viewportIndex] is the item's position **in the visible viewport**, never its index in the list.
+ * See [AppStagger].
+ */
+fun entranceFraction(
+    viewportIndex: Int,
+    elapsedMillis: Int,
+    durationMillis: Int = AppDuration.MEDIUM,
+): Float {
+    val started = elapsedMillis - AppStagger.delayFor(viewportIndex)
+
+    return (started.toFloat() / durationMillis).coerceIn(0f, 1f)
+}
+
+/** Rises into place from below while fading in. The workhorse: grid cards, sheet content, rows. */
+fun Modifier.rise(fraction: Float): Modifier =
+    graphicsLayer {
+        alpha = fraction
+        translationY = (1f - AppEasing.EaseOutQuint.transform(fraction)) * RISE_DISTANCE.toPx()
+    }
+
+/** Scales up into place. Chips, pills and type badges, which are too small to travel. */
+fun Modifier.pop(fraction: Float): Modifier =
+    graphicsLayer {
+        alpha = fraction
+        val scale = POP_FROM + (1f - POP_FROM) * AppEasing.Emphasized.transform(fraction)
+        scaleX = scale
+        scaleY = scale
+    }
+
+/** Drops in from above. Header text, which the artwork below it rises past. */
+fun Modifier.heroUp(fraction: Float): Modifier =
+    graphicsLayer {
+        alpha = fraction
+        translationY = (AppEasing.EaseOutQuint.transform(fraction) - 1f) * HERO_DISTANCE.toPx()
+    }
+
+/**
+ * A clock reading for content that is simply there — a preview, or a component drawn outside any
+ * entrance. Every [entranceFraction] read against it is 1.
+ */
+val ENTRANCE_DONE: Int = AppStagger.delayFor(AppStagger.MAX_ITEMS) + AppDuration.MEDIUM
+
+// The clock's own length. Anything reading a fraction after this is reading 1.
+private val FINISHED = ENTRANCE_DONE.toFloat()
+
+// Far enough to read as arriving, short enough that a card does not cross the one below it.
+private val RISE_DISTANCE = 24.dp
+
+private val HERO_DISTANCE = 16.dp
+
+// Not from zero. A pill scaling up from nothing reads as a balloon; from 0.85 it reads as settling.
+private const val POP_FROM = 0.85f

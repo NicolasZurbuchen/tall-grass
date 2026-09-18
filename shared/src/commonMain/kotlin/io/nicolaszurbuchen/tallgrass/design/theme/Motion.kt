@@ -63,9 +63,10 @@ object AppStagger {
  * *durations* by that factor on its own; what a caller needs this for is the categorical choices
  * duration cannot express, such as stopping a loop rather than running it instantly.
  *
- * **Absent means not reduced.** The element is installed by the platform's window recomposer, so a
- * composition running outside one — a screenshot harness, a test with a bare effect context — gets
- * full motion rather than an exception.
+ * **Absent means not reduced, and so does unreadable.** The element is installed by the platform's
+ * window recomposer, and Android's implementation throws if the factor is read before that
+ * recomposer's loop has started — a state a real composition is past, but a test or a preview with
+ * its own effect context need not be. Full motion is the right answer to "cannot tell".
  *
  * Must be called during composition: on Android the scale factor is snapshot state, so a screen that
  * reads it here recomposes when the setting changes underneath it.
@@ -75,6 +76,7 @@ fun rememberReducedMotion(): Boolean {
     // The scope is only a handle on the composition's coroutine context, which is where the platform
     // puts the scale. Nothing is launched in it.
     val scope = rememberCoroutineScope()
+    val scale = scope.coroutineContext[MotionDurationScale] ?: return false
 
-    return scope.coroutineContext[MotionDurationScale]?.scaleFactor == 0f
+    return runCatching { scale.scaleFactor }.getOrDefault(1f) == 0f
 }
