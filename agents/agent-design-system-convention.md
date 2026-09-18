@@ -50,3 +50,20 @@ A flat `data class` of named tokens with defaults, exposed via a `MaterialTheme`
 The loading placeholder is a token, not a component. `ShimmerPulse` provides one animated alpha and `Modifier.shimmerBlock` paints a block that reads it, so every placeholder on a screen breathes together; the *geometry* of a skeleton belongs to the screen that draws it, because matching the real layout is the entire point.
 
 `LocalShimmerAlpha` has a static default, so a preview or a screenshot test with no `ShimmerPulse` above it still draws the frame — it simply does not animate. The alpha bounds and the pulse duration carry their reasoning at the constants; adjust them for a real design rather than copying numbers into a screen.
+
+## Motion (`theme/Motion.kt`)
+
+Material 3's motion scheme is the default vocabulary. `AppEasing` holds the three curve-based
+exceptions to it, each because matching the Flutter reference is an explicit goal of this project and
+a spring cannot reproduce a 600ms `easeOutQuint` settle. `AppDuration` and `AppStagger` are the
+numbers those animations take. **No call site carries a raw duration or easing** — the catalogue in
+#12 is the source, and a number that does not come from it is a number nobody has justified.
+
+`AppStagger.delayFor` takes an index **within the visible viewport**, never an absolute list index.
+At dex scale the absolute index gives card 500 a twenty-seven second delay, which reads as a hang
+rather than as a stagger.
+
+`rememberReducedMotion()` is the primitive behind the reduced-motion policy. Compose already scales
+durations by the system factor on its own; what it cannot do is make the categorical choices — a
+decorative loop stops rather than running instantly, a shared element cross-fades rather than
+snapping — and those need the setting as a boolean.
