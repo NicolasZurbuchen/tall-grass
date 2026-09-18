@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.infra.image
 
 import coil3.PlatformContext
+import kotlinx.cinterop.ExperimentalForeignApi
 import okio.Path
 import okio.Path.Companion.toPath
 import platform.Foundation.NSCachesDirectory
@@ -18,8 +19,14 @@ actual fun platformCacheDirectory(context: PlatformContext): Path {
     return caches.toPath()
 }
 
-// Zero when the volume cannot be read, which stops the prefetch rather than letting it run into a
-// disk it knows nothing about.
+/**
+ * Zero when the volume cannot be read, which stops the prefetch rather than letting it run at a disk
+ * it knows nothing about.
+ *
+ * The opt-in is for the error out-parameter, which is a `CPointer` — the same annotation the iOS
+ * SQLDelight driver already carries. Nothing here reaches into memory itself.
+ */
+@OptIn(ExperimentalForeignApi::class)
 actual fun availableBytesAt(path: Path): Long {
     val attributes = NSFileManager.defaultManager.attributesOfFileSystemForPath(path.toString(), null)
 
