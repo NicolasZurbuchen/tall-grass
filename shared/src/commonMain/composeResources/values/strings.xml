@@ -26,7 +26,9 @@
     <string name="pokedex_detail_breeding">Breeding</string>
     <string name="pokedex_detail_gender">Gender</string>
     <string name="pokedex_detail_genderless">Genderless</string>
-    <string name="pokedex_detail_gender_value">%1$s%% male, %2$s%% female</string>
+    <!-- A lone % is literal. Compose's resource formatter substitutes %N$s and %N$d and nothing
+         else, so Android's %% escape renders as two percent signs rather than one. -->
+    <string name="pokedex_detail_gender_value">%1$s% male, %2$s% female</string>
     <string name="pokedex_detail_egg_groups">Egg Groups</string>
     <string name="pokedex_detail_egg_cycle">Egg Cycle</string>
     <string name="pokedex_detail_egg_cycle_value">%1$s cycles</string>
