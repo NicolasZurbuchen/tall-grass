@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 import io.nicolaszurbuchen.tallgrass.core.error.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.mapper.toUiModel
 
 fun DexState.toUiModel(): DexUiModel =
     DexUiModel(
@@ -20,6 +21,7 @@ fun DexState.toUiModel(): DexUiModel =
                 )
             },
         error = error?.toUiModel(),
+        prefetch = prefetch?.toUiModel(),
     )
 
 // Three, because the National Dex is four digits away from needing a fourth and every existing

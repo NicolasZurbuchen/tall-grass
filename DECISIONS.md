@@ -353,3 +353,51 @@ the default for a host that has nothing better to say.
 
 This is the same shape as the insets decision above: the host owns the mechanism and the screen — or
 here, the composition root — owns the answer.
+
+### The artwork corpus is 133 MB, and the disk cache is sized against it
+
+Measured, not estimated: every artwork URL in the committed dataset was asked for its length.
+
+| | Files | Bytes |
+|---|---|---|
+| Dex cards (`listedInDex`) | 1,082 | **132.6 MB** |
+| Every variant, forms included | 1,385 | 166.2 MB |
+| Average / largest single image | | 123 KB / 289 KB |
+
+The disk cache ceiling is **192 MB**. It has to clear the prefetched set or the cache thrashes —
+later images evict earlier ones and the run undoes itself — and the headroom above it covers the
+forms, which are fetched lazily and would otherwise start evicting cards.
+
+A byte cap rather than a percentage of free space, because this corpus has a knowable size: a
+percentage hands a 512 GB phone a quota nothing will ever fill, and a nearly-full phone one too small
+to be worth writing to.
+
+**Coil ships no disk cache unless it is given one.** Until this was configured, every artwork in the
+dex was re-fetched on each cold start — which, in an app whose only network use is images, was the
+whole of its offline story.
+
+### The prefetch has no cursor, because the disk is the cursor
+
+Resuming a half-finished run needs to know what was already fetched. The obvious answer is to record
+progress — which means a table, a migration, and a number that can disagree with reality after the
+system empties the cache directory, as it is entitled to do.
+
+Instead each URL is asked of the cache before it is fetched. What is on disk *is* the progress, it
+cannot be stale, and a run killed halfway resumes by finding its own earlier work. The cost is 1,082
+cache lookups on a second visit, which is a few hundred milliseconds on a background dispatcher.
+
+**Storage exhaustion is a check, not a caught exception.** A write that runs out of room surfaces as
+an `IOException` whose message differs by platform and filesystem, and matching on that string is a
+guess. The run asks the platform how much room is left, every fiftieth image, and stops at a 64 MB
+floor — early, because the device does not belong to it.
+
+### The prefetch starts with the dex, not with the app
+
+#32 says "on first run". It begins when the Pokedex is first opened instead.
+
+The purpose is that browsing the dex works offline, and that is still what happens: open it once with
+a signal and it is filled. What changes is that somebody who opens Tall Grass, looks at the home
+screen and leaves does not pay 133 MB for a screen they never reached.
+
+**This is a deviation and should be read as one.** The literal reading is defensible too — artwork
+ready before the user asks for it — and reversing it means moving the call, not rewriting anything.

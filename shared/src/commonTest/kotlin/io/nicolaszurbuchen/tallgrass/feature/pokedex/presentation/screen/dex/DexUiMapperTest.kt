@@ -84,4 +84,9 @@ class DexUiMapperTest {
         assertEquals(true, DexState(isLoading = true).toUiModel().isLoading)
         assertNotNull(DexState(error = AppError.Unexpected(IllegalStateException())).toUiModel().error)
     }
+
+    @Test
+    fun toUiModel_hasNoPrefetchLineBeforeTheRunStarts() {
+        assertNull(DexState().toUiModel().prefetch)
+    }
 }

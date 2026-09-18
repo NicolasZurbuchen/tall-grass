@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
+import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -16,6 +17,7 @@ interface DexStore : Store<DexIntent, DexState, DexLabel>
 class DexStoreFactory(
     private val storeFactory: StoreFactory,
     private val getDexEntries: GetDexEntriesUseCase,
+    private val prefetchImages: ImagePrefetch,
 ) {
     fun create(): DexStore =
         object :
@@ -66,13 +68,33 @@ class DexStoreFactory(
             dispatch(DexMessage.LoadStarted)
             scope.launch {
                 try {
-                    dispatch(DexMessage.EntriesLoaded(getDexEntries()))
+                    val entries = getDexEntries()
+                    dispatch(DexMessage.EntriesLoaded(entries))
+                    prefetchArtwork(entries.map { it.artworkUrl })
                 } catch (e: AppException) {
                     dispatch(DexMessage.LoadFailed(e.error))
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
                     dispatch(DexMessage.LoadFailed(AppError.Unexpected(e)))
+                }
+            }
+        }
+
+        /**
+         * Fills the image cache behind the grid the reader is already using.
+         *
+         * Started from here rather than at launch, which is a deliberate reading of #32: the
+         * download exists so the dex works offline, so it begins when someone opens the dex. Nobody
+         * who opens the app once and never taps Pokedex pays 133 MB for it.
+         *
+         * Nothing is awaited and nothing can fail: the run reports itself and ends, and every card
+         * on screen already works without it.
+         */
+        private fun prefetchArtwork(urls: List<String>) {
+            scope.launch {
+                prefetchImages.run(urls).collect { progress ->
+                    dispatch(DexMessage.ArtworkPrefetchProgressed(progress))
                 }
             }
         }
@@ -84,6 +106,7 @@ class DexStoreFactory(
                 DexMessage.LoadStarted -> copy(isLoading = true, error = null)
                 is DexMessage.EntriesLoaded -> copy(isLoading = false, entries = msg.entries, error = null)
                 is DexMessage.LoadFailed -> copy(isLoading = false, error = msg.error)
+                is DexMessage.ArtworkPrefetchProgressed -> copy(prefetch = msg.progress)
             }
     }
 }

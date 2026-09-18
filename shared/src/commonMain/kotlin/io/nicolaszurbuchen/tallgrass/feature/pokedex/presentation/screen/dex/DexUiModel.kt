@@ -2,12 +2,14 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 
 import androidx.compose.ui.graphics.Color
 import io.nicolaszurbuchen.tallgrass.core.error.AppErrorUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.uimodel.PrefetchUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 
 data class DexUiModel(
     val isLoading: Boolean,
     val entries: List<DexEntryUiModel>,
     val error: AppErrorUiModel?,
+    val prefetch: PrefetchUiModel?,
 )
 
 /**

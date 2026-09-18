@@ -25,6 +25,7 @@ import io.nicolaszurbuchen.tallgrass.design.theme.rise
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.DexCard
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.DexCardSkeleton
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.PrefetchBanner
 
 @Composable
 fun DexScreen(
@@ -80,6 +81,13 @@ fun DexScreen(
                     }
                 }
             }
+        }
+
+        // At the foot of the grid rather than in it, so it neither scrolls away nor takes a row from
+        // the cards. It is the only thing on this screen that is about the app rather than about
+        // Pokemon, and it leaves as soon as the run does.
+        state.prefetch?.let { prefetch ->
+            PrefetchBanner(prefetch = prefetch, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
