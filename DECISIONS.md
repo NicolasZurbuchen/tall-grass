@@ -259,3 +259,21 @@ wiring mistake into a transition that silently does not run. The cost is that an
 shared element is unpreviewable without a host, and the transition is the point of several of them.
 The harness already stands in for the shell's theme and background; these are two more things the
 shell provides.
+
+### The form switcher lists forms that change something
+
+Cosmetic forms are in the dataset and out of the switcher.
+
+Pikachu is the case that forces it: seventeen variants, fourteen of them costumes — Rock Star, Pop
+Star, Ph.D., Libre, Cosplay and eight regional hats — all carrying Pikachu's types, stats and
+abilities exactly. A row of seventeen pills whose numbers never change is a worse screen than no row,
+and it buries Partner Pikachu and Gigantamax, which do change something.
+
+They stay in `PokemonDetail.variants` and are dropped at the presentation edge. Whether a costume is
+worth showing is a question about a screen rather than about the Pokemon, and a count of them — the
+dashed `+N cosmetic` pill in the prototype — needs them present to be counted.
+
+**An unknown `formKind` reads as `ALTERNATE`, not as null.** Every other enum read from the dataset
+here drops its row when it cannot parse the value, because an unreadable type or growth rate makes
+the row meaningless. A kind is different: it says how a form differs, not what it is. Failing to
+recognise one should cost a label, not a Pokemon.
