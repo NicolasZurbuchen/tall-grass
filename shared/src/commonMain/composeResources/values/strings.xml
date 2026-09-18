@@ -12,40 +12,38 @@
     <string name="home_tile_team_builder">Team Builder</string>
     <string name="home_tile_compare">Compare</string>
 
-    <string name="detail_back">Back</string>
-    <string name="detail_forms">Forms</string>
-    <string name="detail_form_default">Standard</string>
+    <string name="pokedex_detail_back">Back</string>
+    <string name="pokedex_detail_form_default">Standard</string>
 
-    <string name="detail_tab_about">About</string>
-    <string name="detail_tab_stats">Base Stats</string>
+    <string name="pokedex_detail_tab_about">About</string>
+    <string name="pokedex_detail_tab_stats">Base Stats</string>
 
-    <string name="detail_height">Height</string>
-    <string name="detail_weight">Weight</string>
-    <string name="detail_height_value">%1$s m</string>
-    <string name="detail_weight_value">%1$s kg</string>
+    <string name="pokedex_detail_height">Height</string>
+    <string name="pokedex_detail_weight">Weight</string>
+    <string name="pokedex_detail_height_value">%1$s m</string>
+    <string name="pokedex_detail_weight_value">%1$s kg</string>
 
-    <string name="detail_breeding">Breeding</string>
-    <string name="detail_gender">Gender</string>
-    <string name="detail_genderless">Genderless</string>
-    <string name="detail_gender_value">%1$s%% male, %2$s%% female</string>
-    <string name="detail_egg_groups">Egg Groups</string>
-    <string name="detail_egg_cycle">Egg Cycle</string>
-    <string name="detail_egg_cycle_value">%1$s cycles</string>
+    <string name="pokedex_detail_breeding">Breeding</string>
+    <string name="pokedex_detail_gender">Gender</string>
+    <string name="pokedex_detail_genderless">Genderless</string>
+    <string name="pokedex_detail_gender_value">%1$s%% male, %2$s%% female</string>
+    <string name="pokedex_detail_egg_groups">Egg Groups</string>
+    <string name="pokedex_detail_egg_cycle">Egg Cycle</string>
+    <string name="pokedex_detail_egg_cycle_value">%1$s cycles</string>
 
-    <string name="detail_training">Training</string>
-    <string name="detail_catch_rate">Catch Rate</string>
-    <string name="detail_growth">Growth</string>
+    <string name="pokedex_detail_training">Training</string>
+    <string name="pokedex_detail_growth">Growth</string>
 
-    <string name="detail_stat_hp">HP</string>
-    <string name="detail_stat_attack">Attack</string>
-    <string name="detail_stat_defense">Defense</string>
-    <string name="detail_stat_special_attack">Sp. Atk</string>
-    <string name="detail_stat_special_defense">Sp. Def</string>
-    <string name="detail_stat_speed">Speed</string>
-    <string name="detail_stat_total">Total</string>
+    <string name="pokedex_detail_stat_hp">HP</string>
+    <string name="pokedex_detail_stat_attack">Attack</string>
+    <string name="pokedex_detail_stat_defense">Defense</string>
+    <string name="pokedex_detail_stat_special_attack">Sp. Atk</string>
+    <string name="pokedex_detail_stat_special_defense">Sp. Def</string>
+    <string name="pokedex_detail_stat_speed">Speed</string>
+    <string name="pokedex_detail_stat_total">Total</string>
 
-    <string name="detail_type_defenses">Type Defenses</string>
-    <string name="detail_type_defenses_hint">Damage taken from each attacking type. Neutral matchups are left out.</string>
+    <string name="pokedex_detail_type_defenses">Type Defenses</string>
+    <string name="pokedex_detail_type_defenses_hint">Damage taken from each attacking type. Neutral matchups are left out.</string>
 
     <string name="error_retry">Retry</string>
     <string name="error_dismiss">Dismiss</string>

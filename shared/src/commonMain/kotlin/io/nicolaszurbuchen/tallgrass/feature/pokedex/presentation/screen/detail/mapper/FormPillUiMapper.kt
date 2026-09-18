@@ -4,7 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_form_default
+import tallgrass.shared.generated.resources.pokedex_detail_form_default
 
 /**
  * A pill says what makes this form different, and nothing else.
@@ -33,7 +33,7 @@ fun PokemonVariant.toFormPillUiModel(speciesName: String): FormPillUiModel {
         label =
             when {
                 stripped != null -> UiText.Raw(stripped)
-                isDefault -> UiText.Resource(Res.string.detail_form_default)
+                isDefault -> UiText.Resource(Res.string.pokedex_detail_form_default)
                 else -> UiText.Raw(name)
             },
     )

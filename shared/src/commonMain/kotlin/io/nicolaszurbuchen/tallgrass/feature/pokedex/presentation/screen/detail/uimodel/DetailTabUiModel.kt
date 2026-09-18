@@ -2,8 +2,8 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_tab_about
-import tallgrass.shared.generated.resources.detail_tab_stats
+import tallgrass.shared.generated.resources.pokedex_detail_tab_about
+import tallgrass.shared.generated.resources.pokedex_detail_tab_stats
 
 /**
  * The two tabs this screen has today. Location and Moves join them once the datasets they need
@@ -12,6 +12,6 @@ import tallgrass.shared.generated.resources.detail_tab_stats
 enum class DetailTabUiModel(
     val label: UiText,
 ) {
-    ABOUT(UiText.Resource(Res.string.detail_tab_about)),
-    STATS(UiText.Resource(Res.string.detail_tab_stats)),
+    ABOUT(UiText.Resource(Res.string.pokedex_detail_tab_about)),
+    STATS(UiText.Resource(Res.string.pokedex_detail_tab_stats)),
 }

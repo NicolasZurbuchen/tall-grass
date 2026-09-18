@@ -29,9 +29,9 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_stat_total
-import tallgrass.shared.generated.resources.detail_type_defenses
-import tallgrass.shared.generated.resources.detail_type_defenses_hint
+import tallgrass.shared.generated.resources.pokedex_detail_stat_total
+import tallgrass.shared.generated.resources.pokedex_detail_type_defenses
+import tallgrass.shared.generated.resources.pokedex_detail_type_defenses_hint
 
 /**
  * The stats and matchups of the form on screen, which is the half of this screen that genuinely
@@ -54,7 +54,7 @@ fun StatsTab(
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         ) {
             Text(
-                text = stringResource(Res.string.detail_stat_total),
+                text = stringResource(Res.string.pokedex_detail_stat_total),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.width(STAT_LABEL_WIDTH),
@@ -67,13 +67,13 @@ fun StatsTab(
         }
 
         Text(
-            text = stringResource(Res.string.detail_type_defenses),
+            text = stringResource(Res.string.pokedex_detail_type_defenses),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.xs),
         )
         Text(
-            text = stringResource(Res.string.detail_type_defenses_hint),
+            text = stringResource(Res.string.pokedex_detail_type_defenses_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.appColors.textSecondary,
             modifier = Modifier.padding(bottom = MaterialTheme.spacing.sm),

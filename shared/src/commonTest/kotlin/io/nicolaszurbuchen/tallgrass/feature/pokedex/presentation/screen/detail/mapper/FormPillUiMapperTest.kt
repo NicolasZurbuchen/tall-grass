@@ -5,7 +5,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_form_default
+import tallgrass.shared.generated.resources.pokedex_detail_form_default
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -59,7 +59,7 @@ class FormPillUiMapperTest {
     fun toFormPillUiModel_callsTheOrdinaryFormStandard() {
         val pill = variant(slug = "charizard", name = "Charizard", formLabel = null, isDefault = true)
 
-        assertEquals(UiText.Resource(Res.string.detail_form_default), pill.toFormPillUiModel("Charizard").label)
+        assertEquals(UiText.Resource(Res.string.pokedex_detail_form_default), pill.toFormPillUiModel("Charizard").label)
     }
 
     @Test

@@ -27,7 +27,7 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_back
+import tallgrass.shared.generated.resources.pokedex_detail_back
 
 /**
  * The text half of the hero, drawn on the type's colour.
@@ -46,7 +46,7 @@ fun DetailHeader(
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(Res.string.detail_back),
+                contentDescription = stringResource(Res.string.pokedex_detail_back),
                 tint = Color.White,
             )
         }

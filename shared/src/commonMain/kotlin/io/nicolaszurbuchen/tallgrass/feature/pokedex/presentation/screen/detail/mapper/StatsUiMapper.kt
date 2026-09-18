@@ -8,12 +8,12 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.detail_stat_attack
-import tallgrass.shared.generated.resources.detail_stat_defense
-import tallgrass.shared.generated.resources.detail_stat_hp
-import tallgrass.shared.generated.resources.detail_stat_special_attack
-import tallgrass.shared.generated.resources.detail_stat_special_defense
-import tallgrass.shared.generated.resources.detail_stat_speed
+import tallgrass.shared.generated.resources.pokedex_detail_stat_attack
+import tallgrass.shared.generated.resources.pokedex_detail_stat_defense
+import tallgrass.shared.generated.resources.pokedex_detail_stat_hp
+import tallgrass.shared.generated.resources.pokedex_detail_stat_special_attack
+import tallgrass.shared.generated.resources.pokedex_detail_stat_special_defense
+import tallgrass.shared.generated.resources.pokedex_detail_stat_speed
 
 fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
     val bar = { label: UiText, value: Int ->
@@ -27,12 +27,12 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
     return StatsUiModel(
         bars =
             listOf(
-                bar(UiText.Resource(Res.string.detail_stat_hp), stats.hp),
-                bar(UiText.Resource(Res.string.detail_stat_attack), stats.attack),
-                bar(UiText.Resource(Res.string.detail_stat_defense), stats.defense),
-                bar(UiText.Resource(Res.string.detail_stat_special_attack), stats.specialAttack),
-                bar(UiText.Resource(Res.string.detail_stat_special_defense), stats.specialDefense),
-                bar(UiText.Resource(Res.string.detail_stat_speed), stats.speed),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_attack), stats.specialAttack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed),
             ),
         totalText = stats.total.toString(),
         matchups =
