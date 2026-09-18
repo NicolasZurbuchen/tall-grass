@@ -277,3 +277,22 @@ dashed `+N cosmetic` pill in the prototype — needs them present to be counted.
 here drops its row when it cannot parse the value, because an unreadable type or growth rate makes
 the row meaningless. A kind is different: it says how a form differs, not what it is. Failing to
 recognise one should cost a label, not a Pokemon.
+
+### Two art sources, because thirty-four forms have no official artwork
+
+Almost every variant points at PokeAPI's `official-artwork`, which is what the dex grid is designed
+around. The Arceus Plates and Silvally Memories point at the `home` renders instead.
+
+They have to. Those thirty-four forms have no `pokemon` row — they exist only in `pokemon_forms`,
+which is the whole reason they had to be promoted into variants in the first place — and the artwork
+set is keyed by `pokemon` id. `official-artwork/493-fighting.png` is a 404. The HOME set is keyed by
+form and has all thirty-four.
+
+**The alternative was showing the base form's picture eighteen times.** On a screen whose purpose is
+to show what changes between forms, that is a worse answer than a change of art style, and the style
+only ever appears in the detail hero: none of these forms earns a card in the grid.
+
+**Two id spaces, both in the ten-thousands.** `pokemon` and `pokemon_forms` are numbered separately,
+so an id from the wrong one produces a URL that resolves to another Pokemon rather than a 404 — Mega
+Mewtwo X for Dragon Arceus. `DatasetTest.noTwoVariants_shareOnePicture` is the tripwire, because
+nothing downstream can tell a right picture from a wrong one.
