@@ -423,10 +423,9 @@ Instrumenting the phases of one such open attributes it:
 | measure to first draw | 337 ms | 32 ms |
 
 `SharedTransitionLayout` puts everything under it in a `LookaheadScope`, so the grid is measured
-twice, and every shared element pays for both passes plus a layer of its own. Eighteen of them landed
-on the one frame where the shimmer gives way to the list, which is the freeze that was reported three
-times and misdiagnosed twice — first as an emission storm, then as the prefetch, then as mapping on
-the main thread. Those were all real and are all fixed, and none of them was this.
+twice, and every shared element pays for both passes plus a layer of its own. Eighteen of them land on
+the one frame where the shimmer gives way to the list. Read the release numbers at the end of this
+entry before concluding that this was the reported freeze: it was not.
 
 `DexCard` therefore takes a nullable key. Null draws the same picture and registers nothing; the
 screen hands the real key to the card whose slug matches `heroSlug`, set in the click handler before
@@ -442,6 +441,19 @@ there is dropping the modifier as the *form switcher* is tapped, on a screen whe
 changes and the modifier would come and go repeatedly. Here the key is fixed per card and the
 condition flips at most once, on the tap that ends the screen.
 
-**The remaining ~355 ms is not addressed.** Roughly 143 ms of it is composing the eighteen visible
-cards, in a debug build with no baseline profile. Worth a look, but it is a slow first frame rather
-than the reported freeze.
+**Every number above is a debug build, and that turned out to be most of the story.** The same five
+cold opens against a release build:
+
+| | every card | tapped card only |
+|---|---|---|
+| median compose to first draw | 25 ms | 20 ms |
+| frames dropped | 0 | 0 |
+
+So the freeze does not exist in a release build, and this change is worth 5 ms there rather than
+474 ms. It is kept because it is less work by construction -- seventeen registrations that cannot
+pay off -- and not because it rescues the screen.
+
+**The lesson is the one about where it was measured.** `debuggable` costs roughly 18x on composition
+and layout here: ART holds back its optimisations and the Compose compiler keeps source information
+and trace calls in every composable. A screen that janks in debug and not in release is the normal
+case, and nothing in this repo said so before.
