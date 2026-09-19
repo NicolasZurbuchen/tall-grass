@@ -296,3 +296,17 @@ only ever appears in the detail hero: none of these forms earns a card in the gr
 so an id from the wrong one produces a URL that resolves to another Pokemon rather than a 404 — Mega
 Mewtwo X for Dragon Arceus. `DatasetTest.noTwoVariants_shareOnePicture` is the tripwire, because
 nothing downstream can tell a right picture from a wrong one.
+
+### Three curves and five durations, measured rather than chosen
+
+M3's springs are the default vocabulary and most of the app should keep using them. `AppEasing`
+carries three exceptions because matching the Flutter reference is an explicit goal of this project
+and a spring cannot reproduce a 600ms `easeOutQuint` settle. See #12.
+
+Four of the five durations in `AppDuration` are read off that reference rather than picked;
+`MEDIUM` is the one derived value, sitting where a step between `SHORT` and `LONG` was needed.
+
+**The stagger counts from the top of the viewport and caps at eight.** The dex is 1,082 cards; at
+55ms of absolute index, card 500 would enter twenty-seven seconds in, which is not a stagger but a
+bug that looks like a hang. Capped, the ninth visible item and everything after it start together at
+385ms, and a full entrance takes the same time whether the viewport holds nine cards or ninety.
