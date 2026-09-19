@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
@@ -28,6 +30,7 @@ class DetailViewModel(
     val state: StateFlow<DetailUiModel> =
         store.stateFlow
             .map { it.toUiModel(hero) }
+            .flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), store.state.toUiModel(hero))
 
     val labels: Flow<DetailLabel> = store.labels

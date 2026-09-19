@@ -121,6 +121,17 @@ Cover the states the screen can actually reach, in the order it reaches them. Th
 
 A skeleton is a second rendering of the same layout, so it goes in a file of its own rather than as a private function at the bottom of the screen — the two drift apart the moment one is easier to reach than the other.
 
+## UiModel stability
+
+**Every `UiModel` class is annotated `@Immutable`.** Enums are exempt — Compose already treats them as stable — and a Konsist rule covers the rest.
+
+Compose decides whether it may *skip* a Composable by looking at its parameter types. A `List` field makes the class holding it unstable, because `List` is an interface and the compiler cannot know the instance behind it is not an `ArrayList` somebody mutates. An unstable parameter means the Composable taking it recomposes every single time its caller does, and the leak spreads upward: one unstable field makes its holder unstable too. `UiText` is the cautionary example — it carries `List<Any>` and `List<UiText>`, so before it was annotated *every* Composable taking a `UiText` anywhere in the app was unskippable.
+
+The annotation is a promise, not a check. It is true here because these types are built by a mapper and never touched again. It is required on every UiModel rather than only the ones that need it today so the rule stays mechanical: adding a list to a model that did not have one must not quietly cost a screen its skipping.
+
+**A UiMapper that is expensive may take its expensive part as a parameter.** `DexUiMapper` maps 1,082 cards; the prefetch produces twenty-five states that change everything except them. So `DexState.toUiModel` takes the cards with a default that maps them, and `DexViewModel` passes the ones it already has. The per-item mapper moves to `mapper/` and gets its own test, which is where it belonged anyway.
+
+
 ## Dependency injection (Koin)
 
 - `factoryOf` — UseCases, StoreFactories

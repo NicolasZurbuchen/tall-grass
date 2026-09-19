@@ -8,7 +8,11 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexReposit
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
+import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
+import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetchProgress
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,7 +51,14 @@ class DexExecutorTest {
         DexStoreFactory(
             storeFactory = DefaultStoreFactory(),
             getDexEntries = GetDexEntriesUseCase(repository),
+            prefetchImages = StubImagePrefetch,
         ).create()
+
+    // The dex does not wait on the prefetch and neither do these tests. A run that reports nothing
+    // is the shape of "it did not get in the way".
+    private object StubImagePrefetch : ImagePrefetch {
+        override fun run(urls: List<String>): Flow<ImagePrefetchProgress> = emptyFlow()
+    }
 
     @Test
     fun store_loadsTheDexWithoutBeingAsked() =

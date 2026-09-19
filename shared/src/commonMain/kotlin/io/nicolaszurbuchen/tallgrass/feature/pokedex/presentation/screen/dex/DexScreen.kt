@@ -13,7 +13,10 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
@@ -25,6 +28,7 @@ import io.nicolaszurbuchen.tallgrass.design.theme.rise
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.DexCard
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.DexCardSkeleton
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.component.PrefetchBanner
 
 @Composable
 fun DexScreen(
@@ -57,6 +61,12 @@ fun DexScreen(
                 // the count starts from.
                 val firstOnScreen = remember { gridState.firstVisibleItemIndex }
 
+                // At most one card is ever a shared element: the one that was tapped. Saved rather than
+                // remembered for the same reason the entrance flag is -- the host disposes this composition
+                // while the detail is open, and the way back needs the sending half still here to match
+                // against.
+                var heroSlug by rememberSaveable { mutableStateOf<String?>(null) }
+
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(DEX_GRID_COLUMNS),
@@ -72,14 +82,24 @@ fun DexScreen(
                             numberText = entry.numberText,
                             formLabel = entry.formLabel,
                             artworkUrl = entry.artworkUrl,
-                            artworkKey = entry.artworkKey,
+                            artworkKey = entry.artworkKey.takeIf { entry.slug == heroSlug },
                             tint = entry.tint,
-                            onClick = { onEntryClick(entry.slug) },
+                            onClick = {
+                                heroSlug = entry.slug
+                                onEntryClick(entry.slug)
+                            },
                             modifier = Modifier.rise(entranceFraction(index - firstOnScreen, elapsed)),
                         )
                     }
                 }
             }
+        }
+
+        // At the foot of the grid rather than in it, so it neither scrolls away nor takes a row from
+        // the cards. It is the only thing on this screen that is about the app rather than about
+        // Pokemon, and it leaves as soon as the run does.
+        state.prefetch?.let { prefetch ->
+            PrefetchBanner(prefetch = prefetch, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
