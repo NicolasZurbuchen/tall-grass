@@ -17,13 +17,10 @@ import io.nicolaszurbuchen.tallgrass.infra.navigation.NavTransitions
 /**
  * The app's screen-to-screen motion — the mock's `scrIn` and `scrBack`.
  *
- * Built here rather than in the host because the curves and durations are design tokens and `infra/`
- * may not import them. See #12.
+ * Under reduced motion every one of these becomes a cross-dissolve.
  *
- * **Under reduced motion this is a cross-dissolve, chosen rather than inherited.** Left to the
- * platform, the slide would simply run at zero duration and hard-cut — and on iOS that is the
- * documented behaviour rather than the cross-dissolve UIKit does elsewhere. Saying it explicitly
- * makes both platforms do the same readable thing.
+ * DECISIONS.md § The navigation host takes its motion as a parameter
+ * DECISIONS.md § Reduced motion is answered per category, not left to the duration scale
  */
 @Composable
 fun rememberAppNavTransitions(): NavTransitions {

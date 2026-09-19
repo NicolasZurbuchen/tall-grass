@@ -325,6 +325,12 @@ animation state of its own, which is the property that makes scrolling free.
 The stagger each item reads is capped, so a deep viewport does not enter more slowly than a shallow
 one. See § Three curves and five durations, measured rather than chosen.
 
+**An entrance happens once per screen, not once per visit.** Opening a detail throws away the dex's
+composition — the host keeps the back stack, not the layout — so a plain `remember` is gone by the
+time the reader comes back, and the whole grid would cascade in again for a list that never went
+anywhere. The fact that it has already run lives in `rememberSaveable`, which the host's state holder
+restores along with the scroll position.
+
 ### Reduced motion is answered per category, not left to the duration scale
 
 Compose already scales every animation's duration by the system factor, so doing nothing would be

@@ -19,22 +19,13 @@ import androidx.compose.ui.unit.dp
 /**
  * One clock for a whole screen's entrance, in milliseconds since it began.
  *
- * **Not one animation per item, which is the trap a lazy list sets.** An entrance owned by the item
- * re-runs every time that item scrolls back into composition, so the dex would re-animate cards the
- * reader has already seen — and the fix people reach for, remembering a flag per item, does not
- * survive the recycling either.
+ * Runs once per screen and not once per item, and survives the reader leaving and coming back.
+ * An item composed after it has finished reads a fraction of 1 and animates nothing.
  *
- * A screen-level clock has neither problem. An item entering later reads a clock that has already
- * finished, gets a fraction of 1, and draws normally with no animation state of its own.
+ * [key] restarts it: pass whatever identifies the content, so switching to a different Pokemon
+ * enters again and coming back to the same one does not. [enabled] false starts it finished.
  *
- * **An entrance happens once per screen, not once per visit.** Opening a detail throws away the
- * dex's composition — the navigation host keeps the back stack, not the layout — so a plain
- * `remember` here is gone by the time the reader comes back, and the whole grid would cascade in
- * again for a list that never went anywhere. The fact that it has already run is therefore kept in
- * `rememberSaveable`, which the host's state holder restores along with the scroll position.
- *
- * [key] restarts it. Pass whatever identifies the content, so switching to a different Pokemon
- * enters again and coming back to the same one does not.
+ * DECISIONS.md § One entrance clock per screen, not one animation per item
  */
 @Composable
 fun rememberEntranceClock(

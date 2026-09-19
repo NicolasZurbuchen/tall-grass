@@ -25,10 +25,8 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun ShimmerPulse(content: @Composable () -> Unit) {
-    // A loop, and #12's policy is that decorative loops stop entirely under reduced motion rather
-    // than running at zero duration -- which for an infinite repeat means flickering between the two
-    // alphas as fast as the display allows, the single worst thing to show someone who asked for
-    // less movement. The blocks still draw; they simply hold still.
+    // Stopped rather than run at zero duration, and the blocks still draw.
+    // DECISIONS.md § Reduced motion is answered per category, not left to the duration scale
     if (rememberReducedMotion()) {
         CompositionLocalProvider(LocalShimmerAlpha provides MAX_ALPHA, content = content)
         return
