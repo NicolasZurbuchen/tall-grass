@@ -83,7 +83,6 @@ fun DexScreen(
                             formLabel = entry.formLabel,
                             artworkUrl = entry.artworkUrl,
                             artworkKey = entry.artworkKey.takeIf { entry.slug == heroSlug },
-                            tintKey = entry.tintKey.takeIf { entry.slug == heroSlug },
                             tint = entry.tint,
                             onClick = {
                                 heroSlug = entry.slug

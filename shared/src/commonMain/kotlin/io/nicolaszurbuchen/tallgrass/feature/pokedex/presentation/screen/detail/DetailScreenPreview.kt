@@ -25,7 +25,6 @@ private fun DetailScreenPreview() {
                     error = null,
                     artworkUrl = "",
                     artworkKey = SharedElementKey(source = "dex", id = "charizard"),
-                    tintKey = SharedElementKey(source = "dex-tint", id = "charizard"),
                     tint = TypeUiModel.FIRE.color,
                     content =
                         DetailContentUiModel(

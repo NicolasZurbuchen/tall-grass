@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexTintKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.uimodel.PrefetchUiModel
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
@@ -26,7 +25,6 @@ private fun DexScreenPreview() {
                                 formLabel = null,
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("bulbasaur"),
-                                tintKey = dexTintKey("bulbasaur"),
                                 tint = TypeUiModel.GRASS.color,
                             ),
                             DexEntryUiModel(
@@ -36,7 +34,6 @@ private fun DexScreenPreview() {
                                 formLabel = null,
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("charmander"),
-                                tintKey = dexTintKey("charmander"),
                                 tint = TypeUiModel.FIRE.color,
                             ),
                             DexEntryUiModel(
@@ -46,7 +43,6 @@ private fun DexScreenPreview() {
                                 formLabel = null,
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("squirtle"),
-                                tintKey = dexTintKey("squirtle"),
                                 tint = TypeUiModel.WATER.color,
                             ),
                             DexEntryUiModel(
@@ -56,7 +52,6 @@ private fun DexScreenPreview() {
                                 formLabel = null,
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("vulpix"),
-                                tintKey = dexTintKey("vulpix"),
                                 tint = TypeUiModel.FIRE.color,
                             ),
                             DexEntryUiModel(
@@ -66,7 +61,6 @@ private fun DexScreenPreview() {
                                 formLabel = "Alolan",
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("vulpix-alola"),
-                                tintKey = dexTintKey("vulpix-alola"),
                                 tint = TypeUiModel.ICE.color,
                             ),
                             DexEntryUiModel(
@@ -76,7 +70,6 @@ private fun DexScreenPreview() {
                                 formLabel = null,
                                 artworkUrl = "",
                                 artworkKey = dexArtworkKey("pikachu"),
-                                tintKey = dexTintKey("pikachu"),
                                 tint = TypeUiModel.ELECTRIC.color,
                             ),
                         ),

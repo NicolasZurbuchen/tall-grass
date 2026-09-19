@@ -6,12 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -39,7 +36,6 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailHeader
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailSheetSkeleton
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailTabRow
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailTint
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.FormPillRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
@@ -75,36 +71,20 @@ fun DetailScreen(
         label = "heroTint",
     )
 
-    Column(modifier = modifier.fillMaxSize()) {
-        // The tinted band, and the whole of it: the header, plus the strip the artwork hangs over
-        // down to the top of the sheet. Sized to exactly what is coloured so the travelling half of
-        // it has nothing to disagree with -- a shared layer that covered more would sit over the
-        // sheet for the length of the flight, and one that covered less would leave a seam of a
-        // second shade while the screen behind it is still fading up.
-        Box {
-            DetailTint(tint = tint, tintKey = state.tintKey, modifier = Modifier.matchParentSize())
+    Column(modifier = modifier.fillMaxSize().background(tint)) {
+        DetailHeader(
+            content = state.content,
+            onBackClick = onBackClick,
+            modifier = Modifier.statusBarsPadding(),
+            elapsedMillis = elapsed,
+        )
 
-            Column {
-                DetailHeader(
-                    content = state.content,
-                    onBackClick = onBackClick,
-                    modifier = Modifier.statusBarsPadding(),
-                    elapsedMillis = elapsed,
-                )
-
-                // The half of the artwork that hangs below the header. It is held open here rather
-                // than as padding on the sheet so that the colour behind it belongs to the band.
-                Spacer(modifier = Modifier.height(ARTWORK_SIZE / 2))
-            }
-        }
-
-        // Tinted too, which is only ever seen in the two rounded shoulders of the sheet. The band
-        // above stops at the sheet's top edge on purpose, so this is what colours the corners.
-        Box(modifier = Modifier.fillMaxSize().background(tint)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier =
                     Modifier
                         .fillMaxSize()
+                        .padding(top = ARTWORK_SIZE / 2)
                         .clip(RoundedCornerShape(topStart = SHEET_CORNER, topEnd = SHEET_CORNER))
                         .background(MaterialTheme.appColors.surface)
                         .verticalScroll(rememberScrollState())
@@ -179,13 +159,7 @@ fun DetailScreen(
             DetailArtwork(
                 artworkUrl = state.artworkUrl,
                 artworkKey = state.artworkKey,
-                // Lifted by half its height so it still straddles the sheet's top edge, now that the
-                // band below the header holds that space open instead of the sheet.
-                modifier =
-                    Modifier
-                        .align(Alignment.TopCenter)
-                        .offset(y = -ARTWORK_SIZE / 2)
-                        .size(ARTWORK_SIZE),
+                modifier = Modifier.align(Alignment.TopCenter).size(ARTWORK_SIZE),
             )
         }
     }

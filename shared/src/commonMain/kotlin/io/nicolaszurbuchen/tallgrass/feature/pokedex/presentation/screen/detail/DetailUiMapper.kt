@@ -5,7 +5,6 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toTypeUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexTintKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toAboutUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toFormPillsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toStatsUiModel
@@ -23,9 +22,6 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
         // until the switcher is used, and after that the key matches no card -- which is the point.
         // See DetailUiModel.
         artworkKey = hero.sharedElementKey.copy(id = activeVariantSlug),
-        // The colour travels with the artwork and stops matching at the same moment, for the same
-        // reason: after a form switch the card it came from is showing a different Pokemon.
-        tintKey = dexTintKey(activeVariantSlug),
         // The handoff's type until the read lands, so the hero never changes colour under the
         // reader. Its slug fails to parse only if a saved destination outlived the build that wrote
         // it, and a grey-blue hero for a few milliseconds is the whole cost of being wrong.

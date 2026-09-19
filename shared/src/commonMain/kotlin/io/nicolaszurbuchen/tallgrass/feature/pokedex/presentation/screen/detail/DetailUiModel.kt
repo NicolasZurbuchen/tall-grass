@@ -21,7 +21,6 @@ data class DetailUiModel(
     val error: AppErrorUiModel?,
     val artworkUrl: String,
     val artworkKey: SharedElementKey,
-    val tintKey: SharedElementKey,
     val tint: Color,
     val content: DetailContentUiModel?,
 )
