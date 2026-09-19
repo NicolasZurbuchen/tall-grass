@@ -23,12 +23,7 @@ class DexViewModel(
     private var cardsFrom: List<DexEntry>? = null
     private var cards: List<DexEntryUiModel> = emptyList()
 
-    /**
-     * **Mapped off the main thread.** `viewModelScope` is the main dispatcher, so without the
-     * `flowOn` below every state change builds all 1,082 dex cards on the thread drawing the frame
-     * — measured at 22ms cold against the real dataset, and that lands exactly when the grid first
-     * appears. The mapper is pure, so there is nothing about it that wants the main thread.
-     */
+    // viewModelScope is the main dispatcher, and the mapper is pure, so it runs off it.
     @OptIn(ExperimentalCoroutinesApi::class)
     val state: StateFlow<DexUiModel> =
         store.stateFlow
@@ -47,21 +42,9 @@ class DexViewModel(
         super.onCleared()
     }
 
-    /**
-     * The mapped dex, kept for as long as the Store keeps handing back the same entries.
-     *
-     * The prefetch reports twenty-five times while it fills the artwork cache, and every report is a
-     * new `DexState` carrying the *same* entries list. Mapping is O(1,082), so without this the
-     * screen pays for the whole dex twenty-five times over to redraw a percentage — around 27,000
-     * throwaway UiModels during exactly the window the reader is scrolling.
-     *
-     * **Identity, not equality.** The reducer copies the state and leaves the list alone, so the same
-     * instance coming back is precisely the signal that nothing about the entries changed. Comparing
-     * by equality would walk all 1,082 to learn the same thing.
-     *
-     * Not synchronised, and does not need to be: it is only ever reached from the single coroutine
-     * collecting the flow above.
-     */
+    // Identity, not equality: the reducer copies the state and leaves the entries list alone, so the
+    // same instance coming back is the signal that nothing about them changed.
+    // DECISIONS.md § The dex is mapped once per list, not once per state
     private fun cardsFor(entries: List<DexEntry>): List<DexEntryUiModel> {
         if (entries !== cardsFrom) {
             cardsFrom = entries

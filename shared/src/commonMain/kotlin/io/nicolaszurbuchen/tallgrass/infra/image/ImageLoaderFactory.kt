@@ -9,21 +9,15 @@ import coil3.request.crossfade
 import io.ktor.client.HttpClient
 
 /**
- * One image loader for the whole app, built to survive a device with no signal.
+ * One image loader for the whole app, configured with a disk cache.
  *
- * **The disk cache is configured rather than left to a default, because there is no default.** Coil
- * builds an `ImageLoader` with `diskCache = null` unless told otherwise, so until now every one of
- * the dex's artworks was re-fetched on each cold start. Nothing else in this app touches the
- * network, which made that the whole of its offline story.
+ * Coil builds an `ImageLoader` with `diskCache = null` unless told otherwise, which is the whole
+ * reason this factory exists rather than the singleton default.
  *
- * The memory cache stays on Coil's default. It is sized against the device's own memory and only
- * ever affects a session; the disk is the part that decides whether the dex works on a train.
+ * [httpClient] is shared so image requests go through the same engine and timeouts as everything
+ * else. [crossfadeMillis] is passed in because this is `infra/` and the duration is a design token.
  *
- * Sharing [httpClient] rather than letting Coil build its own puts image requests through the same
- * engine and timeouts as everything else — which here means the one Ktor client the app has.
- *
- * [crossfadeMillis] is passed in rather than read from a token, because this is `infra/` and the
- * duration is a design decision. See #12.
+ * DECISIONS.md § The artwork corpus is 133 MB, and the disk cache is sized against it
  */
 fun createImageLoader(
     context: PlatformContext,
@@ -45,19 +39,7 @@ fun createImageLoader(
         .crossfade(crossfadeMillis)
         .build()
 
-/**
- * 192 MB, against a measured corpus of **132.6 MB for the 1,082 dex cards** and 166.2 MB for all
- * 1,385 variants including the forms only the detail switcher reaches.
- *
- * Measured rather than guessed: every artwork URL in the committed dataset was asked for its length.
- * The average is 123 KB and the largest single image is 289 KB.
- *
- * The ceiling has to clear the prefetched set or the cache thrashes — later images evict earlier
- * ones and the run is self-defeating — and the headroom above it covers the forms, which are fetched
- * lazily and would otherwise start evicting cards.
- *
- * A byte cap rather than a percentage of free space, because this corpus has a knowable size: a
- * percentage hands a 512 GB phone a quota nothing will ever fill, and a nearly-full phone one too
- * small to be worth writing to.
- */
+// 192 MB: above the 132.6 MB prefetched set, or later images evict earlier ones and the run undoes
+// itself, with headroom for the forms that are fetched lazily.
+// DECISIONS.md § The artwork corpus is 133 MB, and the disk cache is sized against it
 private const val MAX_DISK_CACHE_BYTES = 192L * 1024 * 1024

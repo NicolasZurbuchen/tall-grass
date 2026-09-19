@@ -51,17 +51,9 @@ data class ImagePrefetchProgress(
     val fraction: Float get() = if (total <= 0) 1f else (handled.toFloat() / total).coerceIn(0f, 1f)
 }
 
-/**
- * Which reporting slot this progress falls into. A run emits when the slot changes, and not once per
- * image.
- *
- * **Every emission costs a screen.** It becomes a new state, and mapping that state rebuilds every
- * card in the dex — a millisecond each time, and 236 of them measured across a full run. They arrive
- * in one burst, because a warm cache walks the list as fast as the disk answers, and the burst lands
- * at the moment the grid appears. That was a visible freeze.
- *
- * Twenty-five slots is more than a percentage on one line of text can express.
- */
+// Emissions are not free: each one is a new state, and mapping it rebuilds every card in the dex.
+// Twenty-five slots is already more than a percentage on one line of text can express.
+// DECISIONS.md § The prefetch reports in slots, not per image
 internal val ImagePrefetchProgress.reportingSlot: Int
     get() = if (total <= 0) 0 else handled * REPORTING_SLOTS / total
 

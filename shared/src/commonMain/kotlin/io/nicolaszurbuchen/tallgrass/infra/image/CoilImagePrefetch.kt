@@ -69,22 +69,15 @@ class CoilImagePrefetch(
             }
         }.flowOn(Dispatchers.Default)
 
-    /**
-     * One image, into the disk cache and nowhere else.
-     *
-     * **The memory cache is disabled for these requests on purpose.** Decoded, this corpus is far
-     * larger than it is on disk, and a prefetch that warmed the memory cache would evict every
-     * bitmap the screen in front of the reader is actually using — to hold a thousand pictures
-     * nobody is looking at.
-     *
-     * A failure is counted and swallowed. One 404 or one malformed file must not end the run, and
-     * there is nothing a reader could do about it if it were reported.
-     */
+    // A failure is counted and swallowed: one 404 must not end the run, and there is nothing a
+    // reader could do about it if it were reported.
     private suspend fun fetch(url: String): Boolean =
         try {
             val request =
                 ImageRequest.Builder(context)
                     .data(url)
+                    // Decoded, this corpus is far larger than it is on disk, so warming the memory cache would
+                    // evict the bitmaps the screen in front of the reader is using.
                     .memoryCachePolicy(CachePolicy.DISABLED)
                     .build()
 
