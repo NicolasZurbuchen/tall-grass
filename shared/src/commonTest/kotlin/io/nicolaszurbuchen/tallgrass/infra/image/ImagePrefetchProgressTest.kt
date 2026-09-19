@@ -51,4 +51,28 @@ class ImagePrefetchProgressTest {
     fun isComplete_isTrueWhenEveryUrlHasBeenAccountedFor() {
         assertTrue(progress(fetched = 60, alreadyCached = 30, failed = 10).isComplete)
     }
+
+    @Test
+    fun reportingSlot_lettsARunOverTheWholeDexReportTwentyFiveTimes() {
+        // The regression this exists for: emitting once per image put 1,082 state changes through a
+        // mapper that rebuilds every card, 236ms of main thread measured, all of it arriving in one
+        // burst at the moment the grid appeared.
+        val dex = 1082
+        val emissions = (1..dex).map { handled -> progress(fetched = handled, total = dex).reportingSlot }.distinct()
+
+        assertTrue(emissions.size <= 26, "A full run would emit  times")
+    }
+
+    @Test
+    fun reportingSlot_stillMovesForAShortRun() {
+        // A species with a handful of forms must not collapse to a single emission at the end.
+        val emissions = (1..10).map { handled -> progress(fetched = handled, total = 10).reportingSlot }.distinct()
+
+        assertEquals(10, emissions.size)
+    }
+
+    @Test
+    fun reportingSlot_doesNotDivideByZero() {
+        assertEquals(0, progress(total = 0).reportingSlot)
+    }
 }

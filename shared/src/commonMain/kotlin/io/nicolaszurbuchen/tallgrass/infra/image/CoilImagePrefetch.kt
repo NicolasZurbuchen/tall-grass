@@ -33,6 +33,7 @@ class CoilImagePrefetch(
 
             val cacheRoot = platformCacheDirectory(context)
             var progress = ImagePrefetchProgress(fetched = 0, alreadyCached = 0, failed = 0, total = urls.size)
+            var lastReportedSlot = -1
 
             urls.forEachIndexed { index, url ->
                 // Checked on the way in and then every so often, not before every image: it is a
@@ -58,7 +59,13 @@ class CoilImagePrefetch(
                         }
                     }
 
-                emit(progress)
+                // Not once per image. See ImagePrefetchProgress.reportingSlot.
+                val slot = progress.reportingSlot
+
+                if (slot != lastReportedSlot || progress.handled == progress.total) {
+                    lastReportedSlot = slot
+                    emit(progress)
+                }
             }
         }.flowOn(Dispatchers.Default)
 
