@@ -25,6 +25,7 @@ import org.koin.core.qualifier.named
 fun NavGraph(
     config: SavedStateConfiguration,
     modifier: Modifier = Modifier,
+    transitions: NavTransitions = NavTransitions.Fade,
 ) {
     val navigator = koinInject<AppNavigator>()
     val initialRoute = koinInject<NavKey>(named("initialRoute"))
@@ -50,6 +51,9 @@ fun NavGraph(
                 backStack = backStack,
                 modifier = modifier.background(color = MaterialTheme.colorScheme.background),
                 onBack = { backStack.removeLastOrNull() },
+                transitionSpec = transitions.forward,
+                popTransitionSpec = transitions.back,
+                predictivePopTransitionSpec = transitions.predictiveBack,
                 entryDecorators =
                     listOf(
                         rememberSaveableStateHolderNavEntryDecorator(),

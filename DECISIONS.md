@@ -310,3 +310,46 @@ Four of the five durations in `AppDuration` are read off that reference rather t
 55ms of absolute index, card 500 would enter twenty-seven seconds in, which is not a stagger but a
 bug that looks like a hang. Capped, the ninth visible item and everything after it start together at
 385ms, and a full entrance takes the same time whether the viewport holds nine cards or ninety.
+### One entrance clock per screen, not one animation per item
+
+A lazy list makes the obvious approach wrong. An entrance owned by the item re-runs every time that
+item scrolls back into composition, so the dex re-animates cards the reader has already seen — and
+remembering a flag per item does not help, because the composition is recycled along with everything
+in it.
+
+`rememberEntranceClock` runs one animation for the whole screen, in milliseconds since the content
+landed. Each item reads its own slice of that clock through `entranceFraction`, offset by its
+position in the viewport. An item composed after the clock has stopped reads 1 and draws with no
+animation state of its own, which is the property that makes scrolling free.
+
+The stagger each item reads is capped, so a deep viewport does not enter more slowly than a shallow
+one. See § Three curves and five durations, measured rather than chosen.
+
+**An entrance happens once per screen, not once per visit.** Opening a detail throws away the dex's
+composition — the host keeps the back stack, not the layout — so a plain `remember` is gone by the
+time the reader comes back, and the whole grid would cascade in again for a list that never went
+anywhere. The fact that it has already run lives in `rememberSaveable`, which the host's state holder
+restores along with the scroll position.
+
+### Reduced motion is answered per category, not left to the duration scale
+
+Compose already scales every animation's duration by the system factor, so doing nothing would be
+*something*: animations would run in a single frame. That is the right answer for a stat bar, whose
+length carries the number, and the wrong one for everything else.
+
+- **Entrances and staggers** are switched off at the source — the clock snaps to finished, items
+  appear together, and no animation is started to be scaled down.
+- **Navigation** becomes a cross-dissolve chosen explicitly, because a slide at zero duration is a
+  hard cut, and on iOS that is the documented behaviour rather than the cross-dissolve UIKit does.
+- **The shimmer stops.** An infinite repeat at zero duration flickers between its two alphas as fast
+  as the display allows, which is the worst possible response to a request for less movement.
+- **Stat bars keep animating.** The movement is the information.
+
+### The navigation host takes its motion as a parameter
+
+`infra/` may not import `design/`, and the curves and durations are design tokens. So `NavGraph`
+takes a `NavTransitions` and the app composes it from the token layer, with a plain cross-dissolve as
+the default for a host that has nothing better to say.
+
+This is the same shape as the insets decision above: the host owns the mechanism and the screen — or
+here, the composition root — owns the answer.

@@ -1,5 +1,8 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +17,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
+import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
+import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
+import io.nicolaszurbuchen.tallgrass.design.theme.rememberEntranceClock
+import io.nicolaszurbuchen.tallgrass.design.theme.rememberReducedMotion
+import io.nicolaszurbuchen.tallgrass.design.theme.rise
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.AboutTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailArtwork
@@ -49,11 +59,24 @@ fun DetailScreen(
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().background(state.tint)) {
+    // Keyed on the form, so arriving and switching form both enter, and scrolling does not. A tab
+    // change is a crossfade below rather than a second entrance of the whole screen.
+    val elapsed by rememberEntranceClock(state.content?.activeFormSlug, enabled = !rememberReducedMotion())
+
+    // The hero colour is the primary type's, and switching form changes it. Animated so the change
+    // reads as the same screen becoming something else rather than as a cut.
+    val tint by animateColorAsState(
+        targetValue = state.tint,
+        animationSpec = tween(durationMillis = AppDuration.SHORT, easing = AppEasing.EaseInOut),
+        label = "heroTint",
+    )
+
+    Column(modifier = modifier.fillMaxSize().background(tint)) {
         DetailHeader(
             content = state.content,
             onBackClick = onBackClick,
             modifier = Modifier.statusBarsPadding(),
+            elapsedMillis = elapsed,
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -92,16 +115,23 @@ fun DetailScreen(
                                 activeSlug = content.activeFormSlug,
                                 onFormClick = onFormClick,
                                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.md),
+                                elapsedMillis = elapsed,
                             )
                         }
 
                         DetailTabRow(
                             selected = content.tab,
                             onTabClick = onTabClick,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.md),
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = MaterialTheme.spacing.md)
+                                    .rise(entranceFraction(1, elapsed)),
                         )
 
-                        Box(
+                        Crossfade(
+                            targetState = content.tab,
+                            animationSpec = tween(durationMillis = AppDuration.SHORT, easing = AppEasing.EaseInOut),
+                            label = "detailTab",
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
@@ -109,11 +139,17 @@ fun DetailScreen(
                                         start = MaterialTheme.spacing.md,
                                         end = MaterialTheme.spacing.md,
                                         top = MaterialTheme.spacing.md,
-                                    ),
-                        ) {
-                            when (content.tab) {
-                                DetailTabUiModel.ABOUT -> AboutTab(about = content.about)
-                                DetailTabUiModel.STATS -> StatsTab(stats = content.stats, tint = state.tint)
+                                    )
+                                    .rise(entranceFraction(2, elapsed)),
+                        ) { tab ->
+                            when (tab) {
+                                DetailTabUiModel.ABOUT -> {
+                                    AboutTab(about = content.about)
+                                }
+
+                                DetailTabUiModel.STATS -> {
+                                    StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
+                                }
                             }
                         }
                     }
