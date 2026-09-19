@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.ARTWORK_OVERLAY_Z
 import io.nicolaszurbuchen.tallgrass.infra.navigation.LocalSharedTransitionScope
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 
@@ -40,6 +41,9 @@ fun DetailArtwork(
                 modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(artworkKey),
                     animatedVisibilityScope = animatedContentScope,
+                    // Above the colour, which is travelling at the same time and ends up
+                    // filling the screen. See ARTWORK_OVERLAY_Z.
+                    zIndexInOverlay = ARTWORK_OVERLAY_Z,
                 ),
         )
     }

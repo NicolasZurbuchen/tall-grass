@@ -12,4 +12,24 @@ import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
  */
 fun dexArtworkKey(slug: String): SharedElementKey = SharedElementKey(source = DEX_SOURCE, id = slug)
 
+/**
+ * The identity the card's colour carries into the ground behind the hero.
+ *
+ * A second key rather than a second use of [dexArtworkKey], because they are two elements travelling
+ * together and a shared element may only be matched once. Same id, so both halves of a card move as
+ * one Pokemon.
+ */
+fun dexTintKey(slug: String): SharedElementKey = SharedElementKey(source = DEX_TINT_SOURCE, id = slug)
+
 private const val DEX_SOURCE = "dex"
+
+private const val DEX_TINT_SOURCE = "dex-tint"
+
+/**
+ * The artwork's height in the shared-element overlay.
+ *
+ * The colour travels at the same time and ends up filling the screen, so without this the Pokemon
+ * spends the whole flight behind it. Both halves read it from here for the same reason they read
+ * their keys from here.
+ */
+const val ARTWORK_OVERLAY_Z = 1f

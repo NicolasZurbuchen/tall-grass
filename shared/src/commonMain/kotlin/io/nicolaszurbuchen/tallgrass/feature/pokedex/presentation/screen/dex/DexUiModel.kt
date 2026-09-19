@@ -26,5 +26,6 @@ data class DexEntryUiModel(
     val formLabel: String?,
     val artworkUrl: String,
     val artworkKey: SharedElementKey,
+    val tintKey: SharedElementKey,
     val tint: Color,
 )

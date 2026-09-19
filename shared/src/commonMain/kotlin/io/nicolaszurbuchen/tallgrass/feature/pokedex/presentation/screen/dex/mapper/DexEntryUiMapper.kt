@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.ma
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexTintKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.DexEntryUiModel
 
 /**
@@ -17,6 +18,7 @@ fun DexEntry.toUiModel(): DexEntryUiModel =
         formLabel = formLabel?.removeSuffix(" Form"),
         artworkUrl = artworkUrl,
         artworkKey = dexArtworkKey(slug),
+        tintKey = dexTintKey(slug),
         tint = primaryType.toUiModel().color,
     )
 

@@ -457,3 +457,49 @@ pay off -- and not because it rescues the screen.
 and layout here: ART holds back its optimisations and the Compose compiler keeps source information
 and trace calls in every composable. A screen that janks in debug and not in release is the normal
 case, and nothing in this repo said so before.
+
+### A screen reached from an element does not also arrive from the side
+
+The detail used to slide in from the right like every other destination, on top of a shared element
+that was simultaneously saying it came from a card in the middle of the grid. Two answers to the same
+question, and the reader gets both at once.
+
+Such a destination cross-dissolves instead, and the matched element carries the movement by itself.
+Everything else still slides, because a screen with nothing shared has nothing else to say about
+where it came from.
+
+The host is told by entry metadata — `SharedElementEntry`, passed at `entry<DetailDestination>(...)`
+— rather than by a marker interface on the key. It is a fact about how the host draws the
+destination, not about the destination, and navigation3 already hands metadata to the display for
+this. Both directions are checked, because a transition is shared-element on the way back for the
+same reason it was on the way in.
+
+### The card's colour travels with its artwork
+
+The dex card is a rectangle of the type's colour, and the detail's header is a band of the same
+colour. So the band is the card's, grown: a second shared element keyed `dex-tint/<slug>`, travelling
+beside `dex/<slug>`.
+
+**Sized to exactly the colour that is visible, which took three tries to get right.** The obvious
+version makes the detail's tint layer `fillMaxSize`, and it fails in a way worth recording:
+
+| the shared layer | what happens |
+|---|---|
+| Full screen, in the overlay | Covers the header, the sheet and every word for the whole flight, then pops when the overlay lets go |
+| Full screen, drawn in place | Z-order is right, but it grows from the top-left corner of the screen rather than from the card |
+| The header band only | Lands correctly, but the full-screen tint behind it is still fading up, so an opaque rectangle sits on a paler one and the seam shows |
+| **The band down to the sheet's top edge** | **What ships** |
+
+The fourth is the only one where the travelling layer and the coloured region are the same rectangle,
+which is what leaves nothing to disagree with. It is in the overlay, so it moves freely from the card;
+it is exactly the tinted area, so it covers nothing it should not.
+
+Two consequences worth knowing before editing this screen. The half of the artwork that hangs below
+the header is held open by a `Spacer` in the band rather than by padding on the sheet, so the colour
+behind it belongs to the band — and the artwork is lifted by half its height to compensate. And the
+artwork carries `zIndexInOverlay = ARTWORK_OVERLAY_Z` because both elements are in the overlay
+together and the colour would otherwise fly over the Pokemon.
+
+`enter` and `exit` are `None`. The colour is identical at both ends, so there is nothing to
+cross-fade between, and the screen it belongs to is already dissolving — the default would fade it
+twice and read as a translucent smear over the grid.
