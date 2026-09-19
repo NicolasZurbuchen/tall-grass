@@ -474,32 +474,44 @@ destination, not about the destination, and navigation3 already hands metadata t
 this. Both directions are checked, because a transition is shared-element on the way back for the
 same reason it was on the way in.
 
-### The card's colour travels with its artwork
 
-The dex card is a rectangle of the type's colour, and the detail's header is a band of the same
-colour. So the band is the card's, grown: a second shared element keyed `dex-tint/<slug>`, travelling
-beside `dex/<slug>`.
+### Rejected: the card's colour travelling into the detail
 
-**Sized to exactly the colour that is visible, which took three tries to get right.** The obvious
-version makes the detail's tint layer `fillMaxSize`, and it fails in a way worth recording:
+Only the artwork is shared between a dex card and the detail. The card's colour stays on the card.
+
+**This was built, it worked, and it was removed.** A dex card is a rectangle of the type's colour and
+the detail's header is a band of the same colour, so the band can be the card's, grown — a second
+shared element keyed `dex-tint/<slug>` travelling beside `dex/<slug>`. Frame-by-frame on a device at
+10x animator scale it does exactly that: the colour lifts off the tapped card and expands into the
+header with the Pokemon riding above it.
+
+Two defects made it read as broken rather than as motion, and neither is cheap:
+
+**Everything drawn on the colour appears all at once when the animation ends.** The header's name,
+number, type pills and genus are not part of the shared element, so they are subject to the screen's
+cross-dissolve while an opaque band sits over them in the shared-element overlay. They become visible
+only when the overlay lets go, which is a hard pop at the exact moment the motion finishes — the
+frame that should be the calmest.
+
+**The card's rounded corners turn square the instant it starts moving.** `sharedBounds` interpolates
+bounds, not shape. The radius comes from a `clip` on the card's side and the destination has none, so
+there is nothing to interpolate and the corner is gone on the first frame. Animating it means
+animating a shape through the transition's own fraction, which is a custom modifier rather than a
+parameter.
+
+Both are solvable — the first by making the header content part of the shared content, the second by
+a shape that reads the transition — and together they are more machinery than a colour is worth
+today. Recorded here because the approach is sound and the next person to have this idea should start
+from the two problems rather than rediscover them.
+
+The sizing lesson is worth keeping even so. The travelling layer has to be **exactly** the coloured
+region, and three of the four ways to size it fail:
 
 | the shared layer | what happens |
 |---|---|
-| Full screen, in the overlay | Covers the header, the sheet and every word for the whole flight, then pops when the overlay lets go |
+| Full screen, in the overlay | Covers the header, the sheet and every word for the whole flight |
 | Full screen, drawn in place | Z-order is right, but it grows from the top-left corner of the screen rather than from the card |
 | The header band only | Lands correctly, but the full-screen tint behind it is still fading up, so an opaque rectangle sits on a paler one and the seam shows |
-| **The band down to the sheet's top edge** | **What ships** |
+| The band down to the sheet's top edge | The only one where the travelling layer and the coloured region are the same rectangle |
 
-The fourth is the only one where the travelling layer and the coloured region are the same rectangle,
-which is what leaves nothing to disagree with. It is in the overlay, so it moves freely from the card;
-it is exactly the tinted area, so it covers nothing it should not.
-
-Two consequences worth knowing before editing this screen. The half of the artwork that hangs below
-the header is held open by a `Spacer` in the band rather than by padding on the sheet, so the colour
-behind it belongs to the band — and the artwork is lifted by half its height to compensate. And the
-artwork carries `zIndexInOverlay = ARTWORK_OVERLAY_Z` because both elements are in the overlay
-together and the colour would otherwise fly over the Pokemon.
-
-`enter` and `exit` are `None`. The colour is identical at both ends, so there is nothing to
-cross-fade between, and the screen it belongs to is already dissolving — the default would fade it
-twice and read as a translucent smear over the grid.
+That last row is what the implementation reached, and it is where a second attempt should start.
