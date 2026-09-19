@@ -1,19 +1,24 @@
 package io.nicolaszurbuchen.tallgrass.infra.text
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+@Immutable
 sealed interface UiText {
+    @Immutable
     data class Raw(
         val value: String,
     ) : UiText
 
+    @Immutable
     data class Resource(
         val id: StringResource,
         val args: List<Any> = emptyList(),
     ) : UiText
 
+    @Immutable
     data class Composite(
         val parts: List<UiText>,
     ) : UiText

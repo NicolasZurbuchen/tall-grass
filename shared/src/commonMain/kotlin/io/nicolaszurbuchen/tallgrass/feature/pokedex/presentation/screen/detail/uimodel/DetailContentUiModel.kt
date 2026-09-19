@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel
 
+import androidx.compose.runtime.Immutable
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 
 /**
@@ -11,6 +12,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
  *
  * [forms] is empty for a species with one form, which is most of them.
  */
+@Immutable
 data class DetailContentUiModel(
     val name: String,
     val numberText: String,

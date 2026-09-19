@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.uimodel
 
+import androidx.compose.runtime.Immutable
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 
 /**
@@ -8,6 +9,7 @@ import io.nicolaszurbuchen.tallgrass.infra.text.UiText
  * [fraction] is null when there is no bar to draw — the run has stopped and the line is now a
  * sentence rather than progress.
  */
+@Immutable
 data class PrefetchUiModel(
     val message: UiText,
     val fraction: Float?,

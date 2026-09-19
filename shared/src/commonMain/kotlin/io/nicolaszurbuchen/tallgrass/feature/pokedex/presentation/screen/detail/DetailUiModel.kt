@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import io.nicolaszurbuchen.tallgrass.core.error.AppErrorUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
@@ -14,6 +15,7 @@ import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
  * picture of Mega Charizard X on the way back — so after a switch the key deliberately matches no
  * card and the two screens simply cross-fade.
  */
+@Immutable
 data class DetailUiModel(
     val isLoading: Boolean,
     val error: AppErrorUiModel?,
