@@ -22,7 +22,7 @@ class TypeLocalDataSourceImplTest {
             database.insertEfficacy(damage = "grass", target = "fire", percent = 50)
             database.insertEfficacy(damage = "rock", target = "flying", percent = 200)
 
-            val source = TypeLocalDataSourceImpl(database.typeQueries, StandardTestDispatcher(testScheduler))
+            val source = TypeLocalDataSourceImpl(lazyOf(database.typeQueries), StandardTestDispatcher(testScheduler))
             val cells = source.efficaciesAgainst(PokemonType.FIRE).associate { it.damageType to it.factorPercent }
 
             assertEquals(mapOf(PokemonType.ROCK to 200, PokemonType.WATER to 200, PokemonType.GRASS to 50), cells)
@@ -34,7 +34,7 @@ class TypeLocalDataSourceImplTest {
             val database = inMemoryPokedex()
             database.insertEfficacy(damage = "rock", target = "fire", percent = 200)
 
-            val source = TypeLocalDataSourceImpl(database.typeQueries, StandardTestDispatcher(testScheduler))
+            val source = TypeLocalDataSourceImpl(lazyOf(database.typeQueries), StandardTestDispatcher(testScheduler))
 
             assertEquals(emptyList(), source.efficaciesAgainst(PokemonType.NORMAL))
         }

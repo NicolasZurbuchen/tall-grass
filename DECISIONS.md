@@ -542,3 +542,21 @@ region, and three of the four ways to size it fail:
 | The band down to the sheet's top edge | The only one where the travelling layer and the coloured region are the same rectangle |
 
 That last row is what the implementation reached, and it is where a second attempt should start.
+### The database opens on the first query, not on the first injection
+
+The data sources take `Lazy<Queries>` and the Koin modules bind them with `lazy { … }` rather than
+`get<PokedexDatabase>().variantQueries`.
+
+Koin resolves a constructor's dependencies on whichever thread first asks the graph for the object,
+and here that is `koinViewModel()` — during composition, on the main thread. Opening the SQLite
+database and, on a first launch, copying the 1.2 MB bundled dataset out of the APK are both real work
+and neither belongs there. Deferred to the first `.value`, both happen inside the first query, which
+already runs on `Dispatchers.Default`.
+
+**The wrapper is the whole mechanism, so it has to survive a refactor.** A data source that took
+`VariantQueries` directly would compile, pass every test, and quietly move the open back onto the
+main thread — nothing would go red. The `Lazy` in the constructor signature is what makes that
+regression visible at the call site.
+
+Measured on a Galaxy S25: the first read of the dex is 37ms on a background thread. What that buys is
+not the 37ms — it is that they are not spent while the navigation transition is drawing.

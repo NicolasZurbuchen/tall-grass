@@ -77,7 +77,7 @@ class PokemonDetailLocalDataSourceImplTest {
 
 private fun source(dispatcher: CoroutineDispatcher): PokemonDetailLocalDataSourceImpl {
     val database = vulpix()
-    return PokemonDetailLocalDataSourceImpl(database.speciesQueries, database.variantQueries, dispatcher)
+    return PokemonDetailLocalDataSourceImpl(lazyOf(database.speciesQueries), lazyOf(database.variantQueries), dispatcher)
 }
 
 private fun vulpix(): PokedexDatabase {

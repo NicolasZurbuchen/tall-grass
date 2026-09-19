@@ -6,12 +6,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class DexLocalDataSourceImpl(
-    private val queries: VariantQueries,
+    private val queries: Lazy<VariantQueries>,
     private val dispatcher: CoroutineDispatcher,
 ) : DexLocalDataSource {
     override suspend fun dexEntries(): List<DexEntry> =
         withContext(dispatcher) {
-            queries
+            queries.value
                 .selectDexEntries()
                 .executeAsList()
                 .mapNotNull { it.toDomain() }

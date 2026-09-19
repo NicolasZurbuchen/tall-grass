@@ -13,8 +13,11 @@ import org.koin.dsl.module
 
 val typeModule =
     module {
+        // Lazily: `get` runs on whichever thread first asks the graph for this, and that is the main
+        // one, during composition.
+        // DECISIONS.md § The database opens on the first query, not on the first injection
         single<TypeLocalDataSource> {
-            TypeLocalDataSourceImpl(get<PokedexDatabase>().typeQueries, Dispatchers.Default)
+            TypeLocalDataSourceImpl(lazy { get<PokedexDatabase>().typeQueries }, Dispatchers.Default)
         }
         singleOf(::TypeRepositoryImpl) bind TypeRepository::class
         singleOf(::GetTypeMatchupsUseCase)

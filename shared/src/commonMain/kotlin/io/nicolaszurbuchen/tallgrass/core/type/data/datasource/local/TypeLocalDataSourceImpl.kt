@@ -7,12 +7,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class TypeLocalDataSourceImpl(
-    private val queries: TypeQueries,
+    private val queries: Lazy<TypeQueries>,
     private val dispatcher: CoroutineDispatcher,
 ) : TypeLocalDataSource {
     override suspend fun efficaciesAgainst(type: PokemonType): List<TypeEfficacy> =
         withContext(dispatcher) {
-            queries
+            queries.value
                 .selectEfficacyAgainst(type.slug)
                 .executeAsList()
                 .mapNotNull { it.toDomain() }
