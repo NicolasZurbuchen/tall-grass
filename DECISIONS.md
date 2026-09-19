@@ -401,3 +401,47 @@ screen and leaves does not pay 133 MB for a screen they never reached.
 
 **This is a deviation and should be read as one.** The literal reading is defensible too — artwork
 ready before the user asks for it — and reversing it means moving the call, not rewriting anything.
+
+### Only the tapped card is a shared element
+
+Every visible dex card once carried `Modifier.sharedElement`. At most one of them can ever transition
+— the one that was tapped — and the other seventeen cost the first layout of the grid dearly.
+
+Measured on a Galaxy S25, debug build, prefetch disabled on both sides, five cold opens of the dex
+from the home screen each, timed from the grid's first composition to its first draw:
+
+| | every card | tapped card only |
+|---|---|---|
+| samples | 790 797 829 919 975 ms | 223 290 355 383 529 ms |
+| median | 829 ms | 355 ms |
+
+Instrumenting the phases of one such open attributes it:
+
+| | every card | tapped card only |
+|---|---|---|
+| approach-pass card measure | 111 ms | 14 ms |
+| measure to first draw | 337 ms | 32 ms |
+
+`SharedTransitionLayout` puts everything under it in a `LookaheadScope`, so the grid is measured
+twice, and every shared element pays for both passes plus a layer of its own. Eighteen of them landed
+on the one frame where the shimmer gives way to the list, which is the freeze that was reported three
+times and misdiagnosed twice — first as an emission storm, then as the prefetch, then as mapping on
+the main thread. Those were all real and are all fixed, and none of them was this.
+
+`DexCard` therefore takes a nullable key. Null draws the same picture and registers nothing; the
+screen hands the real key to the card whose slug matches `heroSlug`, set in the click handler before
+the navigation label makes its way back. The registration lands two frames ahead of the transition
+starting, which was confirmed by logging `SharedContentState.isMatchFound` on both legs of the trip.
+
+`heroSlug` is `rememberSaveable` and not `remember`, for the reason the entrance clock's flag is: the
+host disposes this composition while the detail is open, and the way back needs the sending half of
+the transition to still be here to match against.
+
+**This is not the case rejected under "A shared-element key names its source".** What was rejected
+there is dropping the modifier as the *form switcher* is tapped, on a screen where the key itself
+changes and the modifier would come and go repeatedly. Here the key is fixed per card and the
+condition flips at most once, on the tap that ends the screen.
+
+**The remaining ~355 ms is not addressed.** Roughly 143 ms of it is composing the eighteen visible
+cards, in a debug build with no baseline profile. Worth a look, but it is a slow first frame rather
+than the reported freeze.
