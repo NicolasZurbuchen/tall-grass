@@ -7,7 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -23,18 +27,26 @@ import androidx.compose.ui.unit.dp
  * A screen-level clock has neither problem. An item entering later reads a clock that has already
  * finished, gets a fraction of 1, and draws normally with no animation state of its own.
  *
- * [key] restarts it. Pass whatever identifies the content, so a retry or a different Pokemon enters
- * again and a recomposition does not.
+ * **An entrance happens once per screen, not once per visit.** Opening a detail throws away the
+ * dex's composition — the navigation host keeps the back stack, not the layout — so a plain
+ * `remember` here is gone by the time the reader comes back, and the whole grid would cascade in
+ * again for a list that never went anywhere. The fact that it has already run is therefore kept in
+ * `rememberSaveable`, which the host's state holder restores along with the scroll position.
+ *
+ * [key] restarts it. Pass whatever identifies the content, so switching to a different Pokemon
+ * enters again and coming back to the same one does not.
  */
 @Composable
 fun rememberEntranceClock(
-    key: Any?,
+    key: Any? = Unit,
     enabled: Boolean = true,
 ): State<Int> {
-    val clock = remember(key) { Animatable(if (enabled) 0f else FINISHED) }
+    var hasRun by rememberSaveable(key) { mutableStateOf(false) }
+
+    val clock = remember(key) { Animatable(if (enabled && !hasRun) 0f else FINISHED) }
 
     LaunchedEffect(key, enabled) {
-        if (!enabled) {
+        if (!enabled || hasRun) {
             clock.snapTo(FINISHED)
             return@LaunchedEffect
         }
@@ -42,6 +54,7 @@ fun rememberEntranceClock(
         // Linear on purpose: this is a clock, and each item applies its own easing to its own slice
         // of it. Easing the clock would ease every item twice.
         clock.animateTo(FINISHED, tween(durationMillis = FINISHED.toInt(), easing = LinearEasing))
+        hasRun = true
     }
 
     return remember(clock) { derivedStateOf { clock.value.toInt() } }

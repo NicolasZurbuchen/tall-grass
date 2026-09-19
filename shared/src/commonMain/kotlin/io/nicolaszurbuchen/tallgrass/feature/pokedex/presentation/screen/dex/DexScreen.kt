@@ -50,12 +50,12 @@ fun DexScreen(
 
             else -> {
                 val gridState = rememberLazyGridState()
-                val elapsed by rememberEntranceClock(state.entries, enabled = !rememberReducedMotion())
+                val elapsed by rememberEntranceClock(enabled = !rememberReducedMotion())
 
-                // Captured when the entries land, not read every frame. The rule is that the
-                // stagger counts from the top of the *viewport*, and scrolling during the entrance
-                // would otherwise keep moving the row the count starts from.
-                val firstOnScreen = remember(state.entries) { gridState.firstVisibleItemIndex }
+                // Captured once, not read every frame. The stagger counts from the top of the
+                // *viewport*, and scrolling during the entrance would otherwise keep moving the row
+                // the count starts from.
+                val firstOnScreen = remember { gridState.firstVisibleItemIndex }
 
                 LazyVerticalGrid(
                     state = gridState,
