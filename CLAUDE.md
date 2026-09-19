@@ -137,7 +137,13 @@ If either looks like unused ceremony while reading the code, it is not — it is
 ./gradlew :shared:verifyCommonMainAppDatabaseMigration
 ```
 
-Run all four, not just the one you think is relevant — `ktlintCheck` in particular has a history in this repo of catching violations across files a narrower, filtered test run never touches.
+```bash
+./gradlew :shared:compileCommonMainKotlinMetadata
+```
+
+Run all five, not just the one you think is relevant — `ktlintCheck` in particular has a history in this repo of catching violations across files a narrower, filtered test run never touches.
+
+**The metadata compile is the one that stands in for iOS.** The Kotlin/Native targets do not build on a Windows machine, so everything above can pass with `commonMain` broken for iOS — `Dispatchers.IO`, for one, resolves happily against the Android compilation and does not exist in the common source set. Twice now that has been found by a twelve-minute CI job instead of a fifteen-second local one. It does not cover `iosMain` itself, which only CI can compile; it does cover every mistake of the form *"this API is not actually in commonMain"*.
 
 The migration check is the odd one out and the reason it's on this list: **a table added to a `.sq` file without a matching `.sqm` compiles, runs, and passes every other command here.** It only breaks on a device that already had the database, because SQLDelight takes the schema version from the migration files rather than the schema files. Regenerate the snapshot with `:shared:generateCommonMainAppDatabaseSchema` whenever a `.sq` file changes, and commit the `.db` it writes.
 

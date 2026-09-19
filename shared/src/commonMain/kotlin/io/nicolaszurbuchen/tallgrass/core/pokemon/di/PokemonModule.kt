@@ -19,13 +19,18 @@ val pokemonModule =
         // The data sources take the generated Queries rather than the whole database, so the types
         // they depend on live inside this slice. Handing them PokedexDatabase would reach across the
         // package boundary for the sake of one property.
+        //
+        // Lazily, because `get` here runs wherever the graph is first asked for -- and that is during
+        // composition, on the main thread. Opening a SQLite database and, on a first launch, copying
+        // a 1.2 MB asset out of the APK are not main-thread work. Deferred, both happen inside the
+        // first query, which already runs off it.
         single<DexLocalDataSource> {
-            DexLocalDataSourceImpl(get<PokedexDatabase>().variantQueries, Dispatchers.Default)
+            DexLocalDataSourceImpl(lazy { get<PokedexDatabase>().variantQueries }, Dispatchers.Default)
         }
         single<PokemonDetailLocalDataSource> {
             PokemonDetailLocalDataSourceImpl(
-                get<PokedexDatabase>().speciesQueries,
-                get<PokedexDatabase>().variantQueries,
+                lazy { get<PokedexDatabase>().speciesQueries },
+                lazy { get<PokedexDatabase>().variantQueries },
                 Dispatchers.Default,
             )
         }

@@ -7,21 +7,21 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class PokemonDetailLocalDataSourceImpl(
-    private val speciesQueries: SpeciesQueries,
-    private val variantQueries: VariantQueries,
+    private val speciesQueries: Lazy<SpeciesQueries>,
+    private val variantQueries: Lazy<VariantQueries>,
     private val dispatcher: CoroutineDispatcher,
 ) : PokemonDetailLocalDataSource {
     override suspend fun detail(variantSlug: String): PokemonDetail? =
         withContext(dispatcher) {
             val species =
-                speciesQueries.selectSpeciesByVariantSlug(variantSlug).executeAsOneOrNull()
+                speciesQueries.value.selectSpeciesByVariantSlug(variantSlug).executeAsOneOrNull()
                     ?: return@withContext null
 
-            val eggGroups = speciesQueries.selectEggGroupsBySpecies(species.dexNumber).executeAsList()
-            val statsByVariant = variantQueries.selectStatsBySpecies(species.dexNumber).executeAsList().toStatsByVariantDomain()
+            val eggGroups = speciesQueries.value.selectEggGroupsBySpecies(species.dexNumber).executeAsList()
+            val statsByVariant = variantQueries.value.selectStatsBySpecies(species.dexNumber).executeAsList().toStatsByVariantDomain()
 
             val variants =
-                variantQueries
+                variantQueries.value
                     .selectVariantDetails(species.dexNumber)
                     .executeAsList()
                     .mapNotNull { row -> statsByVariant[row.slug]?.let(row::toDomain) }

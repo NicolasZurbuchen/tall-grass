@@ -42,7 +42,7 @@ class DexLocalDataSourceImplTest {
                 types = listOf("ice"),
             )
 
-            val source = DexLocalDataSourceImpl(database.variantQueries, StandardTestDispatcher(testScheduler))
+            val source = DexLocalDataSourceImpl(lazyOf(database.variantQueries), StandardTestDispatcher(testScheduler))
             val entries = source.dexEntries()
 
             assertEquals(listOf("bulbasaur", "vulpix", "vulpix-alola"), entries.map { it.slug })
@@ -58,7 +58,7 @@ class DexLocalDataSourceImplTest {
             database.insertVariant("bulbasaur", 1, "Bulbasaur", null, listed = true, sortOrder = 1, types = listOf("grass", "poison"))
             database.insertVariant("charmander", 4, "Charmander", null, listed = true, sortOrder = 4, types = listOf("fire"))
 
-            val source = DexLocalDataSourceImpl(database.variantQueries, StandardTestDispatcher(testScheduler))
+            val source = DexLocalDataSourceImpl(lazyOf(database.variantQueries), StandardTestDispatcher(testScheduler))
             val entries = source.dexEntries().associateBy { it.slug }
 
             assertEquals(PokemonType.GRASS, entries.getValue("bulbasaur").primaryType)
@@ -81,7 +81,7 @@ class DexLocalDataSourceImplTest {
                 types = listOf("fire"),
             )
 
-            val source = DexLocalDataSourceImpl(database.variantQueries, StandardTestDispatcher(testScheduler))
+            val source = DexLocalDataSourceImpl(lazyOf(database.variantQueries), StandardTestDispatcher(testScheduler))
 
             assertEquals(emptyList(), source.dexEntries())
         }

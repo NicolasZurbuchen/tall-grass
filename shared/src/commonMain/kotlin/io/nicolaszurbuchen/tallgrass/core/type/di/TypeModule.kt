@@ -13,8 +13,10 @@ import org.koin.dsl.module
 
 val typeModule =
     module {
+        // Lazily, for the reason spelled out in PokemonModule: `get` runs on whichever thread first
+        // asks the graph for this, and that is the main one.
         single<TypeLocalDataSource> {
-            TypeLocalDataSourceImpl(get<PokedexDatabase>().typeQueries, Dispatchers.Default)
+            TypeLocalDataSourceImpl(lazy { get<PokedexDatabase>().typeQueries }, Dispatchers.Default)
         }
         singleOf(::TypeRepositoryImpl) bind TypeRepository::class
         singleOf(::GetTypeMatchupsUseCase)
