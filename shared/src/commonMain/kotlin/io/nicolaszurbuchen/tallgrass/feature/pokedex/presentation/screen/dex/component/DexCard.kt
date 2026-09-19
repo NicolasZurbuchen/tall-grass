@@ -24,19 +24,42 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.infra.navigation.LocalSharedTransitionScope
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 
+/**
+ * One Pokemon in the dex grid.
+ *
+ * [artworkKey] is non-null only for the card whose artwork is travelling into the detail hero, which
+ * is at most one card on screen. A null key draws exactly the same picture and simply does not
+ * register as a shared element. See `DECISIONS.md § Only the tapped card is a shared element`.
+ */
 @Composable
 fun DexCard(
     name: String,
     numberText: String,
     formLabel: String?,
     artworkUrl: String,
-    artworkKey: SharedElementKey,
+    artworkKey: SharedElementKey?,
     tint: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedContentScope = LocalNavAnimatedContentScope.current
+
+    // The sending half of the transition into the detail hero. The key is the card's own, built once
+    // in the navigation package so both ends agree. See #11.
+    val artworkModifier =
+        if (artworkKey == null) {
+            Modifier.size(ARTWORK_SIZE)
+        } else {
+            with(sharedTransitionScope) {
+                Modifier
+                    .size(ARTWORK_SIZE)
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(artworkKey),
+                        animatedVisibilityScope = animatedContentScope,
+                    )
+            }
+        }
 
     Card(
         onClick = onClick,
@@ -58,23 +81,13 @@ fun DexCard(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                // The sending half of the transition into the detail hero. The key is the card's
-                // own, built once in the navigation package so both ends agree. See #11.
-                with(sharedTransitionScope) {
-                    AsyncImage(
-                        model = artworkUrl,
-                        // The name is read out immediately below, so describing the artwork too
-                        // would have a screen reader say every Pokemon twice.
-                        contentDescription = null,
-                        modifier =
-                            Modifier
-                                .size(ARTWORK_SIZE)
-                                .sharedElement(
-                                    sharedContentState = rememberSharedContentState(artworkKey),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                    )
-                }
+                AsyncImage(
+                    model = artworkUrl,
+                    // The name is read out immediately below, so describing the artwork too
+                    // would have a screen reader say every Pokemon twice.
+                    contentDescription = null,
+                    modifier = artworkModifier,
+                )
             }
 
             Column {

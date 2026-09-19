@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
+import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
@@ -30,13 +33,14 @@ fun FormPillRow(
     activeSlug: String,
     onFormClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    elapsedMillis: Int = ENTRANCE_DONE,
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         modifier = modifier.fillMaxWidth(),
     ) {
-        items(items = forms, key = { it.slug }) { form ->
+        itemsIndexed(items = forms, key = { _, form -> form.slug }) { index, form ->
             val isActive = form.slug == activeSlug
 
             Surface(
@@ -45,6 +49,7 @@ fun FormPillRow(
                 color = if (isActive) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.surface,
                 contentColor = if (isActive) MaterialTheme.appColors.textInverse else MaterialTheme.appColors.textSecondary,
                 border = BorderStroke(PILL_BORDER, MaterialTheme.appColors.borderSubtle),
+                modifier = Modifier.pop(entranceFraction(index, elapsedMillis)),
             ) {
                 Text(
                     text = form.label.asString(),

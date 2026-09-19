@@ -297,6 +297,251 @@ so an id from the wrong one produces a URL that resolves to another Pokemon rath
 Mewtwo X for Dragon Arceus. `DatasetTest.noTwoVariants_shareOnePicture` is the tripwire, because
 nothing downstream can tell a right picture from a wrong one.
 
+### Three curves and five durations, measured rather than chosen
+
+M3's springs are the default vocabulary and most of the app should keep using them. `AppEasing`
+carries three exceptions because matching the Flutter reference is an explicit goal of this project
+and a spring cannot reproduce a 600ms `easeOutQuint` settle. See #12.
+
+Four of the five durations in `AppDuration` are read off that reference rather than picked;
+`MEDIUM` is the one derived value, sitting where a step between `SHORT` and `LONG` was needed.
+
+**The stagger counts from the top of the viewport and caps at eight.** The dex is 1,082 cards; at
+55ms of absolute index, card 500 would enter twenty-seven seconds in, which is not a stagger but a
+bug that looks like a hang. Capped, the ninth visible item and everything after it start together at
+385ms, and a full entrance takes the same time whether the viewport holds nine cards or ninety.
+### One entrance clock per screen, not one animation per item
+
+A lazy list makes the obvious approach wrong. An entrance owned by the item re-runs every time that
+item scrolls back into composition, so the dex re-animates cards the reader has already seen — and
+remembering a flag per item does not help, because the composition is recycled along with everything
+in it.
+
+`rememberEntranceClock` runs one animation for the whole screen, in milliseconds since the content
+landed. Each item reads its own slice of that clock through `entranceFraction`, offset by its
+position in the viewport. An item composed after the clock has stopped reads 1 and draws with no
+animation state of its own, which is the property that makes scrolling free.
+
+The stagger each item reads is capped, so a deep viewport does not enter more slowly than a shallow
+one. See § Three curves and five durations, measured rather than chosen.
+
+**An entrance happens once per screen, not once per visit.** Opening a detail throws away the dex's
+composition — the host keeps the back stack, not the layout — so a plain `remember` is gone by the
+time the reader comes back, and the whole grid would cascade in again for a list that never went
+anywhere. The fact that it has already run lives in `rememberSaveable`, which the host's state holder
+restores along with the scroll position.
+
+### Reduced motion is answered per category, not left to the duration scale
+
+Compose already scales every animation's duration by the system factor, so doing nothing would be
+*something*: animations would run in a single frame. That is the right answer for a stat bar, whose
+length carries the number, and the wrong one for everything else.
+
+- **Entrances and staggers** are switched off at the source — the clock snaps to finished, items
+  appear together, and no animation is started to be scaled down.
+- **Navigation** becomes a cross-dissolve chosen explicitly, because a slide at zero duration is a
+  hard cut, and on iOS that is the documented behaviour rather than the cross-dissolve UIKit does.
+- **The shimmer stops.** An infinite repeat at zero duration flickers between its two alphas as fast
+  as the display allows, which is the worst possible response to a request for less movement.
+- **Stat bars keep animating.** The movement is the information.
+
+### The navigation host takes its motion as a parameter
+
+`infra/` may not import `design/`, and the curves and durations are design tokens. So `NavGraph`
+takes a `NavTransitions` and the app composes it from the token layer, with a plain cross-dissolve as
+the default for a host that has nothing better to say.
+
+This is the same shape as the insets decision above: the host owns the mechanism and the screen — or
+here, the composition root — owns the answer.
+
+### The artwork corpus is 133 MB, and the disk cache is sized against it
+
+Measured, not estimated: every artwork URL in the committed dataset was asked for its length.
+
+| | Files | Bytes |
+|---|---|---|
+| Dex cards (`listedInDex`) | 1,082 | **132.6 MB** |
+| Every variant, forms included | 1,385 | 166.2 MB |
+| Average / largest single image | | 123 KB / 289 KB |
+
+The disk cache ceiling is **192 MB**. It has to clear the prefetched set or the cache thrashes —
+later images evict earlier ones and the run undoes itself — and the headroom above it covers the
+forms, which are fetched lazily and would otherwise start evicting cards.
+
+A byte cap rather than a percentage of free space, because this corpus has a knowable size: a
+percentage hands a 512 GB phone a quota nothing will ever fill, and a nearly-full phone one too small
+to be worth writing to.
+
+**Coil ships no disk cache unless it is given one.** Until this was configured, every artwork in the
+dex was re-fetched on each cold start — which, in an app whose only network use is images, was the
+whole of its offline story.
+
+### The dex is mapped once per list, not once per state
+
+`DexState` carries the entries and the prefetch progress together, so every prefetch report was a
+new state, and mapping it rebuilt all 1,082 cards — 11ms a pass, and around 27,000 throwaway
+UiModels across a run, during exactly the window the reader is scrolling.
+
+`DexViewModel` keeps the cards it already built and `DexState.toUiModel` takes them as a parameter.
+The check is **identity**: the reducer copies the state and leaves the list alone, so the same
+instance coming back is precisely the signal that nothing about the entries changed, and comparing
+by equality would walk all 1,082 to learn it.
+
+**The mapping also runs off the main thread.** `viewModelScope` is the main dispatcher, so without
+the `flowOn` every state change built the whole dex on the thread drawing the frame — measured at
+22ms cold against the real dataset, landing exactly when the grid first appears.
+
+### The prefetch reports in slots, not per image
+
+A run emits when its progress crosses one of twenty-five slots, not once per image.
+
+Every emission is a new `DexState`, and mapping that state rebuilt all 1,082 dex cards — about a
+millisecond each time. A warm cache walks the list as fast as the disk answers, so the emissions
+arrive in one burst, and the burst lands on the frame where the shimmer gives way to the list:
+**236ms measured across a full run**, which was a visible freeze.
+
+Twenty-five is more resolution than a percentage on one line of text can express, which is all the
+banner shows.
+
+### The prefetch has no cursor, because the disk is the cursor
+
+Resuming a half-finished run needs to know what was already fetched. The obvious answer is to record
+progress — which means a table, a migration, and a number that can disagree with reality after the
+system empties the cache directory, as it is entitled to do.
+
+Instead each URL is asked of the cache before it is fetched. What is on disk *is* the progress, it
+cannot be stale, and a run killed halfway resumes by finding its own earlier work. The cost is 1,082
+cache lookups on a second visit, which is a few hundred milliseconds on a background dispatcher.
+
+**Storage exhaustion is a check, not a caught exception.** A write that runs out of room surfaces as
+an `IOException` whose message differs by platform and filesystem, and matching on that string is a
+guess. The run asks the platform how much room is left, every fiftieth image, and stops at a 64 MB
+floor — early, because the device does not belong to it.
+
+### The prefetch starts with the dex, not with the app
+
+#32 says "on first run". It begins when the Pokedex is first opened instead.
+
+The purpose is that browsing the dex works offline, and that is still what happens: open it once with
+a signal and it is filled. What changes is that somebody who opens Tall Grass, looks at the home
+screen and leaves does not pay 133 MB for a screen they never reached.
+
+**This is a deviation and should be read as one.** The literal reading is defensible too — artwork
+ready before the user asks for it — and reversing it means moving the call, not rewriting anything.
+
+### Only the tapped card is a shared element
+
+Every visible dex card once carried `Modifier.sharedElement`. At most one of them can ever transition
+— the one that was tapped — and the other seventeen cost the first layout of the grid dearly.
+
+Measured on a Galaxy S25, debug build, prefetch disabled on both sides, five cold opens of the dex
+from the home screen each, timed from the grid's first composition to its first draw:
+
+| | every card | tapped card only |
+|---|---|---|
+| samples | 790 797 829 919 975 ms | 223 290 355 383 529 ms |
+| median | 829 ms | 355 ms |
+
+Instrumenting the phases of one such open attributes it:
+
+| | every card | tapped card only |
+|---|---|---|
+| approach-pass card measure | 111 ms | 14 ms |
+| measure to first draw | 337 ms | 32 ms |
+
+`SharedTransitionLayout` puts everything under it in a `LookaheadScope`, so the grid is measured
+twice, and every shared element pays for both passes plus a layer of its own. Eighteen of them land on
+the one frame where the shimmer gives way to the list. Read the release numbers at the end of this
+entry before concluding that this was the reported freeze: it was not.
+
+`DexCard` therefore takes a nullable key. Null draws the same picture and registers nothing; the
+screen hands the real key to the card whose slug matches `heroSlug`, set in the click handler before
+the navigation label makes its way back. The registration lands two frames ahead of the transition
+starting, which was confirmed by logging `SharedContentState.isMatchFound` on both legs of the trip.
+
+`heroSlug` is `rememberSaveable` and not `remember`, for the reason the entrance clock's flag is: the
+host disposes this composition while the detail is open, and the way back needs the sending half of
+the transition to still be here to match against.
+
+**This is not the case rejected under "A shared-element key names its source".** What was rejected
+there is dropping the modifier as the *form switcher* is tapped, on a screen where the key itself
+changes and the modifier would come and go repeatedly. Here the key is fixed per card and the
+condition flips at most once, on the tap that ends the screen.
+
+**Every number above is a debug build, and that turned out to be most of the story.** The same five
+cold opens against a release build:
+
+| | every card | tapped card only |
+|---|---|---|
+| median compose to first draw | 25 ms | 20 ms |
+| frames dropped | 0 | 0 |
+
+So the freeze does not exist in a release build, and this change is worth 5 ms there rather than
+474 ms. It is kept because it is less work by construction -- seventeen registrations that cannot
+pay off -- and not because it rescues the screen.
+
+**The lesson is the one about where it was measured.** `debuggable` costs roughly 18x on composition
+and layout here: ART holds back its optimisations and the Compose compiler keeps source information
+and trace calls in every composable. A screen that janks in debug and not in release is the normal
+case, and nothing in this repo said so before.
+
+### A screen reached from an element does not also arrive from the side
+
+The detail used to slide in from the right like every other destination, on top of a shared element
+that was simultaneously saying it came from a card in the middle of the grid. Two answers to the same
+question, and the reader gets both at once.
+
+Such a destination cross-dissolves instead, and the matched element carries the movement by itself.
+Everything else still slides, because a screen with nothing shared has nothing else to say about
+where it came from.
+
+The host is told by entry metadata — `SharedElementEntry`, passed at `entry<DetailDestination>(...)`
+— rather than by a marker interface on the key. It is a fact about how the host draws the
+destination, not about the destination, and navigation3 already hands metadata to the display for
+this. Both directions are checked, because a transition is shared-element on the way back for the
+same reason it was on the way in.
+
+
+### Rejected: the card's colour travelling into the detail
+
+Only the artwork is shared between a dex card and the detail. The card's colour stays on the card.
+
+**This was built, it worked, and it was removed.** A dex card is a rectangle of the type's colour and
+the detail's header is a band of the same colour, so the band can be the card's, grown — a second
+shared element keyed `dex-tint/<slug>` travelling beside `dex/<slug>`. Frame-by-frame on a device at
+10x animator scale it does exactly that: the colour lifts off the tapped card and expands into the
+header with the Pokemon riding above it.
+
+Two defects made it read as broken rather than as motion, and neither is cheap:
+
+**Everything drawn on the colour appears all at once when the animation ends.** The header's name,
+number, type pills and genus are not part of the shared element, so they are subject to the screen's
+cross-dissolve while an opaque band sits over them in the shared-element overlay. They become visible
+only when the overlay lets go, which is a hard pop at the exact moment the motion finishes — the
+frame that should be the calmest.
+
+**The card's rounded corners turn square the instant it starts moving.** `sharedBounds` interpolates
+bounds, not shape. The radius comes from a `clip` on the card's side and the destination has none, so
+there is nothing to interpolate and the corner is gone on the first frame. Animating it means
+animating a shape through the transition's own fraction, which is a custom modifier rather than a
+parameter.
+
+Both are solvable — the first by making the header content part of the shared content, the second by
+a shape that reads the transition — and together they are more machinery than a colour is worth
+today. Recorded here because the approach is sound and the next person to have this idea should start
+from the two problems rather than rediscover them.
+
+The sizing lesson is worth keeping even so. The travelling layer has to be **exactly** the coloured
+region, and three of the four ways to size it fail:
+
+| the shared layer | what happens |
+|---|---|
+| Full screen, in the overlay | Covers the header, the sheet and every word for the whole flight |
+| Full screen, drawn in place | Z-order is right, but it grows from the top-left corner of the screen rather than from the card |
+| The header band only | Lands correctly, but the full-screen tint behind it is still fading up, so an opaque rectangle sits on a paler one and the seam shows |
+| The band down to the sheet's top edge | The only one where the travelling layer and the coloured region are the same rectangle |
+
+That last row is what the implementation reached, and it is where a second attempt should start.
 ### The database opens on the first query, not on the first injection
 
 The data sources take `Lazy<Queries>` and the Koin modules bind them with `lazy { … }` rather than

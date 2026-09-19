@@ -170,6 +170,31 @@ class PresentationLayerTest {
 
     // endregion
 
+    // region UiModel stability
+
+    /**
+     * **Compose cannot infer this one, so it is promised.** A `UiModel` holding a `List` is unstable
+     * to the compiler — `List` is an interface, and nothing stops the instance behind it being an
+     * `ArrayList` somebody mutates — and an unstable parameter means the Composable taking it can
+     * never be skipped. The leak spreads: one unstable field makes its holder unstable too.
+     *
+     * These types are built by a mapper and never touched again, so the promise is true. Requiring it
+     * on every `UiModel` rather than only the ones that need it today is deliberate: the rule is then
+     * mechanical, and adding a list to a model that did not have one cannot quietly cost the screen
+     * its skipping.
+     *
+     * Enums are exempt because Compose already treats them as stable.
+     */
+    @Test
+    fun `UiModel classes must be annotated Immutable`() {
+        scope.classes(includeNested = true)
+            .withNameEndingWith("UiModel")
+            .filterNot { it.hasEnumModifier }
+            .assertTrue { it.hasAnnotationWithName("Immutable") }
+    }
+
+    // endregion
+
     // region UiModel placement
 
     /**

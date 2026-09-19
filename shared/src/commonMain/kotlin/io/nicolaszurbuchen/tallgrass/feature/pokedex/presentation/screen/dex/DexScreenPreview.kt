@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.uimodel.PrefetchUiModel
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
+import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 
 @PreviewThemes
 @Composable
@@ -72,6 +74,11 @@ private fun DexScreenPreview() {
                             ),
                         ),
                     error = null,
+                    prefetch =
+                        PrefetchUiModel(
+                            message = UiText.Raw("Saving artwork for offline — 42%"),
+                            fraction = 0.42f,
+                        ),
                 ),
             onEntryClick = { },
             onRetryClick = { },

@@ -25,6 +25,13 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun ShimmerPulse(content: @Composable () -> Unit) {
+    // Stopped rather than run at zero duration, and the blocks still draw.
+    // DECISIONS.md § Reduced motion is answered per category, not left to the duration scale
+    if (rememberReducedMotion()) {
+        CompositionLocalProvider(LocalShimmerAlpha provides MAX_ALPHA, content = content)
+        return
+    }
+
     val transition = rememberInfiniteTransition(label = "shimmer")
     val alpha by transition.animateFloat(
         initialValue = MIN_ALPHA,

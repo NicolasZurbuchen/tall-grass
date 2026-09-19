@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
+import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetchProgress
 
 sealed interface DexIntent {
     data class EntryClicked(
@@ -37,10 +38,19 @@ sealed interface DexMessage {
     data class LoadFailed(
         val error: AppError,
     ) : DexMessage
+
+    data class ArtworkPrefetchProgressed(
+        val progress: ImagePrefetchProgress,
+    ) : DexMessage
 }
 
+/**
+ * [prefetch] is null until the artwork run starts and stays put once it finishes, so the banner can
+ * say what happened rather than vanishing the moment the last image lands.
+ */
 data class DexState(
     val isLoading: Boolean = true,
     val entries: List<DexEntry> = emptyList(),
     val error: AppError? = null,
+    val prefetch: ImagePrefetchProgress? = null,
 )

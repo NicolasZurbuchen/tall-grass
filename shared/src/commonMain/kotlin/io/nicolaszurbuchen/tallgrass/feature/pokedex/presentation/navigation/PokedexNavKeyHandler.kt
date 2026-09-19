@@ -6,6 +6,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.DetailViewModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.DexRoute
 import io.nicolaszurbuchen.tallgrass.infra.navigation.NavKeyHandler
+import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementEntry
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -21,7 +22,7 @@ class PokedexNavKeyHandler(
         // ViewModel rather than through the Route: a Route may only take lambdas, a Modifier or a
         // ViewModel. The destination survives process death, so a restored screen redraws the same
         // hero it had.
-        entry<DetailDestination> { destination ->
+        entry<DetailDestination>(metadata = SharedElementEntry.metadata) { destination ->
             DetailRoute(
                 onNavigateBack = { navigator.navigateBack() },
                 viewModel =

@@ -12,6 +12,9 @@
     <string name="home_tile_team_builder">Team Builder</string>
     <string name="home_tile_compare">Compare</string>
 
+    <string name="pokedex_dex_prefetch_progress">Saving artwork for offline — %1$s%</string>
+    <string name="pokedex_dex_prefetch_no_space">Not enough space to finish saving artwork. The rest loads as you browse.</string>
+
     <string name="pokedex_detail_back">Back</string>
     <string name="pokedex_detail_form_default">Standard</string>
 
