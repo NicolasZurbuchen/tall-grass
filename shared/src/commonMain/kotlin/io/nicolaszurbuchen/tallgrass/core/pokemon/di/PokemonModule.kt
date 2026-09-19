@@ -20,10 +20,9 @@ val pokemonModule =
         // they depend on live inside this slice. Handing them PokedexDatabase would reach across the
         // package boundary for the sake of one property.
         //
-        // Lazily, because `get` here runs wherever the graph is first asked for -- and that is during
-        // composition, on the main thread. Opening a SQLite database and, on a first launch, copying
-        // a 1.2 MB asset out of the APK are not main-thread work. Deferred, both happen inside the
-        // first query, which already runs off it.
+        // Lazily: `get` runs on whichever thread first asks the graph for this, and that is the main
+        // one, during composition.
+        // DECISIONS.md § The database opens on the first query, not on the first injection
         single<DexLocalDataSource> {
             DexLocalDataSourceImpl(lazy { get<PokedexDatabase>().variantQueries }, Dispatchers.Default)
         }

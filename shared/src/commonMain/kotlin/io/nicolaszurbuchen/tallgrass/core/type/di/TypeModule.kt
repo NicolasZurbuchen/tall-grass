@@ -13,8 +13,9 @@ import org.koin.dsl.module
 
 val typeModule =
     module {
-        // Lazily, for the reason spelled out in PokemonModule: `get` runs on whichever thread first
-        // asks the graph for this, and that is the main one.
+        // Lazily: `get` runs on whichever thread first asks the graph for this, and that is the main
+        // one, during composition.
+        // DECISIONS.md § The database opens on the first query, not on the first injection
         single<TypeLocalDataSource> {
             TypeLocalDataSourceImpl(lazy { get<PokedexDatabase>().typeQueries }, Dispatchers.Default)
         }
