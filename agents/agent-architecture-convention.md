@@ -129,6 +129,8 @@ Compose decides whether it may *skip* a Composable by looking at its parameter t
 
 The annotation is a promise, not a check. It is true here because these types are built by a mapper and never touched again. It is required on every UiModel rather than only the ones that need it today so the rule stays mechanical: adding a list to a model that did not have one must not quietly cost a screen its skipping.
 
+**A UiMapper that is expensive may take its expensive part as a parameter.** `DexUiMapper` maps 1,082 cards; the prefetch produces twenty-five states that change everything except them. So `DexState.toUiModel` takes the cards with a default that maps them, and `DexViewModel` passes the ones it already has. The per-item mapper moves to `mapper/` and gets its own test, which is where it belonged anyway.
+
 
 ## Dependency injection (Koin)
 
