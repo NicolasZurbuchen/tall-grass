@@ -10,7 +10,9 @@ import io.nicolaszurbuchen.tallgrass.core.error.AppException
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 interface DexStore : Store<DexIntent, DexState, DexLabel>
 
@@ -88,11 +90,18 @@ class DexStoreFactory(
          * download exists so the dex works offline, so it begins when someone opens the dex. Nobody
          * who opens the app once and never taps Pokedex pays 133 MB for it.
          *
+         * **After a pause, because the moment the list arrives is the worst possible time to start.**
+         * That frame is already building the grid and asking Coil for the fifteen artworks actually
+         * on screen; a thousand more requests queued behind them make the reader wait for pictures
+         * they cannot see. The prefetch has no deadline and the visible cards do.
+         *
          * Nothing is awaited and nothing can fail: the run reports itself and ends, and every card
          * on screen already works without it.
          */
         private fun prefetchArtwork(urls: List<String>) {
             scope.launch {
+                delay(PREFETCH_HEAD_START)
+
                 prefetchImages.run(urls).collect { progress ->
                     dispatch(DexMessage.ArtworkPrefetchProgressed(progress))
                 }
@@ -110,3 +119,13 @@ class DexStoreFactory(
             }
     }
 }
+
+/**
+ * How long the visible cards get to themselves before the prefetch starts competing for Coil.
+ *
+ * Long enough for the grid's first frames and the artwork on them, short enough that a reader who
+ * opens the dex and immediately goes offline has lost almost nothing. A guess, but an informed one:
+ * there is no "the screen has settled" signal to wait for, and inventing one would be more machinery
+ * than the problem deserves.
+ */
+private val PREFETCH_HEAD_START = 1.seconds
