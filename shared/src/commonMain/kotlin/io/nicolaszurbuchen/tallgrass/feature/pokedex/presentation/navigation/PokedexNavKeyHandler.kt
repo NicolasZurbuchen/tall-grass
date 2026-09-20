@@ -15,7 +15,10 @@ class PokedexNavKeyHandler(
 ) : NavKeyHandler {
     override fun EntryProviderScope<NavKey>.registerEntries() {
         entry<DexDestination> {
-            DexRoute(onNavigateToDetail = navigator::navigateToDetail)
+            DexRoute(
+                onNavigateToDetail = navigator::navigateToDetail,
+                onNavigateBack = { navigator.navigateBack() },
+            )
         }
 
         // Which Pokemon, and what its card was already showing, reach the screen through the

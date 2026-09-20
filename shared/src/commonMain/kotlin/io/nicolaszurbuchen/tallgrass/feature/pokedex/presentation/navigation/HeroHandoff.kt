@@ -11,13 +11,19 @@ import kotlinx.serialization.Serializable
  * one that waits on the database to learn its colour changes colour in front of the reader — either
  * is the flicker the shared element exists to remove. See #11 and #33.
  *
+ * Everything that travels is here, not only the artwork: a shared element only matches if the
+ * receiving half is composed when the transition starts, so a name or a type pill the detail could
+ * not draw until the database answered would simply cross-fade instead of flying.
+ *
  * [primaryTypeSlug] rather than a packed colour: the colour is a decision the design system makes
  * from the type, and a destination that carried an ARGB value would be remembering the answer to a
  * question it is not allowed to ask.
  */
 @Serializable
 data class HeroHandoff(
+    val name: String,
     val artworkUrl: String,
     val primaryTypeSlug: String,
+    val secondaryTypeSlug: String?,
     val sharedElementKey: SharedElementKey,
 )
