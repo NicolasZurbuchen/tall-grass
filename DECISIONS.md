@@ -138,11 +138,17 @@ So the wrapper is in `NavGraph.kt` from the first screen, with the scope publish
 
 **The local fails loudly rather than defaulting to null.** Reading it outside the host is a wiring mistake; a null default would turn that into a transition that silently does not run, which is the hardest kind of animation bug to notice.
 
-### The dex grid is three cards across, loaded whole
+### The dex grid is two cards across, loaded whole
 
-Three columns keeps the artwork large enough to recognise at a glance while putting a generation a
-few flicks apart. Two reads as a list and wastes the width; four shrinks the artwork to the point
-where the tint is doing most of the identifying.
+Two columns is what the card needs once it carries the name, the form label and both type pills down
+its left side while the artwork fills the corner. At three across there is no width for a pill and a
+name on the same card, so the card was a picture with a caption — and of the two things a reader
+actually scans a dex for, what it is called and what it is, one of them was missing.
+
+**This reverses the earlier three-across decision**, which held that two columns "read as a list and
+wasted the width". It does read as a list, and that turns out to be the point: the cards are now wide
+enough to be read rather than only recognised, and a generation is still a few flicks apart because
+each card is shorter than it was.
 
 The screen reads all ~1,080 rows in one query and holds them. Paging buys nothing here: the dataset
 is on the device, the rows are small, and a Pokédex that cannot be scrolled to its end without a
@@ -560,3 +566,47 @@ regression visible at the call site.
 
 Measured on a Galaxy S25: the first read of the dex is 37ms on a background thread. What that buys is
 not the 37ms — it is that they are not spent while the navigation transition is drawing.
+
+### The whole card travels, not just the artwork
+
+Only the artwork was a shared element at first, and the name and the types cross-faded under it. At
+two columns the card carries all three at a size the eye tracks as readily as the picture, and a name
+that dissolves while the artwork flies reads as two unrelated things happening at once.
+
+Making them travel forced the name and both type slugs onto `HeroHandoff`, beside the artwork URL
+that was already there. A shared element matches only if the receiving half is composed when the
+transition begins, so anything the detail could not draw until the database answered would have
+cross-faded instead — which is what it was doing.
+
+**Rejected: one shared element for the pill row.** The pills are stacked on the card and in a row in
+the header, so a single container would have had to morph one layout into the other mid-flight. One
+key per pill lets each fly its own path and asks nothing to reflow.
+
+### A type pill on the type's own colour is a scrim, not a colour
+
+Every pill the app draws sits on a ground that is already the primary type's colour: the dex card
+takes its tint from it and so does the detail hero. Filled with `TypeUiModel.color`, the primary
+pill is therefore exactly the value behind it — Ivysaur's Grass pill is `0xFF7AC74C` on a
+`0xFF7AC74C` card, and only its white label shows. Only the *secondary* type was ever legible.
+
+White at 25% makes both pills the same shape and both readable, and it keeps them stable in flight:
+the pills travel from the card into the hero as shared elements, and two pills that change fill on
+the way read as two objects rather than one.
+
+Nothing about the type is lost. Its colour is still on screen — carried by the largest surface there
+instead of by a 60dp chip.
+
+**Rejected: keeping a coloured variant behind a parameter.** A branch with no caller is not an
+option, it is dead code that reads as coverage. When a screen draws a pill on a neutral ground — the
+type chart is the obvious one — the variant comes back then, with something to check it against.
+
+### A screen title is a heading, not a toolbar label
+
+Material's `TopAppBar` sets the title beside the navigation icon at body size, which is right for a
+screen you are several levels inside: the title is chrome, confirming where you are while you read
+something else. The dex is one tap from home and its title is the first thing on it, so it takes the
+line under the back arrow at headline size and the content starts below.
+
+This also keeps the two halves of the screen honest about their padding: the header indents to the
+same gutter as the grid's content padding, so the title sits on the same vertical line as the first
+card rather than on Material's own inset.
