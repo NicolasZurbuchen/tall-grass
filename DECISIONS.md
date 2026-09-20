@@ -255,6 +255,10 @@ being visible. The bars are drawn against 160 and clamped, so the handful above 
 This is a rendering choice and the number is in the mapper, not the domain: the stat is 255 whatever
 the bar does with it.
 
+**The total's lane is full at six times that**, which makes it the mean of the six above it. Any
+other ceiling — the highest total in the dataset, say — would put the total on a scale of its own,
+and the one thing a reader does with a column of lanes is compare them down it.
+
 ### The preview harness opens the navigation host's scopes
 
 `TallGrassPreview` wraps its content in a `SharedTransitionLayout` and an `AnimatedContent` that
@@ -698,3 +702,36 @@ starts; the inset is a rule about where a touch target starts, and they were nev
 
 **Rejected: shrinking the touch target so the box could take the gutter.** A 24dp button lines the
 arrow up arithmetically and is below every guideline's minimum for something you tap with a thumb.
+
+### The stat table is a grid, so its columns measure themselves
+
+The rows carried two magic widths — 72dp for the name, 32dp for the figure — chosen to fit "Sp. Def"
+and three digits. Both were guesses in the direction nobody checks: a name column sized for the
+longest label in English, and a figure column that a four-digit total would have clipped.
+
+`Grid` from `androidx.compose.foundation.layout` sizes the two text columns to their own widest
+content and hands the lanes what is left as `1.fr`. The widths become facts about the text rather
+than estimates of it, and the 24dp gap is declared once instead of being assembled from a row
+arrangement plus a padding that had to sum to it.
+
+Its `config` block is not composable and runs during the measure pass, so the gaps are read from the
+theme before it rather than inside it.
+
+**It is experimental, and that is the cost.** The opt-in is `@ExperimentalGridApi` and the shape of
+the API can change under a Compose upgrade. The exposure is bounded: this project pins CMP 1.11.1 and
+#22 records why it is not moving, and the fallback is the `Row` this replaced — about fifteen lines.
+
+**Rejected: `LazyVerticalGrid`.** Seven rows, all on screen at once, inside a column that already
+scrolls. Nesting a scroller of the same direction inside one is unmeasurable, which is why the
+matchup chips were hand-chunked long before they became a flow.
+
+### Rejected: explaining the matchup chart under its heading
+
+"Damage taken from each attacking type. Neutral matchups are left out." sat under the Type Defenses
+heading as a two-line hint. It is true, and it is the kind of sentence a screen accumulates until
+nothing on it is read.
+
+The chips say `×4`, `½`, `0` — the first two are legible to anyone who has played, and the third is
+obvious. What the hint added was that the *absent* types are the neutral ones, which is a fact about
+a list nobody is looking at. #42 is where that belongs if it turns out to be needed, alongside the
+other numbers on this screen that are opaque without a legend.
