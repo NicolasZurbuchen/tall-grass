@@ -61,8 +61,8 @@ val AppTypography
                 TextStyle(
                     fontFamily = PrimaryFontFamily,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp,
-                    lineHeight = 40.sp,
+                    fontSize = 36.sp,
+                    lineHeight = 44.sp,
                     letterSpacing = (-0.5).sp,
                 ),
             // Section headers within a screen
@@ -160,8 +160,8 @@ val AppTypography
                 TextStyle(
                     fontFamily = PrimaryFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 10.sp,
-                    lineHeight = 14.sp,
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
                     letterSpacing = 1.sp,
                 ),
         )
