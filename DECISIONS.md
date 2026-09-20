@@ -684,3 +684,17 @@ sideways movement has the whole width to read against, so the same distance regi
 `slideInFromEnd` takes the layout direction rather than defaulting it, because `graphicsLayer` is
 handed a density and nothing else. A hard-coded rightward slide is correct until the first
 right-to-left locale, at which point it is silently entering from the wrong side.
+
+### A back arrow takes the navigation inset, not the content gutter
+
+An `IconButton` centres a 24dp glyph in a 48dp touch target, so its drawing always sits 12dp inside
+its own box. Padded to the screen's content gutter, the arrow therefore lands 12dp further in than
+everything it sits above: at a 24dp gutter that is an arrow at 36dp over a title at 24dp, which reads
+as a mistake because it is one.
+
+Both headers give the button Material's own navigation-icon padding of 4dp instead, which puts the
+glyph 16dp from the edge whatever the gutter under it is doing. The gutter is a rule about where text
+starts; the inset is a rule about where a touch target starts, and they were never the same number.
+
+**Rejected: shrinking the touch target so the box could take the gutter.** A 24dp button lines the
+arrow up arithmetically and is below every guideline's minimum for something you tap with a thumb.
