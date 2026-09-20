@@ -30,12 +30,12 @@ class StatsUiMapperTest {
     fun toStatsUiModel_drawsTheSixStatsInTheOrderEveryScreenUsesThem() {
         val bars = variant().toStatsUiModel(emptyList()).bars
 
-        assertEquals(listOf("78", "84", "78", "109", "85", "100"), bars.map { it.valueText })
+        assertEquals(listOf(78, 84, 78, 109, 85, 100), bars.map { it.value })
     }
 
     @Test
     fun toStatsUiModel_addsTheSixUp() {
-        assertEquals("534", variant().toStatsUiModel(emptyList()).totalText)
+        assertEquals(534, variant().toStatsUiModel(emptyList()).total)
     }
 
     @Test

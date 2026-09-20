@@ -19,7 +19,7 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
     val bar = { label: UiText, value: Int ->
         StatBarUiModel(
             label = label,
-            valueText = value.toString(),
+            value = value,
             fraction = (value.toFloat() / FULL_BAR).coerceAtMost(1f),
         )
     }
@@ -34,7 +34,7 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
                 bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense),
                 bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed),
             ),
-        totalText = stats.total.toString(),
+        total = stats.total,
         matchups =
             matchups.map { matchup ->
                 val type = matchup.attackingType.toUiModel()

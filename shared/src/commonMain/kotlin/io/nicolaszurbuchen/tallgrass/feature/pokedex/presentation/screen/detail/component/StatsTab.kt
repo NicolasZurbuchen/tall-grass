@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,19 @@ fun StatsTab(
     modifier: Modifier = Modifier,
     elapsedMillis: Int = ENTRANCE_DONE,
 ) {
+    // Waits for the last bar rather than starting with the first: the total is their sum, and a
+    // figure that settles before its parts have moved reads as unrelated to them.
+    val countedTotal by animateIntAsState(
+        targetValue = stats.total,
+        animationSpec =
+            tween(
+                durationMillis = AppDuration.LONG,
+                delayMillis = AppStagger.delayFor(stats.bars.lastIndex),
+                easing = AppEasing.EaseOutQuint,
+            ),
+        label = "statTotal",
+    )
+
     Column(modifier = modifier.fillMaxWidth()) {
         stats.bars.forEachIndexed { index, bar -> StatRow(bar = bar, tint = tint, barIndex = index) }
 
@@ -70,7 +84,7 @@ fun StatsTab(
                 modifier = Modifier.width(STAT_LABEL_WIDTH),
             )
             Text(
-                text = stats.totalText,
+                text = countedTotal.toString(),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.appColors.textPrimary,
             )
@@ -94,11 +108,11 @@ fun StatsTab(
 }
 
 /**
- * The bar grows to its value rather than appearing at it.
+ * The bar grows to its value, and the figure beside it counts to the same place on the same curve.
  *
- * Functional rather than decorative: the length *is* the number, so this one keeps running under
- * reduced motion — Compose's own duration scaling shortens it to a frame, which is the right answer
- * for a movement that carries information. See #12 § Reduced motion.
+ * Functional rather than decorative: the length *is* the number, so both keep running under reduced
+ * motion — Compose's own duration scaling shortens them to a frame, which is the right answer for a
+ * movement that carries information. See #12 § Reduced motion.
  */
 @Composable
 private fun StatRow(
@@ -118,6 +132,18 @@ private fun StatRow(
         label = "statBar",
     )
 
+    // The same curve and the same delay as the bar, so the two are one movement rather than two.
+    val counted by animateIntAsState(
+        targetValue = bar.value,
+        animationSpec =
+            tween(
+                durationMillis = AppDuration.LONG,
+                delayMillis = AppStagger.delayFor(barIndex),
+                easing = AppEasing.EaseOutQuint,
+            ),
+        label = "statValue",
+    )
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -130,7 +156,7 @@ private fun StatRow(
             modifier = Modifier.width(STAT_LABEL_WIDTH),
         )
         Text(
-            text = bar.valueText,
+            text = counted.toString(),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.appColors.textPrimary,
             textAlign = TextAlign.End,
