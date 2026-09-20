@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
@@ -22,15 +23,19 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
  *
  * The fill is a scrim rather than the type's own colour. See
  * `DECISIONS.md § A type pill on the type's own colour is a scrim, not a colour`.
+ *
+ * [style] is the caller's because the same pill is a label on a grid card and a headline element on
+ * a hero, and those are not the same size. It defaults to the chip slot, which is what a card wants.
  */
 @Composable
 fun TypePill(
     type: TypeUiModel,
     modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
     Text(
         text = type.label,
-        style = MaterialTheme.typography.labelSmall,
+        style = style,
         color = Color.White,
         modifier =
             modifier
