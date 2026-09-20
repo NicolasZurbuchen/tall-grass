@@ -1,6 +1,5 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -12,12 +11,17 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +50,10 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
  * by all but the overlapping third of the artwork, and the artwork is drawn after it in the same box
  * so it sits on top without anyone computing a screen height.
  *
+ * The sheet itself does not scroll. Its form switcher and tab row are pinned and each tab scrolls
+ * inside the pager below them — see `DECISIONS.md § The tabs are a pager, so the sheet stops
+ * scrolling as one piece`.
+ *
  * The tint runs behind the status bar, so this screen takes the insets itself rather than inheriting
  * them from the navigation host: the header clears the status bar and the sheet's content clears the
  * navigation bar, while both backgrounds run to the edge.
@@ -72,6 +80,26 @@ fun DetailScreen(
         label = "heroTint",
     )
 
+    // Remembered above the content check so the pager survives the read landing under it.
+    val pagerState = rememberPagerState(pageCount = { DetailTabUiModel.entries.size })
+    val tab = state.content?.tab
+    val onTabSelected by rememberUpdatedState(onTabClick)
+
+    // Tapping a tab moves the pager, and only when the pager is not already there: a swipe reports
+    // its new page before it settles, and animating to the page it just reached fights the finger.
+    LaunchedEffect(tab) {
+        if (tab != null && pagerState.currentPage != tab.ordinal) {
+            pagerState.animateScrollToPage(tab.ordinal)
+        }
+    }
+
+    // Swiping moves the tab row. `currentPage` rather than `settledPage`, so the underline crosses
+    // with the finger at the halfway point instead of waiting for the animation to finish.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .collect { page -> onTabSelected(DetailTabUiModel.entries[page]) }
+    }
+
     Column(modifier = modifier.fillMaxSize().background(tint)) {
         DetailHeader(
             name = state.name,
@@ -91,10 +119,8 @@ fun DetailScreen(
                         .padding(top = ARTWORK_SIZE - ARTWORK_OVERLAP)
                         .clip(RoundedCornerShape(topStart = SHEET_CORNER, topEnd = SHEET_CORNER))
                         .background(MaterialTheme.appColors.surface)
-                        .verticalScroll(rememberScrollState())
                         .navigationBarsPadding()
-                        .padding(top = ARTWORK_OVERLAP + MaterialTheme.spacing.md)
-                        .padding(bottom = MaterialTheme.spacing.xxl),
+                        .padding(top = ARTWORK_OVERLAP + MaterialTheme.spacing.md),
             ) {
                 val content = state.content
 
@@ -132,27 +158,32 @@ fun DetailScreen(
                                     .rise(entranceFraction(1, elapsed)),
                         )
 
-                        Crossfade(
-                            targetState = content.tab,
-                            animationSpec = tween(durationMillis = AppDuration.SHORT, easing = AppEasing.EaseInOut),
-                            label = "detailTab",
+                        // Full-bleed, so the swipe starts at the screen edge; the gutter is inside
+                        // each page instead.
+                        HorizontalPager(
+                            state = pagerState,
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(
-                                        start = MaterialTheme.spacing.lg,
-                                        end = MaterialTheme.spacing.lg,
-                                        top = MaterialTheme.spacing.md,
-                                    )
+                                    .weight(1f)
                                     .rise(entranceFraction(2, elapsed)),
-                        ) { tab ->
-                            when (tab) {
-                                DetailTabUiModel.ABOUT -> {
-                                    AboutTab(about = content.about)
-                                }
+                        ) { page ->
+                            Column(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                        .padding(horizontal = MaterialTheme.spacing.lg)
+                                        .padding(top = MaterialTheme.spacing.md, bottom = MaterialTheme.spacing.xxl),
+                            ) {
+                                when (DetailTabUiModel.entries[page]) {
+                                    DetailTabUiModel.ABOUT -> {
+                                        AboutTab(about = content.about)
+                                    }
 
-                                DetailTabUiModel.STATS -> {
-                                    StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
+                                    DetailTabUiModel.STATS -> {
+                                        StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
+                                    }
                                 }
                             }
                         }

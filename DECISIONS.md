@@ -735,3 +735,27 @@ The chips say `×4`, `½`, `0` — the first two are legible to anyone who has p
 obvious. What the hint added was that the *absent* types are the neutral ones, which is a fact about
 a list nobody is looking at. #42 is where that belongs if it turns out to be needed, alongside the
 other numbers on this screen that are opaque without a legend.
+
+### The tabs are a pager, so the sheet stops scrolling as one piece
+
+The sheet was one `verticalScroll` holding the form switcher, the tab row and the tab's content, with
+a `Crossfade` between tabs. A pager cannot live in that. `HorizontalPager` needs a bounded height and
+inside a vertical scroll it has none — and given one, two tabs of different heights would resize the
+scroll under the reader every time they swiped.
+
+So the sheet is a fixed column. The switcher and the tab row are pinned, the pager takes what is
+left, and each tab scrolls inside its own page. That is also the shape the expandable sheet needs, so
+it lands here rather than being rebuilt there.
+
+**The two halves are bound one direction each, with a guard.** Tapping a tab animates the pager, but
+only when the pager is not already on that page. Swiping reports its page and writes it back as the
+same intent a tap sends. Without the guard they fight: a drag past the halfway point changes the
+page, which changes the Store, which animates the pager to the page the finger is already on.
+
+Swiping reports `currentPage` rather than `settledPage`, which is what makes the underline cross with
+the finger instead of snapping once the animation finishes.
+
+**Rejected: giving the pager a fixed height so the sheet could keep scrolling as one piece.** The
+About tab is roughly a third of the Base Stats tab, so any fixed height is wrong for one of them:
+either Base Stats scrolls inside a box two hundred dp shorter than it needs, or About sits in a
+mostly empty one.
