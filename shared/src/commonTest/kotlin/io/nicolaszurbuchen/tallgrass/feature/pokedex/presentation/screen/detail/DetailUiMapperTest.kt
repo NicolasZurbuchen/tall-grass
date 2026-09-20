@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 import kotlin.test.Test
@@ -17,8 +18,9 @@ class DetailUiMapperTest {
         isLoading: Boolean = false,
     ) = DetailState(
         entryVariantSlug = "charizard",
+        query = DexQuery.All,
         isLoading = isLoading,
-        detail = charizardDetail,
+        details = mapOf("charizard" to charizardDetail),
         activeVariantSlug = activeSlug,
     )
 
@@ -26,9 +28,9 @@ class DetailUiMapperTest {
     fun toUiModel_drawsTheHeroBeforeAnythingHasBeenRead() {
         // The point of the handoff: a hero with no artwork and no colour is the flicker the shared
         // element exists to remove, and both are known the moment the screen opens.
-        val ui = DetailState(entryVariantSlug = "charizard").toUiModel(charizardHandoff)
+        val ui = DetailState(entryVariantSlug = "charizard", query = DexQuery.All).toUiModel(charizardHandoff)
 
-        assertEquals(charizardHandoff.artworkUrl, ui.artworkUrl)
+        assertEquals(charizardHandoff.artworkUrl, ui.heroes.single().artworkUrl)
         assertEquals(TypeUiModel.FIRE.color, ui.tint)
         assertNull(ui.content)
         assertTrue(ui.isLoading)
@@ -36,13 +38,13 @@ class DetailUiMapperTest {
 
     @Test
     fun toUiModel_keepsTheTappedCardsKeyWhileTheTappedFormIsOnScreen() {
-        assertEquals(dexArtworkKey("charizard"), state().toUiModel(charizardHandoff).artworkKey)
+        assertEquals(dexArtworkKey("charizard"), state().toUiModel(charizardHandoff).heroes.single().artworkKey)
     }
 
     @Test
     fun toUiModel_takesTheKeyOffTheOtherFormsArtwork() {
         // The Mega is a different picture. Keeping the key would fly Charizard's card into it.
-        val key = state(activeSlug = "charizard-mega-x").toUiModel(charizardHandoff).artworkKey
+        val key = state(activeSlug = "charizard-mega-x").toUiModel(charizardHandoff).heroes.single().artworkKey
 
         assertNotEquals(dexArtworkKey("charizard"), key)
         assertEquals(dexArtworkKey("charizard-mega-x"), key)
@@ -80,7 +82,7 @@ class DetailUiMapperTest {
 
     @Test
     fun toUiModel_padsTheDexNumberToThreeDigits() {
-        assertEquals("#006", assertNotNull(state().toUiModel(charizardHandoff).content).numberText)
+        assertEquals("#006", state().toUiModel(charizardHandoff).numberText)
     }
 
     @Test
@@ -98,7 +100,7 @@ class DetailUiMapperTest {
         // when the mapper is next touched and nothing else on screen would look wrong.
         val withCostume = charizardDetail.copy(variants = charizardDetail.variants + charizardCostume)
 
-        val content = assertNotNull(state().copy(detail = withCostume).toUiModel(charizardHandoff).content)
+        val content = assertNotNull(state().copy(details = mapOf("charizard" to withCostume)).toUiModel(charizardHandoff).content)
 
         assertEquals(listOf("charizard", "charizard-mega-x"), content.forms.map { it.slug })
     }
@@ -107,7 +109,7 @@ class DetailUiMapperTest {
     fun toUiModel_hasNoSwitcherForASpeciesWithOneForm() {
         val single = charizardDetail.copy(variants = listOf(charizard))
 
-        val content = assertNotNull(state().copy(detail = single).toUiModel(charizardHandoff).content)
+        val content = assertNotNull(state().copy(details = mapOf("charizard" to single)).toUiModel(charizardHandoff).content)
 
         assertTrue(content.forms.isEmpty())
     }

@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.di
 
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.DetailStoreFactory
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.DetailViewModel
@@ -21,7 +22,7 @@ val pokedexModule =
         // what its card was showing both arrive from the NavKey, so they are passed at resolution
         // rather than resolved. The factory above stays an ordinary binding, which is what keeps its
         // own dependencies inside the graph.
-        viewModel { (slug: String, hero: HeroHandoff) ->
-            DetailViewModel(get(), slug, hero)
+        viewModel { (slug: String, hero: HeroHandoff, query: DexQuery) ->
+            DetailViewModel(get(), slug, query, hero)
         }
     }

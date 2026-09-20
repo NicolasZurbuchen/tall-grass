@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetchProgress
 
@@ -21,6 +22,7 @@ sealed interface DexLabel {
     data class NavigateToDetail(
         val slug: String,
         val hero: HeroHandoff,
+        val query: DexQuery,
     ) : DexLabel
 }
 

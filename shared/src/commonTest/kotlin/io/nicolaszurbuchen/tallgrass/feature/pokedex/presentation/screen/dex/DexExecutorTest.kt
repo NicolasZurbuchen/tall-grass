@@ -8,6 +8,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexReposit
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
@@ -113,6 +114,7 @@ class DexExecutorTest {
                 assertEquals(
                     DexLabel.NavigateToDetail(
                         slug = "bulbasaur",
+                        query = DexQuery.All,
                         hero =
                             HeroHandoff(
                                 name = "Bulbasaur",
@@ -159,7 +161,7 @@ class DexExecutorTest {
                 state = awaitItem()
                 while (state.isLoading) state = awaitItem()
 
-                assertEquals(2, repository.callCount)
+                assertEquals(2, repository.entriesCallCount)
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

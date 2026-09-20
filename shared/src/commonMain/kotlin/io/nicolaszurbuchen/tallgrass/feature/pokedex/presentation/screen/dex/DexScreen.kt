@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,11 +72,12 @@ fun DexScreen(
                     // row the count starts from.
                     val firstOnScreen = remember { gridState.firstVisibleItemIndex }
 
-                    // At most one card is ever a shared element: the one that was tapped. Saved
-                    // rather than remembered for the same reason the entrance flag is -- the host
-                    // disposes this composition while the detail is open, and the way back needs the
-                    // sending half still here to match against.
-                    var heroSlug by rememberSaveable { mutableStateOf<String?>(null) }
+                    // At most one card is ever a shared element: the one that was tapped. Remembered
+                    // rather than saved, which is what makes the transition one-way -- the host
+                    // disposes this composition while the detail is open, so the way back finds no
+                    // sending half and cross-fades.
+                    // DECISIONS.md § The artwork flies out of the grid and does not fly back
+                    var heroSlug by remember { mutableStateOf<String?>(null) }
 
                     LazyVerticalGrid(
                         state = gridState,

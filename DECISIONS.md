@@ -619,19 +619,23 @@ This also keeps the two halves of the screen honest about their padding: the hea
 same gutter as the grid's content padding, so the title sits on the same vertical line as the first
 card rather than on Material's own inset.
 
-### Switching form is a change of content, not a second arrival
+### The entrance belongs to the arrival, not to the content
 
-The entrance clock was keyed on the active form, so every use of the switcher replayed the whole
-screen: the tab row rose, the tab's content rose behind it, and the matchup chips popped in one at a
-time. The screen was already up, and re-entering it read as a navigation that had not happened.
+The entrance clock was keyed on the active form, and every use of the switcher replayed the whole
+screen: the tab row rose, the tab's content rose behind it, the matchup chips popped in one at a
+time. Keying it on the content arriving fixed that and broke the same thing again the moment the
+carousel landed, because a swipe empties the sheet and refills it — which is a content change by any
+definition, and not an arrival by any.
 
-It is keyed on the content arriving instead — which is later than the screen opening, and that is
-deliberate. Keying it on the screen would start the clock while the sheet was still a skeleton, so a
-slow read would hand the content to a clock already part-way through, and the entrance would be over
-before there was anything to enter.
+So the key is latched: false until the first read lands, true from then on, never false again. The
+entrance runs when the screen fills and not when anything refills it.
 
-What still moves on a switch is what the switch changes: the tint, the artwork, the stat bars and the
-figures beside them. Those are the same screen becoming something else, which is the thing worth
+The latch rather than keying on the screen opening, because a clock started while the sheet is still
+a skeleton can be finished before there is anything to enter, and a slow read would then deliver its
+content already settled.
+
+What still moves on a switch or a swipe is what actually changed: the tint, the artwork, the name,
+the number, the types. Those are the same screen becoming something else, which is the thing worth
 animating.
 
 ### Rejected: counting the stat figures to their new values
@@ -789,3 +793,108 @@ grid representation and nothing else — which is why the diff is 57 booleans an
 
 Entries above this one quote 1,082 where they record a measurement. Those stay as measured; the count
 they were taken against is this one.
+
+### The carousel traverses the query, not a copy of its results
+
+Swiping sideways on the hero moves along the list the detail was opened from. When a filter arrives,
+picking Fire and opening Charmander has to keep the swipe inside Fire — a carousel that silently
+walked the whole dex would be a different list from the one the reader was just looking at.
+
+The destination carries the **query** rather than the list it returns. A `NavKey` holding a thousand
+slugs is around twenty kilobytes written into saved state on every navigation and read back on
+process death, and it freezes a result set the dataset can move under. The query is small, it *is*
+the identity of the result set, and the detail re-runs it.
+
+There is one query and one list today, so `DexQuery` has a single value. That is the point: the
+filter becomes another value rather than another field on the destination, and the detail already
+asks "which list" instead of assuming.
+
+**Rejected: reading the whole dex in the detail and calling it the same list.** It is the same list,
+right up until it is not, and nothing in the code would have been wrong at the moment it broke.
+
+### The carousel is a pager over the browse list
+
+A thousand pages, one per card, rather than a hand-rolled three-position track. The pager is already
+the thing that handles a drag, a fling, a settle and the offset in between, and it composes three
+pages at a time whatever the count.
+
+**The neighbours are drawn twice.** Each page renders its artwork, and the same artwork flattened to
+a single colour on top of it, with the flat copy's alpha set to the page's distance from the centre.
+A card therefore arrives by resolving out of the ground colour and leaves by dissolving back into it.
+Animating a `ColorFilter` instead would rebuild the filter every frame of the drag; two images and an
+alpha is one composition and a redraw.
+
+The silhouette is *darker* than the ground. Lighter was tried first, on the argument that a dark flat
+shape on a saturated colour reads as a hole punched in it. On a device it read as washed out instead —
+too close to the ground to be a second object at all. Darker gives the cards either side the shadow
+of the one in front, which is what they are standing in.
+
+**They are half size, and the size is half the movement.** A card grows into the centre and shrinks
+out of it, so arriving is not only a sideways translation.
+
+**A neighbour is also a control.** Tapping one brings it to the centre — the same movement the swipe
+makes, and the only one available to a reader who cannot make the gesture. It carries the Pokemon's
+name as its click label, which is the only thing that name is for.
+
+**The pages are a fixed width**, centred by content padding computed from the measured width, because
+what a neighbour shows has to be a slice of the artwork and not a slice of a page with the artwork
+somewhere inside it. At the viewport's width the artwork would sit in the middle of its page and the
+neighbours would show empty margin.
+
+**The swipe reports at the halfway point, not on the settle.** The name, the number, the types and
+the colour cross with the finger, and the read for the new card starts while it is still moving. The
+executor holds the read's `Job` and cancels it, so swiping faster than the database answers leaves
+the card you stopped on rather than the last one to finish.
+
+**The sheet empties on the way.** Holding the previous Pokemon's forms, stats and matchups under the
+new one's name is a wrong screen rather than a slow one, and the read is a frame or two.
+
+**Rejected: keeping the pager at one page until the list lands, then swapping it in.** The swap would
+remount the composable holding the shared element in the middle of the transition from the grid. It
+scrolls into place instead, which costs at most one frame on a page nobody has touched yet.
+
+### The artwork flies out of the grid and does not fly back
+
+Tapping a card flies its artwork, its name and its type pills into the hero. Pressing back does not
+fly them home: the two screens cross-fade.
+
+Not an oversight, and not a limitation. Once the carousel existed, the return could only be
+consistent by accident — swipe twice and the card you came from is three screens back in a grid that
+is not showing it, so there is nothing to fly to. A transition that runs when you have not moved and
+does not when you have is worse than one that never runs, because the reader has to learn which case
+they are in.
+
+The mechanism is that the grid's `heroSlug` is `remember` rather than `rememberSaveable`. The host
+disposes the grid's composition while the detail is open, so the flag is gone by the time the reader
+comes back and no card registers a key to match against. The forward transition is unaffected — the
+grid is still composed while it is being animated out.
+
+**Rejected: clearing the flag on the way back instead.** It needs the screen to know it is being
+returned to, which Navigation 3 does not hand it, and the answer would have been a guess dressed as a
+lifecycle.
+
+### The carousel reads ahead, so a swipe lands on content
+
+Emptying the sheet on a swipe was the wrong half of a real problem. Holding the previous Pokemon's
+stats under the new one's name is a wrong screen; replacing them with a skeleton for the length of a
+database read is a blink, and a blink reads as a fault. The read is one frame, which is exactly the
+duration at which a change of state looks like a glitch rather than like loading.
+
+So neither. The Store holds the card on screen and the two either side of it, and reads the
+neighbours as soon as the middle one lands. A swipe onto a card that was read ahead shows it on the
+same frame, with no skeleton in between and nothing stale in the meantime.
+
+**Bounded by the window, not by a count.** The cache is filtered to the three slugs around the active
+card every time it changes, so swiping the length of the dex holds three records whatever route it
+took. An eviction policy would have needed a size, and a size would have been a guess.
+
+**A read answers for a named card.** `DetailLoaded` carries the entry slug it was asked for, because
+a neighbour's read can land while the reader has moved on, and a message that only carried a
+`PokemonDetail` would overwrite what they are looking at with what they are not.
+
+**Read-ahead failures are swallowed.** A card nobody has asked for cannot produce an error message,
+and the read runs again if they swipe onto it.
+
+**Retry goes past the cache.** It is only reachable from the error state, where nothing is cached, so
+the flag changes nothing today — but a button that says "try again" and quietly does not is worse
+than no button.

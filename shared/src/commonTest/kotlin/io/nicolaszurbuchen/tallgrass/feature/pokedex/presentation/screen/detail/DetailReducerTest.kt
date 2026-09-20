@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -15,13 +16,14 @@ class DetailReducerTest {
         message: DetailMessage,
     ) = with(reducer) { state.reduce(message) }
 
-    private val initial = DetailState(entryVariantSlug = "charizard")
+    private val initial = DetailState(entryVariantSlug = "charizard", query = DexQuery.All)
 
-    private val loaded = DetailMessage.DetailLoaded(detail = charizardDetail, matchups = emptyMap())
+    private fun loaded(entrySlug: String = "charizard") =
+        DetailMessage.DetailLoaded(entrySlug = entrySlug, detail = charizardDetail, matchups = emptyMap())
 
     @Test
     fun detailLoaded_opensOnTheFormThatWasTapped() {
-        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-x"), loaded)
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-x", query = DexQuery.All), loaded("charizard-mega-x"))
 
         assertEquals("charizard-mega-x", state.activeVariantSlug)
         assertFalse(state.isLoading)
@@ -31,7 +33,7 @@ class DetailReducerTest {
     fun detailLoaded_fallsBackToTheFirstFormWhenTheTappedOneIsGone() {
         // A saved back stack can name a slug a newer dataset no longer carries. The species is still
         // worth a screen, so the switcher opens on its first form rather than on nothing.
-        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-z"), loaded)
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-z", query = DexQuery.All), loaded("charizard-mega-z"))
 
         assertEquals("charizard", state.activeVariantSlug)
     }
@@ -40,7 +42,7 @@ class DetailReducerTest {
     fun formSwitched_movesTheActiveFormAndLeavesTheEntryOneAlone() {
         // The two together are what decide whether the hero still owns the shared element it arrived
         // with, so the entry slug has to survive the switch.
-        val state = reduce(reduce(initial, loaded), DetailMessage.FormSwitched("charizard-mega-x"))
+        val state = reduce(reduce(initial, loaded()), DetailMessage.FormSwitched("charizard-mega-x"))
 
         assertEquals("charizard-mega-x", state.activeVariantSlug)
         assertEquals("charizard", state.entryVariantSlug)
@@ -49,15 +51,15 @@ class DetailReducerTest {
     @Test
     fun formSwitched_doesNotTouchTheDetailItSwitchesWithin() {
         // Every form was read at once, so switching is a choice within what is already in hand.
-        val state = reduce(reduce(initial, loaded), DetailMessage.FormSwitched("charizard-mega-x"))
+        val state = reduce(reduce(initial, loaded()), DetailMessage.FormSwitched("charizard-mega-x"))
 
-        assertEquals(charizardDetail, state.detail)
+        assertEquals(charizardDetail, state.details["charizard"])
         assertFalse(state.isLoading)
     }
 
     @Test
     fun tabSwitched_changesOnlyTheTab() {
-        val state = reduce(reduce(initial, loaded), DetailMessage.TabSwitched(DetailState.Tab.STATS))
+        val state = reduce(reduce(initial, loaded()), DetailMessage.TabSwitched(DetailState.Tab.STATS))
 
         assertEquals(DetailState.Tab.STATS, state.tab)
         assertEquals("charizard", state.activeVariantSlug)

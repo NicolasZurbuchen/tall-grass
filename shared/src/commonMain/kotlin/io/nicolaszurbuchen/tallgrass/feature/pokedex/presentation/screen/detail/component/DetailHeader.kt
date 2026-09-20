@@ -35,16 +35,18 @@ import tallgrass.shared.generated.resources.pokedex_detail_back
 /**
  * The text half of the hero, drawn on the type's colour.
  *
- * [name] and [types] arrive with the destination and are the receiving half of the transition from a
- * dex card, so they are drawn on the first frame and take no entrance of their own — they are
- * already moving. A null [content] is the moment before the read lands, which leaves only the number
- * and the genus to appear.
+ * [name], [numberText] and [types] come from the card the carousel is on, so they are drawn on the
+ * first frame and change the instant a swipe crosses. The name and the types are also the receiving
+ * half of the transition from a dex card, so they take no entrance of their own — they are already
+ * moving. A null [content] is the moment before the read lands, which leaves only the genus to
+ * appear.
  */
 @Composable
 fun DetailHeader(
     name: String,
     types: List<TypeUiModel>,
-    artworkKey: SharedElementKey,
+    numberText: String,
+    artworkKey: SharedElementKey?,
     content: DetailContentUiModel?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -88,12 +90,12 @@ fun DetailHeader(
                     Modifier
                         .weight(1f, fill = false)
                         .alignByBaseline()
-                        .sharedBoundsOrNone(artworkKey.nameKey()),
+                        .sharedBoundsOrNone(artworkKey?.nameKey()),
             )
 
-            if (content != null) {
+            if (numberText.isNotEmpty()) {
                 Text(
-                    text = content.numberText,
+                    text = numberText,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
                     modifier =
@@ -119,7 +121,7 @@ fun DetailHeader(
                 types.forEachIndexed { slot, type ->
                     TypePill(
                         type = type,
-                        modifier = Modifier.sharedBoundsOrNone(artworkKey.typeKey(slot)),
+                        modifier = Modifier.sharedBoundsOrNone(artworkKey?.typeKey(slot)),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }

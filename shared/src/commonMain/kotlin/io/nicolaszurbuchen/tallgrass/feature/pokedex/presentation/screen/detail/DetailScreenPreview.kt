@@ -5,6 +5,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
@@ -24,13 +25,36 @@ private fun DetailScreenPreview() {
                     isLoading = false,
                     error = null,
                     name = "Charizard",
+                    numberText = "#006",
                     types = listOf(TypeUiModel.FIRE, TypeUiModel.FLYING),
-                    artworkUrl = "",
-                    artworkKey = SharedElementKey(source = "dex", id = "charizard"),
                     tint = TypeUiModel.FIRE.color,
+                    heroes =
+                        listOf(
+                            DetailHeroUiModel(
+                                slug = "charmeleon",
+                                name = "Charmeleon",
+                                artworkUrl = "",
+                                tint = TypeUiModel.FIRE.color,
+                                artworkKey = null,
+                            ),
+                            DetailHeroUiModel(
+                                slug = "charizard",
+                                name = "Charizard",
+                                artworkUrl = "",
+                                tint = TypeUiModel.FIRE.color,
+                                artworkKey = SharedElementKey(source = "dex", id = "charizard"),
+                            ),
+                            DetailHeroUiModel(
+                                slug = "squirtle",
+                                name = "Squirtle",
+                                artworkUrl = "",
+                                tint = TypeUiModel.WATER.color,
+                                artworkKey = null,
+                            ),
+                        ),
+                    activeIndex = 1,
                     content =
                         DetailContentUiModel(
-                            numberText = "#006",
                             genusText = "Flame Pokémon",
                             forms =
                                 listOf(
@@ -76,6 +100,7 @@ private fun DetailScreenPreview() {
                         ),
                 ),
             onBackClick = { },
+            onEntrySwipe = { },
             onFormClick = { },
             onTabClick = { },
             onRetryClick = { },

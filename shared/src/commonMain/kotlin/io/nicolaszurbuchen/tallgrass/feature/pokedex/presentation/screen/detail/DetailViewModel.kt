@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,9 +23,10 @@ import kotlinx.coroutines.flow.stateIn
 class DetailViewModel(
     factory: DetailStoreFactory,
     variantSlug: String,
+    query: DexQuery,
     private val hero: HeroHandoff,
 ) : ViewModel() {
-    private val store = factory.create(variantSlug)
+    private val store = factory.create(variantSlug, query)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val state: StateFlow<DetailUiModel> =
