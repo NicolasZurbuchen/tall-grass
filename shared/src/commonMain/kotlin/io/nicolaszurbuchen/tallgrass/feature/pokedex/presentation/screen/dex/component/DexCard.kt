@@ -61,12 +61,14 @@ fun DexCard(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
+                        .padding(ARTWORK_INSET)
                         .size(ARTWORK_SIZE)
                         .sharedElementOrNone(heroKey),
             )
 
-            // Drawn after the artwork so the text stays legible where the two overlap.
-            Column(modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm)) {
+            // Drawn after the artwork so the text stays legible where the two overlap, which at this
+            // size they are meant to: the pills run under the Pokemon rather than stopping short.
+            Column(modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.md)) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top,
@@ -74,7 +76,7 @@ fun DexCard(
                 ) {
                     Text(
                         text = entry.name,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier =
@@ -85,17 +87,7 @@ fun DexCard(
                     Text(
                         text = entry.numberText,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = SUPPORTING_ALPHA),
-                    )
-                }
-
-                if (entry.formLabel != null) {
-                    Text(
-                        text = entry.formLabel,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = SUPPORTING_ALPHA),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        color = Color.White.copy(alpha = NUMBER_ALPHA),
                     )
                 }
 
@@ -103,7 +95,7 @@ fun DexCard(
                 // for the artwork, which is the card's subject.
                 Column(
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
-                    modifier = Modifier.padding(top = MaterialTheme.spacing.xs),
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.sm),
                 ) {
                     entry.types.forEachIndexed { slot, type ->
                         TypePill(
@@ -117,12 +109,16 @@ fun DexCard(
     }
 }
 
-// Wider than tall, which is what two columns give a card that stacks a name, a form label and two
-// pills down its left side while the artwork fills the corner.
-private const val CARD_ASPECT_RATIO = 1.45f
+// Wider than tall, which is what two columns give a card that stacks a name and two pills down its
+// left side while the artwork fills the corner.
+private const val CARD_ASPECT_RATIO = 1.35f
 
-private val ARTWORK_SIZE = 72.dp
+private val ARTWORK_SIZE = 100.dp
 
-// The number and the form label are supporting text on a saturated ground, where full white reads
-// as loud as the name it sits under.
-private const val SUPPORTING_ALPHA = 0.7f
+// Off the corner rather than flush to it, so the Pokemon reads as standing on the card instead of
+// being cropped by it.
+private val ARTWORK_INSET = 4.dp
+
+// The number is supporting text on a saturated ground, where full white reads as loud as the name
+// beside it.
+private const val NUMBER_ALPHA = 0.7f

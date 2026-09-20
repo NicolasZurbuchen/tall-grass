@@ -25,7 +25,6 @@ data class DexEntryUiModel(
     val slug: String,
     val numberText: String,
     val name: String,
-    val formLabel: String?,
     val types: List<TypeUiModel>,
     val artworkUrl: String,
     val artworkKey: SharedElementKey,

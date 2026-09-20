@@ -40,23 +40,33 @@ fun DexCardSkeleton(modifier: Modifier = Modifier) {
                     Modifier
                         .align(Alignment.BottomEnd)
                         .padding(MaterialTheme.spacing.sm)
-                        .size(56.dp)
+                        .size(ARTWORK_BLOCK)
                         .shimmerBlock(),
             )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
-                modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
-            ) {
-                Box(modifier = Modifier.fillMaxWidth(NAME_WIDTH_FRACTION).height(14.dp).shimmerBlock())
-                Box(modifier = Modifier.size(width = 52.dp, height = 14.dp).shimmerBlock())
-                Box(modifier = Modifier.size(width = 52.dp, height = 14.dp).shimmerBlock())
+            Column(modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.md)) {
+                Box(modifier = Modifier.fillMaxWidth(NAME_WIDTH_FRACTION).height(18.dp).shimmerBlock())
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.sm),
+                ) {
+                    Box(modifier = Modifier.size(width = PILL_WIDTH, height = PILL_HEIGHT).shimmerBlock())
+                    Box(modifier = Modifier.size(width = PILL_WIDTH, height = PILL_HEIGHT).shimmerBlock())
+                }
             }
         }
     }
 }
 
-private const val SKELETON_ASPECT_RATIO = 1.45f
+private const val SKELETON_ASPECT_RATIO = 1.35f
+
+// A shade smaller than the artwork it stands in for: a solid block of that size reads as a filled
+// corner rather than as something about to arrive.
+private val ARTWORK_BLOCK = 72.dp
+
+private val PILL_WIDTH = 56.dp
+private val PILL_HEIGHT = 22.dp
 
 // Enough of the card's width to read as a name without reaching the corner the artwork fills.
 private const val NAME_WIDTH_FRACTION = 0.6f

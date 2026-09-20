@@ -6,23 +6,22 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class DexEntryUiMapperTest {
     private fun entry(
         slug: String = "bulbasaur",
         dexNumber: Int = 1,
         name: String = "Bulbasaur",
-        formLabel: String? = null,
         primaryType: PokemonType = PokemonType.GRASS,
+        secondaryType: PokemonType? = PokemonType.POISON,
     ) = DexEntry(
         slug = slug,
         dexNumber = dexNumber,
         name = name,
-        formLabel = formLabel,
+        formLabel = null,
         artworkUrl = "https://example.invalid/1.png",
         primaryType = primaryType,
-        secondaryType = null,
+        secondaryType = secondaryType,
     )
 
     @Test
@@ -43,19 +42,13 @@ class DexEntryUiMapperTest {
     }
 
     @Test
-    fun toUiModel_shortensTheFormLabelForTheChip() {
-        // The dataset stores upstream's "Alolan Form"; a chip that size reads better as "Alolan".
-        assertEquals("Alolan", entry(formLabel = "Alolan Form").toUiModel().formLabel)
+    fun toUiModel_keepsBothTypesInSlotOrder() {
+        assertEquals(listOf(TypeUiModel.GRASS, TypeUiModel.POISON), entry().toUiModel().types)
     }
 
     @Test
-    fun toUiModel_leavesAFormLabelWithoutTheSuffixAlone() {
-        assertEquals("Mega Charizard X", entry(formLabel = "Mega Charizard X").toUiModel().formLabel)
-    }
-
-    @Test
-    fun toUiModel_hasNoChipForAnOrdinaryForm() {
-        assertNull(entry().toUiModel().formLabel)
+    fun toUiModel_givesASingleTypedPokemonOnePill() {
+        assertEquals(listOf(TypeUiModel.FIRE), entry(primaryType = PokemonType.FIRE, secondaryType = null).toUiModel().types)
     }
 
     @Test
