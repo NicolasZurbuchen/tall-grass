@@ -39,6 +39,24 @@ class StatsUiMapperTest {
     }
 
     @Test
+    fun toStatsUiModel_scalesTheTotalBarBySixFullStats() {
+        // The total's lane is the mean of the six above it. A stat is full at 160, so the total is
+        // full at six times that, and the two can be read down the same column.
+        val stats = variant(PokemonStats(hp = 80, attack = 80, defense = 80, specialAttack = 80, specialDefense = 80, speed = 80))
+
+        assertEquals(0.5f, stats.toStatsUiModel(emptyList()).totalFraction)
+    }
+
+    @Test
+    fun toStatsUiModel_clampsATotalThatWouldOverflowItsLane() {
+        // No real Pokemon reaches 960, but the ceiling is a rendering promise rather than a fact
+        // about the dataset, and a lane longer than itself is not a thing a Box can draw.
+        val stats = variant(PokemonStats(hp = 255, attack = 255, defense = 255, specialAttack = 255, specialDefense = 255, speed = 255))
+
+        assertEquals(1f, stats.toStatsUiModel(emptyList()).totalFraction)
+    }
+
+    @Test
     fun toStatsUiModel_clampsABarThatWouldOverflowItsLane() {
         // Blissey's 255 HP is well past the value a full bar stands for. Without the clamp the bar
         // would be asked to be longer than the lane it sits in.

@@ -62,6 +62,7 @@ private fun DetailScreenPreview() {
                                             StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f),
                                         ),
                                     totalText = "534",
+                                    totalFraction = 0.56f,
                                     matchups =
                                         listOf(
                                             TypeMatchupUiModel("Rock", TypeUiModel.ROCK.color, "×4"),

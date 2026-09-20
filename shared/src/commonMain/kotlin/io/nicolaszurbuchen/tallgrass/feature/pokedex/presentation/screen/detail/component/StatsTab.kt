@@ -6,13 +6,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalGridApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Grid
+import androidx.compose.foundation.layout.GridScope
+import androidx.compose.foundation.layout.GridTrackSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
@@ -32,7 +35,6 @@ import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
@@ -40,7 +42,6 @@ import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_stat_total
 import tallgrass.shared.generated.resources.pokedex_detail_type_defenses
-import tallgrass.shared.generated.resources.pokedex_detail_type_defenses_hint
 
 /**
  * The stats and matchups of the form on screen, which is the half of this screen that genuinely
@@ -56,36 +57,13 @@ fun StatsTab(
     elapsedMillis: Int = ENTRANCE_DONE,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        stats.bars.forEach { bar -> StatRow(bar = bar, tint = tint) }
-
-        // The same two fixed columns as a stat row, so the total lines up under the figures it adds.
-        Row(modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm)) {
-            Text(
-                text = stringResource(Res.string.pokedex_detail_stat_total),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.appColors.textPrimary,
-                modifier = Modifier.width(STAT_LABEL_WIDTH),
-            )
-            Text(
-                text = stats.totalText,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.appColors.textPrimary,
-                textAlign = TextAlign.End,
-                modifier = Modifier.width(STAT_VALUE_WIDTH),
-            )
-        }
+        StatTable(stats = stats, tint = tint)
 
         Text(
             text = stringResource(Res.string.pokedex_detail_type_defenses),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.appColors.textPrimary,
-            modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.xs),
-        )
-        Text(
-            text = stringResource(Res.string.pokedex_detail_type_defenses_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.appColors.textSecondary,
-            modifier = Modifier.padding(bottom = MaterialTheme.spacing.md),
+            modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.md),
         )
 
         MatchupFlow(matchups = stats.matchups, elapsedMillis = elapsedMillis)
@@ -93,63 +71,110 @@ fun StatsTab(
 }
 
 /**
- * The bar grows to its value rather than appearing at it.
+ * Three columns: the names, the figures, and the lanes.
+ *
+ * DECISIONS.md § The stat table is a grid, so its columns measure themselves
+ */
+@OptIn(ExperimentalGridApi::class)
+@Composable
+private fun StatTable(
+    stats: StatsUiModel,
+    tint: Color,
+    modifier: Modifier = Modifier,
+) {
+    // Read before the config block rather than inside it: that block is not composable and runs
+    // during the measure pass, where a MaterialTheme lookup is not available.
+    val columnGap = MaterialTheme.spacing.lg
+    val rowGap = MaterialTheme.spacing.md
+
+    Grid(
+        config = {
+            column(GridTrackSize.Auto)
+            column(GridTrackSize.Auto)
+            column(1.fr)
+            columnGap(columnGap)
+            rowGap(rowGap)
+        },
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        stats.bars.forEach { bar ->
+            StatCells(
+                label = bar.label.asString(),
+                valueText = bar.valueText,
+                fraction = bar.fraction,
+                style = MaterialTheme.typography.bodyMedium,
+                labelColor = MaterialTheme.appColors.textSecondary,
+                tint = tint,
+            )
+        }
+
+        // The total's lane is the mean of the six above it, because a bar is full at 160 and this one
+        // is full at six times that. Nothing else would let the two be compared down the column.
+        StatCells(
+            label = stringResource(Res.string.pokedex_detail_stat_total),
+            valueText = stats.totalText,
+            fraction = stats.totalFraction,
+            style = MaterialTheme.typography.titleSmall,
+            labelColor = MaterialTheme.appColors.textPrimary,
+            tint = tint,
+        )
+    }
+}
+
+/**
+ * One row of the table: a name, a figure, and a lane that grows to the figure.
  *
  * Functional rather than decorative: the length *is* the number, so this one keeps running under
  * reduced motion — Compose's own duration scaling shortens it to a frame, which is the right answer
  * for a movement that carries information. See #12 § Reduced motion.
  *
- * All six start together. See `DECISIONS.md § The stat bars answer a form switch together`.
+ * All seven start together. See `DECISIONS.md § The stat bars answer a form switch together`.
  */
+@OptIn(ExperimentalGridApi::class)
 @Composable
-private fun StatRow(
-    bar: StatBarUiModel,
+private fun GridScope.StatCells(
+    label: String,
+    valueText: String,
+    fraction: Float,
+    style: TextStyle,
+    labelColor: Color,
     tint: Color,
-    modifier: Modifier = Modifier,
 ) {
     val grown by animateFloatAsState(
-        targetValue = bar.fraction,
+        targetValue = fraction,
         animationSpec = tween(durationMillis = AppDuration.LONG, easing = AppEasing.EaseOutQuint),
         label = "statBar",
     )
 
-    // Two fixed columns and then the lane, rather than an even gap between all three: the label and
-    // the figure are one unit, and the lane is what the eye compares down the tab.
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.sm),
+    Text(
+        text = label,
+        style = style,
+        color = labelColor,
+        modifier = Modifier.gridItem(alignment = Alignment.CenterStart),
+    )
+    Text(
+        text = valueText,
+        style = style,
+        color = MaterialTheme.appColors.textPrimary,
+        modifier = Modifier.gridItem(alignment = Alignment.CenterEnd),
+    )
+    Box(
+        modifier =
+            Modifier
+                .gridItem(alignment = Alignment.Center)
+                .fillMaxWidth()
+                .height(LANE_HEIGHT)
+                .clip(RoundedCornerShape(LANE_HEIGHT))
+                .background(MaterialTheme.appColors.borderSubtle),
     ) {
-        Text(
-            text = bar.label.asString(),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.appColors.textSecondary,
-            modifier = Modifier.width(STAT_LABEL_WIDTH),
-        )
-        Text(
-            text = bar.valueText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.appColors.textPrimary,
-            textAlign = TextAlign.End,
-            modifier = Modifier.width(STAT_VALUE_WIDTH),
-        )
         Box(
             modifier =
                 Modifier
-                    .weight(1f)
-                    .padding(start = LANE_GAP)
-                    .height(LANE_HEIGHT)
+                    .fillMaxWidth(grown)
+                    .fillMaxHeight()
                     .clip(RoundedCornerShape(LANE_HEIGHT))
-                    .background(MaterialTheme.appColors.borderSubtle),
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth(grown)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(LANE_HEIGHT))
-                        .background(tint),
-            )
-        }
+                    .background(tint),
+        )
     }
 }
 
@@ -203,13 +228,7 @@ private fun MatchupChip(
     }
 }
 
-private val STAT_LABEL_WIDTH = 72.dp
-private val STAT_VALUE_WIDTH = 32.dp
 private val LANE_HEIGHT = 6.dp
-
-// Between the figure and the lane it belongs to. Wide enough that the numbers read as their own
-// column rather than as labels stuck to the front of the bars.
-private val LANE_GAP = 32.dp
 
 // Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
 // label on top of it still has somewhere to go.
