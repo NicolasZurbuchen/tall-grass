@@ -610,3 +610,45 @@ line under the back arrow at headline size and the content starts below.
 This also keeps the two halves of the screen honest about their padding: the header indents to the
 same gutter as the grid's content padding, so the title sits on the same vertical line as the first
 card rather than on Material's own inset.
+
+### Switching form is a change of content, not a second arrival
+
+The entrance clock was keyed on the active form, so every use of the switcher replayed the whole
+screen: the tab row rose, the tab's content rose behind it, and the matchup chips popped in one at a
+time. The screen was already up, and re-entering it read as a navigation that had not happened.
+
+It is keyed on the content arriving instead — which is later than the screen opening, and that is
+deliberate. Keying it on the screen would start the clock while the sheet was still a skeleton, so a
+slow read would hand the content to a clock already part-way through, and the entrance would be over
+before there was anything to enter.
+
+What still moves on a switch is what the switch changes: the tint, the artwork, the stat bars and the
+figures beside them. Those are the same screen becoming something else, which is the thing worth
+animating.
+
+### A stat's figure is a number in the UiModel, not a string
+
+Every other display value on this screen is formatted by a mapper, which is the rule here. This one
+cannot be: the figure counts from the old value to the new one whenever the form changes, and a
+mapper cannot format a value that is still moving.
+
+So `StatBarUiModel.value` and `StatsUiModel.total` are `Int` and the component calls `toString()`.
+That is the whole of the formatting — the range is 1 to 255, with no grouping, no unit and no locale
+to get wrong. A stat that needs more than that is a stat that has stopped animating.
+
+The count takes the bar's curve, duration and stagger delay, so the two read as one movement rather
+than as a bar with a caption. The total waits for the last bar, because a sum that settles before its
+parts have moved does not look like their sum.
+
+### Text that trails a heading enters from the side
+
+The dex number and the genus sit at the trailing edge of their rows, beside the name rather than
+under it. Entering them downwards with `heroUp`, as the header did, made four things drop in
+formation and read as one block arriving — which is not what the layout says they are.
+
+They slide in from the trailing edge instead, 48dp against the vertical entrances' 16 and 24: a
+sideways movement has the whole width to read against, so the same distance registers as less.
+
+`slideInFromEnd` takes the layout direction rather than defaulting it, because `graphicsLayer` is
+handed a density and nothing else. A hard-coded rightward slide is correct until the first
+right-to-left locale, at which point it is silently entering from the wrong side.
