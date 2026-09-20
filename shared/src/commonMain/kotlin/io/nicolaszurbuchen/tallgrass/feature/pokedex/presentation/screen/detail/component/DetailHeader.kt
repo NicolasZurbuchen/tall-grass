@@ -86,7 +86,7 @@ fun DetailHeader(
             if (content != null) {
                 Text(
                     text = content.numberText,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
                     modifier =
                         Modifier
@@ -114,7 +114,7 @@ fun DetailHeader(
             if (content != null) {
                 Text(
                     text = content.genusText,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = GENUS_ALPHA),
                     modifier = Modifier.slideInFromEnd(entranceFraction(1, elapsedMillis), layoutDirection),
                 )

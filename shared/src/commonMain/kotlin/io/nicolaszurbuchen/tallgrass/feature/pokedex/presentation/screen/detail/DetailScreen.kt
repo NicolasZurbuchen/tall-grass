@@ -43,7 +43,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 /**
  * The artwork is centred over a sheet whose top edge crosses its feet. It is laid out that way
  * rather than offset with a z-index: the sheet fills the space under the header, inset from the top
- * by all but the overlapping tenth of the artwork, and the artwork is drawn after it in the same box
+ * by all but the overlapping fifth of the artwork, and the artwork is drawn after it in the same box
  * so it sits on top without anyone computing a screen height.
  *
  * The tint runs behind the status bar, so this screen takes the insets itself rather than inheriting
@@ -172,6 +172,7 @@ fun DetailScreen(
 private val ARTWORK_SIZE = 200.dp
 private val SHEET_CORNER = 30.dp
 
-// How much of the artwork the sheet covers. A tenth reads as the Pokemon standing on the sheet;
-// at half it was sunk into it, which is where the imported design had it.
-private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.1f
+// How much of the artwork the sheet covers. Not a tenth: the artwork is square and many Pokemon do
+// not reach the bottom of their own frame, so at a tenth the smaller ones floated clear of the sheet
+// altogether. A fifth puts every one of them on it.
+private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.2f
