@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
-import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 
 /**
  * A type, named.
@@ -41,12 +40,18 @@ fun TypePill(
             modifier
                 .clip(RoundedCornerShape(PILL_CORNER))
                 .background(Color.White.copy(alpha = SCRIM_ALPHA))
-                .padding(horizontal = MaterialTheme.spacing.sm, vertical = MaterialTheme.spacing.xs),
+                .padding(horizontal = PILL_PADDING_HORIZONTAL, vertical = PILL_PADDING_VERTICAL),
     )
 }
 
 // Larger than any radius in the shape scale, because a pill is a stadium rather than a rounded box.
 private val PILL_CORNER = 999.dp
+
+// Two off the spacing scale in each direction, which is the one place in the app that leaves it. A
+// stadium curves away from its label at both ends, so a pill padded to the scale has visibly less
+// room around its text than a box padded by the same amount.
+private val PILL_PADDING_HORIZONTAL = 10.dp
+private val PILL_PADDING_VERTICAL = 6.dp
 
 // Enough to separate the pill from the tint behind it without the label losing its white.
 private const val SCRIM_ALPHA = 0.25f
