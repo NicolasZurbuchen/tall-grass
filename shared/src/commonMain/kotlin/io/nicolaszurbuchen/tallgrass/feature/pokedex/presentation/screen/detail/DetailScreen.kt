@@ -231,9 +231,9 @@ fun DetailScreen(
                     .background(MaterialTheme.appColors.surface)
                     .navigationBarsPadding(),
         ) {
-            // Clears the part of the artwork lying over the sheet, and stops clearing it as the
-            // artwork fades away.
-            Spacer(modifier = Modifier.height(lerpDp(ARTWORK_OVERLAP, 0.dp, progress)))
+            // Clears the part of the artwork lying over the sheet, and settles to a gutter of its own
+            // once there is no artwork left to clear: the handle needs room under the arc's apex.
+            Spacer(modifier = Modifier.height(lerpDp(ARTWORK_OVERLAP, MaterialTheme.spacing.md, progress)))
 
             SheetHandle(
                 onDrag = { delta ->
@@ -342,6 +342,10 @@ fun DetailScreen(
                 heroes = state.heroes,
                 silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
                 pagerState = heroPagerState,
+                // Alpha hides a thing; it does not stop it taking gestures. Faded out, the carousel
+                // sits exactly over the sheet's tab row, where a sideways swipe means the other
+                // thing entirely.
+                enabled = heroAlpha > 0f,
                 modifier =
                     Modifier
                         .fillMaxWidth()

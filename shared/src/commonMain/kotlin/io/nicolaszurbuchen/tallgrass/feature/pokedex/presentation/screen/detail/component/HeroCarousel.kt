@@ -41,6 +41,10 @@ import kotlin.math.absoluteValue
  * The pages are a fixed width rather than the viewport's, because what a neighbour shows has to be a
  * slice of the *artwork* and not a slice of a page with the artwork somewhere inside it.
  *
+ * [enabled] false stops it taking gestures without removing it. A caller that has faded it out has
+ * only made it invisible, and an invisible pager over something else's controls still swallows their
+ * swipes.
+ *
  * DECISIONS.md § The carousel is a pager over the browse list
  */
 @Composable
@@ -49,6 +53,7 @@ fun HeroCarousel(
     silhouette: Color,
     pagerState: PagerState,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -61,6 +66,7 @@ fun HeroCarousel(
             pageSize = PageSize.Fixed(HERO_SIZE),
             contentPadding = PaddingValues(horizontal = sidePadding),
             pageSpacing = HERO_SPACING,
+            userScrollEnabled = enabled,
         ) { page ->
             val hero = heroes[page]
 
@@ -88,7 +94,7 @@ fun HeroCarousel(
                         .clickable(
                             interactionSource = interactionSource,
                             indication = null,
-                            enabled = page != pagerState.currentPage,
+                            enabled = enabled && page != pagerState.currentPage,
                             onClickLabel = stringResource(Res.string.pokedex_detail_show_pokemon, hero.name),
                         ) {
                             scope.launch { pagerState.animateScrollToPage(page) }

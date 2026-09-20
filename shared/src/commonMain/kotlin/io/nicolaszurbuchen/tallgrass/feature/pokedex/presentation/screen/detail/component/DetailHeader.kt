@@ -102,7 +102,9 @@ fun DetailHeader(
         val gutter = MaterialTheme.spacing.lg
         val travelX = (maxWidth - titleWidth) / 2 - gutter
 
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = gutter)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Outside the gutter: the arrow takes Material's navigation inset and the text does not.
+            // DECISIONS.md § A back arrow takes the navigation inset, not the content gutter
             Box(modifier = Modifier.fillMaxWidth().height(TOOLBAR_ROW_HEIGHT)) {
                 // Deliberately outside the entrance and outside the fade. It is the one control on
                 // this screen that has to work whatever else is happening, and a target that is
@@ -145,7 +147,11 @@ fun DetailHeader(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
-                modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = gutter)
+                        .padding(top = MaterialTheme.spacing.md),
             ) {
                 Text(
                     text = name,
@@ -191,6 +197,7 @@ fun DetailHeader(
                 modifier =
                     Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = gutter)
                         .padding(top = MaterialTheme.spacing.sm)
                         .graphicsLayer { alpha = heroAlpha },
             ) {
