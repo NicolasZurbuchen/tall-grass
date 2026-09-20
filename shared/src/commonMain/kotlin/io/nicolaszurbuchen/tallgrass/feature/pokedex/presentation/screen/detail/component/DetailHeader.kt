@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
@@ -30,7 +28,6 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.typ
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedBoundsOrNone
-import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedElementOrNone
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_back
@@ -69,6 +66,8 @@ fun DetailHeader(
             )
         }
 
+        // Baselines rather than tops: the number is a fifth of the name's size, and aligning their
+        // boxes left it floating somewhere above the name's midline.
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
@@ -80,7 +79,11 @@ fun DetailHeader(
                 color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false).sharedBoundsOrNone(artworkKey.nameKey()),
+                modifier =
+                    Modifier
+                        .weight(1f, fill = false)
+                        .alignByBaseline()
+                        .sharedBoundsOrNone(artworkKey.nameKey()),
             )
 
             if (content != null) {
@@ -90,7 +93,7 @@ fun DetailHeader(
                     color = Color.White,
                     modifier =
                         Modifier
-                            .padding(top = MaterialTheme.spacing.sm)
+                            .alignByBaseline()
                             .slideInFromEnd(entranceFraction(0, elapsedMillis), layoutDirection),
                 )
             }
@@ -99,22 +102,24 @@ fun DetailHeader(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.sm)
-                    .heightIn(min = TYPES_ROW_MIN_HEIGHT),
+            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
+                // Bounds rather than a plain shared element: the pill is a chip on the card and a
+                // headline element here, so the two halves are different sizes.
                 types.forEachIndexed { slot, type ->
-                    TypePill(type = type, modifier = Modifier.sharedElementOrNone(artworkKey.typeKey(slot)))
+                    TypePill(
+                        type = type,
+                        modifier = Modifier.sharedBoundsOrNone(artworkKey.typeKey(slot)),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
                 }
             }
 
             if (content != null) {
                 Text(
                     text = content.genusText,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = GENUS_ALPHA),
                     modifier = Modifier.slideInFromEnd(entranceFraction(1, elapsedMillis), layoutDirection),
                 )
@@ -122,9 +127,6 @@ fun DetailHeader(
         }
     }
 }
-
-// Holds the row open while the genus is unknown, so the artwork below does not jump when it lands.
-private val TYPES_ROW_MIN_HEIGHT = 24.dp
 
 // Supporting text on a saturated ground, where full white reads as loud as the name above it.
 private const val GENUS_ALPHA = 0.7f

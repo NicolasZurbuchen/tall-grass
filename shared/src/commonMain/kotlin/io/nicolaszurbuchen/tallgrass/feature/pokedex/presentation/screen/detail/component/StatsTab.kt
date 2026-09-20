@@ -58,10 +58,8 @@ fun StatsTab(
     Column(modifier = modifier.fillMaxWidth()) {
         stats.bars.forEach { bar -> StatRow(bar = bar, tint = tint) }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm),
-        ) {
+        // The same two fixed columns as a stat row, so the total lines up under the figures it adds.
+        Row(modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm)) {
             Text(
                 text = stringResource(Res.string.pokedex_detail_stat_total),
                 style = MaterialTheme.typography.titleSmall,
@@ -72,6 +70,8 @@ fun StatsTab(
                 text = stats.totalText,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.appColors.textPrimary,
+                textAlign = TextAlign.End,
+                modifier = Modifier.width(STAT_VALUE_WIDTH),
             )
         }
 
@@ -113,8 +113,9 @@ private fun StatRow(
         label = "statBar",
     )
 
+    // Two fixed columns and then the lane, rather than an even gap between all three: the label and
+    // the figure are one unit, and the lane is what the eye compares down the tab.
     Row(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.sm),
     ) {
@@ -135,6 +136,7 @@ private fun StatRow(
             modifier =
                 Modifier
                     .weight(1f)
+                    .padding(start = LANE_GAP)
                     .height(LANE_HEIGHT)
                     .clip(RoundedCornerShape(LANE_HEIGHT))
                     .background(MaterialTheme.appColors.borderSubtle),
@@ -204,6 +206,10 @@ private fun MatchupChip(
 private val STAT_LABEL_WIDTH = 72.dp
 private val STAT_VALUE_WIDTH = 32.dp
 private val LANE_HEIGHT = 6.dp
+
+// Between the figure and the lane it belongs to. Wide enough that the numbers read as their own
+// column rather than as labels stuck to the front of the bars.
+private val LANE_GAP = 32.dp
 
 // Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
 // label on top of it still has somewhere to go.
