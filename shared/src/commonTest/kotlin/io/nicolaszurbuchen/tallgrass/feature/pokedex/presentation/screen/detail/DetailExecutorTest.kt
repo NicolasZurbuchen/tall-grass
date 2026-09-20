@@ -6,11 +6,13 @@ import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexRepository
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetPokemonDetailUseCase
 import io.nicolaszurbuchen.tallgrass.core.type.domain.fake.FakeTypeRepository
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeEfficacy
 import io.nicolaszurbuchen.tallgrass.core.type.domain.usecase.GetTypeMatchupsUseCase
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -49,9 +51,10 @@ class DetailExecutorTest {
         repository: FakePokedexRepository = FakePokedexRepository(details = mapOf("charizard" to charizardDetail)),
     ) = DetailStoreFactory(
         storeFactory = DefaultStoreFactory(),
+        getDexEntries = GetDexEntriesUseCase(repository),
         getPokemonDetail = GetPokemonDetailUseCase(repository),
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
-    ).create(slug)
+    ).create(slug, DexQuery.All)
 
     @Test
     fun store_readsTheDetailWithoutBeingAsked() =
@@ -165,7 +168,7 @@ class DetailExecutorTest {
                 state = awaitItem()
                 while (state.isLoading) state = awaitItem()
 
-                assertEquals(2, repository.callCount)
+                assertEquals(2, repository.detailCallCount)
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

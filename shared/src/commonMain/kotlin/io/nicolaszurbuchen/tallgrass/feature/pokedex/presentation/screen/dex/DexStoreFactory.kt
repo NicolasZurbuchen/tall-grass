@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
@@ -62,6 +63,9 @@ class DexStoreFactory(
             publish(
                 DexLabel.NavigateToDetail(
                     slug = entry.slug,
+                    // One list today, so one value. The point is that the detail is told which list
+                    // it was opened from rather than assuming the whole dex.
+                    query = DexQuery.All,
                     hero =
                         HeroHandoff(
                             name = entry.name,

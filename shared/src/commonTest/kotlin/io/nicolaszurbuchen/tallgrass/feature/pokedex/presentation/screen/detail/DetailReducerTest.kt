@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -15,13 +16,13 @@ class DetailReducerTest {
         message: DetailMessage,
     ) = with(reducer) { state.reduce(message) }
 
-    private val initial = DetailState(entryVariantSlug = "charizard")
+    private val initial = DetailState(entryVariantSlug = "charizard", query = DexQuery.All)
 
     private val loaded = DetailMessage.DetailLoaded(detail = charizardDetail, matchups = emptyMap())
 
     @Test
     fun detailLoaded_opensOnTheFormThatWasTapped() {
-        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-x"), loaded)
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-x", query = DexQuery.All), loaded)
 
         assertEquals("charizard-mega-x", state.activeVariantSlug)
         assertFalse(state.isLoading)
@@ -31,7 +32,7 @@ class DetailReducerTest {
     fun detailLoaded_fallsBackToTheFirstFormWhenTheTappedOneIsGone() {
         // A saved back stack can name a slug a newer dataset no longer carries. The species is still
         // worth a screen, so the switcher opens on its first form rather than on nothing.
-        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-z"), loaded)
+        val state = reduce(DetailState(entryVariantSlug = "charizard-mega-z", query = DexQuery.All), loaded)
 
         assertEquals("charizard", state.activeVariantSlug)
     }

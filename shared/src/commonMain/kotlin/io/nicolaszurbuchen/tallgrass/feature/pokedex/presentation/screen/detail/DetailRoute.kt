@@ -29,6 +29,7 @@ fun DetailRoute(
     DetailScreen(
         state = state,
         onBackClick = { viewModel.onIntent(DetailIntent.BackClicked) },
+        onEntrySwipe = { slug -> viewModel.onIntent(DetailIntent.EntrySelected(slug)) },
         onFormClick = { slug -> viewModel.onIntent(DetailIntent.FormSelected(slug)) },
         // The tab crosses back into the Store's own vocabulary here. The Screen may not name a State
         // type, and the Contract may not name a UiModel, so the Route is the one place that sees

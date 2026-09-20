@@ -9,9 +9,15 @@ sealed interface PokedexDestination : NavKey
 @Serializable
 data object DexDestination : PokedexDestination
 
-/** One Pokemon, keyed by the slug of the form that was tapped. See [HeroHandoff] for [hero]. */
+/**
+ * One Pokemon, keyed by the slug of the card that was tapped.
+ *
+ * See [HeroHandoff] for [hero] and [DexQuery] for [query] — the first is what the card was drawing,
+ * the second is which list it was drawn in.
+ */
 @Serializable
 data class DetailDestination(
     val slug: String,
     val hero: HeroHandoff,
+    val query: DexQuery,
 ) : PokedexDestination

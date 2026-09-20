@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,6 +25,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
@@ -36,19 +38,19 @@ import io.nicolaszurbuchen.tallgrass.design.theme.rememberReducedMotion
 import io.nicolaszurbuchen.tallgrass.design.theme.rise
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.AboutTab
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailArtwork
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailHeader
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailSheetSkeleton
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailTabRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.FormPillRow
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.HeroCarousel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 
 /**
- * The artwork is centred over a sheet whose top edge crosses its feet. It is laid out that way
- * rather than offset with a z-index: the sheet fills the space under the header, inset from the top
- * by all but the overlapping third of the artwork, and the artwork is drawn after it in the same box
- * so it sits on top without anyone computing a screen height.
+ * The carousel is centred over a sheet whose top edge crosses the Pokemon's feet. It is laid out
+ * that way rather than offset with a z-index: the sheet fills the space under the header, inset from
+ * the top by all but the overlapping third of the artwork, and the carousel is drawn after it in the
+ * same box so it sits on top without anyone computing a screen height.
  *
  * The sheet itself does not scroll. Its form switcher and tab row are pinned and each tab scrolls
  * inside the pager below them — see `DECISIONS.md § The tabs are a pager, so the sheet stops
@@ -62,6 +64,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 fun DetailScreen(
     state: DetailUiModel,
     onBackClick: () -> Unit,
+    onEntrySwipe: (String) -> Unit,
     onFormClick: (String) -> Unit,
     onTabClick: (DetailTabUiModel) -> Unit,
     onRetryClick: () -> Unit,
@@ -72,39 +75,59 @@ fun DetailScreen(
     // DECISIONS.md § Switching form is a change of content, not a second arrival
     val elapsed by rememberEntranceClock(state.content != null, enabled = !rememberReducedMotion())
 
-    // The hero colour is the primary type's, and switching form changes it. Animated so the change
-    // reads as the same screen becoming something else rather than as a cut.
+    // The hero colour is the card's, and both the carousel and the switcher change it. Animated so
+    // the change reads as the same screen becoming something else rather than as a cut.
     val tint by animateColorAsState(
         targetValue = state.tint,
         animationSpec = tween(durationMillis = AppDuration.SHORT, easing = AppEasing.EaseInOut),
         label = "heroTint",
     )
 
-    // Remembered above the content check so the pager survives the read landing under it.
-    val pagerState = rememberPagerState(pageCount = { DetailTabUiModel.entries.size })
+    val heroPagerState = rememberPagerState(pageCount = { state.heroes.size })
+    val tabPagerState = rememberPagerState(pageCount = { DetailTabUiModel.entries.size })
     val tab = state.content?.tab
     val onTabSelected by rememberUpdatedState(onTabClick)
+    val onEntrySelected by rememberUpdatedState(onEntrySwipe)
+
+    // The carousel opens holding one card, because the list behind it has not been read yet. When it
+    // lands the pager is suddenly a thousand pages long and sitting on the wrong one, so it is put
+    // back where it belongs without an animation -- there is nothing to animate, the reader has not
+    // moved.
+    LaunchedEffect(state.activeIndex, state.heroes.size) {
+        if (heroPagerState.currentPage != state.activeIndex) {
+            heroPagerState.scrollToPage(state.activeIndex)
+        }
+    }
+
+    // A swipe reports its new card at the halfway point rather than on the settle, so the name, the
+    // number, the types and the colour cross with the finger and the read starts while it is still
+    // moving.
+    LaunchedEffect(heroPagerState, state.heroes) {
+        snapshotFlow { heroPagerState.currentPage }
+            .collect { page -> state.heroes.getOrNull(page)?.let { onEntrySelected(it.slug) } }
+    }
 
     // Tapping a tab moves the pager, and only when the pager is not already there: a swipe reports
     // its new page before it settles, and animating to the page it just reached fights the finger.
     LaunchedEffect(tab) {
-        if (tab != null && pagerState.currentPage != tab.ordinal) {
-            pagerState.animateScrollToPage(tab.ordinal)
+        if (tab != null && tabPagerState.currentPage != tab.ordinal) {
+            tabPagerState.animateScrollToPage(tab.ordinal)
         }
     }
 
     // Swiping moves the tab row. `currentPage` rather than `settledPage`, so the underline crosses
     // with the finger at the halfway point instead of waiting for the animation to finish.
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
+    LaunchedEffect(tabPagerState) {
+        snapshotFlow { tabPagerState.currentPage }
             .collect { page -> onTabSelected(DetailTabUiModel.entries[page]) }
     }
 
     Column(modifier = modifier.fillMaxSize().background(tint)) {
         DetailHeader(
             name = state.name,
+            numberText = state.numberText,
             types = state.types,
-            artworkKey = state.artworkKey,
+            artworkKey = state.heroes.getOrNull(state.activeIndex)?.artworkKey,
             content = state.content,
             onBackClick = onBackClick,
             modifier = Modifier.statusBarsPadding(),
@@ -161,7 +184,7 @@ fun DetailScreen(
                         // Full-bleed, so the swipe starts at the screen edge; the gutter is inside
                         // each page instead.
                         HorizontalPager(
-                            state = pagerState,
+                            state = tabPagerState,
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
@@ -191,10 +214,13 @@ fun DetailScreen(
                 }
             }
 
-            DetailArtwork(
-                artworkUrl = state.artworkUrl,
-                artworkKey = state.artworkKey,
-                modifier = Modifier.align(Alignment.TopCenter).size(ARTWORK_SIZE),
+            HeroCarousel(
+                heroes = state.heroes,
+                // Lighter than the ground rather than darker: the artwork is drawn over a saturated
+                // colour, and a darker flat shape reads as a hole in it.
+                silhouette = lerp(tint, Color.White, SILHOUETTE_LIFT),
+                pagerState = heroPagerState,
+                modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().height(ARTWORK_SIZE),
             )
         }
     }
@@ -207,3 +233,7 @@ private val SHEET_CORNER = 30.dp
 // bottom of their own frame, so the share of the box that overlaps is always more than the share of
 // the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
 private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
+
+// Far enough off the ground for a silhouette to read against it, close enough that it stays part of
+// it rather than becoming a second colour on the screen.
+private const val SILHOUETTE_LIFT = 0.22f

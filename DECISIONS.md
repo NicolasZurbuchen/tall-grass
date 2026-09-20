@@ -789,3 +789,53 @@ grid representation and nothing else — which is why the diff is 57 booleans an
 
 Entries above this one quote 1,082 where they record a measurement. Those stay as measured; the count
 they were taken against is this one.
+
+### The carousel traverses the query, not a copy of its results
+
+Swiping sideways on the hero moves along the list the detail was opened from. When a filter arrives,
+picking Fire and opening Charmander has to keep the swipe inside Fire — a carousel that silently
+walked the whole dex would be a different list from the one the reader was just looking at.
+
+The destination carries the **query** rather than the list it returns. A `NavKey` holding a thousand
+slugs is around twenty kilobytes written into saved state on every navigation and read back on
+process death, and it freezes a result set the dataset can move under. The query is small, it *is*
+the identity of the result set, and the detail re-runs it.
+
+There is one query and one list today, so `DexQuery` has a single value. That is the point: the
+filter becomes another value rather than another field on the destination, and the detail already
+asks "which list" instead of assuming.
+
+**Rejected: reading the whole dex in the detail and calling it the same list.** It is the same list,
+right up until it is not, and nothing in the code would have been wrong at the moment it broke.
+
+### The carousel is a pager over the browse list
+
+A thousand pages, one per card, rather than a hand-rolled three-position track. The pager is already
+the thing that handles a drag, a fling, a settle and the offset in between, and it composes three
+pages at a time whatever the count.
+
+**The neighbours are drawn twice.** Each page renders its artwork, and the same artwork flattened to
+a single colour on top of it, with the flat copy's alpha set to the page's distance from the centre.
+A card therefore arrives by resolving out of the ground colour and leaves by dissolving back into it.
+Animating a `ColorFilter` instead would rebuild the filter every frame of the drag; two images and an
+alpha is one composition and a redraw.
+
+The silhouette is *lighter* than the ground, not darker. A darker flat shape on a saturated colour
+reads as a hole punched in it rather than as a Pokemon standing behind the one in front.
+
+**The pages are a fixed width**, centred by content padding computed from the measured width, because
+what a neighbour shows has to be a slice of the artwork and not a slice of a page with the artwork
+somewhere inside it. At the viewport's width the artwork would sit in the middle of its page and the
+neighbours would show empty margin.
+
+**The swipe reports at the halfway point, not on the settle.** The name, the number, the types and
+the colour cross with the finger, and the read for the new card starts while it is still moving. The
+executor holds the read's `Job` and cancels it, so swiping faster than the database answers leaves
+the card you stopped on rather than the last one to finish.
+
+**The sheet empties on the way.** Holding the previous Pokemon's forms, stats and matchups under the
+new one's name is a wrong screen rather than a slow one, and the read is a frame or two.
+
+**Rejected: keeping the pager at one page until the list lands, then swapping it in.** The swap would
+remount the composable holding the shared element in the middle of the transition from the grid. It
+scrolls into place instead, which costs at most one frame on a page nobody has touched yet.

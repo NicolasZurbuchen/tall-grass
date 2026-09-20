@@ -30,7 +30,7 @@ class PokedexNavKeyHandler(
                 onNavigateBack = { navigator.navigateBack() },
                 viewModel =
                     koinViewModel<DetailViewModel>(
-                        parameters = { parametersOf(destination.slug, destination.hero) },
+                        parameters = { parametersOf(destination.slug, destination.hero, destination.query) },
                     ),
             )
         }
