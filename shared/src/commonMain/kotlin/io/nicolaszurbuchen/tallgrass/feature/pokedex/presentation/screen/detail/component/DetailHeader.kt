@@ -54,7 +54,7 @@ fun DetailHeader(
     // to answer rather than the modifier's.
     val layoutDirection = LocalLayoutDirection.current
 
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.md)) {
+    Column(modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.xl)) {
         // Deliberately outside the entrance. It is the one control on this screen that has to work
         // the instant the screen is up, and a target that is still sliding is a target that can be
         // missed.
