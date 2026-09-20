@@ -35,6 +35,7 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
                 bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed),
             ),
         totalText = stats.total.toString(),
+        totalFraction = (stats.total.toFloat() / (FULL_BAR * STAT_COUNT)).coerceAtMost(1f),
         matchups =
             matchups.map { matchup ->
                 val type = matchup.attackingType.toUiModel()
@@ -52,6 +53,10 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
 // scaling every bar to it leaves the ordinary range squashed into the left third where the
 // differences the tab exists to show stop being visible. Anything above it is drawn full.
 private const val FULL_BAR = 160f
+
+// The six a variant has. Named rather than read off the list, because the list is built right here
+// and reading its size to scale itself is a circle a reader has to unwind.
+private const val STAT_COUNT = 6
 
 private const val NEUTRAL_PERCENT = 100
 

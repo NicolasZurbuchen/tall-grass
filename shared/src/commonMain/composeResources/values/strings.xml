@@ -49,7 +49,6 @@
     <string name="pokedex_detail_stat_total">Total</string>
 
     <string name="pokedex_detail_type_defenses">Type Defenses</string>
-    <string name="pokedex_detail_type_defenses_hint">Damage taken from each attacking type. Neutral matchups are left out.</string>
 
     <string name="header_back">Back</string>
 

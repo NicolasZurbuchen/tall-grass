@@ -41,10 +41,10 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 
 /**
- * The artwork is centred over a sheet that starts halfway up it, which is the layout the imported
- * design is built around. It is laid out that way rather than offset with a z-index: the sheet fills
- * the space under the header and is inset from the top by half the artwork, and the artwork is drawn
- * after it in the same box, so it sits on top without anyone computing a screen height.
+ * The artwork is centred over a sheet whose top edge crosses its feet. It is laid out that way
+ * rather than offset with a z-index: the sheet fills the space under the header, inset from the top
+ * by all but the overlapping third of the artwork, and the artwork is drawn after it in the same box
+ * so it sits on top without anyone computing a screen height.
  *
  * The tint runs behind the status bar, so this screen takes the insets itself rather than inheriting
  * them from the navigation host: the header clears the status bar and the sheet's content clears the
@@ -59,9 +59,10 @@ fun DetailScreen(
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Keyed on the form, so arriving and switching form both enter, and scrolling does not. A tab
-    // change is a crossfade below rather than a second entrance of the whole screen.
-    val elapsed by rememberEntranceClock(state.content?.activeFormSlug, enabled = !rememberReducedMotion())
+    // Keyed on the content arriving rather than on which form is showing, so the entrance runs
+    // once when the read lands, and scrolling, switching form and changing tab all leave it alone.
+    // DECISIONS.md § Switching form is a change of content, not a second arrival
+    val elapsed by rememberEntranceClock(state.content != null, enabled = !rememberReducedMotion())
 
     // The hero colour is the primary type's, and switching form changes it. Animated so the change
     // reads as the same screen becoming something else rather than as a cut.
@@ -87,12 +88,12 @@ fun DetailScreen(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(top = ARTWORK_SIZE / 2)
+                        .padding(top = ARTWORK_SIZE - ARTWORK_OVERLAP)
                         .clip(RoundedCornerShape(topStart = SHEET_CORNER, topEnd = SHEET_CORNER))
                         .background(MaterialTheme.appColors.surface)
                         .verticalScroll(rememberScrollState())
                         .navigationBarsPadding()
-                        .padding(top = ARTWORK_SIZE / 2 + MaterialTheme.spacing.md)
+                        .padding(top = ARTWORK_OVERLAP + MaterialTheme.spacing.md)
                         .padding(bottom = MaterialTheme.spacing.xxl),
             ) {
                 val content = state.content
@@ -103,12 +104,12 @@ fun DetailScreen(
                             text = state.error.title,
                             icon = state.error.icon,
                             onRetry = onRetryClick,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.md),
+                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg),
                         )
                     }
 
                     content == null -> {
-                        DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.md))
+                        DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg))
                     }
 
                     else -> {
@@ -127,7 +128,7 @@ fun DetailScreen(
                             onTabClick = onTabClick,
                             modifier =
                                 Modifier
-                                    .padding(horizontal = MaterialTheme.spacing.md)
+                                    .padding(horizontal = MaterialTheme.spacing.lg)
                                     .rise(entranceFraction(1, elapsed)),
                         )
 
@@ -139,8 +140,8 @@ fun DetailScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .padding(
-                                        start = MaterialTheme.spacing.md,
-                                        end = MaterialTheme.spacing.md,
+                                        start = MaterialTheme.spacing.lg,
+                                        end = MaterialTheme.spacing.lg,
                                         top = MaterialTheme.spacing.md,
                                     )
                                     .rise(entranceFraction(2, elapsed)),
@@ -170,3 +171,8 @@ fun DetailScreen(
 
 private val ARTWORK_SIZE = 200.dp
 private val SHEET_CORNER = 30.dp
+
+// How much of the artwork the sheet covers. The artwork is square and many Pokemon do not reach the
+// bottom of their own frame, so the share of the box that overlaps is always more than the share of
+// the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
+private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f

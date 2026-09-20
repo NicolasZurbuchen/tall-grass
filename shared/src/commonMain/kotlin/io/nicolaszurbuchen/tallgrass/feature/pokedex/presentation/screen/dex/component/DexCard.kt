@@ -100,7 +100,7 @@ fun DexCard(
                     entry.types.forEachIndexed { slot, type ->
                         TypePill(
                             type = type,
-                            modifier = Modifier.sharedElementOrNone(heroKey?.typeKey(slot)),
+                            modifier = Modifier.sharedBoundsOrNone(heroKey?.typeKey(slot)),
                         )
                     }
                 }

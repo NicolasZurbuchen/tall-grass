@@ -14,6 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 /**
@@ -92,6 +93,24 @@ fun Modifier.heroUp(fraction: Float): Modifier =
     }
 
 /**
+ * Slides in from the trailing edge. Text that trails a heading rather than sitting under it.
+ *
+ * [layoutDirection] has no default because the modifier cannot read one: `graphicsLayer` is handed a
+ * density and nothing else, and a hard-coded rightward slide would enter from the wrong side the day
+ * a right-to-left locale ships. Call sites read `LocalLayoutDirection`.
+ */
+fun Modifier.slideInFromEnd(
+    fraction: Float,
+    layoutDirection: LayoutDirection,
+): Modifier =
+    graphicsLayer {
+        alpha = fraction
+        val travelled = 1f - AppEasing.EaseOutQuint.transform(fraction)
+        val sign = if (layoutDirection == LayoutDirection.Rtl) -1f else 1f
+        translationX = sign * travelled * SIDE_DISTANCE.toPx()
+    }
+
+/**
  * A clock reading for content that is simply there — a preview, or a component drawn outside any
  * entrance. Every [entranceFraction] read against it is 1.
  */
@@ -104,6 +123,10 @@ private val FINISHED = ENTRANCE_DONE.toFloat()
 private val RISE_DISTANCE = 24.dp
 
 private val HERO_DISTANCE = 16.dp
+
+// Further than the vertical entrances travel: sideways movement has the whole width to read against,
+// so the same 16dp barely registers.
+private val SIDE_DISTANCE = 48.dp
 
 // Not from zero. A pill scaling up from nothing reads as a balloon; from 0.85 it reads as settling.
 private const val POP_FROM = 0.85f

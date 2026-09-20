@@ -255,6 +255,10 @@ being visible. The bars are drawn against 160 and clamped, so the handful above 
 This is a rendering choice and the number is in the mapper, not the domain: the stat is 255 whatever
 the bar does with it.
 
+**The total's lane is full at six times that**, which makes it the mean of the six above it. Any
+other ceiling — the highest total in the dataset, say — would put the total on a scale of its own,
+and the one thing a reader does with a column of lanes is compare them down it.
+
 ### The preview harness opens the navigation host's scopes
 
 `TallGrassPreview` wraps its content in a `SharedTransitionLayout` and an `AnimatedContent` that
@@ -610,3 +614,124 @@ line under the back arrow at headline size and the content starts below.
 This also keeps the two halves of the screen honest about their padding: the header indents to the
 same gutter as the grid's content padding, so the title sits on the same vertical line as the first
 card rather than on Material's own inset.
+
+### Switching form is a change of content, not a second arrival
+
+The entrance clock was keyed on the active form, so every use of the switcher replayed the whole
+screen: the tab row rose, the tab's content rose behind it, and the matchup chips popped in one at a
+time. The screen was already up, and re-entering it read as a navigation that had not happened.
+
+It is keyed on the content arriving instead — which is later than the screen opening, and that is
+deliberate. Keying it on the screen would start the clock while the sheet was still a skeleton, so a
+slow read would hand the content to a clock already part-way through, and the entrance would be over
+before there was anything to enter.
+
+What still moves on a switch is what the switch changes: the tint, the artwork, the stat bars and the
+figures beside them. Those are the same screen becoming something else, which is the thing worth
+animating.
+
+### Rejected: counting the stat figures to their new values
+
+The bars grow to their new lengths when the form changes, so the figures beside them were made to
+count to theirs on the same curve, duration and delay. It was asked for, built, and watched on a
+device: Attack reading 86 on its way from 84 to 130 while its bar filled underneath.
+
+It reads badly. A bar growing is a quantity changing; a number spinning is a slot machine, and the
+eye goes to it instead of to the six bars that carry the comparison. Worse, the figure is the precise
+value — the one thing on the row that is supposed to be readable at a glance — and for the length of
+the animation it is a number the Pokemon does not have.
+
+So the figures cut and the bars move. `StatBarUiModel.valueText` and `StatsUiModel.totalText` are
+formatted strings again, like every other display value on this screen.
+
+### The stat bars answer a form switch together
+
+The six bars were staggered by 55ms each, which is the app's entrance stagger applied to a movement
+that is not an entrance. On a form switch the effect is that the row you are looking at waits up to
+275ms before it starts, and the switch reads as the screen being slow to respond rather than as six
+numbers changing at once.
+
+The stagger is right when items are *arriving* — the eye needs somewhere to start. Here nothing
+arrives: six bars that are already on screen change length. They start together.
+
+(The bars never staggered on first view of the tab anyway. `animateFloatAsState` initialises at its
+target, so the first composition has nothing to travel from, and the stagger only ever applied to a
+switch — the one case where it was wrong.)
+
+### A matchup chip is sized by its name, not by the grid
+
+The chips were three across in a hand-chunked grid, each stretched to a third of the width, so
+"Electric ½" and "Bug ½" occupied the same space and the last row was padded with blanks to keep the
+columns. It reads as a table of a fixed shape rather than as a list of the types that happen to
+matter, which for a single-typed Pokemon can be as few as five.
+
+They wrap instead, each sized to its own text. What is lost is the row index the stagger used, since
+a flow does not report where it broke; the stagger is per chip now, and `AppStagger`'s cap holds
+eighteen of them under four hundred milliseconds, which is what the row grouping was there to avoid.
+
+**The label is the type's own colour, shifted.** A chip filled with `TypeUiModel.color` at full
+strength is the dex card's problem again — see *A type pill on the type's own colour is a scrim* — so
+the ground is an 18% wash of it and the label is the same hue moved 45% toward black on a light
+sheet, or toward white on a dark one. Pure Grass measures 1.9:1 against white; the shift is what
+makes it a colour rather than a suggestion, and it has to know the theme because "darker" is only
+legible in one of them.
+
+### Text that trails a heading enters from the side
+
+The dex number and the genus sit at the trailing edge of their rows, beside the name rather than
+under it. Entering them downwards with `heroUp`, as the header did, made four things drop in
+formation and read as one block arriving — which is not what the layout says they are.
+
+They slide in from the trailing edge instead, 48dp against the vertical entrances' 16 and 24: a
+sideways movement has the whole width to read against, so the same distance registers as less.
+
+`slideInFromEnd` takes the layout direction rather than defaulting it, because `graphicsLayer` is
+handed a density and nothing else. A hard-coded rightward slide is correct until the first
+right-to-left locale, at which point it is silently entering from the wrong side.
+
+### A back arrow takes the navigation inset, not the content gutter
+
+An `IconButton` centres a 24dp glyph in a 48dp touch target, so its drawing always sits 12dp inside
+its own box. Padded to the screen's content gutter, the arrow therefore lands 12dp further in than
+everything it sits above: at a 24dp gutter that is an arrow at 36dp over a title at 24dp, which reads
+as a mistake because it is one.
+
+Both headers give the button Material's own navigation-icon padding of 4dp instead, which puts the
+glyph 16dp from the edge whatever the gutter under it is doing. The gutter is a rule about where text
+starts; the inset is a rule about where a touch target starts, and they were never the same number.
+
+**Rejected: shrinking the touch target so the box could take the gutter.** A 24dp button lines the
+arrow up arithmetically and is below every guideline's minimum for something you tap with a thumb.
+
+### The stat table is a grid, so its columns measure themselves
+
+The rows carried two magic widths — 72dp for the name, 32dp for the figure — chosen to fit "Sp. Def"
+and three digits. Both were guesses in the direction nobody checks: a name column sized for the
+longest label in English, and a figure column that a four-digit total would have clipped.
+
+`Grid` from `androidx.compose.foundation.layout` sizes the two text columns to their own widest
+content and hands the lanes what is left as `1.fr`. The widths become facts about the text rather
+than estimates of it, and the 24dp gap is declared once instead of being assembled from a row
+arrangement plus a padding that had to sum to it.
+
+Its `config` block is not composable and runs during the measure pass, so the gaps are read from the
+theme before it rather than inside it.
+
+**It is experimental, and that is the cost.** The opt-in is `@ExperimentalGridApi` and the shape of
+the API can change under a Compose upgrade. The exposure is bounded: this project pins CMP 1.11.1 and
+#22 records why it is not moving, and the fallback is the `Row` this replaced — about fifteen lines.
+
+**Rejected: `LazyVerticalGrid`.** Seven rows, all on screen at once, inside a column that already
+scrolls. Nesting a scroller of the same direction inside one is unmeasurable, which is why the
+matchup chips were hand-chunked long before they became a flow.
+
+### Rejected: explaining the matchup chart under its heading
+
+"Damage taken from each attacking type. Neutral matchups are left out." sat under the Type Defenses
+heading as a two-line hint. It is true, and it is the kind of sentence a screen accumulates until
+nothing on it is read.
+
+The chips say `×4`, `½`, `0` — the first two are legible to anyone who has played, and the third is
+obvious. What the hint added was that the *absent* types are the neutral ones, which is a fact about
+a list nobody is looking at. #42 is where that belongs if it turns out to be needed, alongside the
+other numbers on this screen that are opaque without a legend.
