@@ -54,14 +54,14 @@ private fun DetailScreenPreview() {
                                 StatsUiModel(
                                     bars =
                                         listOf(
-                                            StatBarUiModel(UiText.Raw("HP"), 78, 0.49f),
-                                            StatBarUiModel(UiText.Raw("Attack"), 84, 0.53f),
-                                            StatBarUiModel(UiText.Raw("Defense"), 78, 0.49f),
-                                            StatBarUiModel(UiText.Raw("Sp. Atk"), 109, 0.68f),
-                                            StatBarUiModel(UiText.Raw("Sp. Def"), 85, 0.53f),
-                                            StatBarUiModel(UiText.Raw("Speed"), 100, 0.63f),
+                                            StatBarUiModel(UiText.Raw("HP"), "78", 0.49f),
+                                            StatBarUiModel(UiText.Raw("Attack"), "84", 0.53f),
+                                            StatBarUiModel(UiText.Raw("Defense"), "78", 0.49f),
+                                            StatBarUiModel(UiText.Raw("Sp. Atk"), "109", 0.68f),
+                                            StatBarUiModel(UiText.Raw("Sp. Def"), "85", 0.53f),
+                                            StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f),
                                         ),
-                                    total = 534,
+                                    totalText = "534",
                                     matchups =
                                         listOf(
                                             TypeMatchupUiModel("Rock", TypeUiModel.ROCK.color, "×4"),
