@@ -131,6 +131,6 @@ private fun DexGridSkeleton() {
     }
 }
 
-// A screenful, not the whole dex: nothing below the fold is visible and eleven hundred shimmering
+// A screenful, not the whole dex: nothing below the fold is visible and a thousand shimmering
 // blocks would animate off-screen for no one.
 private const val SKELETON_CARDS = 12

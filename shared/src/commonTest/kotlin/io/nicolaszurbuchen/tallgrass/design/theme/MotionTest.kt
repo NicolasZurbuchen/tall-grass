@@ -14,7 +14,7 @@ class MotionTest {
 
     @Test
     fun delayFor_capsSoADeepListEntersAsFastAsAShallowOne() {
-        // The whole reason the cap exists. Uncapped, the dex's 1,082nd card would wait a minute.
+        // The whole reason the cap exists. Uncapped, the dex's 1,025th card would wait a minute.
         assertEquals(AppStagger.delayFor(7), AppStagger.delayFor(8))
         assertEquals(AppStagger.delayFor(7), AppStagger.delayFor(1081))
     }

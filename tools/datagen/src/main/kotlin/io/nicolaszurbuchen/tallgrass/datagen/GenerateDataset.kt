@@ -193,7 +193,9 @@ private fun buildVariants(
                     isMega = defaultForm?.bool("is_mega") ?: false,
                     isBattleOnly = isBattleOnly,
                     isDefault = row.bool("is_default"),
-                    listedInDex = row.bool("is_default") || isRegionalForm(form, isBattleOnly),
+                    // One card per species, and no more: the browse list is the National Dex.
+                    // DECISIONS.md § The dex lists one card per species, forms behind it
+                    listedInDex = row.bool("is_default"),
                     height = row.int("height"),
                     weight = row.int("weight"),
                     artworkUrl = artworkUrl(id),

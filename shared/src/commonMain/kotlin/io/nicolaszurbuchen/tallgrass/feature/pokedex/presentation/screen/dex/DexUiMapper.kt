@@ -6,7 +6,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex.map
 /**
  * [entries] is mapped from the State by default, which is what every caller but one wants.
  *
- * `DexViewModel` passes its own, because mapping eleven hundred cards is the expensive half of this
+ * `DexViewModel` passes its own, because mapping a thousand cards is the expensive half of this
  * function and the prefetch produces states that change everything except them.
  */
 fun DexState.toUiModel(entries: List<DexEntryUiModel> = this.entries.map { it.toUiModel() }): DexUiModel =
