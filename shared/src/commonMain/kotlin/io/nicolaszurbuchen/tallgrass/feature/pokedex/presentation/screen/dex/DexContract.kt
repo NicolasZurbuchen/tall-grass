@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.dex
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetchProgress
 
 sealed interface DexIntent {
@@ -13,14 +14,13 @@ sealed interface DexIntent {
 }
 
 /**
- * The card already knows the artwork and the colour the detail hero opens with, so the tap carries
- * them rather than leaving the next screen to look them up. See `HeroHandoff`.
+ * The card already knows everything the detail hero opens with, so the tap carries it rather than
+ * leaving the next screen to look it up. See `HeroHandoff`.
  */
 sealed interface DexLabel {
     data class NavigateToDetail(
         val slug: String,
-        val artworkUrl: String,
-        val primaryTypeSlug: String,
+        val hero: HeroHandoff,
     ) : DexLabel
 }
 

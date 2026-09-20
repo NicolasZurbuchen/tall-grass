@@ -6,11 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DexRoute(
-    onNavigateToDetail: (slug: String, artworkUrl: String, primaryTypeSlug: String) -> Unit,
+    onNavigateToDetail: (slug: String, hero: HeroHandoff) -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DexViewModel = koinViewModel(),
 ) {
@@ -20,9 +22,7 @@ fun DexRoute(
     LaunchedEffect(Unit) {
         viewModel.labels.collect { label ->
             when (label) {
-                is DexLabel.NavigateToDetail -> {
-                    onNavigateToDetailUpdated(label.slug, label.artworkUrl, label.primaryTypeSlug)
-                }
+                is DexLabel.NavigateToDetail -> onNavigateToDetailUpdated(label.slug, label.hero)
             }
         }
     }
@@ -30,6 +30,7 @@ fun DexRoute(
     DexScreen(
         state = state,
         onEntryClick = { slug -> viewModel.onIntent(DexIntent.EntryClicked(slug)) },
+        onBackClick = onNavigateBack,
         onRetryClick = { viewModel.onIntent(DexIntent.RetryClicked) },
         modifier = modifier,
     )

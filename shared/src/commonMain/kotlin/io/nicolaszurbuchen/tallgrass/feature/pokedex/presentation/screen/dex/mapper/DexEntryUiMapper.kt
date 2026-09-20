@@ -15,6 +15,7 @@ fun DexEntry.toUiModel(): DexEntryUiModel =
         numberText = "#" + dexNumber.toString().padStart(DEX_NUMBER_DIGITS, '0'),
         name = name,
         formLabel = formLabel?.removeSuffix(" Form"),
+        types = listOfNotNull(primaryType, secondaryType).map { it.toUiModel() },
         artworkUrl = artworkUrl,
         artworkKey = dexArtworkKey(slug),
         tint = primaryType.toUiModel().color,

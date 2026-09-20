@@ -73,7 +73,7 @@ class DetailUiMapperTest {
     @Test
     fun toUiModel_readsTheTypesAndTheTintFromTheFormOnScreen() {
         // Mega Charizard X is Fire/Dragon. Arceus is the same case eighteen times over.
-        val mega = assertNotNull(state(activeSlug = "charizard-mega-x").toUiModel(charizardHandoff).content)
+        val mega = state(activeSlug = "charizard-mega-x").toUiModel(charizardHandoff)
 
         assertEquals(listOf(TypeUiModel.FIRE, TypeUiModel.DRAGON), mega.types)
     }

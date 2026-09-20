@@ -8,6 +8,8 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -60,8 +62,14 @@ class DexStoreFactory(
             publish(
                 DexLabel.NavigateToDetail(
                     slug = entry.slug,
-                    artworkUrl = entry.artworkUrl,
-                    primaryTypeSlug = entry.primaryType.slug,
+                    hero =
+                        HeroHandoff(
+                            name = entry.name,
+                            artworkUrl = entry.artworkUrl,
+                            primaryTypeSlug = entry.primaryType.slug,
+                            secondaryTypeSlug = entry.secondaryType?.slug,
+                            sharedElementKey = dexArtworkKey(entry.slug),
+                        ),
                 ),
             )
         }

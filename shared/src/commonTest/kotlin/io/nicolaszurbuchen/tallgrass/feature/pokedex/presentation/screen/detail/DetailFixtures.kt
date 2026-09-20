@@ -61,8 +61,10 @@ internal val charizardDetail = PokemonDetail(species = charizardSpecies, variant
 
 internal val charizardHandoff =
     HeroHandoff(
+        name = charizard.name,
         artworkUrl = charizard.artworkUrl,
         primaryTypeSlug = PokemonType.FIRE.slug,
+        secondaryTypeSlug = null,
         sharedElementKey = dexArtworkKey(charizard.slug),
     )
 

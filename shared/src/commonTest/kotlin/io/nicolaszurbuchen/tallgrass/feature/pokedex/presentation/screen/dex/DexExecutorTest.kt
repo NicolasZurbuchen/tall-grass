@@ -8,6 +8,8 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexReposit
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.dexArtworkKey
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetch
 import io.nicolaszurbuchen.tallgrass.infra.image.ImagePrefetchProgress
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +46,7 @@ class DexExecutorTest {
             formLabel = null,
             artworkUrl = "https://example.invalid/1.png",
             primaryType = PokemonType.GRASS,
-            secondaryType = null,
+            secondaryType = PokemonType.POISON,
         )
 
     private fun store(repository: FakePokedexRepository) =
@@ -111,8 +113,14 @@ class DexExecutorTest {
                 assertEquals(
                     DexLabel.NavigateToDetail(
                         slug = "bulbasaur",
-                        artworkUrl = "https://example.invalid/1.png",
-                        primaryTypeSlug = "grass",
+                        hero =
+                            HeroHandoff(
+                                name = "Bulbasaur",
+                                artworkUrl = "https://example.invalid/1.png",
+                                primaryTypeSlug = "grass",
+                                secondaryTypeSlug = "poison",
+                                sharedElementKey = dexArtworkKey("bulbasaur"),
+                            ),
                     ),
                     awaitItem(),
                 )
