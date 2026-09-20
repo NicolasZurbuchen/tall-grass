@@ -104,12 +104,12 @@ fun DetailScreen(
                             text = state.error.title,
                             icon = state.error.icon,
                             onRetry = onRetryClick,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.xl),
+                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg),
                         )
                     }
 
                     content == null -> {
-                        DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.xl))
+                        DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg))
                     }
 
                     else -> {
@@ -128,7 +128,7 @@ fun DetailScreen(
                             onTabClick = onTabClick,
                             modifier =
                                 Modifier
-                                    .padding(horizontal = MaterialTheme.spacing.xl)
+                                    .padding(horizontal = MaterialTheme.spacing.lg)
                                     .rise(entranceFraction(1, elapsed)),
                         )
 
@@ -140,8 +140,8 @@ fun DetailScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .padding(
-                                        start = MaterialTheme.spacing.xl,
-                                        end = MaterialTheme.spacing.xl,
+                                        start = MaterialTheme.spacing.lg,
+                                        end = MaterialTheme.spacing.lg,
                                         top = MaterialTheme.spacing.md,
                                     )
                                     .rise(entranceFraction(2, elapsed)),

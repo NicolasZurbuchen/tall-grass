@@ -36,7 +36,7 @@ fun FormPillRow(
     elapsedMillis: Int = ENTRANCE_DONE,
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.xl),
+        contentPadding = PaddingValues(horizontal = MaterialTheme.spacing.lg),
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
         modifier = modifier.fillMaxWidth(),
     ) {
