@@ -626,19 +626,51 @@ What still moves on a switch is what the switch changes: the tint, the artwork, 
 figures beside them. Those are the same screen becoming something else, which is the thing worth
 animating.
 
-### A stat's figure is a number in the UiModel, not a string
+### Rejected: counting the stat figures to their new values
 
-Every other display value on this screen is formatted by a mapper, which is the rule here. This one
-cannot be: the figure counts from the old value to the new one whenever the form changes, and a
-mapper cannot format a value that is still moving.
+The bars grow to their new lengths when the form changes, so the figures beside them were made to
+count to theirs on the same curve, duration and delay. It was asked for, built, and watched on a
+device: Attack reading 86 on its way from 84 to 130 while its bar filled underneath.
 
-So `StatBarUiModel.value` and `StatsUiModel.total` are `Int` and the component calls `toString()`.
-That is the whole of the formatting — the range is 1 to 255, with no grouping, no unit and no locale
-to get wrong. A stat that needs more than that is a stat that has stopped animating.
+It reads badly. A bar growing is a quantity changing; a number spinning is a slot machine, and the
+eye goes to it instead of to the six bars that carry the comparison. Worse, the figure is the precise
+value — the one thing on the row that is supposed to be readable at a glance — and for the length of
+the animation it is a number the Pokemon does not have.
 
-The count takes the bar's curve, duration and stagger delay, so the two read as one movement rather
-than as a bar with a caption. The total waits for the last bar, because a sum that settles before its
-parts have moved does not look like their sum.
+So the figures cut and the bars move. `StatBarUiModel.valueText` and `StatsUiModel.totalText` are
+formatted strings again, like every other display value on this screen.
+
+### The stat bars answer a form switch together
+
+The six bars were staggered by 55ms each, which is the app's entrance stagger applied to a movement
+that is not an entrance. On a form switch the effect is that the row you are looking at waits up to
+275ms before it starts, and the switch reads as the screen being slow to respond rather than as six
+numbers changing at once.
+
+The stagger is right when items are *arriving* — the eye needs somewhere to start. Here nothing
+arrives: six bars that are already on screen change length. They start together.
+
+(The bars never staggered on first view of the tab anyway. `animateFloatAsState` initialises at its
+target, so the first composition has nothing to travel from, and the stagger only ever applied to a
+switch — the one case where it was wrong.)
+
+### A matchup chip is sized by its name, not by the grid
+
+The chips were three across in a hand-chunked grid, each stretched to a third of the width, so
+"Electric ½" and "Bug ½" occupied the same space and the last row was padded with blanks to keep the
+columns. It reads as a table of a fixed shape rather than as a list of the types that happen to
+matter, which for a single-typed Pokemon can be as few as five.
+
+They wrap instead, each sized to its own text. What is lost is the row index the stagger used, since
+a flow does not report where it broke; the stagger is per chip now, and `AppStagger`'s cap holds
+eighteen of them under four hundred milliseconds, which is what the row grouping was there to avoid.
+
+**The label is the type's own colour, shifted.** A chip filled with `TypeUiModel.color` at full
+strength is the dex card's problem again — see *A type pill on the type's own colour is a scrim* — so
+the ground is an 18% wash of it and the label is the same hue moved 45% toward black on a light
+sheet, or toward white on a dark one. Pure Grass measures 1.9:1 against white; the shift is what
+makes it a colour rather than a suggestion, and it has to know the theme because "darker" is only
+legible in one of them.
 
 ### Text that trails a heading enters from the side
 
