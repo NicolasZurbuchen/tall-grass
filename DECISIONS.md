@@ -933,8 +933,24 @@ scrollers gives a nested-scroll connection three gestures to arbitrate between. 
 is not a reason: the arbitration is one `if` on the sign of the drag, and a gesture nobody discovers
 is worse than one that occasionally guesses.
 
-**The hero draws after the sheet**, so the Pokemon stands on it rather than behind it. By the time
-the sheet has risen far enough to reach the header, the hero has already gone.
+**The hero draws after the sheet**, so the Pokemon stands on it rather than behind it. In a `Box`,
+draw order and hit-test order are the same order reversed — the last child is drawn on top *and*
+asked about a pointer first — so putting the hero on top also put it in front of the sheet's
+gestures.
+
+**Which is why the faded hero is not merely faded.** An alpha of zero draws nothing and still answers
+a pointer, and the carousel at zero lies exactly over the expanded sheet's tabs. A horizontal pager
+between a finger and a horizontal pager is a gesture that arrives about one time in four, and a
+vertical drag over it has to survive the pager deciding the drag is not its axis first. Both are
+"nothing happened" to the reader.
+
+It is measured but not placed, which is `View.INVISIBLE` and which Compose has no single modifier
+for. Not placing it rather than not composing it: the hero's height is what decides where the sheet
+rests, so a carousel that left the layout would take 200dp of that with it and the sheet would jump
+on the way back down.
+
+**Rejected: `userScrollEnabled = false` on the pager.** It stops the pager scrolling. It does not
+stop it being the thing the pointer reaches, which was the actual problem.
 
 **The hero goes in the first quarter of the drag.** The sheet is what the reader is moving, so
 everything it is taking the place of should be gone by the time they have decided to move it — a

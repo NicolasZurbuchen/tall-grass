@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
@@ -342,14 +343,11 @@ fun DetailScreen(
                 heroes = state.heroes,
                 silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
                 pagerState = heroPagerState,
-                // Alpha hides a thing; it does not stop it taking gestures. Faded out, the carousel
-                // sits exactly over the sheet's tab row, where a sideways swipe means the other
-                // thing entirely.
-                enabled = heroAlpha > 0f,
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .height(ARTWORK_SIZE)
+                        .invisibleWhen(heroAlpha == 0f)
                         .graphicsLayer { alpha = heroAlpha },
             )
         }
@@ -441,4 +439,27 @@ private fun settleTarget(
         velocity < -FLING_VELOCITY -> 1f
         velocity > FLING_VELOCITY -> 0f
         else -> if (progress > HALFWAY) 1f else 0f
+    }
+
+/**
+ * Measured, so the space stays; not placed, so nothing is drawn and nothing is hit.
+ *
+ * `View.INVISIBLE`, which Compose has no single modifier for. Alpha alone draws nothing and still
+ * answers a pointer, and that is not a subtlety here: faded out, the hero carousel lies exactly over
+ * the expanded sheet's tabs, and a horizontal pager between a finger and a horizontal pager is a
+ * gesture that works one time in four.
+ *
+ * Not placing it rather than not composing it, because the hero's height is what decides where the
+ * sheet rests. A carousel that left the layout would take 200dp of that with it and the sheet would
+ * jump on the way back down.
+ *
+ * DECISIONS.md § The sheet expands and the hero becomes a toolbar
+ */
+private fun Modifier.invisibleWhen(invisible: Boolean): Modifier =
+    layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+
+        layout(placeable.width, placeable.height) {
+            if (!invisible) placeable.place(0, 0)
+        }
     }
