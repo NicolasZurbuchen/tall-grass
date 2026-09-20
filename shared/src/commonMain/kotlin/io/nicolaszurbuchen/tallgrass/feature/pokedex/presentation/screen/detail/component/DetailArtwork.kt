@@ -2,10 +2,9 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
-import io.nicolaszurbuchen.tallgrass.infra.navigation.LocalSharedTransitionScope
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
+import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedElementOrNone
 
 /**
  * The hero's artwork, and the receiving half of the transition from a dex card.
@@ -27,20 +26,11 @@ fun DetailArtwork(
     artworkKey: SharedElementKey,
     modifier: Modifier = Modifier,
 ) {
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedContentScope = LocalNavAnimatedContentScope.current
-
-    with(sharedTransitionScope) {
-        AsyncImage(
-            model = artworkUrl,
-            // The name is read out beside it, so describing the artwork too would say every Pokemon
-            // twice to a screen reader.
-            contentDescription = null,
-            modifier =
-                modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(artworkKey),
-                    animatedVisibilityScope = animatedContentScope,
-                ),
-        )
-    }
+    AsyncImage(
+        model = artworkUrl,
+        // The name is read out beside it, so describing the artwork too would say every Pokemon
+        // twice to a screen reader.
+        contentDescription = null,
+        modifier = modifier.sharedElementOrNone(artworkKey),
+    )
 }

@@ -14,11 +14,14 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 
 /**
- * A type, named and coloured.
+ * A type, named.
  *
- * In `core/type/` rather than in `design/` because it owns a rule about the subject: which colour a
- * type is drawn in is a fact about the type, not a presentational choice the caller makes. The name
- * is the test — `AppTypePill` reads as nonsense.
+ * In `core/type/` rather than in `design/` because it takes a [TypeUiModel], and a component in
+ * `design/` may not know the subject exists. The name is the second test — `AppTypePill` reads as
+ * nonsense.
+ *
+ * The fill is a scrim rather than the type's own colour. See
+ * `DECISIONS.md § A type pill on the type's own colour is a scrim, not a colour`.
  */
 @Composable
 fun TypePill(
@@ -27,15 +30,18 @@ fun TypePill(
 ) {
     Text(
         text = type.label,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.labelSmall,
         color = Color.White,
         modifier =
             modifier
                 .clip(RoundedCornerShape(PILL_CORNER))
-                .background(type.color)
+                .background(Color.White.copy(alpha = SCRIM_ALPHA))
                 .padding(horizontal = MaterialTheme.spacing.sm, vertical = MaterialTheme.spacing.xs),
     )
 }
 
 // Larger than any radius in the shape scale, because a pill is a stadium rather than a rounded box.
 private val PILL_CORNER = 999.dp
+
+// Enough to separate the pill from the tint behind it without the label losing its white.
+private const val SCRIM_ALPHA = 0.25f

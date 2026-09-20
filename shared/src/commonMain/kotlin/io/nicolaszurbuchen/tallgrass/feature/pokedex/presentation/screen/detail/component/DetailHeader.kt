@@ -1,14 +1,11 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -22,13 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
+import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.heroUp
-import io.nicolaszurbuchen.tallgrass.design.theme.pop
-import io.nicolaszurbuchen.tallgrass.design.theme.shimmerBlock
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.nameKey
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.typeKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
+import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
+import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedBoundsOrNone
+import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedElementOrNone
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_back
@@ -36,12 +37,16 @@ import tallgrass.shared.generated.resources.pokedex_detail_back
 /**
  * The text half of the hero, drawn on the type's colour.
  *
- * A null [content] is the moment before the read lands. The block keeps its height so the artwork
- * below it does not move when the name arrives, which is the whole reason the skeleton exists here
- * rather than a blank.
+ * [name] and [types] arrive with the destination and are the receiving half of the transition from a
+ * dex card, so they are drawn on the first frame and take no entrance of their own — they are
+ * already moving. A null [content] is the moment before the read lands, which leaves only the number
+ * and the genus to appear.
  */
 @Composable
 fun DetailHeader(
+    name: String,
+    types: List<TypeUiModel>,
+    artworkKey: SharedElementKey,
     content: DetailContentUiModel?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -62,28 +67,26 @@ fun DetailHeader(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.spacing.md)
-                    .heroUp(entranceFraction(0, elapsedMillis)),
+            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
         ) {
-            if (content == null) {
-                Box(modifier = Modifier.width(NAME_SKELETON_WIDTH).height(NAME_SKELETON_HEIGHT).shimmerBlock())
-            } else {
-                Text(
-                    text = content.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false).sharedBoundsOrNone(artworkKey.nameKey()),
+            )
+
+            if (content != null) {
                 Text(
                     text = content.numberText,
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.White,
-                    modifier = Modifier.padding(top = MaterialTheme.spacing.sm),
+                    modifier =
+                        Modifier
+                            .padding(top = MaterialTheme.spacing.sm)
+                            .heroUp(entranceFraction(0, elapsedMillis)),
                 )
             }
         }
@@ -98,8 +101,8 @@ fun DetailHeader(
                     .heightIn(min = TYPES_ROW_MIN_HEIGHT),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
-                content?.types?.forEachIndexed { index, type ->
-                    TypePill(type = type, modifier = Modifier.pop(entranceFraction(index, elapsedMillis)))
+                types.forEachIndexed { slot, type ->
+                    TypePill(type = type, modifier = Modifier.sharedElementOrNone(artworkKey.typeKey(slot)))
                 }
             }
 
@@ -115,10 +118,7 @@ fun DetailHeader(
     }
 }
 
-private val NAME_SKELETON_WIDTH = 180.dp
-private val NAME_SKELETON_HEIGHT = 32.dp
-
-// Holds the row open while the types are unknown, so the artwork below does not jump when they land.
+// Holds the row open while the genus is unknown, so the artwork below does not jump when it lands.
 private val TYPES_ROW_MIN_HEIGHT = 24.dp
 
 // Supporting text on a saturated ground, where full white reads as loud as the name above it.

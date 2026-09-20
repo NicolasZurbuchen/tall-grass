@@ -73,6 +73,9 @@ fun DetailScreen(
 
     Column(modifier = modifier.fillMaxSize().background(tint)) {
         DetailHeader(
+            name = state.name,
+            types = state.types,
+            artworkKey = state.artworkKey,
             content = state.content,
             onBackClick = onBackClick,
             modifier = Modifier.statusBarsPadding(),

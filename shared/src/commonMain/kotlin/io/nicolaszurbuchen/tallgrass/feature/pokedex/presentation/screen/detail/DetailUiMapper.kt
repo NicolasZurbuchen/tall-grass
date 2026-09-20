@@ -14,27 +14,37 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
     val variant = detail?.variants?.firstOrNull { it.slug == activeVariantSlug }
 
+    // The handoff's answer until the read lands, so nothing in the hero changes under the reader.
+    // A slug fails to parse only if a saved destination outlived the build that wrote it, and a
+    // grey-blue hero for a few milliseconds is the whole cost of being wrong.
+    val types =
+        if (variant == null) {
+            listOfNotNull(
+                hero.primaryTypeSlug.toTypeUiModel() ?: TypeUiModel.NORMAL,
+                hero.secondaryTypeSlug?.toTypeUiModel(),
+            )
+        } else {
+            listOfNotNull(variant.primaryType, variant.secondaryType).map { it.toUiModel() }
+        }
+
     return DetailUiModel(
         isLoading = isLoading,
         error = error?.toUiModel(),
+        name = variant?.name ?: hero.name,
+        types = types,
         artworkUrl = variant?.artworkUrl ?: hero.artworkUrl,
         // Keyed by the form on screen rather than by the one that was tapped. The two are the same
         // until the switcher is used, and after that the key matches no card -- which is the point.
         // See DetailUiModel.
         artworkKey = hero.sharedElementKey.copy(id = activeVariantSlug),
-        // The handoff's type until the read lands, so the hero never changes colour under the
-        // reader. Its slug fails to parse only if a saved destination outlived the build that wrote
-        // it, and a grey-blue hero for a few milliseconds is the whole cost of being wrong.
-        tint = (variant?.primaryType?.toUiModel() ?: hero.primaryTypeSlug.toTypeUiModel() ?: TypeUiModel.NORMAL).color,
+        tint = types.first().color,
         content =
             if (detail == null || variant == null) {
                 null
             } else {
                 DetailContentUiModel(
-                    name = variant.name,
                     numberText = "#" + detail.species.dexNumber.toString().padStart(DEX_NUMBER_DIGITS, '0'),
                     genusText = detail.species.genus,
-                    types = listOfNotNull(variant.primaryType, variant.secondaryType).map { it.toUiModel() },
                     forms = detail.variants.toFormPillsUiModel(detail.species.name),
                     activeFormSlug = variant.slug,
                     tab =

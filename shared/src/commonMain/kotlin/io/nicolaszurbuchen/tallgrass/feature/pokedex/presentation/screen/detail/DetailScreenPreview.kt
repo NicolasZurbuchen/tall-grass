@@ -23,15 +23,15 @@ private fun DetailScreenPreview() {
                 DetailUiModel(
                     isLoading = false,
                     error = null,
+                    name = "Charizard",
+                    types = listOf(TypeUiModel.FIRE, TypeUiModel.FLYING),
                     artworkUrl = "",
                     artworkKey = SharedElementKey(source = "dex", id = "charizard"),
                     tint = TypeUiModel.FIRE.color,
                     content =
                         DetailContentUiModel(
-                            name = "Charizard",
                             numberText = "#006",
                             genusText = "Flame Pokémon",
-                            types = listOf(TypeUiModel.FIRE, TypeUiModel.FLYING),
                             forms =
                                 listOf(
                                     FormPillUiModel("charizard", UiText.Raw("Standard")),

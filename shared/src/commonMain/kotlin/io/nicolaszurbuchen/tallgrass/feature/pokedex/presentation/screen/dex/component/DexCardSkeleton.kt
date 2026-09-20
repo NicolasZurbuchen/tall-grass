@@ -13,6 +13,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.theme.shimmerBlock
@@ -33,23 +34,39 @@ fun DexCardSkeleton(modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = modifier.aspectRatio(SKELETON_ASPECT_RATIO),
     ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.sm),
-        ) {
-            Box(modifier = Modifier.size(width = 32.dp, height = 10.dp).shimmerBlock())
-
+        Box(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(MaterialTheme.spacing.sm)
+                        .size(ARTWORK_BLOCK)
                         .shimmerBlock(),
             )
 
-            Box(modifier = Modifier.fillMaxWidth(0.7f).height(12.dp).shimmerBlock())
+            Column(modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.md)) {
+                Box(modifier = Modifier.fillMaxWidth(NAME_WIDTH_FRACTION).height(18.dp).shimmerBlock())
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.sm),
+                ) {
+                    Box(modifier = Modifier.size(width = PILL_WIDTH, height = PILL_HEIGHT).shimmerBlock())
+                    Box(modifier = Modifier.size(width = PILL_WIDTH, height = PILL_HEIGHT).shimmerBlock())
+                }
+            }
         }
     }
 }
 
-private const val SKELETON_ASPECT_RATIO = 0.82f
+private const val SKELETON_ASPECT_RATIO = 1.35f
+
+// A shade smaller than the artwork it stands in for: a solid block of that size reads as a filled
+// corner rather than as something about to arrive.
+private val ARTWORK_BLOCK = 72.dp
+
+private val PILL_WIDTH = 56.dp
+private val PILL_HEIGHT = 22.dp
+
+// Enough of the card's width to read as a name without reaching the corner the artwork fills.
+private const val NAME_WIDTH_FRACTION = 0.6f
