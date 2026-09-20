@@ -898,3 +898,34 @@ and the read runs again if they swipe onto it.
 **Retry goes past the cache.** It is only reachable from the error state, where nothing is cached, so
 the flag changes nothing today — but a button that says "try again" and quietly does not is worse
 than no button.
+
+### The sheet expands and the hero becomes a toolbar
+
+Dragging the sheet up is what makes a long tab readable on a phone. What it takes from the screen is
+the hero, so the hero has to leave in a way that keeps the reader oriented: the artwork, the number,
+the types and the genus fade out, and the name travels into the back arrow's row and shrinks to sit
+beside it. What is left is a toolbar, which is what a screen with no hero needs anyway.
+
+**One number drives all of it.** How far the sheet has been dragged positions the sheet, fades the
+hero, and moves the name. There is no second animation to keep in step, and a drag released halfway
+leaves every part of the screen halfway.
+
+**The hero and the sheet are siblings in a box, not a column.** The sheet slides up *over* the hero,
+and a column cannot place a child above its predecessor.
+
+**The hero measures itself.** Where the sheet rests is the bottom of the hero less the artwork's
+overlap, and the hero is a status bar plus however tall a name, a row of pills, a genus and the
+artwork turn out to be. Only the first of those is a number anyone could have written down. An
+earlier version added the status bar to a height that already included it, and the sheet sat a status
+bar too low — visible only as "that looks slightly wrong", which is the failure mode of a layout
+assembled from constants.
+
+**Only the handle drags.** Below it is a pager whose pages scroll vertically, and a drag that could
+mean either "scroll this" or "move the sheet" has to guess. A handle is one gesture with one meaning,
+and it is also the affordance that says the sheet moves at all.
+
+**Rejected: dragging anywhere on the sheet, with a nested-scroll connection deciding.** It is what a
+Material bottom sheet does and it is the right answer for a sheet whose content is a plain list. Here
+the content is a horizontal pager containing vertical scrollers, so the connection has to arbitrate
+between three gestures, and the failure it produces is a scroll that sometimes moves the sheet — which
+is worse than a handle that always does.

@@ -1,15 +1,25 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,6 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -28,7 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
@@ -48,15 +63,17 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.HeroCarousel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
+import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.lerp as lerpDp
 
 /**
- * The carousel is centred over a sheet whose top edge crosses the Pokemon's feet. It is laid out
- * that way rather than offset with a z-index: the sheet fills the space under the header, inset from
- * the top by all but the overlapping third of the artwork, and the carousel is drawn after it in the
- * same box so it sits on top without anyone computing a screen height.
+ * The hero and the sheet are siblings in one box rather than a column, because the sheet slides up
+ * over the hero and a column cannot do that. How far it has been dragged is the one piece of state
+ * the whole screen reads: it positions the sheet, fades the hero out, and carries the name into the
+ * back arrow's row. See `DECISIONS.md § The sheet expands and the hero becomes a toolbar`.
  *
- * The sheet itself does not scroll. Its form switcher and tab row are pinned and each tab scrolls
- * inside the pager below them — see `DECISIONS.md § The tabs are a pager, so the sheet stops
+ * The sheet does not scroll as one piece. Its form switcher and tab row are pinned and each tab
+ * scrolls inside the pager below them — see `DECISIONS.md § The tabs are a pager, so the sheet stops
  * scrolling as one piece`.
  *
  * The tint runs behind the status bar, so this screen takes the insets itself rather than inheriting
@@ -128,105 +145,184 @@ fun DetailScreen(
             .collect { page -> onTabSelected(DetailTabUiModel.entries[page]) }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(tint)) {
-        DetailHeader(
-            name = state.name,
-            numberText = state.numberText,
-            types = state.types,
-            artworkKey = state.heroes.getOrNull(state.activeIndex)?.artworkKey,
-            content = state.content,
-            onBackClick = onBackClick,
-            modifier = Modifier.statusBarsPadding(),
-            elapsedMillis = elapsed,
-        )
+    val density = LocalDensity.current
+    val dragScope = rememberCoroutineScope()
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
+    // 0 resting over the artwork, 1 up against the toolbar. An Animatable rather than a plain float,
+    // so releasing settles the sheet rather than leaving it wherever the finger stopped.
+    val expansion = remember { Animatable(0f) }
+    val progress = expansion.value
+
+    // The hero measures itself: a status bar, a name, a row of pills, a genus and the artwork, and
+    // only the first of those has a number anyone could have written down.
+    var heroHeight by remember { mutableStateOf(0.dp) }
+    val statusBar = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
+    BoxWithConstraints(modifier = modifier.fillMaxSize().background(tint)) {
+        val restingTop = (heroHeight - ARTWORK_OVERLAP).coerceAtLeast(0.dp)
+        val raisedTop = statusBar + TOOLBAR_HEIGHT
+        val travelPx = with(density) { (restingTop - raisedTop).coerceAtLeast(0.dp).toPx() }
+
+        Column(modifier = Modifier.onSizeChanged { heroHeight = with(density) { it.height.toDp() } }) {
+            DetailHeader(
+                name = state.name,
+                numberText = state.numberText,
+                types = state.types,
+                artworkKey = state.heroes.getOrNull(state.activeIndex)?.artworkKey,
+                content = state.content,
+                onBackClick = onBackClick,
+                modifier = Modifier.statusBarsPadding(),
+                elapsedMillis = elapsed,
+                collapseProgress = progress,
+            )
+
+            HeroCarousel(
+                heroes = state.heroes,
+                silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
+                pagerState = heroPagerState,
                 modifier =
                     Modifier
-                        .fillMaxSize()
-                        .padding(top = ARTWORK_SIZE - ARTWORK_OVERLAP)
-                        .clip(arcTopShape(SHEET_ARC))
-                        .background(MaterialTheme.appColors.surface)
-                        .navigationBarsPadding()
-                        .padding(top = ARTWORK_OVERLAP + MaterialTheme.spacing.md),
-            ) {
-                val content = state.content
+                        .fillMaxWidth()
+                        .height(ARTWORK_SIZE)
+                        .graphicsLayer { alpha = 1f - progress },
+            )
+        }
 
-                when {
-                    state.error != null -> {
-                        AppErrorBanner(
-                            text = state.error.title,
-                            icon = state.error.icon,
-                            onRetry = onRetryClick,
-                            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg),
-                        )
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = lerpDp(restingTop, raisedTop, progress))
+                    .clip(arcTopShape(SHEET_ARC))
+                    .background(MaterialTheme.appColors.surface)
+                    .navigationBarsPadding(),
+        ) {
+            // Clears the part of the artwork lying over the sheet, and stops clearing it as the
+            // artwork fades away.
+            Spacer(modifier = Modifier.height(lerpDp(ARTWORK_OVERLAP, 0.dp, progress)))
+
+            SheetHandle(
+                onDrag = { delta ->
+                    dragScope.launch {
+                        val step = if (travelPx > 0f) delta / travelPx else 0f
+                        expansion.snapTo((expansion.value - step).coerceIn(0f, 1f))
                     }
-
-                    content == null -> {
-                        DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg))
-                    }
-
-                    else -> {
-                        if (content.forms.isNotEmpty()) {
-                            FormPillRow(
-                                forms = content.forms,
-                                activeSlug = content.activeFormSlug,
-                                onFormClick = onFormClick,
-                                modifier = Modifier.padding(bottom = MaterialTheme.spacing.md),
-                                elapsedMillis = elapsed,
-                            )
+                },
+                onRelease = { velocity ->
+                    val target =
+                        when {
+                            velocity < -FLING_VELOCITY -> 1f
+                            velocity > FLING_VELOCITY -> 0f
+                            else -> if (expansion.value > HALFWAY) 1f else 0f
                         }
 
-                        DetailTabRow(
-                            selected = content.tab,
-                            onTabClick = onTabClick,
-                            modifier =
-                                Modifier
-                                    .padding(horizontal = MaterialTheme.spacing.lg)
-                                    .rise(entranceFraction(1, elapsed)),
+                    expansion.animateTo(target, tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint))
+                },
+            )
+
+            val content = state.content
+
+            when {
+                state.error != null -> {
+                    AppErrorBanner(
+                        text = state.error.title,
+                        icon = state.error.icon,
+                        onRetry = onRetryClick,
+                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg),
+                    )
+                }
+
+                content == null -> {
+                    DetailSheetSkeleton(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg))
+                }
+
+                else -> {
+                    if (content.forms.isNotEmpty()) {
+                        FormPillRow(
+                            forms = content.forms,
+                            activeSlug = content.activeFormSlug,
+                            onFormClick = onFormClick,
+                            modifier = Modifier.padding(bottom = MaterialTheme.spacing.md),
+                            elapsedMillis = elapsed,
                         )
+                    }
 
-                        // Full-bleed, so the swipe starts at the screen edge; the gutter is inside
-                        // each page instead.
-                        HorizontalPager(
-                            state = tabPagerState,
+                    DetailTabRow(
+                        selected = content.tab,
+                        onTabClick = onTabClick,
+                        modifier =
+                            Modifier
+                                .padding(horizontal = MaterialTheme.spacing.lg)
+                                .rise(entranceFraction(1, elapsed)),
+                    )
+
+                    // Full-bleed, so the swipe starts at the screen edge; the gutter is inside each
+                    // page instead.
+                    HorizontalPager(
+                        state = tabPagerState,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .rise(entranceFraction(2, elapsed)),
+                    ) { page ->
+                        Column(
                             modifier =
                                 Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .rise(entranceFraction(2, elapsed)),
-                        ) { page ->
-                            Column(
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(rememberScrollState())
-                                        .padding(horizontal = MaterialTheme.spacing.lg)
-                                        .padding(top = MaterialTheme.spacing.md, bottom = MaterialTheme.spacing.xxl),
-                            ) {
-                                when (DetailTabUiModel.entries[page]) {
-                                    DetailTabUiModel.ABOUT -> {
-                                        AboutTab(about = content.about)
-                                    }
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(horizontal = MaterialTheme.spacing.lg)
+                                    .padding(top = MaterialTheme.spacing.md, bottom = MaterialTheme.spacing.xxl),
+                        ) {
+                            when (DetailTabUiModel.entries[page]) {
+                                DetailTabUiModel.ABOUT -> {
+                                    AboutTab(about = content.about)
+                                }
 
-                                    DetailTabUiModel.STATS -> {
-                                        StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
-                                    }
+                                DetailTabUiModel.STATS -> {
+                                    StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
                                 }
                             }
                         }
                     }
                 }
             }
-
-            HeroCarousel(
-                heroes = state.heroes,
-                silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
-                pagerState = heroPagerState,
-                modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().height(ARTWORK_SIZE),
-            )
         }
+    }
+}
+
+/**
+ * The strip the sheet is dragged by, and the only part of it that is.
+ *
+ * The tabs below hold a pager whose pages scroll vertically, and a drag that could mean either
+ * "scroll this" or "move the sheet" has to guess which. A handle is one gesture with one meaning,
+ * and it is also the affordance saying the sheet moves at all.
+ */
+@Composable
+private fun SheetHandle(
+    onDrag: (Float) -> Unit,
+    onRelease: suspend (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(HANDLE_ROW_HEIGHT)
+                .draggable(
+                    orientation = Orientation.Vertical,
+                    state = rememberDraggableState(onDelta = onDrag),
+                    onDragStopped = { velocity -> onRelease(velocity) },
+                ),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .size(width = HANDLE_WIDTH, height = HANDLE_HEIGHT)
+                    .clip(MaterialTheme.shapes.extraSmall)
+                    .background(MaterialTheme.appColors.borderDefault),
+        )
     }
 }
 
@@ -244,3 +340,18 @@ private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
 // A card standing behind the one in front is in its shadow. Far enough off the ground to read against
 // it, close enough that it stays part of it rather than becoming a second colour on the screen.
 private const val SILHOUETTE_SHADE = 0.25f
+
+// What the header is left as when the sheet is all the way up: the back arrow's row, with the name
+// beside it.
+private val TOOLBAR_HEIGHT = 56.dp
+
+private val HANDLE_ROW_HEIGHT = 28.dp
+private val HANDLE_WIDTH = 36.dp
+private val HANDLE_HEIGHT = 4.dp
+
+// Where a release with no flick in it goes.
+private const val HALFWAY = 0.5f
+
+// Pixels per second past which the flick decides instead of the position. Low enough that a short
+// flick works, high enough that a slow drag goes wherever it was left nearest to.
+private const val FLING_VELOCITY = 400f
