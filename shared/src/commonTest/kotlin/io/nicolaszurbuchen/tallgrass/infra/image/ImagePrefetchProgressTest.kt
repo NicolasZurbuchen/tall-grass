@@ -54,10 +54,10 @@ class ImagePrefetchProgressTest {
 
     @Test
     fun reportingSlot_lettsARunOverTheWholeDexReportTwentyFiveTimes() {
-        // The regression this exists for: emitting once per image put 1,082 state changes through a
+        // The regression this exists for: emitting once per image put 1,025 state changes through a
         // mapper that rebuilds every card, 236ms of main thread measured, all of it arriving in one
         // burst at the moment the grid appeared.
-        val dex = 1082
+        val dex = 1025
         val emissions = (1..dex).map { handled -> progress(fetched = handled, total = dex).reportingSlot }.distinct()
 
         assertTrue(emissions.size <= 26, "A full run would emit  times")

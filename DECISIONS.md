@@ -150,7 +150,7 @@ wasted the width". It does read as a list, and that turns out to be the point: t
 enough to be read rather than only recognised, and a generation is still a few flicks apart because
 each card is shorter than it was.
 
-The screen reads all ~1,080 rows in one query and holds them. Paging buys nothing here: the dataset
+The screen reads all ~1,025 rows in one query and holds them. Paging buys nothing here: the dataset
 is on the device, the rows are small, and a Pokédex that cannot be scrolled to its end without a
 round trip is worse than one costing a few hundred kilobytes of heap.
 
@@ -316,7 +316,7 @@ and a spring cannot reproduce a 600ms `easeOutQuint` settle. See #12.
 Four of the five durations in `AppDuration` are read off that reference rather than picked;
 `MEDIUM` is the one derived value, sitting where a step between `SHORT` and `LONG` was needed.
 
-**The stagger counts from the top of the viewport and caps at eight.** The dex is 1,082 cards; at
+**The stagger counts from the top of the viewport and caps at eight.** The dex is 1,025 cards; at
 55ms of absolute index, card 500 would enter twenty-seven seconds in, which is not a stagger but a
 bug that looks like a hang. Capped, the ninth visible item and everything after it start together at
 385ms, and a full entrance takes the same time whether the viewport holds nine cards or ninety.
@@ -370,9 +370,13 @@ Measured, not estimated: every artwork URL in the committed dataset was asked fo
 
 | | Files | Bytes |
 |---|---|---|
-| Dex cards (`listedInDex`) | 1,082 | **132.6 MB** |
+| Dex cards, as measured | 1,082 | **132.6 MB** |
 | Every variant, forms included | 1,385 | 166.2 MB |
 | Average / largest single image | | 123 KB / 289 KB |
+
+Those were taken when the dex held 1,082 cards. It holds 1,025 now — see *The dex lists one card per
+species, forms behind it* — so the prefetched set is smaller than the first row says. The ceiling is
+sized against the corpus rather than against the dex, so it does not move.
 
 The disk cache ceiling is **192 MB**. It has to clear the prefetched set or the cache thrashes —
 later images evict earlier ones and the run undoes itself — and the headroom above it covers the
@@ -420,7 +424,7 @@ progress — which means a table, a migration, and a number that can disagree wi
 system empties the cache directory, as it is entitled to do.
 
 Instead each URL is asked of the cache before it is fetched. What is on disk *is* the progress, it
-cannot be stale, and a run killed halfway resumes by finding its own earlier work. The cost is 1,082
+cannot be stale, and a run killed halfway resumes by finding its own earlier work. The cost is 1,025
 cache lookups on a second visit, which is a few hundred milliseconds on a background dispatcher.
 
 **Storage exhaustion is a check, not a caught exception.** A write that runs out of room surfaces as
@@ -759,3 +763,29 @@ the finger instead of snapping once the animation finishes.
 About tab is roughly a third of the Base Stats tab, so any fixed height is wrong for one of them:
 either Base Stats scrolls inside a box two hundred dp shorter than it needs, or About sits in a
 mostly empty one.
+
+### The dex lists one card per species, forms behind it
+
+Regional forms used to have cards of their own — 57 of them, so the browse list was 1,082 entries for
+1,025 species. #5 argued for it and the argument is a fair one: a regional form is a different
+Pokemon in play, with a different type, different stats and different matchups.
+
+It reads wrong all the same. Scrolling the dex is walking the National Dex, and a second Vulpix
+appearing between #037 and #038 raises a question the list cannot answer — *why this form and not
+Mega Charizard, not Gigantamax, not Zen Mode?* The rule underneath was "regional forms are different
+enough", which is a judgement the reader has to already share for the list to look consistent rather
+than arbitrary.
+
+One card per species needs no such agreement. Every form of every kind is reached from the card of
+the species it belongs to, through the same switcher, and a filter is where "show me the regional
+forms" belongs when it arrives.
+
+Nothing is lost from the app. `toFormPillsUiModel` already lists every non-cosmetic form, so Alolan
+Vulpix is one tap from Vulpix and always was.
+
+**Rejected: dropping them from the dataset.** They are real variants with their own types, stats and
+artwork, and the detail screen renders them. Only `listedInDex` changed — the column that decides
+grid representation and nothing else — which is why the diff is 57 booleans and no rows.
+
+Entries above this one quote 1,082 where they record a measurement. Those stay as measured; the count
+they were taken against is this one.

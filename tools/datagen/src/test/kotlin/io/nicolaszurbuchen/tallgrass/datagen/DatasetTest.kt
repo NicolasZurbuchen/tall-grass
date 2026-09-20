@@ -90,18 +90,26 @@ class DatasetTest {
     }
 
     @Test
-    fun regionalForms_areListedAndOtherFormsAreNot() {
+    fun onlyTheDefaultForm_isListedInTheDex() {
         fun listed(slug: String) = variants.single { it.slug == slug }.listedInDex
 
-        assertTrue(listed("vulpix-alola"), "A regional form gets its own card")
-        assertTrue(listed("wooper-paldea"))
-        assertTrue(listed("tauros-paldea-aqua-breed"), "Each Paldean Tauros breed is its own form")
-        assertTrue(listed("darmanitan-galar-standard"), "The Galarian form itself is regional")
+        assertTrue(listed("vulpix"), "The species' own form is the card")
 
-        assertTrue(!listed("charizard-mega-x"), "A Mega is a battle state, not a regional form")
-        assertTrue(!listed("darmanitan-galar-zen"), "Zen Mode is a transformation of a regional form")
+        assertTrue(!listed("vulpix-alola"), "A regional form is reached through the form switcher")
+        assertTrue(!listed("wooper-paldea"))
+        assertTrue(!listed("tauros-paldea-aqua-breed"))
+        assertTrue(!listed("darmanitan-galar-standard"))
+        assertTrue(!listed("charizard-mega-x"), "A Mega is a battle state, not a browse entry")
+        assertTrue(!listed("darmanitan-galar-zen"))
         assertTrue(!listed("meowstic-female"), "Gender differences stay behind the form switcher")
         assertTrue(!listed("zygarde-complete"))
+    }
+
+    @Test
+    fun theDex_holdsExactlyOneCardPerSpecies() {
+        // The invariant the browse list is built on: scrolling it is walking the National Dex, and
+        // every form of every kind is reached from the card of the species it belongs to.
+        assertEquals(species.size, variants.count { it.listedInDex })
     }
 
     @Test
