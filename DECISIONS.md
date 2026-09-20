@@ -872,3 +872,29 @@ grid is still composed while it is being animated out.
 **Rejected: clearing the flag on the way back instead.** It needs the screen to know it is being
 returned to, which Navigation 3 does not hand it, and the answer would have been a guess dressed as a
 lifecycle.
+
+### The carousel reads ahead, so a swipe lands on content
+
+Emptying the sheet on a swipe was the wrong half of a real problem. Holding the previous Pokemon's
+stats under the new one's name is a wrong screen; replacing them with a skeleton for the length of a
+database read is a blink, and a blink reads as a fault. The read is one frame, which is exactly the
+duration at which a change of state looks like a glitch rather than like loading.
+
+So neither. The Store holds the card on screen and the two either side of it, and reads the
+neighbours as soon as the middle one lands. A swipe onto a card that was read ahead shows it on the
+same frame, with no skeleton in between and nothing stale in the meantime.
+
+**Bounded by the window, not by a count.** The cache is filtered to the three slugs around the active
+card every time it changes, so swiping the length of the dex holds three records whatever route it
+took. An eviction policy would have needed a size, and a size would have been a guess.
+
+**A read answers for a named card.** `DetailLoaded` carries the entry slug it was asked for, because
+a neighbour's read can land while the reader has moved on, and a message that only carried a
+`PokemonDetail` would overwrite what they are looking at with what they are not.
+
+**Read-ahead failures are swallowed.** A card nobody has asked for cannot produce an error message,
+and the read runs again if they swipe onto it.
+
+**Retry goes past the cache.** It is only reachable from the error state, where nothing is cached, so
+the flag changes nothing today — but a button that says "try again" and quietly does not is worse
+than no button.

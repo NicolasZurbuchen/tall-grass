@@ -65,7 +65,7 @@ class DetailExecutorTest {
                 var state = awaitItem()
                 while (state.isLoading) state = awaitItem()
 
-                assertEquals(charizardDetail, state.detail)
+                assertEquals(charizardDetail, state.details["charizard"])
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

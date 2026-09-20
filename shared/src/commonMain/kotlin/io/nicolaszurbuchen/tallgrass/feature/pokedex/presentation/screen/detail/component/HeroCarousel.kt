@@ -115,9 +115,9 @@ fun HeroCarousel(
 
 private val HERO_SIZE = 200.dp
 
-// Close enough that a neighbour shows about a fifth of itself once it has been scaled down, which is
-// the point at which it reads as a Pokemon rather than as an edge.
-private val HERO_SPACING = 24.dp
+// All but touching. Halved, a neighbour is 100dp wide, and the page either side of the centre then
+// has about 55 of those to show -- the half the design asks for.
+private val HERO_SPACING = 4.dp
 
 // Half. The size change is half of what makes a card arrive: it grows into the centre and shrinks
 // out of it, so the movement is not only sideways.

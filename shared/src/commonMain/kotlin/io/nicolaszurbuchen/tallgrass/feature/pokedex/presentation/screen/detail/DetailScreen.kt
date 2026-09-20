@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.arcTopShape
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.rememberEntranceClock
 import io.nicolaszurbuchen.tallgrass.design.theme.rememberReducedMotion
@@ -146,7 +146,7 @@ fun DetailScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(top = ARTWORK_SIZE - ARTWORK_OVERLAP)
-                        .clip(RoundedCornerShape(topStart = SHEET_CORNER, topEnd = SHEET_CORNER))
+                        .clip(arcTopShape(SHEET_ARC))
                         .background(MaterialTheme.appColors.surface)
                         .navigationBarsPadding()
                         .padding(top = ARTWORK_OVERLAP + MaterialTheme.spacing.md),
@@ -231,7 +231,10 @@ fun DetailScreen(
 }
 
 private val ARTWORK_SIZE = 200.dp
-private val SHEET_CORNER = 30.dp
+
+// How far the sheet's middle sits above its corners. The apex is where the Pokemon stands, so this
+// changes how much ground shows at the sides and not how much of the artwork is covered.
+private val SHEET_ARC = 32.dp
 
 // How much of the artwork the sheet covers. The artwork is square and many Pokemon do not reach the
 // bottom of their own frame, so the share of the box that overlaps is always more than the share of

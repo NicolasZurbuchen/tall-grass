@@ -14,6 +14,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 
 fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
+    val detail = details[activeEntrySlug]
     val variant = detail?.variants?.firstOrNull { it.slug == activeVariantSlug }
     val entry = entries.firstOrNull { it.slug == activeEntrySlug }
 

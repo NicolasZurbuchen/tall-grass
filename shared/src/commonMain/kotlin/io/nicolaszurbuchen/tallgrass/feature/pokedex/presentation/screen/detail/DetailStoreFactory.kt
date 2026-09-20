@@ -7,8 +7,10 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetPokemonDetailUseCase
+import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
 import io.nicolaszurbuchen.tallgrass.core.type.domain.usecase.GetTypeMatchupsUseCase
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import kotlinx.coroutines.CancellationException
@@ -53,9 +55,10 @@ class DetailStoreFactory(
     private inner class ExecutorImpl(
         private val query: DexQuery,
     ) : CoroutineExecutor<DetailIntent, DetailAction, DetailState, DetailMessage, DetailLabel>() {
-        // A swipe can outrun a read. Holding the job means a card that is no longer on screen stops
+        // A swipe can outrun a read. Holding the jobs means a card that is no longer on screen stops
         // being loaded rather than landing on top of the one that is.
         private var detailJob: Job? = null
+        private var readAheadJob: Job? = null
 
         override fun executeAction(action: DetailAction) {
             when (action) {
@@ -85,8 +88,10 @@ class DetailStoreFactory(
                     publish(DetailLabel.NavigateBack)
                 }
 
+                // Past the cache: a button that says "try again" and quietly does not is worse than no
+                // button, even if the only way to see it is to have nothing cached anyway.
                 DetailIntent.RetryClicked -> {
-                    loadDetail(state().activeEntrySlug)
+                    loadDetail(state().activeEntrySlug, force = true)
                 }
             }
         }
@@ -112,31 +117,38 @@ class DetailStoreFactory(
                     }
 
                 dispatch(DetailMessage.CarouselLoaded(entries))
+                readAhead()
             }
         }
 
-        private fun loadDetail(variantSlug: String) {
+        /**
+         * Nothing to do when the card is already held: a swipe onto a neighbour that was read ahead
+         * shows it on the same frame, with no skeleton in between.
+         */
+        private fun loadDetail(
+            entrySlug: String,
+            force: Boolean = false,
+        ) {
+            if (!force && state().details.containsKey(entrySlug)) {
+                readAhead()
+                return
+            }
+
             detailJob?.cancel()
             dispatch(DetailMessage.LoadStarted)
 
             detailJob =
                 scope.launch {
                     try {
-                        val detail = getPokemonDetail(variantSlug)
+                        val record = read(entrySlug)
 
-                        if (detail == null) {
+                        if (record == null) {
                             dispatch(DetailMessage.LoadFailed(AppError.Database.NotFound))
                             return@launch
                         }
 
-                        // Every form's matchups, not only the one about to be on screen: Arceus has
-                        // eighteen, and the switcher has to move between them without a query.
-                        val matchups =
-                            detail.variants.associate { variant ->
-                                variant.slug to getTypeMatchups(variant.primaryType, variant.secondaryType)
-                            }
-
-                        dispatch(DetailMessage.DetailLoaded(detail, matchups))
+                        dispatch(DetailMessage.DetailLoaded(entrySlug, record.first, record.second))
+                        readAhead()
                     } catch (e: AppException) {
                         dispatch(DetailMessage.LoadFailed(e.error))
                     } catch (e: CancellationException) {
@@ -145,6 +157,57 @@ class DetailStoreFactory(
                         dispatch(DetailMessage.LoadFailed(AppError.Unexpected(e)))
                     }
                 }
+        }
+
+        /**
+         * Reads the cards either side of the one on screen, so a swipe finds them already there.
+         *
+         * Failures are swallowed. A card the reader has not asked for cannot produce an error
+         * message, and the read runs again if they swipe onto it.
+         *
+         * DECISIONS.md § The carousel reads ahead, so a swipe lands on content
+         */
+        private fun readAhead() {
+            readAheadJob?.cancel()
+
+            val current = state()
+            val index = current.entries.indexOfFirst { it.slug == current.activeEntrySlug }
+            if (index < 0) return
+
+            val wanted =
+                listOfNotNull(current.entries.getOrNull(index - 1), current.entries.getOrNull(index + 1))
+                    .map { it.slug }
+                    .filterNot { current.details.containsKey(it) }
+
+            if (wanted.isEmpty()) return
+
+            readAheadJob =
+                scope.launch {
+                    wanted.forEach { slug ->
+                        try {
+                            read(slug)?.let { dispatch(DetailMessage.DetailLoaded(slug, it.first, it.second)) }
+                        } catch (e: AppException) {
+                            return@forEach
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            return@forEach
+                        }
+                    }
+                }
+        }
+
+        private suspend fun read(entrySlug: String): Pair<PokemonDetail, Map<String, List<TypeMatchup>>>? {
+            val detail = getPokemonDetail(entrySlug) ?: return null
+
+            // Every form's matchups, not only the one about to be on screen: Arceus has eighteen, and
+            // the switcher has to move between them without a query.
+            val matchups =
+                detail.variants.associate { variant ->
+                    variant.slug to getTypeMatchups(variant.primaryType, variant.secondaryType)
+                }
+
+            return detail to matchups
         }
     }
 
@@ -160,19 +223,27 @@ class DetailStoreFactory(
                 }
 
                 is DetailMessage.DetailLoaded -> {
+                    val isOnScreen = msg.entrySlug == activeEntrySlug
+                    val held = windowed(details + (msg.entrySlug to msg.detail))
+
                     copy(
-                        isLoading = false,
-                        detail = msg.detail,
-                        matchups = msg.matchups,
+                        isLoading = if (isOnScreen) false else isLoading,
+                        details = held,
+                        matchups = (matchups + msg.matchups).filterKeys { it in variantSlugs(held) },
                         // The card the carousel is on, unless the dataset has stopped carrying it,
                         // in which case the first form of the species is a better screen than an
-                        // empty one.
+                        // empty one. A read that answers for a card nobody is looking at changes
+                        // nothing about the one they are.
                         activeVariantSlug =
-                            msg.detail.variants
-                                .map { it.slug }
-                                .firstOrNull { it == activeEntrySlug }
-                                ?: msg.detail.variants.first().slug,
-                        error = null,
+                            if (isOnScreen) {
+                                msg.detail.variants
+                                    .map { it.slug }
+                                    .firstOrNull { it == activeEntrySlug }
+                                    ?: msg.detail.variants.first().slug
+                            } else {
+                                activeVariantSlug
+                            },
+                        error = if (isOnScreen) null else error,
                     )
                 }
 
@@ -180,15 +251,10 @@ class DetailStoreFactory(
                     copy(isLoading = false, error = msg.error)
                 }
 
-                // The sheet empties. Holding the previous Pokemon's forms, stats and matchups under
-                // the new one's name for the length of a read is a wrong screen rather than a slow
-                // one, and the read is one frame.
                 is DetailMessage.EntrySwitched -> {
                     copy(
                         activeEntrySlug = msg.entrySlug,
                         activeVariantSlug = msg.entrySlug,
-                        detail = null,
-                        matchups = emptyMap(),
                         error = null,
                     )
                 }
@@ -201,5 +267,32 @@ class DetailStoreFactory(
                     copy(tab = msg.tab)
                 }
             }
+
+        /**
+         * The card on screen and the two either side of it, which is exactly what the read-ahead
+         * fills and exactly what a swipe can reach without another read.
+         *
+         * Bounded by construction rather than by a count: swiping the length of the dex holds three
+         * records whatever route it took to get there.
+         */
+        private fun DetailState.windowed(candidates: Map<String, PokemonDetail>): Map<String, PokemonDetail> {
+            val index = entries.indexOfFirst { it.slug == activeEntrySlug }
+
+            val window =
+                if (index < 0) {
+                    setOf(activeEntrySlug)
+                } else {
+                    listOfNotNull(
+                        entries.getOrNull(index - 1),
+                        entries.getOrNull(index),
+                        entries.getOrNull(index + 1),
+                    ).map { it.slug }.toSet() + activeEntrySlug
+                }
+
+            return candidates.filterKeys { it in window }
+        }
+
+        private fun variantSlugs(details: Map<String, PokemonDetail>): Set<String> =
+            details.values.flatMap { detail -> detail.variants.map { it.slug } }.toSet()
     }
 }

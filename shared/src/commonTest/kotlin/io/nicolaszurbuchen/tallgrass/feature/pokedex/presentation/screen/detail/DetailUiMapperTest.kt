@@ -20,7 +20,7 @@ class DetailUiMapperTest {
         entryVariantSlug = "charizard",
         query = DexQuery.All,
         isLoading = isLoading,
-        detail = charizardDetail,
+        details = mapOf("charizard" to charizardDetail),
         activeVariantSlug = activeSlug,
     )
 
@@ -100,7 +100,7 @@ class DetailUiMapperTest {
         // when the mapper is next touched and nothing else on screen would look wrong.
         val withCostume = charizardDetail.copy(variants = charizardDetail.variants + charizardCostume)
 
-        val content = assertNotNull(state().copy(detail = withCostume).toUiModel(charizardHandoff).content)
+        val content = assertNotNull(state().copy(details = mapOf("charizard" to withCostume)).toUiModel(charizardHandoff).content)
 
         assertEquals(listOf("charizard", "charizard-mega-x"), content.forms.map { it.slug })
     }
@@ -109,7 +109,7 @@ class DetailUiMapperTest {
     fun toUiModel_hasNoSwitcherForASpeciesWithOneForm() {
         val single = charizardDetail.copy(variants = listOf(charizard))
 
-        val content = assertNotNull(state().copy(detail = single).toUiModel(charizardHandoff).content)
+        val content = assertNotNull(state().copy(details = mapOf("charizard" to single)).toUiModel(charizardHandoff).content)
 
         assertTrue(content.forms.isEmpty())
     }
