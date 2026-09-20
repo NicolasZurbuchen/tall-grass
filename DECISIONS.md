@@ -619,19 +619,23 @@ This also keeps the two halves of the screen honest about their padding: the hea
 same gutter as the grid's content padding, so the title sits on the same vertical line as the first
 card rather than on Material's own inset.
 
-### Switching form is a change of content, not a second arrival
+### The entrance belongs to the arrival, not to the content
 
-The entrance clock was keyed on the active form, so every use of the switcher replayed the whole
-screen: the tab row rose, the tab's content rose behind it, and the matchup chips popped in one at a
-time. The screen was already up, and re-entering it read as a navigation that had not happened.
+The entrance clock was keyed on the active form, and every use of the switcher replayed the whole
+screen: the tab row rose, the tab's content rose behind it, the matchup chips popped in one at a
+time. Keying it on the content arriving fixed that and broke the same thing again the moment the
+carousel landed, because a swipe empties the sheet and refills it — which is a content change by any
+definition, and not an arrival by any.
 
-It is keyed on the content arriving instead — which is later than the screen opening, and that is
-deliberate. Keying it on the screen would start the clock while the sheet was still a skeleton, so a
-slow read would hand the content to a clock already part-way through, and the entrance would be over
-before there was anything to enter.
+So the key is latched: false until the first read lands, true from then on, never false again. The
+entrance runs when the screen fills and not when anything refills it.
 
-What still moves on a switch is what the switch changes: the tint, the artwork, the stat bars and the
-figures beside them. Those are the same screen becoming something else, which is the thing worth
+The latch rather than keying on the screen opening, because a clock started while the sheet is still
+a skeleton can be finished before there is anything to enter, and a slow read would then deliver its
+content already settled.
+
+What still moves on a switch or a swipe is what actually changed: the tint, the artwork, the name,
+the number, the types. Those are the same screen becoming something else, which is the thing worth
 animating.
 
 ### Rejected: counting the stat figures to their new values
@@ -820,8 +824,17 @@ A card therefore arrives by resolving out of the ground colour and leaves by dis
 Animating a `ColorFilter` instead would rebuild the filter every frame of the drag; two images and an
 alpha is one composition and a redraw.
 
-The silhouette is *lighter* than the ground, not darker. A darker flat shape on a saturated colour
-reads as a hole punched in it rather than as a Pokemon standing behind the one in front.
+The silhouette is *darker* than the ground. Lighter was tried first, on the argument that a dark flat
+shape on a saturated colour reads as a hole punched in it. On a device it read as washed out instead —
+too close to the ground to be a second object at all. Darker gives the cards either side the shadow
+of the one in front, which is what they are standing in.
+
+**They are half size, and the size is half the movement.** A card grows into the centre and shrinks
+out of it, so arriving is not only a sideways translation.
+
+**A neighbour is also a control.** Tapping one brings it to the centre — the same movement the swipe
+makes, and the only one available to a reader who cannot make the gesture. It carries the Pokemon's
+name as its click label, which is the only thing that name is for.
 
 **The pages are a fixed width**, centred by content padding computed from the measured width, because
 what a neighbour shows has to be a slice of the artwork and not a slice of a page with the artwork
@@ -839,3 +852,23 @@ new one's name is a wrong screen rather than a slow one, and the read is a frame
 **Rejected: keeping the pager at one page until the list lands, then swapping it in.** The swap would
 remount the composable holding the shared element in the middle of the transition from the grid. It
 scrolls into place instead, which costs at most one frame on a page nobody has touched yet.
+
+### The artwork flies out of the grid and does not fly back
+
+Tapping a card flies its artwork, its name and its type pills into the hero. Pressing back does not
+fly them home: the two screens cross-fade.
+
+Not an oversight, and not a limitation. Once the carousel existed, the return could only be
+consistent by accident — swipe twice and the card you came from is three screens back in a grid that
+is not showing it, so there is nothing to fly to. A transition that runs when you have not moved and
+does not when you have is worse than one that never runs, because the reader has to learn which case
+they are in.
+
+The mechanism is that the grid's `heroSlug` is `remember` rather than `rememberSaveable`. The host
+disposes the grid's composition while the detail is open, so the flag is gone by the time the reader
+comes back and no card registers a key to match against. The forward transition is unaffected — the
+grid is still composed while it is being animated out.
+
+**Rejected: clearing the flag on the way back instead.** It needs the screen to know it is being
+returned to, which Navigation 3 does not hand it, and the answer would have been a guess dressed as a
+lifecycle.

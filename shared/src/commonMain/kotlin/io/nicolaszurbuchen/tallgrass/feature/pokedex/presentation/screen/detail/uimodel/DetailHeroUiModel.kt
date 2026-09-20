@@ -12,11 +12,15 @@ import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
  * picture and registers nothing, which is the same rule the dex grid follows. See
  * `DECISIONS.md § Only the tapped card is a shared element`.
  *
+ * [name] is read by a screen reader and by nothing else: the cards either side of the centre can be
+ * tapped to reach them, and a control that says only "image" is a control nobody can use.
+ *
  * [tint] is the colour the screen takes when this card is centred.
  */
 @Immutable
 data class DetailHeroUiModel(
     val slug: String,
+    val name: String,
     val artworkUrl: String,
     val tint: Color,
     val artworkKey: SharedElementKey?,

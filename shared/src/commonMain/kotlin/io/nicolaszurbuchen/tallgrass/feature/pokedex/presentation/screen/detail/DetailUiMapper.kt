@@ -40,6 +40,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
         }
 
     val tint = types.first().color
+    val heroName = variant?.name ?: entry?.name ?: hero.name
     val artworkUrl = variant?.artworkUrl ?: entry?.artworkUrl ?: hero.artworkUrl
     val dexNumber = entry?.dexNumber ?: detail?.species?.dexNumber
 
@@ -53,7 +54,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
     return DetailUiModel(
         isLoading = isLoading,
         error = error?.toUiModel(),
-        name = variant?.name ?: entry?.name ?: hero.name,
+        name = heroName,
         // Blank rather than wrong in the frame before the carousel's list has been read.
         numberText = dexNumber?.let { "#" + it.toString().padStart(DEX_NUMBER_DIGITS, '0') }.orEmpty(),
         types = types,
@@ -61,7 +62,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
         // One card until the list lands, so the carousel is never empty and the hero never waits.
         heroes =
             if (entries.isEmpty()) {
-                listOf(DetailHeroUiModel(activeEntrySlug, artworkUrl, tint, heroKey))
+                listOf(DetailHeroUiModel(activeEntrySlug, heroName, artworkUrl, tint, heroKey))
             } else {
                 entries.map { candidate ->
                     if (candidate.slug == activeEntrySlug) {

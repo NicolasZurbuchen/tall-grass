@@ -20,7 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,10 +73,13 @@ fun DetailScreen(
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Keyed on the content arriving rather than on which form is showing, so the entrance runs
-    // once when the read lands, and scrolling, switching form and changing tab all leave it alone.
-    // DECISIONS.md § Switching form is a change of content, not a second arrival
-    val elapsed by rememberEntranceClock(state.content != null, enabled = !rememberReducedMotion())
+    // Latched: true from the first read onwards and never false again, so the entrance runs when the
+    // screen fills and not when a swipe or a form switch refills it.
+    // DECISIONS.md § The entrance belongs to the arrival, not to the content
+    var hasFilled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(state.content) { if (state.content != null) hasFilled = true }
+
+    val elapsed by rememberEntranceClock(hasFilled, enabled = !rememberReducedMotion())
 
     // The hero colour is the card's, and both the carousel and the switcher change it. Animated so
     // the change reads as the same screen becoming something else rather than as a cut.
@@ -216,9 +222,7 @@ fun DetailScreen(
 
             HeroCarousel(
                 heroes = state.heroes,
-                // Lighter than the ground rather than darker: the artwork is drawn over a saturated
-                // colour, and a darker flat shape reads as a hole in it.
-                silhouette = lerp(tint, Color.White, SILHOUETTE_LIFT),
+                silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
                 pagerState = heroPagerState,
                 modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().height(ARTWORK_SIZE),
             )
@@ -234,6 +238,6 @@ private val SHEET_CORNER = 30.dp
 // the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
 private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
 
-// Far enough off the ground for a silhouette to read against it, close enough that it stays part of
-// it rather than becoming a second colour on the screen.
-private const val SILHOUETTE_LIFT = 0.22f
+// A card standing behind the one in front is in its shadow. Far enough off the ground to read against
+// it, close enough that it stays part of it rather than becoming a second colour on the screen.
+private const val SILHOUETTE_SHADE = 0.25f

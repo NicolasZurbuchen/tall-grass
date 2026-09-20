@@ -32,18 +32,21 @@ private fun DetailScreenPreview() {
                         listOf(
                             DetailHeroUiModel(
                                 slug = "charmeleon",
+                                name = "Charmeleon",
                                 artworkUrl = "",
                                 tint = TypeUiModel.FIRE.color,
                                 artworkKey = null,
                             ),
                             DetailHeroUiModel(
                                 slug = "charizard",
+                                name = "Charizard",
                                 artworkUrl = "",
                                 tint = TypeUiModel.FIRE.color,
                                 artworkKey = SharedElementKey(source = "dex", id = "charizard"),
                             ),
                             DetailHeroUiModel(
                                 slug = "squirtle",
+                                name = "Squirtle",
                                 artworkUrl = "",
                                 tint = TypeUiModel.WATER.color,
                                 artworkKey = null,

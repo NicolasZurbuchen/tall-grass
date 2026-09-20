@@ -21,6 +21,7 @@ fun DexEntry.toHeroUiModel(
 ): DetailHeroUiModel =
     DetailHeroUiModel(
         slug = slug,
+        name = name,
         artworkUrl = artworkUrl,
         tint = tint,
         artworkKey = artworkKey,

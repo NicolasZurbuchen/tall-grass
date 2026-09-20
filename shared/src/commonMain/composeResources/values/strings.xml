@@ -17,6 +17,7 @@
     <string name="pokedex_dex_prefetch_no_space">Not enough space to finish saving artwork. The rest loads as you browse.</string>
 
     <string name="pokedex_detail_back">Back</string>
+    <string name="pokedex_detail_show_pokemon">Show %1$s</string>
     <string name="pokedex_detail_form_default">Standard</string>
 
     <string name="pokedex_detail_tab_about">About</string>

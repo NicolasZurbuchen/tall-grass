@@ -1,5 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,6 +10,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -17,15 +21,22 @@ import androidx.compose.ui.util.lerp
 import coil3.compose.AsyncImage
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedElementOrNone
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.pokedex_detail_show_pokemon
 import kotlin.math.absoluteValue
 
 /**
- * The Pokemon on screen, with the cards either side of it showing through.
+ * The Pokemon on screen, with the cards either side of it standing behind it.
  *
  * Each card is drawn twice: the artwork, and the same artwork flattened to [silhouette] on top of
  * it. The flat copy's alpha is the card's distance from the centre, so a card arrives by resolving
  * out of the ground colour and leaves by dissolving back into it. That is cheaper and steadier than
  * animating a colour filter, which would rebuild the filter every frame.
+ *
+ * A neighbour is also a control: tapping it brings it to the centre, which is the same movement the
+ * swipe makes and the only one available to a reader who cannot make the gesture.
  *
  * The pages are a fixed width rather than the viewport's, because what a neighbour shows has to be a
  * slice of the *artwork* and not a slice of a page with the artwork somewhere inside it.
@@ -39,6 +50,8 @@ fun HeroCarousel(
     pagerState: PagerState,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
+
     BoxWithConstraints(modifier = modifier) {
         // Centres a fixed-width page in whatever width the screen turns out to be.
         val sidePadding = ((maxWidth - HERO_SIZE) / 2).coerceAtLeast(0.dp)
@@ -59,6 +72,10 @@ fun HeroCarousel(
                     .coerceIn(0f, 1f)
             }
 
+            // No ripple: the target is a Pokemon-shaped hole in a flat colour, and a circle
+            // expanding out of it lands mostly on the background.
+            val interactionSource = remember { MutableInteractionSource() }
+
             Box(
                 modifier =
                     Modifier
@@ -67,12 +84,20 @@ fun HeroCarousel(
                             val scale = lerp(NEIGHBOUR_SCALE, 1f, 1f - distanceOf())
                             scaleX = scale
                             scaleY = scale
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            enabled = page != pagerState.currentPage,
+                            onClickLabel = stringResource(Res.string.pokedex_detail_show_pokemon, hero.name),
+                        ) {
+                            scope.launch { pagerState.animateScrollToPage(page) }
                         },
             ) {
                 AsyncImage(
                     model = hero.artworkUrl,
                     // The name is read out above it, so describing the artwork too would say every
-                    // Pokemon twice to a screen reader.
+                    // Pokemon twice to a screen reader. The tap target carries the name instead.
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize().sharedElementOrNone(hero.artworkKey),
                 )
@@ -90,9 +115,10 @@ fun HeroCarousel(
 
 private val HERO_SIZE = 200.dp
 
-// Wide enough that a neighbour shows about a fifth of itself once it has been scaled down. Any less
-// and the cards look like one picture with edges; any more and the centre stops being the subject.
-private val HERO_SPACING = 56.dp
+// Close enough that a neighbour shows about a fifth of itself once it has been scaled down, which is
+// the point at which it reads as a Pokemon rather than as an edge.
+private val HERO_SPACING = 24.dp
 
-// Smaller, not distant: the neighbours are the same objects seen past the one in front.
-private const val NEIGHBOUR_SCALE = 0.75f
+// Half. The size change is half of what makes a card arrive: it grows into the centre and shrinks
+// out of it, so the movement is not only sideways.
+private const val NEIGHBOUR_SCALE = 0.5f
