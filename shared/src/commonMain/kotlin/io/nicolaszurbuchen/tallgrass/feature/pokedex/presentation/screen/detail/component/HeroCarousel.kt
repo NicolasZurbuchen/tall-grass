@@ -40,6 +40,7 @@ import kotlin.math.absoluteValue
  *
  * The pages are a fixed width rather than the viewport's, because what a neighbour shows has to be a
  * slice of the *artwork* and not a slice of a page with the artwork somewhere inside it.
+
  *
  * DECISIONS.md § The carousel is a pager over the browse list
  */

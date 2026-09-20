@@ -898,3 +898,67 @@ and the read runs again if they swipe onto it.
 **Retry goes past the cache.** It is only reachable from the error state, where nothing is cached, so
 the flag changes nothing today — but a button that says "try again" and quietly does not is worse
 than no button.
+
+### The sheet expands and the hero becomes a toolbar
+
+Dragging the sheet up is what makes a long tab readable on a phone. What it takes from the screen is
+the hero, so the hero has to leave in a way that keeps the reader oriented: the artwork, the number,
+the types and the genus fade out, and the name travels into the middle of the back arrow's row and
+shrinks to a title with a chevron either side of it. What is left is a toolbar, which is what a
+screen with no hero needs anyway.
+
+**One number drives all of it.** How far the sheet has been dragged positions the sheet, fades the
+hero, and moves the name. There is no second animation to keep in step, and a drag released halfway
+leaves every part of the screen halfway.
+
+**The hero and the sheet are siblings in a box, not a column.** The sheet slides up *over* the hero,
+and a column cannot place a child above its predecessor.
+
+**The hero measures itself.** Where the sheet rests is the bottom of the hero less the artwork's
+overlap, and the hero is a status bar plus however tall a name, a row of pills, a genus and the
+artwork turn out to be. Only the first of those is a number anyone could have written down. An
+earlier version added the status bar to a height that already included it, and the sheet sat a status
+bar too low — visible only as "that looks slightly wrong", which is the failure mode of a layout
+assembled from constants.
+
+**The whole sheet scrolls it open.** A handle alone is discoverable only by people looking for one.
+A nested-scroll connection spends an upward drag on expanding until the sheet is up, and a downward
+drag on collapsing — but only what the content underneath did not take, which is what keeps a
+scrolled tab scrolling rather than pulling the sheet down with it. The handle stays as the affordance
+that says the sheet moves at all, and as the one target that works when the content has nothing to
+scroll.
+
+This was first built as handle-only, on the argument that a horizontal pager full of vertical
+scrollers gives a nested-scroll connection three gestures to arbitrate between. That is true and it
+is not a reason: the arbitration is one `if` on the sign of the drag, and a gesture nobody discovers
+is worse than one that occasionally guesses.
+
+**The hero draws after the sheet**, so the Pokemon stands on it rather than behind it. In a `Box`,
+draw order and hit-test order are the same order reversed — the last child is drawn on top *and*
+asked about a pointer first — so putting the hero on top also put it in front of the sheet's
+gestures.
+
+**Which is why the faded hero is not merely faded.** An alpha of zero draws nothing and still answers
+a pointer, and the carousel at zero lies exactly over the expanded sheet's tabs. A horizontal pager
+between a finger and a horizontal pager is a gesture that arrives about one time in four, and a
+vertical drag over it has to survive the pager deciding the drag is not its axis first. Both are
+"nothing happened" to the reader.
+
+It is measured but not placed, which is `View.INVISIBLE` and which Compose has no single modifier
+for. Not placing it rather than not composing it: the hero's height is what decides where the sheet
+rests, so a carousel that left the layout would take 200dp of that with it and the sheet would jump
+on the way back down.
+
+**Rejected: `userScrollEnabled = false` on the pager.** It stops the pager scrolling. It does not
+stop it being the thing the pointer reaches, which was the actual problem.
+
+**The hero goes in the first quarter of the drag.** The sheet is what the reader is moving, so
+everything it is taking the place of should be gone by the time they have decided to move it — a
+sheet sliding up behind something still solid reads as two things happening rather than one. The
+chevrons arrive in the last two fifths, so nothing is half-faded on top of something else.
+
+**The name lands in the middle of the toolbar, with a chevron either side.** One Text that moves
+rather than two that cross-fade, which means its width has to be measured before its destination can
+be computed: a title is centred against its own measurement. The chevrons flank a gap the size of the
+scaled name, so it arrives between them rather than beside them, and they do what the carousel's
+swipe does for a reader who would rather press a button.
