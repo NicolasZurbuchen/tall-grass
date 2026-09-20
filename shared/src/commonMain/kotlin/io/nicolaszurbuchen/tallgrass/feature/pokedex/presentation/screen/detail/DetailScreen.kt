@@ -39,11 +39,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
@@ -153,6 +158,10 @@ fun DetailScreen(
     val expansion = remember { Animatable(0f) }
     val progress = expansion.value
 
+    // Front-loaded: the hero is gone in the first quarter of the drag, so the sheet is never rising
+    // behind something still solid.
+    val heroAlpha = 1f - (progress / HERO_FADE_BY).coerceIn(0f, 1f)
+
     // The hero measures itself: a status bar, a name, a row of pills, a genus and the artwork, and
     // only the first of those has a number anyone could have written down.
     var heroHeight by remember { mutableStateOf(0.dp) }
@@ -163,36 +172,61 @@ fun DetailScreen(
         val raisedTop = statusBar + TOOLBAR_HEIGHT
         val travelPx = with(density) { (restingTop - raisedTop).coerceAtLeast(0.dp).toPx() }
 
-        Column(modifier = Modifier.onSizeChanged { heroHeight = with(density) { it.height.toDp() } }) {
-            DetailHeader(
-                name = state.name,
-                numberText = state.numberText,
-                types = state.types,
-                artworkKey = state.heroes.getOrNull(state.activeIndex)?.artworkKey,
-                content = state.content,
-                onBackClick = onBackClick,
-                modifier = Modifier.statusBarsPadding(),
-                elapsedMillis = elapsed,
-                collapseProgress = progress,
-            )
+        // Scrolling the sheet moves it before it scrolls its content, and only in the direction
+        // that has anywhere to go. Dragging up spends the drag on expanding until the sheet is up;
+        // dragging down spends it on collapsing, but only what the content underneath did not take,
+        // which is what keeps a scrolled tab scrolling rather than pulling the sheet with it.
+        // DECISIONS.md § The sheet expands and the hero becomes a toolbar
+        val sheetScroll =
+            remember(travelPx) {
+                object : NestedScrollConnection {
+                    override fun onPreScroll(
+                        available: Offset,
+                        source: NestedScrollSource,
+                    ): Offset = drag(available.y, expanding = true)
 
-            HeroCarousel(
-                heroes = state.heroes,
-                silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
-                pagerState = heroPagerState,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(ARTWORK_SIZE)
-                        .graphicsLayer { alpha = 1f - progress },
-            )
-        }
+                    override fun onPostScroll(
+                        consumed: Offset,
+                        available: Offset,
+                        source: NestedScrollSource,
+                    ): Offset = drag(available.y, expanding = false)
+
+                    override suspend fun onPreFling(available: Velocity): Velocity {
+                        if (expansion.value <= 0f || expansion.value >= 1f) return Velocity.Zero
+
+                        expansion.animateTo(
+                            settleTarget(expansion.value, available.y),
+                            tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
+                        )
+
+                        return available
+                    }
+
+                    private fun drag(
+                        delta: Float,
+                        expanding: Boolean,
+                    ): Offset {
+                        if (travelPx <= 0f) return Offset.Zero
+                        if (expanding && delta >= 0f) return Offset.Zero
+                        if (!expanding && delta <= 0f) return Offset.Zero
+
+                        val next = (expansion.value - delta / travelPx).coerceIn(0f, 1f)
+                        val moved = next - expansion.value
+                        if (moved == 0f) return Offset.Zero
+
+                        dragScope.launch { expansion.snapTo(next) }
+
+                        return Offset(0f, -moved * travelPx)
+                    }
+                }
+            }
 
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(top = lerpDp(restingTop, raisedTop, progress))
+                    .nestedScroll(sheetScroll)
                     .clip(arcTopShape(SHEET_ARC))
                     .background(MaterialTheme.appColors.surface)
                     .navigationBarsPadding(),
@@ -209,14 +243,10 @@ fun DetailScreen(
                     }
                 },
                 onRelease = { velocity ->
-                    val target =
-                        when {
-                            velocity < -FLING_VELOCITY -> 1f
-                            velocity > FLING_VELOCITY -> 0f
-                            else -> if (expansion.value > HALFWAY) 1f else 0f
-                        }
-
-                    expansion.animateTo(target, tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint))
+                    expansion.animateTo(
+                        settleTarget(expansion.value, velocity),
+                        tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
+                    )
                 },
             )
 
@@ -288,15 +318,46 @@ fun DetailScreen(
                 }
             }
         }
+
+        // Drawn after the sheet, so the Pokemon stands on it rather than behind it. By the time the
+        // sheet has risen far enough to reach the header, the hero has already faded away.
+        Column(modifier = Modifier.onSizeChanged { heroHeight = with(density) { it.height.toDp() } }) {
+            DetailHeader(
+                name = state.name,
+                numberText = state.numberText,
+                types = state.types,
+                artworkKey = state.heroes.getOrNull(state.activeIndex)?.artworkKey,
+                content = state.content,
+                onBackClick = onBackClick,
+                onPreviousClick = { dragScope.launch { heroPagerState.animateScrollToPage(state.activeIndex - 1) } },
+                onNextClick = { dragScope.launch { heroPagerState.animateScrollToPage(state.activeIndex + 1) } },
+                hasPrevious = state.activeIndex > 0,
+                hasNext = state.activeIndex < state.heroes.lastIndex,
+                modifier = Modifier.statusBarsPadding(),
+                elapsedMillis = elapsed,
+                collapseProgress = progress,
+            )
+
+            HeroCarousel(
+                heroes = state.heroes,
+                silhouette = lerp(tint, Color.Black, SILHOUETTE_SHADE),
+                pagerState = heroPagerState,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(ARTWORK_SIZE)
+                        .graphicsLayer { alpha = heroAlpha },
+            )
+        }
     }
 }
 
 /**
- * The strip the sheet is dragged by, and the only part of it that is.
+ * The strip the sheet is dragged by, which is not the only part of it that moves it.
  *
- * The tabs below hold a pager whose pages scroll vertically, and a drag that could mean either
- * "scroll this" or "move the sheet" has to guess which. A handle is one gesture with one meaning,
- * and it is also the affordance saying the sheet moves at all.
+ * Scrolling anywhere on the sheet opens it too — see the nested-scroll connection above. The handle
+ * stays because that gesture is discoverable only by people already looking for it, and because it
+ * is the one target that still works when the tab below has nothing to scroll.
  */
 @Composable
 private fun SheetHandle(
@@ -337,6 +398,11 @@ private val SHEET_ARC = 32.dp
 // the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
 private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
 
+// The hero is gone in the first quarter of the drag. Front-loaded on purpose: the sheet is what the
+// reader is moving, so everything it takes the place of should be gone by the time they have decided
+// to move it.
+private const val HERO_FADE_BY = 0.25f
+
 // A card standing behind the one in front is in its shadow. Far enough off the ground to read against
 // it, close enough that it stays part of it rather than becoming a second colour on the screen.
 private const val SILHOUETTE_SHADE = 0.25f
@@ -355,3 +421,20 @@ private const val HALFWAY = 0.5f
 // Pixels per second past which the flick decides instead of the position. Low enough that a short
 // flick works, high enough that a slow drag goes wherever it was left nearest to.
 private const val FLING_VELOCITY = 400f
+
+/**
+ * Where a drag or a fling leaves the sheet.
+ *
+ * A flick decides on its own, whichever end it was nearer: releasing a short upward flick from a
+ * sheet barely off its rest still opens it, which is what a flick means. Without one, the sheet goes
+ * to whichever end it is closer to.
+ */
+private fun settleTarget(
+    progress: Float,
+    velocity: Float,
+): Float =
+    when {
+        velocity < -FLING_VELOCITY -> 1f
+        velocity > FLING_VELOCITY -> 0f
+        else -> if (progress > HALFWAY) 1f else 0f
+    }

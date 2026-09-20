@@ -903,8 +903,9 @@ than no button.
 
 Dragging the sheet up is what makes a long tab readable on a phone. What it takes from the screen is
 the hero, so the hero has to leave in a way that keeps the reader oriented: the artwork, the number,
-the types and the genus fade out, and the name travels into the back arrow's row and shrinks to sit
-beside it. What is left is a toolbar, which is what a screen with no hero needs anyway.
+the types and the genus fade out, and the name travels into the middle of the back arrow's row and
+shrinks to a title with a chevron either side of it. What is left is a toolbar, which is what a
+screen with no hero needs anyway.
 
 **One number drives all of it.** How far the sheet has been dragged positions the sheet, fades the
 hero, and moves the name. There is no second animation to keep in step, and a drag released halfway
@@ -920,12 +921,28 @@ earlier version added the status bar to a height that already included it, and t
 bar too low — visible only as "that looks slightly wrong", which is the failure mode of a layout
 assembled from constants.
 
-**Only the handle drags.** Below it is a pager whose pages scroll vertically, and a drag that could
-mean either "scroll this" or "move the sheet" has to guess. A handle is one gesture with one meaning,
-and it is also the affordance that says the sheet moves at all.
+**The whole sheet scrolls it open.** A handle alone is discoverable only by people looking for one.
+A nested-scroll connection spends an upward drag on expanding until the sheet is up, and a downward
+drag on collapsing — but only what the content underneath did not take, which is what keeps a
+scrolled tab scrolling rather than pulling the sheet down with it. The handle stays as the affordance
+that says the sheet moves at all, and as the one target that works when the content has nothing to
+scroll.
 
-**Rejected: dragging anywhere on the sheet, with a nested-scroll connection deciding.** It is what a
-Material bottom sheet does and it is the right answer for a sheet whose content is a plain list. Here
-the content is a horizontal pager containing vertical scrollers, so the connection has to arbitrate
-between three gestures, and the failure it produces is a scroll that sometimes moves the sheet — which
-is worse than a handle that always does.
+This was first built as handle-only, on the argument that a horizontal pager full of vertical
+scrollers gives a nested-scroll connection three gestures to arbitrate between. That is true and it
+is not a reason: the arbitration is one `if` on the sign of the drag, and a gesture nobody discovers
+is worse than one that occasionally guesses.
+
+**The hero draws after the sheet**, so the Pokemon stands on it rather than behind it. By the time
+the sheet has risen far enough to reach the header, the hero has already gone.
+
+**The hero goes in the first quarter of the drag.** The sheet is what the reader is moving, so
+everything it is taking the place of should be gone by the time they have decided to move it — a
+sheet sliding up behind something still solid reads as two things happening rather than one. The
+chevrons arrive in the last two fifths, so nothing is half-faded on top of something else.
+
+**The name lands in the middle of the toolbar, with a chevron either side.** One Text that moves
+rather than two that cross-fade, which means its width has to be measured before its destination can
+be computed: a title is centred against its own measurement. The chevrons flank a gap the size of the
+scaled name, so it arrives between them rather than beside them, and they do what the carousel's
+swipe does for a reader who would rather press a button.
