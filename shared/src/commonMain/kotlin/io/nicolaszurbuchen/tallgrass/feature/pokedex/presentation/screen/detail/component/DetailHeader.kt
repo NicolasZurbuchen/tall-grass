@@ -54,11 +54,12 @@ fun DetailHeader(
     // to answer rather than the modifier's.
     val layoutDirection = LocalLayoutDirection.current
 
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.xl)) {
+    Column(modifier = modifier.fillMaxWidth()) {
         // Deliberately outside the entrance. It is the one control on this screen that has to work
         // the instant the screen is up, and a target that is still sliding is a target that can be
-        // missed.
-        IconButton(onClick = onBackClick) {
+        // missed. The inset is Material's navigation-icon padding rather than this screen's gutter.
+        // DECISIONS.md § A back arrow takes the navigation inset, not the content gutter
+        IconButton(onClick = onBackClick, modifier = Modifier.padding(start = MaterialTheme.spacing.xs)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.pokedex_detail_back),
@@ -71,7 +72,11 @@ fun DetailHeader(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.lg)
+                    .padding(top = MaterialTheme.spacing.md),
         ) {
             Text(
                 text = name,
@@ -102,7 +107,11 @@ fun DetailHeader(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.sm),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spacing.lg)
+                    .padding(top = MaterialTheme.spacing.sm),
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs)) {
                 // Bounds rather than a plain shared element: the pill is a chip on the card and a

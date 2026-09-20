@@ -25,6 +25,9 @@ import tallgrass.shared.generated.resources.header_back
  * Not Material's `TopAppBar`, which sets the title beside the navigation icon at body size. The
  * title here is the largest thing on the screen until the content starts, which is what tells the
  * reader where they landed. See `DECISIONS.md § A screen title is a heading, not a toolbar label`.
+ *
+ * The title indents to the content gutter and the back arrow does not — see
+ * `DECISIONS.md § A back arrow takes the navigation inset, not the content gutter`.
  */
 @Composable
 fun AppScreenHeader(
@@ -32,8 +35,8 @@ fun AppScreenHeader(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = MaterialTheme.spacing.sm)) {
-        IconButton(onClick = onBackClick) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        IconButton(onClick = onBackClick, modifier = Modifier.padding(start = MaterialTheme.spacing.xs)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(Res.string.header_back),
@@ -47,12 +50,7 @@ fun AppScreenHeader(
             color = MaterialTheme.appColors.textPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier =
-                Modifier.padding(
-                    start = MaterialTheme.spacing.sm,
-                    end = MaterialTheme.spacing.sm,
-                    top = MaterialTheme.spacing.sm,
-                ),
+            modifier = Modifier.padding(horizontal = MaterialTheme.spacing.md).padding(top = MaterialTheme.spacing.sm),
         )
     }
 }
