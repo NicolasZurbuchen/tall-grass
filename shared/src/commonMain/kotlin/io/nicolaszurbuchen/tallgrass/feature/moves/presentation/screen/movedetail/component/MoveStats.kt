@@ -31,6 +31,10 @@ import io.nicolaszurbuchen.tallgrass.infra.text.asString
  * pattern already means "short facts that belong together".
  *
  * A move with no power draws a dash. A status move does not deal a small amount of damage.
+ *
+ * The figure is set two slots above the label rather than one. These three are the reason the screen
+ * is open -- they are what a reader came to check -- and at the About tab's height-and-weight size
+ * they read as two facts of equal weight rather than as a number with a name on it.
  */
 @Composable
 fun MoveStats(
@@ -65,7 +69,7 @@ private fun RowScope.StatTile(
         )
         Text(
             text = stat.valueText,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.appColors.textPrimary,
         )
     }

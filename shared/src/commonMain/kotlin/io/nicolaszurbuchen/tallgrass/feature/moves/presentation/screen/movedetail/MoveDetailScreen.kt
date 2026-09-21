@@ -447,6 +447,10 @@ private val SHEET_ARC = 32.dp
 // How far the sheet rides up over the hero at rest. A Pokemon's sheet covers a third of the artwork;
 // there is no artwork here, so this is only enough for the arc to cut into the colour rather than
 // meeting it in a straight line.
+//
+// The hero pays for it twice over in its own bottom padding, which is what leaves air between the
+// type pill and the arc. At parity the two touched, and a pill sitting on the sheet's edge read as
+// the sheet having been dragged up rather than as where it rests.
 private val SHEET_OVERLAP = 24.dp
 
 // Taller than the hero, so the glyph runs off both the top and the bottom of it and reads as

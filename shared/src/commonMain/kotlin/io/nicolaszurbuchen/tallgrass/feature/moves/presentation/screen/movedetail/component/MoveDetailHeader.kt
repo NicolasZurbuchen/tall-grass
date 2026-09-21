@@ -118,7 +118,7 @@ fun MoveDetailHeader(
                 modifier =
                     Modifier
                         .padding(horizontal = gutter)
-                        .padding(top = MaterialTheme.spacing.sm, bottom = MaterialTheme.spacing.lg)
+                        .padding(top = MaterialTheme.spacing.sm, bottom = MaterialTheme.spacing.xxl)
                         .graphicsLayer { alpha = heroAlpha }
                         .sharedBoundsOrNone(move.nameKey.typeKey()),
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = PILL_SIZE),
@@ -135,10 +135,11 @@ private val TOOLBAR_ROW_HEIGHT = 56.dp
 private const val TOOLBAR_NAME_SCALE = 0.45f
 private val NAME_RISE = 64.dp
 
-// Larger than a Pokemon hero's 14sp, and larger than the slot it is copied from. This hero has one
-// pill where a Pokemon's has two plus a number and a genus line, so at chip size it read as a label
-// somebody had forgotten to finish rather than as the move's second fact.
-private val PILL_SIZE = 18.sp
+// The same figure a Pokemon hero sets its pills at, and deliberately the same rather than sized for
+// this screen: a reader moving between the two heroes should not be able to tell that one of them
+// decided its own chip size. Two off the slot it is copied from -- no role in the scale means "chip,
+// but large", and titleLarge happens to be 14sp but is the button slot.
+private val PILL_SIZE = 14.sp
 
 // The hero is gone in the first quarter of the drag.
 private const val HERO_FADE_BY = 0.25f
