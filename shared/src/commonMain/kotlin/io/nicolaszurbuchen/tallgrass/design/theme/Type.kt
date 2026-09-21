@@ -160,8 +160,8 @@ val AppTypography
                 TextStyle(
                     fontFamily = PrimaryFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    lineHeight = 16.sp,
+                    fontSize = 11.sp,
+                    lineHeight = 15.sp,
                     letterSpacing = 1.sp,
                 ),
         )
