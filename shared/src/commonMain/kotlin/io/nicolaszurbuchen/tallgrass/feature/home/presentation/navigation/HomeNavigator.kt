@@ -8,4 +8,6 @@ package io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation
  */
 interface HomeNavigator {
     fun navigateToPokedex()
+
+    fun navigateToMoves()
 }

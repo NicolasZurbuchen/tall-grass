@@ -19,6 +19,10 @@ data class Manifest(
     val typeCount: Int,
     val abilityCount: Int,
     val moveCount: Int,
+    // The only join row that is counted. The rest -- egg groups, variant types, stat changes -- are
+    // read back with the entity they hang off, so a dropped one shows up as a hole in that entity.
+    // Nothing else counts the learnset, and half of it going missing would look like a quiet dataset.
+    val learnerCount: Int,
 )
 
 @Serializable
@@ -183,4 +187,34 @@ data class TypeEfficacyJson(
 data class TypeChartJson(
     val types: List<TypeJson>,
     val efficacies: List<TypeEfficacyJson>,
+)
+
+/**
+ * Which Pokemon learn one move.
+ *
+ * Grouped by move because that is the only direction anything reads it: a move's detail screen asks
+ * "who learns this", and nothing yet asks a Pokemon what it knows. The reverse join is the same rows
+ * and arrives with the Pokemon detail's Moves tab.
+ *
+ * 166 of the 919 moves have an empty [learnedBy] and that is correct rather than missing -- they are
+ * the Z-moves, the Max moves and the other battle-only entries no Pokemon is ever taught.
+ */
+@Serializable
+data class LearnsetJson(
+    val slug: String,
+    val learnedBy: List<LearnerJson>,
+)
+
+/**
+ * One Pokemon that learns a move, and how.
+ *
+ * [level] is set only for `level-up`, and not for all of those: it is null for the other three methods,
+ * where the question does not arise, and for the 160 level-up moves a Pokemon knows without being
+ * taught. Upstream writes 0 in every one of those cases and 0 is not a level.
+ */
+@Serializable
+data class LearnerJson(
+    val variant: String,
+    val method: String,
+    val level: Int?,
 )

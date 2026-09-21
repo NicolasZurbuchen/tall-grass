@@ -16,10 +16,11 @@ class HomeNavKeyHandler(
                     when (tile) {
                         HomeTileUiModel.POKEDEX -> navigator.navigateToPokedex()
 
+                        HomeTileUiModel.MOVES -> navigator.navigateToMoves()
+
                         // Every other feature is still a ticket. The tiles render and do nothing,
                         // which is better than hiding them: the home screen is the app's table of
                         // contents and a shorter one would misrepresent what is coming.
-                        HomeTileUiModel.MOVES,
                         HomeTileUiModel.ABILITIES,
                         HomeTileUiModel.ITEMS,
                         HomeTileUiModel.REGIONS,

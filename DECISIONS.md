@@ -1186,3 +1186,58 @@ move with up to six — `contact`, `punch`, `sound`, `bite`, `powder`, `dance` a
 from the moves side. They live only in the CSVs and not on any endpoint, which is #10's pinned SHA
 paying for itself. Held back because two of the 21 are noise on 64% of moves and 69 Generation IX
 moves are untagged, and both want deciding rather than defaulting. See #66.
+
+### The learnset is the newest game that teaches, not the newest game
+
+`pokemon_moves` is 638,321 rows because it holds every version group a Pokemon has ever appeared in.
+Filtering each Pokemon to its most recent one is #7's latest-by-default applied to a table rather than
+to a screen: what a Pokemon learns is what it learns in the newest game that has it. That leaves
+62,777 rows across 1,268 Pokemon, which is what the Learned by tab reads.
+
+**"Most recent" had to be asked more carefully than that, and the first version was wrong.** Version
+group 32 is Pokemon Champions, and every row in it is `train` — Legends: Arceus-style move mastery,
+which sharpens a move a Pokemon already has rather than teaching it one. Taken as a Pokemon's newest
+appearance, it left **319 Pokemon with an empty learnset**, Charizard among them. Nothing failed: the
+tab rendered, the list was empty, and an empty list is a legitimate answer for 106 real moves.
+
+So the rows are filtered to the four methods that actually teach — level-up, machine, egg, tutor —
+*before* anything asks which version group is newest. The question became "the newest game in which
+this Pokemon actually learns something", which needs no list of titles to skip and answers the same
+way for whatever upstream adds next. A test pins Charizard at Flamethrower, level 46.
+
+**One row per Pokemon and move, not one per way of getting it.** A move that is both a level-up move
+and a TM is one fact on a card and upstream files it twice; the generator keeps the most informative
+answer — level-up first, because it is the one that carries a number. 71,940 rows become 62,777.
+
+**Zero is not a level**, which is the same rule the move meta needed. Upstream writes 0 in the level
+column for every machine, egg and tutor row, and for the 160 level-up moves a Pokemon knows without
+being taught. Carried through, a TM would have read as being learned at level 0.
+
+The 117 Pokemon with no learnset at all are Megas, Gigantamaxes and alternate forms, which learn what
+their base form learns and which upstream does not duplicate rows for. **None of them is a dex card**,
+and a test says so — that is the difference between a known gap and a grid entry with nothing behind
+it.
+
+### The bundled dataset is replaced when it changes, not only when it is missing
+
+The generated database is copied out of the app's resources on first run, because SQLite opens a file
+and a bundled resource is an entry inside the package. That copy used to be made when no file was
+there and never again.
+
+**Which means a dataset update never reached anyone who already had the app.** Not a dev-loop
+annoyance: the first copy a device made was the dex that user kept for as long as they had the app
+installed, and shipping a corrected type chart or a new generation would have changed nothing for
+them. It surfaced as `no such table: moveLearner` on a device that had been running the previous
+build, which is the lucky version of the failure — a schema change announces itself, where a thousand
+corrected rows would not.
+
+The file cannot answer the question itself. SQLite's `user_version` carries the *schema* version, so a
+pin bump that rewrites every row leaves it untouched — exactly the change worth noticing and the one
+it cannot report. So `buildPokedexDatabase` writes a `pokedex.stamp` beside the database holding the
+schema version and the pinned upstream SHA, the driver factory compares the bundled stamp with the
+one next to the copy, and a mismatch re-copies.
+
+Deliberately a comparison rather than a version bump the copier is told about: the stamp is derived
+from the manifest the generator already writes, so nobody has to remember to increment anything. An
+unreadable stamp counts as a mismatch, which re-copies — the safe direction, and it costs one copy of
+a file the app is about to read anyway.

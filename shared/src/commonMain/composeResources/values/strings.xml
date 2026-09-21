@@ -56,6 +56,62 @@
 
     <string name="pokedex_detail_type_defenses">Type Defenses</string>
 
+    <string name="moves_title">Moves</string>
+    <!-- Under the figure on a move card, which is the move's power or an em dash. -->
+    <string name="moves_power">POWER</string>
+
+    <string name="move_detail_battle_data">Battle Data</string>
+    <string name="move_detail_power">Power</string>
+    <string name="move_detail_accuracy">Accuracy</string>
+    <string name="move_detail_pp">PP</string>
+    <string name="move_detail_pp_value">%1$s PP</string>
+    <string name="move_detail_accuracy_value">%1$s%</string>
+
+    <string name="move_detail_effect">Effect</string>
+    <string name="move_detail_target">Target</string>
+    <string name="move_detail_priority">Priority</string>
+
+    <string name="move_detail_mechanics">Mechanics</string>
+
+    <string name="move_detail_tab_about">Details</string>
+    <string name="move_detail_tab_learners">Learned by</string>
+    <!-- The 106 moves nobody is taught: Z-moves, Max moves and the handful that only exist
+         mid-battle. An empty list is a fact here, so it says so rather than showing nothing. -->
+    <string name="move_detail_no_learners">No Pok&#233;mon learns this move.</string>
+    <string name="move_detail_learner_count">%1$s Pok&#233;mon</string>
+    <string name="move_detail_level">Lv %1$s</string>
+    <string name="move_detail_kind">Kind</string>
+    <string name="move_detail_condition">Condition</string>
+    <string name="move_detail_hits">Hits</string>
+    <string name="move_detail_turns">Lasts</string>
+    <string name="move_detail_drain">Drain</string>
+    <string name="move_detail_recoil">Recoil</string>
+    <string name="move_detail_healing">Heals</string>
+    <string name="move_detail_hp_cost">HP cost</string>
+    <string name="move_detail_crit_rate">Critical hits</string>
+    <string name="move_detail_flinch">Flinch</string>
+
+    <!-- Upstream stores a chance of 0 beside an effect that is certain, so the absence of a
+         percentage is itself the fact. These two are a pair: one says the odds, the other says there
+         are none to say. Drawing 0% instead would be the worst number in the app. -->
+    <string name="move_detail_chance">%1$s%</string>
+    <!-- Suffixes rather than wrappers: the value they qualify is itself a formatted resource, and a
+         format cannot be substituted into another format without resolving it first. UiText.Composite
+         joins the two. -->
+    <string name="move_detail_chance_suffix"> · %1$s%</string>
+    <string name="move_detail_certain_suffix"> · always</string>
+
+    <string name="move_detail_times">%1$s times</string>
+    <string name="move_detail_times_range">%1$s to %2$s times</string>
+    <string name="move_detail_turns_value">%1$s turns</string>
+    <string name="move_detail_turns_range">%1$s to %2$s turns</string>
+    <string name="move_detail_share_of_damage">%1$s% of the damage dealt</string>
+    <string name="move_detail_share_of_max_hp">%1$s% of max HP</string>
+    <string name="move_detail_crit_stages">%1$s stage above normal</string>
+    <string name="move_detail_crit_stages_plural">%1$s stages above normal</string>
+    <string name="move_detail_stat_stage">%1$s stage</string>
+    <string name="move_detail_stat_stages">%1$s stages</string>
+
     <string name="header_back">Back</string>
 
     <string name="error_retry">Retry</string>

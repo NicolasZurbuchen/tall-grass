@@ -7,7 +7,7 @@ import java.net.URI
 const val SOURCE_SHA: String = "4b82c204ddd19ecb8eda2ea044ccb59e222b721c"
 
 /** Bumped when the shape of the generated JSON changes, not when its contents do. */
-const val SCHEMA_VERSION: Int = 3
+const val SCHEMA_VERSION: Int = 4
 
 /**
  * Upstream numbers spin-off content from 10000 in the same tables as the main series. Sixty of the

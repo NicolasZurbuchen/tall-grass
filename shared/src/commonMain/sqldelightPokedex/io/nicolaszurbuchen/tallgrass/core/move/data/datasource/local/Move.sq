@@ -80,3 +80,80 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 
 insertMoveStatChange:
 INSERT INTO moveStatChange(moveSlug, statSlug, change) VALUES (?, ?, ?);
+
+-- Alphabetical, because a move has no number to walk. The dex is ordered by the National Dex and
+-- this is the closest thing a list of 919 names has to it.
+selectMoves:
+SELECT slug, name, typeSlug, damageClass, power
+FROM move
+ORDER BY name;
+
+-- Columns named rather than a star, so the generated type is SelectMove and not the table type Move,
+-- which would collide with the domain model of the same name in every mapper that touches both.
+selectMove:
+SELECT slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target,
+       shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns,
+       drain, healing, critRate, flinchChance, statChance
+FROM move
+WHERE slug = ?;
+
+-- Unordered on purpose. The table has no ordering column and the primary key would hand these back
+-- alphabetically, which is not the order stats are drawn in anywhere else in the app. `BattleStat`
+-- declares that order and the mapper sorts by it, so there is one statement of it rather than two.
+selectMoveStatChanges:
+SELECT statSlug, change
+FROM moveStatChange
+WHERE moveSlug = ?;
+
+-- Which Pokemon learn each move, from each Pokemon's most recent appearance. 46,679 rows.
+--
+-- One row per Pokemon and move rather than one per way of getting it: a move that is both a level-up
+-- move and a TM is one fact on a card, and the generator picks which answer to keep. See
+-- DECISIONS.md on the learnset.
+--
+-- `level` is set only where `method` is 'level-up'. A TM has no level, and 0 would claim it is
+-- learned on hatching.
+CREATE TABLE moveLearner (
+    moveSlug    TEXT NOT NULL,
+    variantSlug TEXT NOT NULL,
+    -- "level-up", "machine", "egg" or "tutor".
+    method      TEXT NOT NULL,
+    level       INTEGER,
+    PRIMARY KEY (moveSlug, variantSlug)
+);
+
+-- The primary key already leads with moveSlug, so the only lookup this table has is covered.
+-- A second index on variantSlug is what the Pokemon detail's Moves tab will want, and it is not
+-- added until something reads it.
+
+-- Joined to `variant` here rather than stored denormalised: the name and the artwork belong to the
+-- Pokemon, and 46,679 copies of a URL is how a dataset gets a row that disagrees with itself.
+--
+-- Ordered by Dex number so the list reads as a walk through the Pokedex, with a species' forms
+-- adjacent -- the same ordering selectDexEntries uses, because it is the same walk.
+-- The types come along because tapping one of these opens the Pokemon, and its hero draws the
+-- artwork and the colour before it has read anything. LEFT for the same reason selectDexEntries
+-- uses LEFT: a subquery would be typed NOT NULL and most Pokemon have no second type.
+selectMoveLearners:
+SELECT
+    v.slug,
+    v.speciesDexNumber,
+    v.name,
+    v.formLabel,
+    v.artworkUrl,
+    t1.typeSlug AS primaryType,
+    t2.typeSlug AS secondaryType,
+    l.method,
+    l.level
+FROM moveLearner l
+JOIN variant v ON v.slug = l.variantSlug
+LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
+LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
+WHERE l.moveSlug = ?
+ORDER BY v.speciesDexNumber, v.sortOrder;
+
+countMoveLearners:
+SELECT count(*) FROM moveLearner;
+
+insertMoveLearner:
+INSERT INTO moveLearner(moveSlug, variantSlug, method, level) VALUES (?, ?, ?, ?);

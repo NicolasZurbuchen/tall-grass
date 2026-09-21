@@ -29,12 +29,14 @@ fun main(args: Array<String>) {
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
     val abilities = buildAbilities(source)
     val moves = buildMoves(source)
+    val learnset = buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
     outputDir.resolve("species.json").writeText(json.encodeToString(species))
     outputDir.resolve("variants.json").writeText(json.encodeToString(variants))
     outputDir.resolve("abilities.json").writeText(json.encodeToString(abilities))
     outputDir.resolve("moves.json").writeText(json.encodeToString(moves))
+    outputDir.resolve("learnset.json").writeText(json.encodeToString(learnset))
 
     val manifest =
         Manifest(
@@ -46,6 +48,7 @@ fun main(args: Array<String>) {
             typeCount = types.types.size,
             abilityCount = abilities.size,
             moveCount = moves.size,
+            learnerCount = learnset.sumOf { it.learnedBy.size },
         )
     outputDir.resolve("manifest.json").writeText(json.encodeToString(manifest))
 
@@ -55,6 +58,7 @@ fun main(args: Array<String>) {
     println("  types              ${manifest.typeCount}")
     println("  abilities          ${manifest.abilityCount}")
     println("  moves              ${manifest.moveCount}")
+    println("  learnset rows      ${manifest.learnerCount}")
 }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
@@ -502,3 +506,106 @@ private fun buildMoveMeta(
         statChance = row.int("stat_chance").takeIf { it != 0 },
     )
 }
+
+/**
+ * Which Pokemon learn each move, from each Pokemon's most recent appearance.
+ *
+ * `pokemon_moves` is 638,321 rows because it holds every version group a Pokemon has ever been in.
+ * Filtering each Pokemon to the highest version group it appears in leaves 71,940, which is #7's
+ * latest-by-default applied to a table rather than to a screen: what a Pokemon learns is what it
+ * learns in the newest game that has it.
+ *
+ * **One row per Pokemon and move, not one per way of getting it.** A move that is both a level-up
+ * move and a TM is one fact on a card, and upstream files it twice; [METHOD_PRIORITY] picks which
+ * answer to keep, lowest level first where there are several. 71,940 rows become 46,679.
+ *
+ * `train` is excluded and is not a way of learning anything -- it is Legends: Arceus's move mastery,
+ * which sharpens a move the Pokemon already has. Left in, it would be 19,810 rows claiming a Pokemon
+ * learns by training.
+ */
+private fun buildLearnset(
+    source: UpstreamSource,
+    knownMoves: Set<String>,
+    knownVariants: Set<String>,
+): List<LearnsetJson> {
+    val methods = source.read("pokemon_move_methods").associate { it.int("id") to it["identifier"] }
+    val moveSlugs = source.read("moves").associate { it.int("id") to it["identifier"] }
+    val variantSlugs = source.read("pokemon").associate { it.int("id") to it["identifier"] }
+
+    // **Filtered to real methods before anything asks which version group is newest**, and the order
+    // is the whole rule rather than a tidying. Version group 32 is Pokemon Champions, where every
+    // row is `train`; taken as a Pokemon's newest appearance it leaves 319 of them -- Charizard among
+    // them -- with an empty learnset, because mastery is all that game records.
+    //
+    // What this asks instead is "the newest game in which it actually learns something", which needs
+    // no list of titles to skip and answers the same way for whatever upstream adds next.
+    val rows =
+        source.read("pokemon_moves")
+            .filter { methods[it.int("pokemon_move_method_id")] in METHOD_PRIORITY }
+
+    // Highest wins because upstream allocates version group ids in release order, which is the only
+    // ordering it publishes. A generation added out of order upstream would need a real table here.
+    val newestPerPokemon =
+        rows.groupBy { it.int("pokemon_id") }
+            .mapValues { (_, entries) -> entries.maxOf { it.int("version_group_id") } }
+
+    val best = mutableMapOf<Pair<String, String>, LearnerJson>()
+
+    rows.forEach { row ->
+        val pokemonId = row.int("pokemon_id")
+        if (row.int("version_group_id") != newestPerPokemon[pokemonId]) return@forEach
+
+        val variant = variantSlugs[pokemonId]?.takeIf { it in knownVariants } ?: return@forEach
+        val move = moveSlugs[row.int("move_id")]?.takeIf { it in knownMoves } ?: return@forEach
+        val method = methods[row.int("pokemon_move_method_id")]?.takeIf { it in METHOD_PRIORITY } ?: return@forEach
+
+        // **Zero is not a level.** Upstream writes 0 in this column for every machine, egg and tutor
+        // row -- 33,677 of the 46,679 -- where the question does not arise, and for the 160 level-up
+        // moves a Pokemon knows without being taught, which it learns on evolution or already has.
+        // Carried through, a TM would say the move is learned at level 0.
+        val level = row.intOrNull("level")?.takeIf { method == LEVEL_UP && it > 0 }
+
+        val candidate = LearnerJson(variant = variant, method = method, level = level)
+        val existing = best[move to variant]
+
+        if (existing == null || candidate.beats(existing)) best[move to variant] = candidate
+    }
+
+    return best.entries
+        .groupBy({ it.key.first }, { it.value })
+        .let { byMove ->
+            knownMoves.sorted().map { move ->
+                LearnsetJson(
+                    slug = move,
+                    learnedBy = byMove[move].orEmpty().sortedWith(compareBy({ it.method }, { it.variant })),
+                )
+            }
+        }
+}
+
+/**
+ * Earlier in [METHOD_PRIORITY] wins; between two level-up rows, the earlier one does.
+ *
+ * No level counts as earlier than any level, because for a level-up row that is what it means: the
+ * Pokemon knows the move without being taught it.
+ */
+private fun LearnerJson.beats(other: LearnerJson): Boolean {
+    val rank = METHOD_PRIORITY.indexOf(method)
+    val otherRank = METHOD_PRIORITY.indexOf(other.method)
+
+    if (rank != otherRank) return rank < otherRank
+
+    return (level ?: 0) < (other.level ?: 0)
+}
+
+/**
+ * Which answer to keep when a Pokemon has more than one way to the same move, best first.
+ *
+ * Level-up leads because it is the one that carries a number and so says the most; a TM says only
+ * that it is possible. The order is a judgement about what a card should show rather than a fact
+ * about the games, which is why it is here rather than in the domain.
+ */
+private val METHOD_PRIORITY = listOf(LEVEL_UP, "machine", "egg", "tutor")
+
+/** The one method that carries a number, which is why it is named rather than spelled twice. */
+private const val LEVEL_UP = "level-up"
