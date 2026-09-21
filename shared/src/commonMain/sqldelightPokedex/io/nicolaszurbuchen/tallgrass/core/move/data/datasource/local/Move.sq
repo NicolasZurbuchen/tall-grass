@@ -122,9 +122,11 @@ CREATE TABLE moveLearner (
     PRIMARY KEY (moveSlug, variantSlug)
 );
 
--- The primary key already leads with moveSlug, so the only lookup this table has is covered.
--- A second index on variantSlug is what the Pokemon detail's Moves tab will want, and it is not
--- added until something reads it.
+-- The primary key already leads with moveSlug, which covers a move asking who learns it. The Pokemon
+-- detail asks the other way and the key cannot answer that, so this is the index for it. Added now
+-- rather than earlier because it had no reader until the Moves tab.
+CREATE INDEX moveLearnerByVariant ON moveLearner(variantSlug);
+
 
 -- Joined to `variant` here rather than stored denormalised: the name and the artwork belong to the
 -- Pokemon, and 46,679 copies of a URL is how a dataset gets a row that disagrees with itself.
@@ -163,3 +165,14 @@ SELECT count(*) FROM moveLearner;
 
 insertMoveLearner:
 INSERT INTO moveLearner(moveSlug, variantSlug, method, level) VALUES (?, ?, ?, ?);
+
+-- Which moves one Pokemon learns, for the Moves tab on its detail.
+--
+-- Unordered on purpose, on the same grounds as selectMoveStatChanges: how the list reads is
+-- level-up first and by level within it, and that order lives in `LearnMethod`'s declaration rather
+-- than in a CASE expression here that would have to be kept in step with it.
+selectMovesForVariant:
+SELECT m.slug, m.name, m.typeSlug, m.damageClass, m.power, l.method, l.level
+FROM moveLearner l
+JOIN move m ON m.slug = l.moveSlug
+WHERE l.variantSlug = ?;

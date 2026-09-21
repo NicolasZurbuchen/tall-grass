@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.app.navigation.impl
 
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MoveDetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.HeroHandoff
@@ -15,6 +16,10 @@ class PokedexNavigatorImpl(
         query: DexQuery,
     ) {
         navigator.navigateTo(DetailDestination(slug = slug, hero = hero, query = query))
+    }
+
+    override fun navigateToMove(slug: String) {
+        navigator.navigateTo(MoveDetailDestination(slug))
     }
 
     override fun navigateBack() {

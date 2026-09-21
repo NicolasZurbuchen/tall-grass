@@ -5,6 +5,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.MoveFixtures
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -46,5 +47,7 @@ class MoveRepositoryImplTest {
         override suspend fun detail(slug: String): MoveDetail? = details[slug]
 
         override suspend fun learners(slug: String): List<MoveLearner> = emptyList()
+
+        override suspend fun movesFor(variantSlug: String): List<VariantMove> = emptyList()
     }
 }

@@ -6,6 +6,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.data.repository.MoveRepositoryImp
 import io.nicolaszurbuchen.tallgrass.core.move.domain.repository.MoveRepository
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMoveDetailUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMoveLearnersUseCase
+import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesUseCase
 import io.nicolaszurbuchen.tallgrass.pokedex.PokedexDatabase
 import kotlinx.coroutines.Dispatchers
@@ -24,4 +25,5 @@ val moveModule =
         singleOf(::GetMovesUseCase)
         singleOf(::GetMoveDetailUseCase)
         singleOf(::GetMoveLearnersUseCase)
+        singleOf(::GetMovesForVariantUseCase)
     }

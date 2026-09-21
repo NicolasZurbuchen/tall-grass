@@ -11,6 +11,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveMeta
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveStatChange
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveTarget
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 
 /**
@@ -134,6 +135,18 @@ object MoveFixtures {
                     statChance = null,
                 ),
             statChanges = listOf(MoveStatChange(BattleStat.ATTACK, -1)),
+        )
+
+    /** The same row read the other way: what Charizard learns rather than who learns Flamethrower. */
+    val charizardFlamethrower =
+        VariantMove(
+            slug = "flamethrower",
+            name = "Flamethrower",
+            type = PokemonType.FIRE,
+            damageClass = DamageClass.SPECIAL,
+            power = 90,
+            method = LearnMethod.LEVEL_UP,
+            level = 46,
         )
 
     /** One Pokemon that learns Flamethrower, and the row the champions regression was found on. */

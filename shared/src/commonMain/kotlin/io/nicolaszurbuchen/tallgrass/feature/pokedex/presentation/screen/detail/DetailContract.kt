@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
@@ -20,6 +21,10 @@ sealed interface DetailIntent {
         val tab: DetailState.Tab,
     ) : DetailIntent
 
+    data class MoveClicked(
+        val slug: String,
+    ) : DetailIntent
+
     data object BackClicked : DetailIntent
 
     data object RetryClicked : DetailIntent
@@ -27,6 +32,16 @@ sealed interface DetailIntent {
 
 sealed interface DetailLabel {
     data object NavigateBack : DetailLabel
+
+    /**
+     * A move tapped in the Moves tab.
+     *
+     * Only the slug: a move has no artwork for its hero to open with, so unlike a dex card there is
+     * nothing to hand forward. See #11 on why that transition is a push.
+     */
+    data class NavigateToMove(
+        val slug: String,
+    ) : DetailLabel
 }
 
 sealed interface DetailAction {
@@ -53,6 +68,11 @@ sealed interface DetailMessage {
      * [matchups] is keyed by variant slug and covers every form, because it is read once with the
      * detail. Switching form must not wait on the database.
      */
+    data class MovesLoaded(
+        val variantSlug: String,
+        val moves: List<VariantMove>,
+    ) : DetailMessage
+
     data class DetailLoaded(
         val entrySlug: String,
         val detail: PokemonDetail,
@@ -104,11 +124,16 @@ data class DetailState(
     val details: Map<String, PokemonDetail> = emptyMap(),
     val activeVariantSlug: String = entryVariantSlug,
     val matchups: Map<String, List<TypeMatchup>> = emptyMap(),
+    // Keyed by variant, because a form learns its own moves: Alolan Exeggutor is not Exeggutor with a
+    // different colour. Read when the tab is first opened for a form rather than with the detail,
+    // which is what keeps a reader who never opens it from paying for a hundred rows per swipe.
+    val moves: Map<String, List<VariantMove>> = emptyMap(),
     val tab: Tab = Tab.ABOUT,
     val error: AppError? = null,
 ) {
     enum class Tab {
         ABOUT,
         STATS,
+        MOVES,
     }
 }

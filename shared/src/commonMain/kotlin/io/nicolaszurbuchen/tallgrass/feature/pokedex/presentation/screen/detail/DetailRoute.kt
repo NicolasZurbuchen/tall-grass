@@ -11,17 +11,20 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DetailRoute(
+    onNavigateToMove: (String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onNavigateBackUpdated by rememberUpdatedState(onNavigateBack)
+    val onNavigateToMoveUpdated by rememberUpdatedState(onNavigateToMove)
 
     LaunchedEffect(Unit) {
         viewModel.labels.collect { label ->
             when (label) {
                 DetailLabel.NavigateBack -> onNavigateBackUpdated()
+                is DetailLabel.NavigateToMove -> onNavigateToMoveUpdated(label.slug)
             }
         }
     }
@@ -39,10 +42,12 @@ fun DetailRoute(
                 when (tab) {
                     DetailTabUiModel.ABOUT -> DetailState.Tab.ABOUT
                     DetailTabUiModel.STATS -> DetailState.Tab.STATS
+                    DetailTabUiModel.MOVES -> DetailState.Tab.MOVES
                 }
 
             viewModel.onIntent(DetailIntent.TabSelected(selected))
         },
+        onMoveClick = { slug -> viewModel.onIntent(DetailIntent.MoveClicked(slug)) },
         onRetryClick = { viewModel.onIntent(DetailIntent.RetryClicked) },
         modifier = modifier,
     )

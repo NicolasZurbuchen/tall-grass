@@ -71,6 +71,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailTabRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.FormPillRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.HeroCarousel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.MovesTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 import kotlinx.coroutines.launch
@@ -97,6 +98,7 @@ fun DetailScreen(
     onEntrySwipe: (String) -> Unit,
     onFormClick: (String) -> Unit,
     onTabClick: (DetailTabUiModel) -> Unit,
+    onMoveClick: (String) -> Unit,
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -342,6 +344,10 @@ fun DetailScreen(
 
                                 DetailTabUiModel.STATS -> {
                                     StatsTab(stats = content.stats, tint = tint, elapsedMillis = elapsed)
+                                }
+
+                                DetailTabUiModel.MOVES -> {
+                                    MovesTab(moves = content.moves, onMoveClick = onMoveClick)
                                 }
                             }
                         }

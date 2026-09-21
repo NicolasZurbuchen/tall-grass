@@ -9,6 +9,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toFormPillsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toStatsUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
@@ -100,9 +101,11 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                         when (tab) {
                             DetailState.Tab.ABOUT -> DetailTabUiModel.ABOUT
                             DetailState.Tab.STATS -> DetailTabUiModel.STATS
+                            DetailState.Tab.MOVES -> DetailTabUiModel.MOVES
                         },
                     about = detail.species.toAboutUiModel(variant),
                     stats = variant.toStatsUiModel(matchups[variant.slug].orEmpty()),
+                    moves = moves[variant.slug].orEmpty().map { it.toUiModel() },
                 )
             },
     )

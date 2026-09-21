@@ -24,6 +24,11 @@
 
     <string name="pokedex_detail_tab_about">About</string>
     <string name="pokedex_detail_tab_stats">Base Stats</string>
+    <string name="pokedex_detail_tab_moves">Moves</string>
+    <!-- The tab for a Pokemon that learns nothing: every Mega and Gigantamax, which learn what their
+         base form learns and which upstream does not repeat rows for. -->
+    <string name="pokedex_detail_no_moves">This form learns what its base form learns.</string>
+    <string name="pokedex_detail_move_level">Lv %1$s</string>
 
     <string name="pokedex_detail_height">Height</string>
     <string name="pokedex_detail_weight">Weight</string>
