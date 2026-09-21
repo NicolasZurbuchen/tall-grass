@@ -1047,3 +1047,80 @@ gaps wide enough to be told apart at a glance are around 110° and 330°.
 **The tiles lost their icons.** The reference draws a label and the watermark, and at 2.4:1 a card
 about seventy tall there is no third thing to put on it. An `ImageVector` column on the enum that
 nothing reads is worse than no column.
+
+### An ability's category is classified, overridden by hand, and committed
+
+Upstream has no category field for abilities — only a generation, an effect and a list of holders —
+so the eight-member taxonomy is original work. #27 settled that it should exist and be classified at
+generation time; the vocabulary was left open there and is settled here.
+
+**Eight members, cut by direction rather than by mechanism.** `ENVIRONMENT`, `FORM`, `REACTIVE`,
+`IMMUNITY`, `RECOVERY`, `DEFENSE`, `OFFENSE`, `UTILITY`. The distribution over the real 314 is
+69/65/56/40/40/19/18/7, so nothing is dead and nothing is a quarter of the list.
+
+An earlier set had a ninth member, `STATS`, holding everything that moved a stat stage. It put Moxie
+beside Intimidate — one raises the bearer's own Attack and the other lowers the opponent's, which are
+opposite intents sharing a mechanism — and it overlapped `DEFENSE` for the reader, since Intimidate
+and Multiscale both mean *I take less damage*. Cutting by direction dissolves both problems: the
+question a browser asks is "does this deal more or take less", never "does this do it with a stage or
+a multiplier".
+
+**Rejected: the two vocabularies already on record.** The design file's `Common / Weather / Recovery
+/ Defensive` and the prototype's `Pinch / Weather / Contact / Utility / Offensive` were both written
+before anyone had the data. Neither has a home for the eighteen form changers or the sixty-nine
+immunities, and `Common` is a frequency axis rather than a mechanical one. #27 already marks the
+prototype's thirteen hand-assigned categories as throwaway.
+
+**The order of the rules is half the taxonomy**, because first match wins. An ability that summons
+rain *and* doubles Speed is `ENVIRONMENT`; one that heals because it absorbed a move is `IMMUNITY`.
+The load-bearing one is `OFFENSE` above `DEFENSE`: neither rule can tell *whose* stat moved, since
+upstream writes "decreases their accuracy" for the bearer's own and "lowers opponents' Attack" for
+someone else's. Running offence first makes a trade-off ability read by its upside, which is what it
+is named for — Hustle strengthens physical moves at the cost of its own accuracy, and filing it under
+defence for the accuracy drop was the first thing the classifier got wrong.
+
+**The corrections live in their own file.** #27 requires that a hand-fixed category stay fixed, and a
+generator that rewrites `abilities.json` wholesale would eat the fix on the next SHA bump. So
+`data/ability-categories.json` is hand-authored, never written by the generator, and wins where it
+has an entry. The classifier's output stays pure and fully regenerated — a rerun with no upstream
+change produces an empty diff — and a correction reads as its own line rather than as a hunk inside
+generated output. Two tests guard it from both sides: an override naming an ability that does not
+exist, and an override that did not take.
+
+The classifier is **not** expected to be right about all 314. It is a keyword pass over prose written
+for another purpose, and what makes that acceptable is the override file rather than the rules.
+
+### The dataset is the main series only, decided by two tests rather than one
+
+`/api/v2/ability` returns 374 and this app ships 314; `/api/v2/move` returns 937 and it ships 919.
+
+The missing sixty are Pokémon Conquest's, a 2012 DS strategy spin-off, and the missing eighteen are
+Pokémon XD's Shadow moves. Three facts, each checked rather than assumed:
+
+- none has effect text in any language, so a card would be a name over an empty space;
+- none is on any Pokémon — `pokemon_abilities` uses 313 distinct ability ids and not one is ≥ 10000;
+- upstream numbers them from 10000 *and* flags `is_main_series = 0`.
+
+**Both tests are applied, not either alone.** They are two different claims — one is upstream's own
+judgement about a row and the other is its id convention — and a filter resting on one of them stops
+working quietly when upstream changes the other.
+
+**313 used, not 314.** `embody-aspect` is main-series with real effect text and appears on no Pokémon:
+it is Ogerpon's, form-gated in a way upstream's CSVs do not join. Its detail screen renders an empty
+"known by", which is correct rather than broken, and a test pins it so nobody later reads it as a
+join that failed.
+
+### A move's absent numbers are absent, not zero
+
+331 moves have no power, 285 have no accuracy, and 93 have no effect text. All three are nullable in
+the dataset and all three are drawn as absent.
+
+A status move with `power = 0` reads as a move that hits for nothing, which is a different and wrong
+claim; a never-miss move with `accuracy = 0` reads as one that never lands. The effect text is the
+interesting one: those 93 are all Generation VIII and IX, they carry no `effect_id` at all rather
+than one whose English row is missing, and upstream simply has not written them yet. The screen shows
+the space as empty, because "upstream does not say" is the honest rendering and inventing prose for a
+Pokédex is the one thing it must not do.
+
+PP is the counter-example and is why the other three are worth pinning: every move has one, so a null
+there would be a read that went wrong rather than a fact about the move.

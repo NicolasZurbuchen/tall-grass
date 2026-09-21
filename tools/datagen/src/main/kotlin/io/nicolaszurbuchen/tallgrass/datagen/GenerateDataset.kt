@@ -27,10 +27,14 @@ fun main(args: Array<String>) {
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
+    val abilities = buildAbilities(source, readCategoryOverrides(outputDir))
+    val moves = buildMoves(source)
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
     outputDir.resolve("species.json").writeText(json.encodeToString(species))
     outputDir.resolve("variants.json").writeText(json.encodeToString(variants))
+    outputDir.resolve("abilities.json").writeText(json.encodeToString(abilities))
+    outputDir.resolve("moves.json").writeText(json.encodeToString(moves))
 
     val manifest =
         Manifest(
@@ -40,6 +44,8 @@ fun main(args: Array<String>) {
             variantCount = variants.size,
             listedVariantCount = variants.count { it.listedInDex },
             typeCount = types.types.size,
+            abilityCount = abilities.size,
+            moveCount = moves.size,
         )
     outputDir.resolve("manifest.json").writeText(json.encodeToString(manifest))
 
@@ -47,6 +53,33 @@ fun main(args: Array<String>) {
     println("  variants           ${manifest.variantCount}")
     println("  listed in the dex  ${manifest.listedVariantCount}")
     println("  types              ${manifest.typeCount}")
+    println("  abilities          ${manifest.abilityCount}")
+    println("  moves              ${manifest.moveCount}")
+
+    abilities
+        .groupingBy { it.category }
+        .eachCount()
+        .entries
+        .sortedByDescending { it.value }
+        .forEach { (category, count) -> println("    ${category.name.padEnd(12)} $count") }
+}
+
+/**
+ * The hand-authored corrections, which this program reads and never writes.
+ *
+ * #27 requires that a fixed category stay fixed, and a generator that rewrites `abilities.json`
+ * wholesale would eat the fix on the next SHA bump. Keeping the human's input in its own file means
+ * the classifier's output stays pure and fully regenerated -- so a rerun with no upstream change
+ * produces an empty diff -- while a correction reads as its own line rather than as a hunk inside
+ * generated output.
+ *
+ * DECISIONS.md, An ability's category is classified, overridden by hand, and committed
+ */
+private fun readCategoryOverrides(datasetDir: File): Map<String, AbilityCategory> {
+    val file = datasetDir.resolve("ability-categories.json")
+    if (!file.exists()) return emptyMap()
+
+    return json.decodeFromString<Map<String, AbilityCategory>>(file.readText())
 }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
@@ -337,3 +370,102 @@ private fun VariantJson.sharesBattleDataWith(other: VariantJson): Boolean =
     stats == other.stats &&
         types == other.types &&
         abilities.map { it.slug }.sorted() == other.abilities.map { it.slug }.sorted()
+
+/**
+ * The 314 main-series abilities, categorised.
+ *
+ * Upstream numbers Pokemon Conquest's sixty abilities from 10000 in the same table and flags them
+ * `is_main_series = 0`. Both tests are applied rather than either alone, because they are two
+ * different claims: one is upstream's own judgement and the other is its id convention. None of the
+ * sixty has effect text in any language and none is on any Pokemon, so a card for Mountaineer would
+ * be a name over an empty space with an empty "known by" underneath.
+ */
+private fun buildAbilities(
+    source: UpstreamSource,
+    overrides: Map<String, AbilityCategory>,
+): List<AbilityJson> {
+    val names =
+        source.read("ability_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("ability_id") to it["name"] }
+
+    val shortEffects =
+        source.read("ability_prose")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("ability_id") to it["short_effect"] }
+
+    return source.read("abilities")
+        .filter { it.bool("is_main_series") && it.int("id") < FIRST_SPIN_OFF_ID }
+        .map { row ->
+            val id = row.int("id")
+            val slug = row["identifier"]
+
+            // Fails the run rather than shipping a blank card. All 314 have one today, so an absence
+            // means upstream added an ability this pipeline has not been taught about -- and this
+            // program only runs when a human deliberately bumps the pin, which is the moment to
+            // notice. Moves are the opposite case and are nullable; see below.
+            val shortEffect = shortEffects[id] ?: error("No English short_effect for ability '$slug' ($id)")
+
+            AbilityJson(
+                slug = slug,
+                name = names[id] ?: slug,
+                generation = row.int("generation_id"),
+                category = overrides[slug] ?: classifyAbility(shortEffect),
+                shortEffect = shortEffect,
+            )
+        }.sortedBy { it.slug }
+}
+
+/**
+ * The 919 main-series moves.
+ *
+ * Same threshold and the same reason as the abilities above: ids from 10000 are Pokemon XD's
+ * eighteen Shadow moves, which exist in one 2005 spin-off.
+ *
+ * **93 of these have no effect text**, all of them Generation VIII and IX -- Tera Blast, Ice Spinner,
+ * Salt Cure, Last Respects. They carry no `effect_id` at all rather than one whose English row is
+ * missing, so the column is empty and not merely unjoinable. They ship with a null and the screen
+ * shows the space as empty, which is the honest rendering of "upstream does not say".
+ */
+private fun buildMoves(source: UpstreamSource): List<MoveJson> {
+    val names =
+        source.read("move_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("move_id") to it["name"] }
+
+    // Keyed by effect rather than by move: 453 effects cover 919 moves, because every move that
+    // "inflicts regular damage with no additional effect" shares one row.
+    val shortEffects =
+        source.read("move_effect_prose")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("move_effect_id") to it["short_effect"] }
+
+    val typeSlugs =
+        source.read("types")
+            .filter { it.int("id") <= LAST_REAL_TYPE_ID }
+            .associate { it.int("id") to it["identifier"] }
+
+    val damageClasses = source.read("move_damage_classes").associate { it.int("id") to it["identifier"] }
+    val targets = source.read("move_targets").associate { it.int("id") to it["identifier"] }
+
+    return source.read("moves")
+        .filter { it.int("id") < FIRST_SPIN_OFF_ID }
+        .map { row ->
+            val slug = row["identifier"]
+
+            MoveJson(
+                slug = slug,
+                name = names[row.int("id")] ?: slug,
+                generation = row.int("generation_id"),
+                type = typeSlugs[row.int("type_id")] ?: error("Move '$slug' has an unknown type"),
+                damageClass = damageClasses[row.int("damage_class_id")] ?: error("Move '$slug' has an unknown damage class"),
+                power = row.intOrNull("power"),
+                accuracy = row.intOrNull("accuracy"),
+                pp = row.intOrNull("pp"),
+                priority = row.int("priority"),
+                target = targets[row.int("target_id")] ?: error("Move '$slug' has an unknown target"),
+                effectChance = row.intOrNull("effect_chance"),
+                shortEffect = row.intOrNull("effect_id")?.let { shortEffects[it] },
+            )
+        }.sortedBy { it.slug }
+}

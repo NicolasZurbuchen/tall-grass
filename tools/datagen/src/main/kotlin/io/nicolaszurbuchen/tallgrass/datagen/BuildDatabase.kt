@@ -26,6 +26,8 @@ fun main(args: Array<String>) {
     val types = json.decodeFromString<TypeChartJson>(datasetDir.resolve("types.json").readText())
     val species = json.decodeFromString<List<SpeciesJson>>(datasetDir.resolve("species.json").readText())
     val variants = json.decodeFromString<List<VariantJson>>(datasetDir.resolve("variants.json").readText())
+    val abilities = json.decodeFromString<List<AbilityJson>>(datasetDir.resolve("abilities.json").readText())
+    val moves = json.decodeFromString<List<MoveJson>>(datasetDir.resolve("moves.json").readText())
 
     // Rebuilt from scratch every time. This database is replaced whole-file rather than migrated, so
     // there is nothing in the previous copy worth keeping and an append would silently double rows.
@@ -75,6 +77,33 @@ fun main(args: Array<String>) {
             }
         }
 
+        abilities.forEach { entry ->
+            database.abilityQueries.insertAbility(
+                slug = entry.slug,
+                name = entry.name,
+                generation = entry.generation.toLong(),
+                category = entry.category.name,
+                shortEffect = entry.shortEffect,
+            )
+        }
+
+        moves.forEach { entry ->
+            database.moveQueries.insertMove(
+                slug = entry.slug,
+                name = entry.name,
+                generation = entry.generation.toLong(),
+                typeSlug = entry.type,
+                damageClass = entry.damageClass,
+                power = entry.power?.toLong(),
+                accuracy = entry.accuracy?.toLong(),
+                pp = entry.pp?.toLong(),
+                priority = entry.priority.toLong(),
+                target = entry.target,
+                effectChance = entry.effectChance?.toLong(),
+                shortEffect = entry.shortEffect,
+            )
+        }
+
         variants.forEach { entry ->
             database.variantQueries.insertVariant(
                 slug = entry.slug,
@@ -121,6 +150,8 @@ fun main(args: Array<String>) {
             variantCount = database.variantQueries.countVariants().executeAsOne().toInt(),
             listedVariantCount = database.variantQueries.countListedVariants().executeAsOne().toInt(),
             typeCount = database.typeQueries.countTypes().executeAsOne().toInt(),
+            abilityCount = database.abilityQueries.countAbilities().executeAsOne().toInt(),
+            moveCount = database.moveQueries.countMoves().executeAsOne().toInt(),
         )
     check(written == manifest) { "Database disagrees with the manifest.\n  manifest: $manifest\n  database: $written" }
 

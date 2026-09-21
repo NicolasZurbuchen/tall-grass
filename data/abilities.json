@@ -1,0 +1,2200 @@
+[
+  {
+    "slug": "adaptability",
+    "name": "Adaptability",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Increases the same-type attack bonus from 1.5× to 2×."
+  },
+  {
+    "slug": "aerilate",
+    "name": "Aerilate",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Turns the bearer's Normal moves into Flying moves and strengthens them to 1.3× their power."
+  },
+  {
+    "slug": "aftermath",
+    "name": "Aftermath",
+    "generation": 4,
+    "category": "REACTIVE",
+    "shortEffect": "Damages the attacker for 1/4 its max HP when knocked out by a contact move."
+  },
+  {
+    "slug": "air-lock",
+    "name": "Air Lock",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Negates all effects of weather, but does not prevent the weather itself."
+  },
+  {
+    "slug": "analytic",
+    "name": "Analytic",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens moves to 1.3× their power when moving last."
+  },
+  {
+    "slug": "anger-point",
+    "name": "Anger Point",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Attack to the maximum of six stages upon receiving a critical hit."
+  },
+  {
+    "slug": "anger-shell",
+    "name": "Anger Shell",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "When the Pokémon's HP drops below half, Anger Shell lowers its Defense and Special Defense but its Attack, Special Attack and Speed are raised."
+  },
+  {
+    "slug": "anticipation",
+    "name": "Anticipation",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Notifies all trainers upon entering battle if an opponent has a super-effective move, Self-Destruct, Explosion, or a one-hit KO move."
+  },
+  {
+    "slug": "arena-trap",
+    "name": "Arena Trap",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents opponents from fleeing or switching out.  Eluded by Flying-types and Pokémon in the air."
+  },
+  {
+    "slug": "armor-tail",
+    "name": "Armor Tail",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents the opponent from using any moves that have priority, such as Quick Attack."
+  },
+  {
+    "slug": "aroma-veil",
+    "name": "Aroma Veil",
+    "generation": 6,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects allies against moves that affect their mental state."
+  },
+  {
+    "slug": "as-one-glastrier",
+    "name": "As One",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Combines the effects of Unnerve and Chilling Neigh."
+  },
+  {
+    "slug": "as-one-spectrier",
+    "name": "As One",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Combines the effects of Unnerve and Grim Neigh."
+  },
+  {
+    "slug": "aura-break",
+    "name": "Aura Break",
+    "generation": 6,
+    "category": "UTILITY",
+    "shortEffect": "Makes Dark Aura and Fairy Aura weaken moves of their respective types."
+  },
+  {
+    "slug": "aura-guard",
+    "name": "Aura Guard",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "A Pokémon with Aura Guard takes half damage from moves that make contact."
+  },
+  {
+    "slug": "bad-dreams",
+    "name": "Bad Dreams",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Damages sleeping opponents for 1/8 their max HP after each turn."
+  },
+  {
+    "slug": "ball-fetch",
+    "name": "Ball Fetch",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "If the Pokémon is not holding an item, it will fetch the Poké Ball from the first failed throw of the battle."
+  },
+  {
+    "slug": "battery",
+    "name": "Battery",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "Ally Pokémon's moves have their power increased to 1.3×."
+  },
+  {
+    "slug": "battle-armor",
+    "name": "Battle Armor",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against critical hits."
+  },
+  {
+    "slug": "battle-bond",
+    "name": "Battle Bond",
+    "generation": 7,
+    "category": "FORM",
+    "shortEffect": "Transforms this Pokémon into Ash-Greninja after fainting an opponent.  Water Shuriken's power is 20 and always hits three times."
+  },
+  {
+    "slug": "beads-of-ruin",
+    "name": "Beads of Ruin",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Lowers Special Defense of all Pokémon except itself."
+  },
+  {
+    "slug": "beast-boost",
+    "name": "Beast Boost",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "Raises this Pokémon's highest stat by one stage when it faints another Pokémon."
+  },
+  {
+    "slug": "berserk",
+    "name": "Berserk",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "Raises this Pokémon's Special Attack by one stage every time its HP drops below half."
+  },
+  {
+    "slug": "big-pecks",
+    "name": "Big Pecks",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against Defense drops."
+  },
+  {
+    "slug": "blaze",
+    "name": "Blaze",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Fire moves to inflict 1.5× damage at 1/3 max HP or less."
+  },
+  {
+    "slug": "bulletproof",
+    "name": "Bulletproof",
+    "generation": 6,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against bullet, ball, and bomb-based moves."
+  },
+  {
+    "slug": "cheek-pouch",
+    "name": "Cheek Pouch",
+    "generation": 6,
+    "category": "RECOVERY",
+    "shortEffect": "Restores HP upon eating a Berry, in addition to the Berry's effect."
+  },
+  {
+    "slug": "chilling-neigh",
+    "name": "Chilling Neigh",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Boosts Attack after knocking out a Pokémon."
+  },
+  {
+    "slug": "chlorophyll",
+    "name": "Chlorophyll",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Doubles Speed during strong sunlight."
+  },
+  {
+    "slug": "clear-body",
+    "name": "Clear Body",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents stats from being lowered by other Pokémon."
+  },
+  {
+    "slug": "cloud-nine",
+    "name": "Cloud Nine",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Negates all effects of weather, but does not prevent the weather itself."
+  },
+  {
+    "slug": "color-change",
+    "name": "Color Change",
+    "generation": 3,
+    "category": "FORM",
+    "shortEffect": "Changes type to match when hit by a damaging move."
+  },
+  {
+    "slug": "comatose",
+    "name": "Comatose",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "This Pokémon always  acts as though it were Asleep."
+  },
+  {
+    "slug": "commander",
+    "name": "Commander",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Goes inside the mouth of an ally Dondozo if one is on the field."
+  },
+  {
+    "slug": "competitive",
+    "name": "Competitive",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Special Attack by two stages upon having any stat lowered."
+  },
+  {
+    "slug": "compound-eyes",
+    "name": "Compound Eyes",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Increases moves' accuracy to 1.3×."
+  },
+  {
+    "slug": "contrary",
+    "name": "Contrary",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Inverts stat changes."
+  },
+  {
+    "slug": "corrosion",
+    "name": "Corrosion",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "This Pokémon can inflict poison on Poison and Steel Pokémon."
+  },
+  {
+    "slug": "costar",
+    "name": "Costar",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Copies ally's stat changes on entering battle."
+  },
+  {
+    "slug": "cotton-down",
+    "name": "Cotton Down",
+    "generation": 8,
+    "category": "IMMUNITY",
+    "shortEffect": "When Ignores moves and abilities that draw in moves."
+  },
+  {
+    "slug": "cud-chew",
+    "name": "Cud Chew",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Causes the Pokémon to reuse an already consumed Berry at the end of the next turn."
+  },
+  {
+    "slug": "curious-medicine",
+    "name": "Curious Medicine",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Resets all stat changes upon entering battlefield."
+  },
+  {
+    "slug": "cursed-body",
+    "name": "Cursed Body",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of Disabling any move that hits the Pokémon."
+  },
+  {
+    "slug": "cute-charm",
+    "name": "Cute Charm",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of infatuating attacking Pokémon on contact."
+  },
+  {
+    "slug": "damp",
+    "name": "Damp",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents Self-Destruct, Explosion, and Aftermath from working while the Pokémon is in battle."
+  },
+  {
+    "slug": "dancer",
+    "name": "Dancer",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "Whenever another Pokémon uses a dance move, this Pokémon will use the same move immediately afterwards."
+  },
+  {
+    "slug": "dark-aura",
+    "name": "Dark Aura",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Dark moves to 1.33× their power for all friendly and opposing Pokémon."
+  },
+  {
+    "slug": "dauntless-shield",
+    "name": "Dauntless Shield",
+    "generation": 8,
+    "category": "DEFENSE",
+    "shortEffect": "Boosts Defense in battle."
+  },
+  {
+    "slug": "dazzling",
+    "name": "Dazzling",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "Opposing Pokémon cannot use priority attacks."
+  },
+  {
+    "slug": "defeatist",
+    "name": "Defeatist",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Halves Attack and Special Attack at 50% max HP or less."
+  },
+  {
+    "slug": "defiant",
+    "name": "Defiant",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Attack two stages upon having any stat lowered."
+  },
+  {
+    "slug": "delta-stream",
+    "name": "Delta Stream",
+    "generation": 6,
+    "category": "IMMUNITY",
+    "shortEffect": "Creates a mysterious air current, which cannot be replaced and causes moves to never be super effective against Flying Pokémon."
+  },
+  {
+    "slug": "desolate-land",
+    "name": "Desolate Land",
+    "generation": 6,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Creates extremely harsh sunlight, which has all the properties of Sunny Day, cannot be replaced, and causes damaging Water moves to fail."
+  },
+  {
+    "slug": "disguise",
+    "name": "Disguise",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents the first instance of battle damage."
+  },
+  {
+    "slug": "download",
+    "name": "Download",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Raises the attack stat corresponding to the opponents' weaker defense one stage upon entering battle."
+  },
+  {
+    "slug": "dragonize",
+    "name": "Dragonize",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "The Pokémon's Normal-type moves become Dragon-type moves and their power is boosted by 20%."
+  },
+  {
+    "slug": "dragons-maw",
+    "name": "Dragon’s Maw",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Powers up Dragon-type moves."
+  },
+  {
+    "slug": "drizzle",
+    "name": "Drizzle",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Summons rain that lasts indefinitely upon entering battle."
+  },
+  {
+    "slug": "drought",
+    "name": "Drought",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Summons strong sunlight that lasts indefinitely upon entering battle."
+  },
+  {
+    "slug": "dry-skin",
+    "name": "Dry Skin",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Causes 1/8 max HP in damage each turn during strong sunlight, but heals for 1/8 max HP during rain.  Increases damage from Fire moves to 1.25×, but absorbs Water moves, healing for 1/4 max HP."
+  },
+  {
+    "slug": "early-bird",
+    "name": "Early Bird",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Makes sleep pass twice as quickly."
+  },
+  {
+    "slug": "earth-eater",
+    "name": "Earth Eater",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "Restores HP when hit by a Ground-type move."
+  },
+  {
+    "slug": "eelevate",
+    "name": "Eelevate",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "The Pokémon floats off the ground, making it immune to Ground-type moves, as well as the Spikes, Toxic Spikes, and Sticky Web statuses. When the Pokémon knocks out a target with an attack, its highest stat is boosted by 1 stage."
+  },
+  {
+    "slug": "effect-spore",
+    "name": "Effect Spore",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of inflcting either paralysis, poison, or sleep on attacking Pokémon on contact."
+  },
+  {
+    "slug": "electric-surge",
+    "name": "Electric Surge",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "When this Pokémon enters battle, it changes the terrain to Electric Terrain."
+  },
+  {
+    "slug": "electromorphosis",
+    "name": "Electromorphosis",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "When hit by an attack, the power of the next Electric-type move it uses is doubled."
+  },
+  {
+    "slug": "embody-aspect",
+    "name": "Embody Aspect",
+    "generation": 9,
+    "category": "FORM",
+    "shortEffect": "Embody Aspect boosts a particular stat, depending on the form of a Terastallized Ogerpon"
+  },
+  {
+    "slug": "emergency-exit",
+    "name": "Emergency Exit",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "This Pokémon automatically switches out when its HP drops below half."
+  },
+  {
+    "slug": "fairy-aura",
+    "name": "Fairy Aura",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Fairy moves to 1.33× their power for all friendly and opposing Pokémon."
+  },
+  {
+    "slug": "filter",
+    "name": "Filter",
+    "generation": 4,
+    "category": "DEFENSE",
+    "shortEffect": "Decreases damage taken from super-effective moves by 1/4."
+  },
+  {
+    "slug": "fire-mane",
+    "name": "Fire Mane",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Boosts the power of the Pokémon's Fire-type moves by 50%."
+  },
+  {
+    "slug": "flame-body",
+    "name": "Flame Body",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of burning attacking Pokémon on contact."
+  },
+  {
+    "slug": "flare-boost",
+    "name": "Flare Boost",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Special Attack to 1.5× when burned."
+  },
+  {
+    "slug": "flash-fire",
+    "name": "Flash Fire",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against Fire moves.  Once one has been blocked, the Pokémon's own Fire moves inflict 1.5× damage until it leaves battle."
+  },
+  {
+    "slug": "flower-gift",
+    "name": "Flower Gift",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Increases friendly Pokémon's Attack and Special Defense to 1.5× during strong sunlight."
+  },
+  {
+    "slug": "flower-veil",
+    "name": "Flower Veil",
+    "generation": 6,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects friendly Grass Pokémon from having their stats lowered by other Pokémon."
+  },
+  {
+    "slug": "fluffy",
+    "name": "Fluffy",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "Damage from contact moves is halved.  Damage from Fire moves is doubled."
+  },
+  {
+    "slug": "forecast",
+    "name": "Forecast",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Changes Castform's type and form to match the weather."
+  },
+  {
+    "slug": "forewarn",
+    "name": "Forewarn",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Reveals the opponents' strongest move upon entering battle."
+  },
+  {
+    "slug": "friend-guard",
+    "name": "Friend Guard",
+    "generation": 5,
+    "category": "DEFENSE",
+    "shortEffect": "Decreases all direct damage taken by friendly Pokémon to 0.75×."
+  },
+  {
+    "slug": "frisk",
+    "name": "Frisk",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Reveals an opponent's held item upon entering battle."
+  },
+  {
+    "slug": "full-metal-body",
+    "name": "Full Metal Body",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "Other Pokémon cannot lower this Pokémon's stats."
+  },
+  {
+    "slug": "fur-coat",
+    "name": "Fur Coat",
+    "generation": 6,
+    "category": "DEFENSE",
+    "shortEffect": "Halves damage from physical attacks."
+  },
+  {
+    "slug": "gale-wings",
+    "name": "Gale Wings",
+    "generation": 6,
+    "category": "UTILITY",
+    "shortEffect": "Raises Flying moves' priority by one stage."
+  },
+  {
+    "slug": "galvanize",
+    "name": "Galvanize",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "This Pokémon's Normal moves are Electric and have their power increased to 1.2×."
+  },
+  {
+    "slug": "gluttony",
+    "name": "Gluttony",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Makes the Pokémon eat any held Berry triggered by low HP below 1/2 its max HP."
+  },
+  {
+    "slug": "good-as-gold",
+    "name": "Good as Gold",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "Gives immunity to status moves."
+  },
+  {
+    "slug": "gooey",
+    "name": "Gooey",
+    "generation": 6,
+    "category": "REACTIVE",
+    "shortEffect": "Lowers attacking Pokémon's Speed by one stage on contact."
+  },
+  {
+    "slug": "gorilla-tactics",
+    "name": "Gorilla Tactics",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Boosts the Pokémon's Attack stat but only allows the use of the first selected move."
+  },
+  {
+    "slug": "grass-pelt",
+    "name": "Grass Pelt",
+    "generation": 6,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Boosts Defense while Grassy Terrain is in effect."
+  },
+  {
+    "slug": "grassy-surge",
+    "name": "Grassy Surge",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "When this Pokémon enters battle, it changes the terrain to Grassy Terrain."
+  },
+  {
+    "slug": "grim-neigh",
+    "name": "Grim Neigh",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Boosts Special Attack after knocking out a Pokémon."
+  },
+  {
+    "slug": "guard-dog",
+    "name": "Guard Dog",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "Boosts Attack if intimidated, and prevents being forced to switch out."
+  },
+  {
+    "slug": "gulp-missile",
+    "name": "Gulp Missile",
+    "generation": 8,
+    "category": "FORM",
+    "shortEffect": "If a Cramorant with Gulp Missile uses Surf or Dive, it catches prey and changes its form depending on its remaining HP."
+  },
+  {
+    "slug": "guts",
+    "name": "Guts",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Attack to 1.5× with a major status ailment."
+  },
+  {
+    "slug": "hadron-engine",
+    "name": "Hadron Engine",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Creates an Electric Terrain when entering battle, and boosts Special Attack while active."
+  },
+  {
+    "slug": "harvest",
+    "name": "Harvest",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Has a 50% chance of restoring a used Berry after each turn if the Pokémon has held no items in the meantime."
+  },
+  {
+    "slug": "healer",
+    "name": "Healer",
+    "generation": 5,
+    "category": "RECOVERY",
+    "shortEffect": "Has a 30% chance of curing each adjacent ally of any major status ailment after each turn."
+  },
+  {
+    "slug": "heatproof",
+    "name": "Heatproof",
+    "generation": 4,
+    "category": "DEFENSE",
+    "shortEffect": "Halves damage from Fire moves and burns."
+  },
+  {
+    "slug": "heavy-metal",
+    "name": "Heavy Metal",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Doubles the Pokémon's weight."
+  },
+  {
+    "slug": "honey-gather",
+    "name": "Honey Gather",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "The Pokémon may pick up Honey after battle."
+  },
+  {
+    "slug": "hospitality",
+    "name": "Hospitality",
+    "generation": 9,
+    "category": "RECOVERY",
+    "shortEffect": "When a Pokémon with Hospitality enters a battle, it restores HP for an ally by 25%."
+  },
+  {
+    "slug": "huge-power",
+    "name": "Huge Power",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Doubles Attack in battle."
+  },
+  {
+    "slug": "hunger-switch",
+    "name": "Hunger Switch",
+    "generation": 8,
+    "category": "FORM",
+    "shortEffect": "Causes Morpeko to change its form each turn, alternating between Full Belly Mode and Hangry Mode"
+  },
+  {
+    "slug": "hustle",
+    "name": "Hustle",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens physical moves to inflict 1.5× damage, but decreases their accuracy to 0.8×."
+  },
+  {
+    "slug": "hydration",
+    "name": "Hydration",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Cures any major status ailment after each turn during rain."
+  },
+  {
+    "slug": "hyper-cutter",
+    "name": "Hyper Cutter",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents Attack from being lowered by other Pokémon."
+  },
+  {
+    "slug": "ice-body",
+    "name": "Ice Body",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Heals for 1/16 max HP after each turn during hail.  Protects against hail damage."
+  },
+  {
+    "slug": "ice-face",
+    "name": "Ice Face",
+    "generation": 8,
+    "category": "ENVIRONMENT",
+    "shortEffect": "The Pokémon’s ice head can take a physical attack as a substitute, but the attack also changes the Pokémon’s appearance. The ice will be restored when it snows."
+  },
+  {
+    "slug": "ice-scales",
+    "name": "Ice Scales",
+    "generation": 8,
+    "category": "DEFENSE",
+    "shortEffect": "Halves damage from Special moves."
+  },
+  {
+    "slug": "illuminate",
+    "name": "Illuminate",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Doubles the wild encounter rate."
+  },
+  {
+    "slug": "illusion",
+    "name": "Illusion",
+    "generation": 5,
+    "category": "FORM",
+    "shortEffect": "Takes the appearance of the last conscious party Pokémon upon being sent out until hit by a damaging move."
+  },
+  {
+    "slug": "immunity",
+    "name": "Immunity",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents poison."
+  },
+  {
+    "slug": "imposter",
+    "name": "Imposter",
+    "generation": 5,
+    "category": "FORM",
+    "shortEffect": "Transforms upon entering battle."
+  },
+  {
+    "slug": "infiltrator",
+    "name": "Infiltrator",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Bypasses Light Screen, Reflect, and Safeguard."
+  },
+  {
+    "slug": "innards-out",
+    "name": "Innards Out",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "When this Pokémon faints from an opponent's move, that opponent takes damage equal to the HP this Pokémon had remaining."
+  },
+  {
+    "slug": "inner-focus",
+    "name": "Inner Focus",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents flinching."
+  },
+  {
+    "slug": "insomnia",
+    "name": "Insomnia",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents sleep."
+  },
+  {
+    "slug": "intimidate",
+    "name": "Intimidate",
+    "generation": 3,
+    "category": "DEFENSE",
+    "shortEffect": "Lowers opponents' Attack one stage upon entering battle."
+  },
+  {
+    "slug": "intrepid-sword",
+    "name": "Intrepid Sword",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Boosts Attack in battle."
+  },
+  {
+    "slug": "iron-barbs",
+    "name": "Iron Barbs",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Damages attacking Pokémon for 1/8 their max HP on contact."
+  },
+  {
+    "slug": "iron-fist",
+    "name": "Iron Fist",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens punch-based moves to 1.2× their power."
+  },
+  {
+    "slug": "justified",
+    "name": "Justified",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Attack one stage upon taking damage from a Dark move."
+  },
+  {
+    "slug": "keen-eye",
+    "name": "Keen Eye",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents accuracy from being lowered."
+  },
+  {
+    "slug": "klutz",
+    "name": "Klutz",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents the Pokémon from using its held item in battle."
+  },
+  {
+    "slug": "leaf-guard",
+    "name": "Leaf Guard",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Protects against major status ailments during strong sunlight."
+  },
+  {
+    "slug": "levitate",
+    "name": "Levitate",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Evades Ground moves."
+  },
+  {
+    "slug": "libero",
+    "name": "Libero",
+    "generation": 8,
+    "category": "FORM",
+    "shortEffect": "Libero changes the Pokémon's type to that of its previously used attack."
+  },
+  {
+    "slug": "light-metal",
+    "name": "Light Metal",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Halves the Pokémon's weight."
+  },
+  {
+    "slug": "lightning-rod",
+    "name": "Lightning Rod",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Redirects single-target Electric moves to this Pokémon where possible.  Absorbs Electric moves, raising Special Attack one stage."
+  },
+  {
+    "slug": "limber",
+    "name": "Limber",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents paralysis."
+  },
+  {
+    "slug": "lingering-aroma",
+    "name": "Lingering Aroma",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "Contact changes the attacker's Ability to Lingering Aroma."
+  },
+  {
+    "slug": "liquid-ooze",
+    "name": "Liquid Ooze",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Damages opponents using leeching moves for as much as they would heal."
+  },
+  {
+    "slug": "liquid-voice",
+    "name": "Liquid Voice",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "Sound-based moves become Water-type."
+  },
+  {
+    "slug": "long-reach",
+    "name": "Long Reach",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "This Pokémon's moves do not make contact."
+  },
+  {
+    "slug": "magic-bounce",
+    "name": "Magic Bounce",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Reflects most non-damaging moves back at their user."
+  },
+  {
+    "slug": "magic-guard",
+    "name": "Magic Guard",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against damage not directly caused by a move."
+  },
+  {
+    "slug": "magician",
+    "name": "Magician",
+    "generation": 6,
+    "category": "UTILITY",
+    "shortEffect": "Steals the target's held item when the bearer uses a damaging move."
+  },
+  {
+    "slug": "magma-armor",
+    "name": "Magma Armor",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents freezing."
+  },
+  {
+    "slug": "magnet-pull",
+    "name": "Magnet Pull",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents Steel opponents from fleeing or switching out."
+  },
+  {
+    "slug": "marvel-scale",
+    "name": "Marvel Scale",
+    "generation": 3,
+    "category": "DEFENSE",
+    "shortEffect": "Increases Defense to 1.5× with a major status ailment."
+  },
+  {
+    "slug": "mega-launcher",
+    "name": "Mega Launcher",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens aura and pulse moves to 1.5× their power."
+  },
+  {
+    "slug": "mega-sol",
+    "name": "Mega Sol",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "The Pokémon can use its moves as if the weather were harsh sunlight."
+  },
+  {
+    "slug": "merciless",
+    "name": "Merciless",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "This Pokémon's moves critical hit against poisoned targets."
+  },
+  {
+    "slug": "mimicry",
+    "name": "Mimicry",
+    "generation": 8,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Changes type depending on the terrain."
+  },
+  {
+    "slug": "minds-eye",
+    "name": "Mind’s Eye",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "The Pokémon ignores changes to opponents' evasiveness, its accuracy can't be lowered, and it can hit Ghost types with Normal- and Fighting-type moves."
+  },
+  {
+    "slug": "minus",
+    "name": "Minus",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Special Attack to 1.5× when a friendly Pokémon has Plus or Minus."
+  },
+  {
+    "slug": "mirror-armor",
+    "name": "Mirror Armor",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Reflects any stat-lowering effects."
+  },
+  {
+    "slug": "misty-surge",
+    "name": "Misty Surge",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "When this Pokémon enters battle, it changes the terrain to Misty Terrain."
+  },
+  {
+    "slug": "mold-breaker",
+    "name": "Mold Breaker",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Bypasses targets' abilities if they could hinder or prevent a move."
+  },
+  {
+    "slug": "moody",
+    "name": "Moody",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Raises a random stat two stages and lowers another one stage after each turn."
+  },
+  {
+    "slug": "motor-drive",
+    "name": "Motor Drive",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Absorbs Electric moves, raising Speed one stage."
+  },
+  {
+    "slug": "moxie",
+    "name": "Moxie",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Attack one stage upon KOing a Pokémon."
+  },
+  {
+    "slug": "multiscale",
+    "name": "Multiscale",
+    "generation": 5,
+    "category": "DEFENSE",
+    "shortEffect": "Halves damage taken from full HP."
+  },
+  {
+    "slug": "multitype",
+    "name": "Multitype",
+    "generation": 4,
+    "category": "FORM",
+    "shortEffect": "Changes Arceus's type and form to match its held Plate."
+  },
+  {
+    "slug": "mummy",
+    "name": "Mummy",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Changes attacking Pokémon's abilities to Mummy on contact."
+  },
+  {
+    "slug": "mycelium-might",
+    "name": "Mycelium Might",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Status moves go last, but are not affected by the opponent's ability."
+  },
+  {
+    "slug": "natural-cure",
+    "name": "Natural Cure",
+    "generation": 3,
+    "category": "RECOVERY",
+    "shortEffect": "Cures any major status ailment upon switching out."
+  },
+  {
+    "slug": "neuroforce",
+    "name": "Neuroforce",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "Increases super-effective damage dealt to 1.25×."
+  },
+  {
+    "slug": "neutralizing-gas",
+    "name": "Neutralizing Gas",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Neutralizes abilities of all Pokémon in battle."
+  },
+  {
+    "slug": "no-guard",
+    "name": "No Guard",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Ensures all moves used by and against the Pokémon hit."
+  },
+  {
+    "slug": "normalize",
+    "name": "Normalize",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Makes the Pokémon's moves all act Normal-type."
+  },
+  {
+    "slug": "oblivious",
+    "name": "Oblivious",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents infatuation and protects against Captivate."
+  },
+  {
+    "slug": "opportunist",
+    "name": "Opportunist",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Copies stat boosts by the opponent."
+  },
+  {
+    "slug": "orichalcum-pulse",
+    "name": "Orichalcum Pulse",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Turns the sunlight harsh when entering battle, and boosts Attack while active."
+  },
+  {
+    "slug": "overcoat",
+    "name": "Overcoat",
+    "generation": 5,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Protects against damage from weather."
+  },
+  {
+    "slug": "overgrow",
+    "name": "Overgrow",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Grass moves to inflict 1.5× damage at 1/3 max HP or less."
+  },
+  {
+    "slug": "own-tempo",
+    "name": "Own Tempo",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents confusion."
+  },
+  {
+    "slug": "parental-bond",
+    "name": "Parental Bond",
+    "generation": 6,
+    "category": "UTILITY",
+    "shortEffect": "Lets the bearer hit twice with damaging moves.  The second hit has half power."
+  },
+  {
+    "slug": "pastel-veil",
+    "name": "Pastel Veil",
+    "generation": 8,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents the Pokémon and its allies from being poisoned."
+  },
+  {
+    "slug": "perish-body",
+    "name": "Perish Body",
+    "generation": 8,
+    "category": "REACTIVE",
+    "shortEffect": "When hit by a move that makes direct contact, the Pokémon and the attacker will faint after three turns unless they switch out of battle."
+  },
+  {
+    "slug": "pickpocket",
+    "name": "Pickpocket",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Steals attacking Pokémon's held items on contact."
+  },
+  {
+    "slug": "pickup",
+    "name": "Pickup",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Picks up other Pokémon's used and Flung held items.  May also pick up an item after battle."
+  },
+  {
+    "slug": "piercing-drill",
+    "name": "Piercing Drill",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "When the Pokémon uses contact moves, it can hit even targets that are protecting themselves."
+  },
+  {
+    "slug": "pixilate",
+    "name": "Pixilate",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Turns the bearer's Normal moves into Fairy moves and strengthens them to 1.3× their power."
+  },
+  {
+    "slug": "plus",
+    "name": "Plus",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Special Attack to 1.5× when a friendly Pokémon has Plus or Minus."
+  },
+  {
+    "slug": "poison-heal",
+    "name": "Poison Heal",
+    "generation": 4,
+    "category": "RECOVERY",
+    "shortEffect": "Heals for 1/8 max HP after each turn when poisoned in place of damage."
+  },
+  {
+    "slug": "poison-point",
+    "name": "Poison Point",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of poisoning attacking Pokémon on contact."
+  },
+  {
+    "slug": "poison-puppeteer",
+    "name": "Poison Puppeteer",
+    "generation": 9,
+    "category": "UTILITY",
+    "shortEffect": "Pokémon poisoned by Pecharunt's moves will also become confused."
+  },
+  {
+    "slug": "poison-touch",
+    "name": "Poison Touch",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of poisoning target Pokémon upon contact."
+  },
+  {
+    "slug": "power-construct",
+    "name": "Power Construct",
+    "generation": 7,
+    "category": "FORM",
+    "shortEffect": "Transforms 10% or 50% Zygarde into Complete Forme when its HP is below 50%."
+  },
+  {
+    "slug": "power-of-alchemy",
+    "name": "Power of Alchemy",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "When an ally faints, this Pokémon gains its Ability."
+  },
+  {
+    "slug": "power-spot",
+    "name": "Power Spot",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Just being next to the Pokémon powers up moves."
+  },
+  {
+    "slug": "prankster",
+    "name": "Prankster",
+    "generation": 5,
+    "category": "UTILITY",
+    "shortEffect": "Raises non-damaging moves' priority by one stage."
+  },
+  {
+    "slug": "pressure",
+    "name": "Pressure",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Increases the PP cost of moves targetting the Pokémon by one."
+  },
+  {
+    "slug": "primordial-sea",
+    "name": "Primordial Sea",
+    "generation": 6,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Creates heavy rain, which has all the properties of Rain Dance, cannot be replaced, and causes damaging Fire moves to fail."
+  },
+  {
+    "slug": "prism-armor",
+    "name": "Prism Armor",
+    "generation": 7,
+    "category": "DEFENSE",
+    "shortEffect": "Reduces super-effective damage to 0.75×."
+  },
+  {
+    "slug": "propeller-tail",
+    "name": "Propeller Tail",
+    "generation": 8,
+    "category": "IMMUNITY",
+    "shortEffect": "Ignores moves and abilities that draw in moves."
+  },
+  {
+    "slug": "protean",
+    "name": "Protean",
+    "generation": 6,
+    "category": "FORM",
+    "shortEffect": "Changes the bearer's type to match each move it uses."
+  },
+  {
+    "slug": "protosynthesis",
+    "name": "Protosynthesis",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Raises highest stat in harsh sunlight, or if holding Booster Energy."
+  },
+  {
+    "slug": "psychic-surge",
+    "name": "Psychic Surge",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "When this Pokémon enters battle, it changes the terrain to Psychic Terrain."
+  },
+  {
+    "slug": "punk-rock",
+    "name": "Punk Rock",
+    "generation": 8,
+    "category": "DEFENSE",
+    "shortEffect": "Boosts sound-based moves and halves damage from the same moves."
+  },
+  {
+    "slug": "pure-power",
+    "name": "Pure Power",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Doubles Attack in battle."
+  },
+  {
+    "slug": "purifying-salt",
+    "name": "Purifying Salt",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects from status conditions and halves damage from Ghost-type moves."
+  },
+  {
+    "slug": "quark-drive",
+    "name": "Quark Drive",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Raises highest stat on Electric Terrain, or if holding Booster Energy."
+  },
+  {
+    "slug": "queenly-majesty",
+    "name": "Queenly Majesty",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "Opposing Pokémon cannot use priority attacks."
+  },
+  {
+    "slug": "quick-draw",
+    "name": "Quick Draw",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Enables the Pokémon to move first occasionally."
+  },
+  {
+    "slug": "quick-feet",
+    "name": "Quick Feet",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Speed to 1.5× with a major status ailment."
+  },
+  {
+    "slug": "rain-dish",
+    "name": "Rain Dish",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Heals for 1/16 max HP after each turn during rain."
+  },
+  {
+    "slug": "rattled",
+    "name": "Rattled",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Raises Speed one stage upon being hit by a Dark, Ghost, or Bug move."
+  },
+  {
+    "slug": "receiver",
+    "name": "Receiver",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "When an ally faints, this Pokémon gains its Ability."
+  },
+  {
+    "slug": "reckless",
+    "name": "Reckless",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens recoil moves to 1.2× their power."
+  },
+  {
+    "slug": "refrigerate",
+    "name": "Refrigerate",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Turns the bearer's Normal moves into Ice moves and strengthens them to 1.3× their power."
+  },
+  {
+    "slug": "regenerator",
+    "name": "Regenerator",
+    "generation": 5,
+    "category": "RECOVERY",
+    "shortEffect": "Heals for 1/3 max HP upon switching out."
+  },
+  {
+    "slug": "ripen",
+    "name": "Ripen",
+    "generation": 8,
+    "category": "UTILITY",
+    "shortEffect": "Doubles the effect of berries."
+  },
+  {
+    "slug": "rivalry",
+    "name": "Rivalry",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Increases damage inflicted to 1.25× against Pokémon of the same gender, but decreases damage to 0.75× against the opposite gender."
+  },
+  {
+    "slug": "rks-system",
+    "name": "RKS System",
+    "generation": 7,
+    "category": "FORM",
+    "shortEffect": "Changes this Pokémon's type to match its held Memory."
+  },
+  {
+    "slug": "rock-head",
+    "name": "Rock Head",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against recoil damage."
+  },
+  {
+    "slug": "rocky-payload",
+    "name": "Rocky Payload",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Powers up Rock-type moves."
+  },
+  {
+    "slug": "rough-skin",
+    "name": "Rough Skin",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Damages attacking Pokémon for 1/8 their max HP on contact."
+  },
+  {
+    "slug": "run-away",
+    "name": "Run Away",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Ensures success fleeing from wild battles."
+  },
+  {
+    "slug": "sand-force",
+    "name": "Sand Force",
+    "generation": 5,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Strengthens Rock, Ground, and Steel moves to 1.3× their power during a sandstorm.  Protects against sandstorm damage."
+  },
+  {
+    "slug": "sand-rush",
+    "name": "Sand Rush",
+    "generation": 5,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Doubles Speed during a sandstorm.  Protects against sandstorm damage."
+  },
+  {
+    "slug": "sand-spit",
+    "name": "Sand Spit",
+    "generation": 8,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Creates a sandstorm when hit by an attack."
+  },
+  {
+    "slug": "sand-stream",
+    "name": "Sand Stream",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Summons a sandstorm that lasts indefinitely upon entering battle."
+  },
+  {
+    "slug": "sand-veil",
+    "name": "Sand Veil",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Increases evasion to 1.25× during a sandstorm.  Protects against sandstorm damage."
+  },
+  {
+    "slug": "sap-sipper",
+    "name": "Sap Sipper",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Absorbs Grass moves, raising Attack one stage."
+  },
+  {
+    "slug": "schooling",
+    "name": "Schooling",
+    "generation": 7,
+    "category": "FORM",
+    "shortEffect": "Wishiwashi becomes Schooling Form when its HP is 25% or higher."
+  },
+  {
+    "slug": "scrappy",
+    "name": "Scrappy",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Lets the Pokémon's Normal and Fighting moves hit Ghost Pokémon."
+  },
+  {
+    "slug": "screen-cleaner",
+    "name": "Screen Cleaner",
+    "generation": 8,
+    "category": "IMMUNITY",
+    "shortEffect": "Nullifies effects of Light Screen, Reflect, and Aurora Veil."
+  },
+  {
+    "slug": "seed-sower",
+    "name": "Seed Sower",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Turns the ground into Grassy Terrain when the Pokémon is hit by an attack."
+  },
+  {
+    "slug": "serene-grace",
+    "name": "Serene Grace",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Doubles the chance of moves' extra effects occurring."
+  },
+  {
+    "slug": "shadow-shield",
+    "name": "Shadow Shield",
+    "generation": 7,
+    "category": "DEFENSE",
+    "shortEffect": "When this Pokémon has full HP, regular damage from moves is halved."
+  },
+  {
+    "slug": "shadow-tag",
+    "name": "Shadow Tag",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents opponents from fleeing or switching out."
+  },
+  {
+    "slug": "sharpness",
+    "name": "Sharpness",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Powers up slicing moves."
+  },
+  {
+    "slug": "shed-skin",
+    "name": "Shed Skin",
+    "generation": 3,
+    "category": "RECOVERY",
+    "shortEffect": "Has a 33% chance of curing any major status ailment after each turn."
+  },
+  {
+    "slug": "sheer-force",
+    "name": "Sheer Force",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Strengthens moves with extra effects to 1.3× their power, but prevents their extra effects."
+  },
+  {
+    "slug": "shell-armor",
+    "name": "Shell Armor",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against critical hits."
+  },
+  {
+    "slug": "shield-dust",
+    "name": "Shield Dust",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against incoming moves' extra effects."
+  },
+  {
+    "slug": "shields-down",
+    "name": "Shields Down",
+    "generation": 7,
+    "category": "FORM",
+    "shortEffect": "Transforms this Minior between Core Form and Meteor Form.  Prevents major status ailments and drowsiness while in Meteor Form."
+  },
+  {
+    "slug": "simple",
+    "name": "Simple",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Doubles the Pokémon's stat modifiers.  These doubled modifiers are still capped at -6 or 6 stages."
+  },
+  {
+    "slug": "skill-link",
+    "name": "Skill Link",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Extends two-to-five-hit moves and Triple Kick to their full length every time."
+  },
+  {
+    "slug": "slow-start",
+    "name": "Slow Start",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Halves Attack and Speed for five turns upon entering battle."
+  },
+  {
+    "slug": "slush-rush",
+    "name": "Slush Rush",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "During Hail, this Pokémon has double Speed."
+  },
+  {
+    "slug": "sniper",
+    "name": "Sniper",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens critical hits to inflict 3× damage rather than 2×."
+  },
+  {
+    "slug": "snow-cloak",
+    "name": "Snow Cloak",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Increases evasion to 1.25× during hail.  Protects against hail damage."
+  },
+  {
+    "slug": "snow-warning",
+    "name": "Snow Warning",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Summons hail that lasts indefinitely upon entering battle."
+  },
+  {
+    "slug": "solar-power",
+    "name": "Solar Power",
+    "generation": 4,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Increases Special Attack to 1.5× but costs 1/8 max HP after each turn during strong sunlight."
+  },
+  {
+    "slug": "solid-rock",
+    "name": "Solid Rock",
+    "generation": 4,
+    "category": "DEFENSE",
+    "shortEffect": "Decreases damage taken from super-effective moves by 1/4."
+  },
+  {
+    "slug": "soul-heart",
+    "name": "Soul-Heart",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "This Pokémon's Special Attack rises by one stage every time any Pokémon faints."
+  },
+  {
+    "slug": "soundproof",
+    "name": "Soundproof",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against sound-based moves."
+  },
+  {
+    "slug": "speed-boost",
+    "name": "Speed Boost",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Speed one stage after each turn."
+  },
+  {
+    "slug": "spicy-spray",
+    "name": "Spicy Spray",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "When the Pokémon takes damage from a move, it burns the attacker."
+  },
+  {
+    "slug": "stakeout",
+    "name": "Stakeout",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "This Pokémon's moves have double power against Pokémon that switched in this turn."
+  },
+  {
+    "slug": "stall",
+    "name": "Stall",
+    "generation": 4,
+    "category": "UTILITY",
+    "shortEffect": "Makes the Pokémon move last within its move's priority bracket."
+  },
+  {
+    "slug": "stalwart",
+    "name": "Stalwart",
+    "generation": 8,
+    "category": "IMMUNITY",
+    "shortEffect": "Ignores moves and abilities that draw in moves."
+  },
+  {
+    "slug": "stamina",
+    "name": "Stamina",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "Raises this Pokémon's Defense by one stage when it takes damage from a move."
+  },
+  {
+    "slug": "stance-change",
+    "name": "Stance Change",
+    "generation": 6,
+    "category": "FORM",
+    "shortEffect": "Changes Aegislash to Blade Forme before using a damaging move, or Shield Forme before using King’s Shield."
+  },
+  {
+    "slug": "static",
+    "name": "Static",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Has a 30% chance of paralyzing attacking Pokémon on contact."
+  },
+  {
+    "slug": "steadfast",
+    "name": "Steadfast",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Raises Speed one stage upon flinching."
+  },
+  {
+    "slug": "steam-engine",
+    "name": "Steam Engine",
+    "generation": 8,
+    "category": "REACTIVE",
+    "shortEffect": "Boosts the Speed stat drastically when the Pokémon is hit by a Fire- or Water-type move."
+  },
+  {
+    "slug": "steelworker",
+    "name": "Steelworker",
+    "generation": 7,
+    "category": "OFFENSE",
+    "shortEffect": "This Pokémon's Steel moves have 1.5× power."
+  },
+  {
+    "slug": "steely-spirit",
+    "name": "Steely Spirit",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Powers up ally Pokémon's Steel-type moves."
+  },
+  {
+    "slug": "stench",
+    "name": "Stench",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Has a 10% chance of making target Pokémon flinch with each hit."
+  },
+  {
+    "slug": "sticky-hold",
+    "name": "Sticky Hold",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents a held item from being removed by other Pokémon."
+  },
+  {
+    "slug": "storm-drain",
+    "name": "Storm Drain",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Redirects single-target Water moves to this Pokémon where possible.  Absorbs Water moves, raising Special Attack one stage."
+  },
+  {
+    "slug": "strong-jaw",
+    "name": "Strong Jaw",
+    "generation": 6,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens biting moves to 1.5× their power."
+  },
+  {
+    "slug": "sturdy",
+    "name": "Sturdy",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents being KOed from full HP, leaving 1 HP instead.  Protects against the one-hit KO moves regardless of HP."
+  },
+  {
+    "slug": "suction-cups",
+    "name": "Suction Cups",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents being forced out of battle by other Pokémon's moves."
+  },
+  {
+    "slug": "super-luck",
+    "name": "Super Luck",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Raises moves' critical hit rates one stage."
+  },
+  {
+    "slug": "supersweet-syrup",
+    "name": "Supersweet Syrup",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Once per battle, when a Pokémon with Supersweet Syrup enters the battle, it lowers the evasion stat of all adjacent opponents by one stage. "
+  },
+  {
+    "slug": "supreme-overlord",
+    "name": "Supreme Overlord",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Attack and Special Attack are boosted for each party Pokémon that has been defeated."
+  },
+  {
+    "slug": "surge-surfer",
+    "name": "Surge Surfer",
+    "generation": 7,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Doubles this Pokémon's Speed on Electric Terrain."
+  },
+  {
+    "slug": "swarm",
+    "name": "Swarm",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Bug moves to inflict 1.5× damage at 1/3 max HP or less."
+  },
+  {
+    "slug": "sweet-veil",
+    "name": "Sweet Veil",
+    "generation": 6,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents friendly Pokémon from sleeping."
+  },
+  {
+    "slug": "swift-swim",
+    "name": "Swift Swim",
+    "generation": 3,
+    "category": "ENVIRONMENT",
+    "shortEffect": "Doubles Speed during rain."
+  },
+  {
+    "slug": "sword-of-ruin",
+    "name": "Sword of Ruin",
+    "generation": 9,
+    "category": "OFFENSE",
+    "shortEffect": "Lowers Defense of all Pokémon except itself."
+  },
+  {
+    "slug": "symbiosis",
+    "name": "Symbiosis",
+    "generation": 6,
+    "category": "UTILITY",
+    "shortEffect": "Passes the bearer's held item to an ally when the ally uses up its item."
+  },
+  {
+    "slug": "synchronize",
+    "name": "Synchronize",
+    "generation": 3,
+    "category": "REACTIVE",
+    "shortEffect": "Copies burns, paralysis, and poison received onto the Pokémon that inflicted them."
+  },
+  {
+    "slug": "tablets-of-ruin",
+    "name": "Tablets of Ruin",
+    "generation": 9,
+    "category": "DEFENSE",
+    "shortEffect": "Lowers Attack of all Pokémon except itself."
+  },
+  {
+    "slug": "tangled-feet",
+    "name": "Tangled Feet",
+    "generation": 4,
+    "category": "DEFENSE",
+    "shortEffect": "Doubles evasion when confused."
+  },
+  {
+    "slug": "tangling-hair",
+    "name": "Tangling Hair",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "When this Pokémon takes regular damage from a contact move, the attacking Pokémon's Speed lowers by one stage."
+  },
+  {
+    "slug": "technician",
+    "name": "Technician",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens moves of 60 base power or less to 1.5× their power."
+  },
+  {
+    "slug": "telepathy",
+    "name": "Telepathy",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against friendly Pokémon's damaging moves."
+  },
+  {
+    "slug": "tera-shell",
+    "name": "Tera Shell",
+    "generation": 9,
+    "category": "DEFENSE",
+    "shortEffect": "All damage-dealing moves that hit the Pokémon when its HP is full will not be very effective."
+  },
+  {
+    "slug": "tera-shift",
+    "name": "Tera Shift",
+    "generation": 9,
+    "category": "FORM",
+    "shortEffect": "When Terapagos enters the battle, it turns into its Terastal Form until the end of the battle. "
+  },
+  {
+    "slug": "teraform-zero",
+    "name": "Teraform Zero",
+    "generation": 9,
+    "category": "ENVIRONMENT",
+    "shortEffect": "As soon as Terapagos assumes its Stellar Form, it will immediately neutralize weather and terrain effects. "
+  },
+  {
+    "slug": "teravolt",
+    "name": "Teravolt",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Bypasses targets' abilities if they could hinder or prevent moves."
+  },
+  {
+    "slug": "thermal-exchange",
+    "name": "Thermal Exchange",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "Raises Attack when hit by a Fire-type move. Cannot be burned."
+  },
+  {
+    "slug": "thick-fat",
+    "name": "Thick Fat",
+    "generation": 3,
+    "category": "DEFENSE",
+    "shortEffect": "Halves damage from Fire and Ice moves."
+  },
+  {
+    "slug": "tinted-lens",
+    "name": "Tinted Lens",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Doubles damage inflicted with not-very-effective moves."
+  },
+  {
+    "slug": "torrent",
+    "name": "Torrent",
+    "generation": 3,
+    "category": "OFFENSE",
+    "shortEffect": "Strengthens Water moves to inflict 1.5× damage at 1/3 max HP or less."
+  },
+  {
+    "slug": "tough-claws",
+    "name": "Tough Claws",
+    "generation": 6,
+    "category": "REACTIVE",
+    "shortEffect": "Strengthens moves that make contact to 1.33× their power."
+  },
+  {
+    "slug": "toxic-boost",
+    "name": "Toxic Boost",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Increases Attack to 1.5× when poisoned."
+  },
+  {
+    "slug": "toxic-chain",
+    "name": "Toxic Chain",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "May cause bad poisoning when the Pokémon hits an opponent with a move."
+  },
+  {
+    "slug": "toxic-debris",
+    "name": "Toxic Debris",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "Scatters poison spikes at the feet of the opposing team when the Pokémon takes damage from physical moves."
+  },
+  {
+    "slug": "trace",
+    "name": "Trace",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Copies an opponent's ability upon entering battle."
+  },
+  {
+    "slug": "transistor",
+    "name": "Transistor",
+    "generation": 8,
+    "category": "OFFENSE",
+    "shortEffect": "Powers up Electric-type moves."
+  },
+  {
+    "slug": "triage",
+    "name": "Triage",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "This Pokémon's healing moves have their priority increased by 3."
+  },
+  {
+    "slug": "truant",
+    "name": "Truant",
+    "generation": 3,
+    "category": "UTILITY",
+    "shortEffect": "Skips every second turn."
+  },
+  {
+    "slug": "turboblaze",
+    "name": "Turboblaze",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Bypasses targets' abilities if they could hinder or prevent moves."
+  },
+  {
+    "slug": "unaware",
+    "name": "Unaware",
+    "generation": 4,
+    "category": "IMMUNITY",
+    "shortEffect": "Ignores other Pokémon's stat modifiers for damage and accuracy calculation."
+  },
+  {
+    "slug": "unburden",
+    "name": "Unburden",
+    "generation": 4,
+    "category": "OFFENSE",
+    "shortEffect": "Doubles Speed upon using or losing a held item."
+  },
+  {
+    "slug": "unnerve",
+    "name": "Unnerve",
+    "generation": 5,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents opposing Pokémon from eating held Berries."
+  },
+  {
+    "slug": "unseen-fist",
+    "name": "Unseen Fist",
+    "generation": 8,
+    "category": "REACTIVE",
+    "shortEffect": "Contact moves can strike through Protect/Detect."
+  },
+  {
+    "slug": "vessel-of-ruin",
+    "name": "Vessel of Ruin",
+    "generation": 9,
+    "category": "DEFENSE",
+    "shortEffect": "Lowers Special Attack of all Pokémon except itself."
+  },
+  {
+    "slug": "victory-star",
+    "name": "Victory Star",
+    "generation": 5,
+    "category": "OFFENSE",
+    "shortEffect": "Increases moves' accuracy to 1.1× for friendly Pokémon."
+  },
+  {
+    "slug": "vital-spirit",
+    "name": "Vital Spirit",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents sleep."
+  },
+  {
+    "slug": "volt-absorb",
+    "name": "Volt Absorb",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Absorbs Electric moves, healing for 1/4 max HP."
+  },
+  {
+    "slug": "wandering-spirit",
+    "name": "Wandering Spirit",
+    "generation": 8,
+    "category": "REACTIVE",
+    "shortEffect": "Swaps abilities with opponents on contact."
+  },
+  {
+    "slug": "water-absorb",
+    "name": "Water Absorb",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Absorbs Water moves, healing for 1/4 max HP."
+  },
+  {
+    "slug": "water-bubble",
+    "name": "Water Bubble",
+    "generation": 7,
+    "category": "IMMUNITY",
+    "shortEffect": "Halves damage from Fire moves, doubles damage of Water moves, and prevents burns."
+  },
+  {
+    "slug": "water-compaction",
+    "name": "Water Compaction",
+    "generation": 7,
+    "category": "REACTIVE",
+    "shortEffect": "Raises this Pokémon's Defense by two stages when it's hit by a Water move."
+  },
+  {
+    "slug": "water-veil",
+    "name": "Water Veil",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents burns."
+  },
+  {
+    "slug": "weak-armor",
+    "name": "Weak Armor",
+    "generation": 5,
+    "category": "REACTIVE",
+    "shortEffect": "Raises Speed and lowers Defense by one stage each upon being hit by a physical move."
+  },
+  {
+    "slug": "well-baked-body",
+    "name": "Well-Baked Body",
+    "generation": 9,
+    "category": "IMMUNITY",
+    "shortEffect": "Immune to Fire-type moves, and Defense is sharply boosted."
+  },
+  {
+    "slug": "white-smoke",
+    "name": "White Smoke",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Prevents stats from being lowered by other Pokémon."
+  },
+  {
+    "slug": "wimp-out",
+    "name": "Wimp Out",
+    "generation": 7,
+    "category": "UTILITY",
+    "shortEffect": "This Pokémon automatically switches out when its HP drops below half."
+  },
+  {
+    "slug": "wind-power",
+    "name": "Wind Power",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "When hit by a wind move, the power of the next Electric-type move it uses is doubled."
+  },
+  {
+    "slug": "wind-rider",
+    "name": "Wind Rider",
+    "generation": 9,
+    "category": "REACTIVE",
+    "shortEffect": "Gives immunity to wind moves, and causes the Pokémon's Attack to increase by one stage when hit by one."
+  },
+  {
+    "slug": "wonder-guard",
+    "name": "Wonder Guard",
+    "generation": 3,
+    "category": "IMMUNITY",
+    "shortEffect": "Protects against damaging moves that are not super effective."
+  },
+  {
+    "slug": "wonder-skin",
+    "name": "Wonder Skin",
+    "generation": 5,
+    "category": "DEFENSE",
+    "shortEffect": "Lowers incoming non-damaging moves' base accuracy to exactly 50%."
+  },
+  {
+    "slug": "zen-mode",
+    "name": "Zen Mode",
+    "generation": 5,
+    "category": "FORM",
+    "shortEffect": "Changes Darmanitan's form after each turn depending on its HP: Zen Mode below 50% max HP, and Standard Mode otherwise."
+  },
+  {
+    "slug": "zero-to-hero",
+    "name": "Zero to Hero",
+    "generation": 9,
+    "category": "FORM",
+    "shortEffect": "Transforms into its Hero Form when switching out."
+  }
+]

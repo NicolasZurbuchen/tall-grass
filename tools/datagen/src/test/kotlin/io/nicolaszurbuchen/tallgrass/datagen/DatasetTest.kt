@@ -25,6 +25,12 @@ class DatasetTest {
     private val species by lazy { json.decodeFromString<List<SpeciesJson>>(dataDir.resolve("species.json").readText()) }
     private val variants by lazy { json.decodeFromString<List<VariantJson>>(dataDir.resolve("variants.json").readText()) }
     private val types by lazy { json.decodeFromString<TypeChartJson>(dataDir.resolve("types.json").readText()) }
+    private val abilities by lazy { json.decodeFromString<List<AbilityJson>>(dataDir.resolve("abilities.json").readText()) }
+    private val moves by lazy { json.decodeFromString<List<MoveJson>>(dataDir.resolve("moves.json").readText()) }
+
+    private val categoryOverrides by lazy {
+        json.decodeFromString<Map<String, AbilityCategory>>(dataDir.resolve("ability-categories.json").readText())
+    }
 
     @Test
     fun manifest_matchesTheFilesItDescribes() {
@@ -32,6 +38,8 @@ class DatasetTest {
         assertEquals(manifest.variantCount, variants.size)
         assertEquals(manifest.listedVariantCount, variants.count { it.listedInDex })
         assertEquals(manifest.typeCount, types.types.size)
+        assertEquals(manifest.abilityCount, abilities.size)
+        assertEquals(manifest.moveCount, moves.size)
     }
 
     @Test
@@ -161,6 +169,8 @@ class DatasetTest {
     fun json_isSortedSoTheDiffIsReadable() {
         assertEquals(species.map { it.dexNumber }.sorted(), species.map { it.dexNumber })
         assertEquals(types.types.map { it.slug }.sorted(), types.types.map { it.slug })
+        assertEquals(abilities.map { it.slug }.sorted(), abilities.map { it.slug })
+        assertEquals(moves.map { it.slug }.sorted(), moves.map { it.slug })
     }
 
     @Test
@@ -259,4 +269,139 @@ class DatasetTest {
         assertEquals(base.abilities.map { it.slug }, fire.abilities.map { it.slug })
         assertEquals(base.speciesDexNumber, fire.speciesDexNumber)
     }
+
+    // region abilities
+
+    @Test
+    fun abilities_areTheMainSeriesOnesOnly() {
+        // Upstream's other sixty are Pokemon Conquest's, numbered from 10000 and flagged
+        // is_main_series = 0. None has effect text in any language and none is on any Pokemon, so a
+        // card for Mountaineer would be a name over an empty space.
+        assertEquals(314, abilities.size)
+
+        val conquest = listOf("mountaineer", "wave-rider", "skater", "herbivore", "conqueror")
+        val leaked = abilities.filter { it.slug in conquest }
+        assertTrue(leaked.isEmpty(), "Spin-off abilities in the dataset: ${leaked.map { it.slug }}")
+    }
+
+    @Test
+    fun everyAbility_carriesTheTextTheScreenDraws() {
+        val silent = abilities.filter { it.shortEffect.isBlank() }
+        assertTrue(silent.isEmpty(), "Abilities with no effect text: ${silent.map { it.slug }}")
+        assertTrue(abilities.all { it.name.isNotBlank() })
+    }
+
+    @Test
+    fun everyAbilityAVariantHas_existsInTheAbilityTable() {
+        // The join the ability detail's "known by" section reads, in the direction that can break:
+        // variantAbility holds a slug and nothing enforces that the ability exists.
+        val known = abilities.map { it.slug }.toSet()
+        val dangling = variants.flatMap { it.abilities }.map { it.slug }.filterNot { it in known }.distinct()
+
+        assertTrue(dangling.isEmpty(), "Variants naming an ability that is not in the dataset: $dangling")
+    }
+
+    @Test
+    fun oneAbility_isOnNoPokemonAndThatIsCorrect() {
+        // Ogerpon's, which upstream gates behind a form in a way its CSVs do not join. Pinned so
+        // that an empty "known by" reads as a known fact rather than as a join that broke.
+        val used = variants.flatMap { it.abilities }.map { it.slug }.toSet()
+        assertEquals(listOf("embody-aspect"), abilities.map { it.slug }.filterNot { it in used })
+    }
+
+    @Test
+    fun abilityCategories_partitionTheWholeList() {
+        // Exact, like the FormKind counts above and for the same reason: when these move, the edit
+        // is the moment somebody looks at what the classifier did differently.
+        assertEquals(
+            mapOf(
+                AbilityCategory.IMMUNITY to 69,
+                AbilityCategory.OFFENSE to 65,
+                AbilityCategory.UTILITY to 56,
+                AbilityCategory.ENVIRONMENT to 40,
+                AbilityCategory.REACTIVE to 40,
+                AbilityCategory.DEFENSE to 19,
+                AbilityCategory.FORM to 18,
+                AbilityCategory.RECOVERY to 7,
+            ),
+            abilities.groupingBy { it.category }.eachCount().toList().sortedByDescending { it.second }.toMap(),
+        )
+    }
+
+    @Test
+    fun everyOverride_namesAnAbilityThatExists() {
+        // The override file is hand-edited, so a typo in it is silent: the classifier's answer just
+        // stands. This is the only thing that would notice.
+        val known = abilities.map { it.slug }.toSet()
+        val unknown = categoryOverrides.keys.filterNot { it in known }
+
+        assertTrue(unknown.isEmpty(), "ability-categories.json names abilities that do not exist: $unknown")
+    }
+
+    @Test
+    fun everyOverride_actuallyReachedTheDataset() {
+        // The other half: an override that agrees with the classifier is dead weight, and one that
+        // did not take means the generator never read the file.
+        val applied = abilities.associate { it.slug to it.category }
+        val ignored = categoryOverrides.filter { (slug, category) -> applied[slug] != category }
+
+        assertTrue(ignored.isEmpty(), "Overrides that did not take: $ignored")
+    }
+
+    // endregion
+
+    // region moves
+
+    @Test
+    fun moves_areTheMainSeriesOnesOnly() {
+        // Upstream's other eighteen are Pokemon XD's Shadow moves, on the same threshold as the
+        // Conquest abilities.
+        assertEquals(919, moves.size)
+        assertTrue(moves.none { it.slug.startsWith("shadow-") && it.type == "shadow" })
+        assertTrue(moves.all { it.type in types.types.map { type -> type.slug } })
+        assertEquals(setOf("physical", "special", "status"), moves.map { it.damageClass }.toSet())
+    }
+
+    @Test
+    fun moves_leaveGenuinelyAbsentFieldsNull() {
+        // None of these is a missing value standing in for a default. A status move has no power,
+        // a never-miss move has no accuracy, and 93 Generation VIII and IX moves have no effect
+        // text because upstream has written none -- they carry no effect id at all.
+        assertEquals(331, moves.count { it.power == null })
+        assertEquals(285, moves.count { it.accuracy == null })
+        assertEquals(93, moves.count { it.shortEffect == null })
+
+        // PP is the counter-example, and is why the three above are worth pinning: every move has
+        // one, so a null there would be a read that went wrong rather than a fact.
+        assertEquals(0, moves.count { it.pp == null })
+    }
+
+    @Test
+    fun everyMoveWithoutEffectText_isRecent() {
+        // If this ever fails it is not a data gap, it is a parse that dropped a column: upstream has
+        // written prose for everything up to Generation VII.
+        val old = moves.filter { it.shortEffect == null && it.generation < 8 }
+        assertTrue(old.isEmpty(), "Moves older than Gen VIII with no effect text: ${old.map { it.slug }}")
+    }
+
+    @Test
+    fun moves_carryTheNumbersACardDraws() {
+        val tackle = moves.single { it.slug == "tackle" }
+        assertEquals("Tackle", tackle.name)
+        assertEquals("normal", tackle.type)
+        assertEquals("physical", tackle.damageClass)
+        assertEquals(40, tackle.power)
+        assertEquals(100, tackle.accuracy)
+        assertEquals(35, tackle.pp)
+        assertEquals(0, tackle.priority)
+
+        // The percentage the prose deliberately leaves out: "Has a chance to burn the target."
+        assertEquals(10, moves.single { it.slug == "fire-punch" }.effectChance)
+
+        // Priority is signed, and a move that always goes last is the case a non-negative read would
+        // silently flatten.
+        assertTrue(moves.any { it.priority > 0 } && moves.any { it.priority < 0 })
+    }
+
+    // endregion
 }
