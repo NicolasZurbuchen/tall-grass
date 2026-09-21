@@ -3,10 +3,13 @@ package io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -35,9 +38,16 @@ fun HomeScreen(
     onTileClick: (HomeTileUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val statusBar = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
-        // Outside the system bars rather than inside them: the corner it is cropped by is the
-        // screen's, so it runs up behind the status bar the way the tint on the detail screen does.
+        // Centred on the trailing action of a top bar this screen does not have yet, which is what
+        // the design draws it around. Derived from the row rather than measured off a button, so it
+        // lands in the same place once there is one: half a toolbar below the status bar, and an
+        // icon button's own centre in from the right edge.
+        //
+        // Outside the system bars rather than inside them, so it runs up behind the status bar the
+        // way the tint on the detail screen does and the corner cropping it is the screen's.
         AppPokeball(
             // One small step off the background, towards whichever end of the scale the text is on
             // -- which is darker in light and lighter in dark. No token says that: `surface` is a
@@ -47,7 +57,10 @@ fun HomeScreen(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = CORNER_BALL_CROP_X, y = CORNER_BALL_CROP_Y)
+                    .offset(
+                        x = CORNER_BALL_SIZE / 2 - ACTION_INSET,
+                        y = statusBar + TOOLBAR_HEIGHT / 2 - CORNER_BALL_SIZE / 2,
+                    )
                     .requiredSize(CORNER_BALL_SIZE),
         )
 
@@ -90,11 +103,13 @@ fun HomeScreen(
 // column would fit on a tablet but is not worth a size class until there is a tablet layout.
 private const val HOME_GRID_COLUMNS = 2
 
-// Larger than a tile's ball by enough to read as a different object rather than as a ninth card,
-// and hung far enough off both edges that only the band and part of the button are on screen.
+// Larger than a tile's ball by enough to read as a different object rather than as a ninth card.
 private val CORNER_BALL_SIZE = 220.dp
-private val CORNER_BALL_CROP_X = 72.dp
-private val CORNER_BALL_CROP_Y = (-84).dp
+
+// What the ball is centred on. A 48dp icon button with Material's 4dp end margin has its middle
+// 28dp in from the edge, and the row it sits in is 56dp tall.
+private val TOOLBAR_HEIGHT = 56.dp
+private val ACTION_INSET = 28.dp
 
 // Just enough to be seen in both themes. Anything more and it stops being a watermark.
 private const val CORNER_BALL_TINT = 0.08f

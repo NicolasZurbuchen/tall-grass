@@ -67,9 +67,9 @@ private const val CARD_ASPECT_RATIO = 2.4f
 
 private val BALL_SIZE = 96.dp
 
-// How far past the right edge the ball sits. Just over a third of it, which leaves the button and
-// the band whole and takes the far side away.
-private val BALL_CROP = 36.dp
+// How far past the right edge the ball sits: a tenth of it, so the edge shaves the rim rather than
+// cutting into the band. What is left on the card is a whole pokeball, not the front half of one.
+private val BALL_CROP = BALL_SIZE * 0.1f
 
 // A watermark on a colour the label also sits on. Any heavier and the two compete.
 private const val BALL_ALPHA = 0.16f
