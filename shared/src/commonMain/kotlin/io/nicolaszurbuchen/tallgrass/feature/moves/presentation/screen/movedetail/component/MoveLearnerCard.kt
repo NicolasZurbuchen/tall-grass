@@ -1,15 +1,11 @@
 package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -22,56 +18,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveLearnerUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
-import org.jetbrains.compose.resources.stringResource
-import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.move_detail_no_learners
 
 /**
- * Every Pokemon that learns the move, in National Dex order with a species' forms adjacent.
+ * One Pokemon in the Learned by tab: a picture, a name, and how it comes by the move.
  *
- * **A grid of its own rather than the horizontal strip the design file drew.** A strip works for the
- * four the prototype had; Rest is learned by 1,213 Pokemon and Tackle by 409, and a row you scroll
- * sideways through 1,213 times is a worse answer than one you scroll down. The median move has 26.
- *
- * Three across rather than the dex's two: there is no name-and-pills block here, only a picture and a
- * line, so the card can be a third of the width and the list a third as long.
+ * Smaller than a dex card and carrying a third of what one carries, because the question here is
+ * already answered — the reader knows what the move is and is asking who has it.
  */
 @Composable
-fun MoveLearners(
-    learners: List<MoveLearnerUiModel>,
-    onLearnerClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (learners.isEmpty()) {
-        // The 106 moves nobody is taught. Said out loud, because an empty tab reads as a read that
-        // has not finished rather than as an answer.
-        Text(
-            text = stringResource(Res.string.move_detail_no_learners),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.appColors.textSecondary,
-            modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.lg),
-        )
-        return
-    }
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(LEARNER_GRID_COLUMNS),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-        modifier = modifier.fillMaxSize(),
-    ) {
-        items(items = learners, key = { it.slug }) { learner ->
-            LearnerCard(learner = learner, onClick = { onLearnerClick(learner.slug) })
-        }
-    }
-}
-
-@Composable
-private fun LearnerCard(
+fun MoveLearnerCard(
     learner: MoveLearnerUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -115,10 +73,6 @@ private fun LearnerCard(
         }
     }
 }
-
-// Three across, which is what a card holding a picture and two short lines wants. The dex uses two
-// because its cards also carry a name, a number and up to two pills.
-private const val LEARNER_GRID_COLUMNS = 3
 
 private val ARTWORK_SIZE = 72.dp
 

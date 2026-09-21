@@ -1,12 +1,9 @@
 package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.moves.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -32,13 +29,17 @@ import tallgrass.shared.generated.resources.moves_power
  * One move in the grid.
  *
  * The dex card's layout with a move's contents in it: the type's colour as the ground, the name and a
- * pill down the left, a figure in the top corner, and the subject filling the bottom-right corner
- * cropped by the card's own edges.
+ * pill down the left, and the subject filling the bottom-right corner cropped by the card's own
+ * edges.
  *
  * **The subject is the damage class.** Where a Pokemon has artwork, a move has one of three symbols,
  * and putting it where the artwork goes is what makes the two grids read as the same grid. It is also
  * the only thing on the card that says how the move deals its damage — the power figure says how
  * much, and a 90-power Flamethrower and a 90-power Close Combat are answered by different defences.
+ *
+ * The figure sits on the glyph rather than in the opposite corner. A dex card puts its number up
+ * there because the artwork is the thing being looked at; here the number is, and the glyph is the
+ * ground it is read against.
  */
 @Composable
 fun MoveCard(
@@ -55,7 +56,7 @@ fun MoveCard(
         Box(modifier = Modifier.fillMaxSize()) {
             // Pushed past the corner it stands in so the card's right and bottom edges take the far
             // side of it, exactly as a dex card crops its watermark. Sized by width alone: the
-            // vectors are 3:2 and fixing both dimensions would squash them.
+            // vectors are 3:2 and DamageClassIcon applies the aspect itself.
             DamageClassIcon(
                 damageClass = move.damageClass,
                 color = Color.White.copy(alpha = GLYPH_ALPHA),
@@ -67,35 +68,29 @@ fun MoveCard(
             )
 
             Column(modifier = Modifier.fillMaxSize().padding(MaterialTheme.spacing.md)) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = move.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-
-                    // The corner a dex card puts its number in. Labelled, because "90" alone is not
-                    // self-evident the way "#001" is.
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        modifier = Modifier.padding(start = MaterialTheme.spacing.sm),
-                    ) {
-                        Text(text = move.powerText, style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            text = stringResource(Res.string.moves_power),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = LABEL_ALPHA),
-                        )
-                    }
-                }
+                // One line, always. A move's name runs from "Acid" to "10,000,000 Volt Thunderbolt",
+                // and letting the long ones wrap pushed the pill down on a third of the cards and
+                // left the grid with no line for the eye to follow.
+                Text(
+                    text = move.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
 
                 TypePill(type = move.type, modifier = Modifier.padding(top = MaterialTheme.spacing.sm))
+            }
+
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(MaterialTheme.spacing.md),
+            ) {
+                Text(text = move.powerText, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = stringResource(Res.string.moves_power),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = LABEL_ALPHA),
+                )
             }
         }
     }
@@ -112,9 +107,9 @@ private val GLYPH_WIDTH = 150.dp
 // which is what makes it look like one corner rather than two cuts.
 private val GLYPH_CROP = GLYPH_WIDTH * 0.12f
 
-// Stronger than the pokeball watermark it replaced. This one is the card's subject rather than its
-// brand, so it is meant to be read rather than merely sensed.
-private const val GLYPH_ALPHA = 0.3f
+// Fainter than it would be alone, because the power figure is read against it. Still stronger than
+// the pokeball watermark it replaced: this one is the card's subject rather than its brand.
+private const val GLYPH_ALPHA = 0.22f
 
 // The word under the figure is supporting text on a saturated ground, where full white reads as loud
 // as the number it labels.

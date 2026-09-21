@@ -3,9 +3,9 @@ package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedeta
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
-import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveFactUiModel
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveStatUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import org.jetbrains.compose.resources.StringResource
 import tallgrass.shared.generated.resources.Res
@@ -25,12 +25,13 @@ import tallgrass.shared.generated.resources.move_detail_hp_cost
 import tallgrass.shared.generated.resources.move_detail_kind
 import tallgrass.shared.generated.resources.move_detail_power
 import tallgrass.shared.generated.resources.move_detail_pp
-import tallgrass.shared.generated.resources.move_detail_pp_value
+import tallgrass.shared.generated.resources.move_detail_priority
 import tallgrass.shared.generated.resources.move_detail_recoil
 import tallgrass.shared.generated.resources.move_detail_share_of_damage
 import tallgrass.shared.generated.resources.move_detail_share_of_max_hp
 import tallgrass.shared.generated.resources.move_detail_stat_stage
 import tallgrass.shared.generated.resources.move_detail_stat_stages
+import tallgrass.shared.generated.resources.move_detail_target
 import tallgrass.shared.generated.resources.move_detail_times
 import tallgrass.shared.generated.resources.move_detail_times_range
 import tallgrass.shared.generated.resources.move_detail_turns
@@ -45,50 +46,35 @@ import kotlin.math.abs
  * `StatsUiMapper`: a mapper file holds the crossing and nothing else, so anything that is not itself
  * a mapping lives inside the function that uses it.
  */
-fun MoveDetail.toUiModel(): MoveContentUiModel {
-    val signed = { value: Int -> if (value > 0) "+$value" else value.toString() }
-    val fraction = { value: Int?, full: Int -> ((value ?: 0).toFloat() / full).coerceIn(0f, 1f) }
-
-    return MoveContentUiModel(
+fun MoveDetail.toUiModel(): MoveContentUiModel =
+    MoveContentUiModel(
         name = name,
         type = type.toUiModel(),
         damageClass = damageClass.toUiModel(),
-        ppText = pp?.let { UiText.Resource(Res.string.move_detail_pp_value, listOf(it)) },
-        bars =
+        stats =
             listOf(
-                MoveBarUiModel(
-                    label = UiText.Resource(Res.string.move_detail_power),
-                    valueText = power?.toString() ?: ABSENT,
-                    fraction = fraction(power, POWER_FULL),
-                ),
-                MoveBarUiModel(
+                MoveStatUiModel(UiText.Resource(Res.string.move_detail_power), power?.toString() ?: ABSENT),
+                MoveStatUiModel(
                     label = UiText.Resource(Res.string.move_detail_accuracy),
                     valueText = accuracy?.let { "$it$PERCENT" } ?: ABSENT,
-                    fraction = fraction(accuracy, ACCURACY_FULL),
                 ),
-                MoveBarUiModel(
-                    label = UiText.Resource(Res.string.move_detail_pp),
-                    valueText = pp?.toString() ?: ABSENT,
-                    fraction = fraction(pp, PP_FULL),
-                ),
+                MoveStatUiModel(UiText.Resource(Res.string.move_detail_pp), pp?.toString() ?: ABSENT),
             ),
         effect = effect,
-        targetText = UiText.Raw(target.toUiModel().label),
-        priorityText = signed(priority),
-        facts = toFactsUiModel(signed),
+        facts = toFactsUiModel(),
     )
-}
 
 /**
- * The Mechanics block, built from whatever upstream actually recorded.
+ * The Mechanics block.
  *
- * Every entry is conditional, and that is the whole design: a move with no drain has no drain row
- * rather than a row saying zero, and the 92 moves with no meta produce an empty list that leaves the
- * section out. See `DECISIONS.md § A move's mechanical detail is null where there is nothing to say`.
+ * **Target and priority lead, and they are the only two that are always there.** They are facts about
+ * every move and neither is ever in the prose — the sentence says what happens, not to whom or in
+ * what order. Everything after them is conditional, which is the whole design: a move with no drain
+ * has no drain row rather than a row saying zero, and the 92 moves with no meta row contribute
+ * nothing. See `DECISIONS.md § A move's mechanical detail is null where there is nothing to say`.
  */
-private fun MoveDetail.toFactsUiModel(signed: (Int) -> String): List<MoveFactUiModel> {
-    val meta = this.meta ?: return emptyList()
-
+private fun MoveDetail.toFactsUiModel(): List<MoveFactUiModel> {
+    val signed = { value: Int -> if (value > 0) "+$value" else value.toString() }
     val fact = { label: StringResource, value: UiText -> MoveFactUiModel(UiText.Resource(label), value) }
 
     // **The one place the zero-means-always rule is spent.** A null chance beside a real effect means
@@ -107,7 +93,14 @@ private fun MoveDetail.toFactsUiModel(signed: (Int) -> String): List<MoveFactUiM
         UiText.Composite(listOf(value, suffix))
     }
 
+    val meta = this.meta
+
     return buildList {
+        add(fact(Res.string.move_detail_target, UiText.Raw(target.toUiModel().label)))
+        add(fact(Res.string.move_detail_priority, UiText.Raw(signed(priority))))
+
+        if (meta == null) return@buildList
+
         add(fact(Res.string.move_detail_kind, UiText.Raw(meta.category.toUiModel().label)))
 
         meta.ailment?.let { ailment ->
@@ -173,17 +166,8 @@ private fun MoveDetail.toFactsUiModel(signed: (Int) -> String): List<MoveFactUiM
     }
 }
 
-// An em dash rather than a zero, with an empty lane beside it.
+// An em dash rather than a zero. A status move has no power at all, and 0 would read as a move that
+// hits for nothing — see DECISIONS.md § A move's absent numbers are absent, not zero.
 private const val ABSENT = "—"
 
 private const val PERCENT = "%"
-
-// Full at 150 rather than at the 250 Explosion reaches. 882 of the 919 moves are at or below it, so
-// scaling to the outlier would leave every move anyone actually compares in the bottom third of the
-// lane. The stat bars on a Pokemon clamp at 160 for the same reason.
-private const val POWER_FULL = 150
-
-private const val ACCURACY_FULL = 100
-
-// The most any move has.
-private const val PP_FULL = 40

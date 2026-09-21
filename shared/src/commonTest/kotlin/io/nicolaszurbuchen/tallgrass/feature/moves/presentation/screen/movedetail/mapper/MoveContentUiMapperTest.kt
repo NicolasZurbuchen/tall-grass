@@ -15,7 +15,9 @@ import tallgrass.shared.generated.resources.move_detail_drain
 import tallgrass.shared.generated.resources.move_detail_hits
 import tallgrass.shared.generated.resources.move_detail_hp_cost
 import tallgrass.shared.generated.resources.move_detail_kind
+import tallgrass.shared.generated.resources.move_detail_priority
 import tallgrass.shared.generated.resources.move_detail_recoil
+import tallgrass.shared.generated.resources.move_detail_target
 import tallgrass.shared.generated.resources.move_detail_times_range
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,7 +45,7 @@ class MoveContentUiMapperTest {
 
     private fun factWith(label: Any) = { facts: List<MoveFactUiModel> -> facts.single { labelOf(it) == label } }
 
-    // region battle data
+    // region the three figures
 
     @Test
     fun toUiModel_carriesTheIdentityTheHeroDraws() {
@@ -52,43 +54,19 @@ class MoveContentUiMapperTest {
         assertEquals("Flamethrower", model.name)
         assertEquals(TypeUiModel.FIRE, model.type)
         assertEquals(DamageClassUiModel.SPECIAL, model.damageClass)
-        assertEquals(listOf(15), (model.ppText as UiText.Resource).args)
     }
 
     @Test
-    fun toUiModel_drawsTheThreeBarsInTheOrderTheyAreRead() {
-        val bars = MoveFixtures.flamethrowerDetail.toUiModel().bars
+    fun toUiModel_drawsTheThreeFiguresInTheOrderTheyAreRead() {
+        val stats = MoveFixtures.flamethrowerDetail.toUiModel().stats
 
-        assertEquals(listOf("90", "100%", "15"), bars.map { it.valueText })
-        assertEquals(0.6f, bars[0].fraction)
-        assertEquals(1f, bars[1].fraction)
+        assertEquals(listOf("90", "100%", "15"), stats.map { it.valueText })
     }
 
     @Test
-    fun toUiModel_drawsAnAbsentFigureAsADashWithAnEmptyLane() {
-        // The pair matters: a dash beside a full lane would be worse than either alone.
-        val power = MoveFixtures.thunderWaveDetail.toUiModel().bars.first()
-
-        assertEquals("—", power.valueText)
-        assertEquals(0f, power.fraction)
-    }
-
-    @Test
-    fun toUiModel_clampsAPowerAboveTheScaleRatherThanOverflowingTheLane() {
-        // Explosion reaches 250 against a lane that is full at 150. Thirty-seven moves are over it.
-        val explosion = MoveFixtures.flamethrowerDetail.copy(power = 250)
-
-        assertEquals(1f, explosion.toUiModel().bars.first().fraction)
-        assertEquals("250", explosion.toUiModel().bars.first().valueText)
-    }
-
-    @Test
-    fun toUiModel_signsPriorityOnlyWhenItIsPositive() {
-        // The scale runs -7 to +5 and zero is by far the commonest, so "+0" would be noise on almost
-        // every move while "-7" has to keep its sign.
-        assertEquals("0", MoveFixtures.flamethrowerDetail.toUiModel().priorityText)
-        assertEquals("+1", MoveFixtures.flamethrowerDetail.copy(priority = 1).toUiModel().priorityText)
-        assertEquals("-7", MoveFixtures.flamethrowerDetail.copy(priority = -7).toUiModel().priorityText)
+    fun toUiModel_drawsAnAbsentFigureAsADash() {
+        // A status move has no power at all, and 0 would claim it hits for nothing.
+        assertEquals("—", MoveFixtures.thunderWaveDetail.toUiModel().stats.first().valueText)
     }
 
     // endregion
@@ -96,23 +74,45 @@ class MoveContentUiMapperTest {
     // region mechanics
 
     @Test
-    fun toUiModel_hasNoMechanicsAtAllForAMoveUpstreamHasNotFilledIn() {
-        // 92 Generation VIII and IX moves. An empty list is what leaves the section out rather than
-        // drawing an empty card.
+    fun toUiModel_leadsTheMechanicsWithTargetAndPriority() {
+        // The two every move has, and the two the prose never states: it says what happens, not to
+        // whom or in what order.
+        val facts = MoveFixtures.flamethrowerDetail.toUiModel().facts
+
+        assertEquals(Res.string.move_detail_target, labelOf(facts[0]))
+        assertEquals(UiText.Raw("One target"), facts[0].value)
+        assertEquals(Res.string.move_detail_priority, labelOf(facts[1]))
+        assertEquals(UiText.Raw("0"), facts[1].value)
+    }
+
+    @Test
+    fun toUiModel_signsPriorityOnlyWhenItIsPositive() {
+        // The scale runs -7 to +5 and zero is by far the commonest, so "+0" would be noise on almost
+        // every move while "-7" has to keep its sign.
+        val priority = factWith(Res.string.move_detail_priority)
+
+        assertEquals(UiText.Raw("+1"), priority(MoveFixtures.flamethrowerDetail.copy(priority = 1).toUiModel().facts).value)
+        assertEquals(UiText.Raw("-7"), priority(MoveFixtures.flamethrowerDetail.copy(priority = -7).toUiModel().facts).value)
+    }
+
+    @Test
+    fun toUiModel_keepsTargetAndPriorityForAMoveUpstreamHasNotFilledIn() {
+        // 92 Generation VIII and IX moves have no meta row. They still have a target and a priority,
+        // and those two are facts about the move rather than about upstream's records.
         val model = MoveFixtures.direClawDetail.toUiModel()
 
-        assertTrue(model.facts.isEmpty())
+        assertEquals(2, model.facts.size)
+        assertEquals(Res.string.move_detail_target, labelOf(model.facts[0]))
         assertNull(model.effect, "and no effect paragraph either")
     }
 
     @Test
-    fun toUiModel_alwaysLeadsWithTheKind() {
+    fun toUiModel_namesTheKindOnceThereIsMetaToName() {
         // The one meta field every filled-in move has, and the only classification in this app that
         // was not invented.
-        val facts = MoveFixtures.flamethrowerDetail.toUiModel().facts
+        val kind = factWith(Res.string.move_detail_kind)(MoveFixtures.flamethrowerDetail.toUiModel().facts)
 
-        assertEquals(Res.string.move_detail_kind, labelOf(facts.first()))
-        assertEquals(UiText.Raw("Damage and a condition"), facts.first().value)
+        assertEquals(UiText.Raw("Damage and a condition"), kind.value)
     }
 
     @Test
