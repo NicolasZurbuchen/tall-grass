@@ -13,9 +13,14 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
  * learner, so there is one statement of what a Pokemon looks like rather than 62,777 copies of it.
  * They are here at all because tapping one of these opens its detail screen, whose hero draws all
  * three before it has read anything.
+ *
+ * [cardSlug] is the dex card this Pokemon is reached through, and it is not always [variantSlug]:
+ * only default forms are cards, so Alolan Exeggutor is reached through Exeggutor. The detail needs
+ * both -- the card is what its carousel can swipe along, the variant is which form is on screen.
  */
 data class MoveLearner(
     val variantSlug: String,
+    val cardSlug: String,
     val dexNumber: Int,
     val name: String,
     val formLabel: String?,

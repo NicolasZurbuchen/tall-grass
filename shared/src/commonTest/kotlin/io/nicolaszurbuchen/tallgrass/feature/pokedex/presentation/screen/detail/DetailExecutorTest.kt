@@ -54,7 +54,7 @@ class DetailExecutorTest {
         getDexEntries = GetDexEntriesUseCase(repository),
         getPokemonDetail = GetPokemonDetailUseCase(repository),
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
-    ).create(slug, DexQuery.All)
+    ).create(slug, DexQuery.All, formSlug = null)
 
     @Test
     fun store_readsTheDetailWithoutBeingAsked() =

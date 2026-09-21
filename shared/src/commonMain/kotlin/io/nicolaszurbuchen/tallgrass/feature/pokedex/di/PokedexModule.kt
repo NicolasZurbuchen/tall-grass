@@ -22,7 +22,7 @@ val pokedexModule =
         // what its card was showing both arrive from the NavKey, so they are passed at resolution
         // rather than resolved. The factory above stays an ordinary binding, which is what keeps its
         // own dependencies inside the graph.
-        viewModel { (slug: String, hero: HeroHandoff, query: DexQuery) ->
-            DetailViewModel(get(), slug, query, hero)
+        viewModel { (slug: String, hero: HeroHandoff, query: DexQuery, formSlug: String?) ->
+            DetailViewModel(get(), slug, query, hero, formSlug)
         }
     }

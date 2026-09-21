@@ -97,8 +97,13 @@ fun SelectMoveLearners.toDomain(): MoveLearner? {
     val method = LearnMethod.fromSlug(this.method) ?: return null
     val primary = primaryType?.let(PokemonType::fromSlug) ?: return null
 
+    // A species with no dex card is a hole in the grid, which another test already forbids. Dropping
+    // the row is still better than a card that cannot be opened.
+    val card = cardSlug ?: return null
+
     return MoveLearner(
         variantSlug = slug,
+        cardSlug = card,
         dexNumber = speciesDexNumber.toInt(),
         name = name,
         formLabel = formLabel,

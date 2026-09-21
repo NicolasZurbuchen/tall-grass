@@ -29,7 +29,8 @@ class MovesNavKeyHandler(
             MoveDetailRoute(
                 onNavigateToPokemon = { label ->
                     navigator.navigateToPokemon(
-                        slug = label.slug,
+                        cardSlug = label.cardSlug,
+                        formSlug = label.formSlug,
                         name = label.name,
                         artworkUrl = label.artworkUrl,
                         primaryTypeSlug = label.primaryTypeSlug,

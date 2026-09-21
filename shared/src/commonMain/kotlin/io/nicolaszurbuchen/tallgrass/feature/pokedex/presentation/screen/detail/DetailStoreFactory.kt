@@ -34,12 +34,20 @@ class DetailStoreFactory(
     fun create(
         variantSlug: String,
         query: DexQuery,
+        formSlug: String?,
     ): DetailStore =
         object :
             DetailStore,
             Store<DetailIntent, DetailState, DetailLabel> by storeFactory.create(
                 name = "DetailStore",
-                initialState = DetailState(entryVariantSlug = variantSlug, query = query),
+                initialState =
+                    DetailState(
+                        entryVariantSlug = variantSlug,
+                        query = query,
+                        // The form to open on, which is the card itself unless something handed over
+                        // a variant. See DetailDestination.
+                        activeVariantSlug = formSlug ?: variantSlug,
+                    ),
                 bootstrapper = BootstrapperImpl(),
                 executorFactory = { ExecutorImpl(query) },
                 reducer = ReducerImpl,
@@ -230,15 +238,21 @@ class DetailStoreFactory(
                         isLoading = if (isOnScreen) false else isLoading,
                         details = held,
                         matchups = (matchups + msg.matchups).filterKeys { it in variantSlugs(held) },
-                        // The card the carousel is on, unless the dataset has stopped carrying it,
-                        // in which case the first form of the species is a better screen than an
+                        // Whichever form is already selected, if this species has it. That is the
+                        // card itself on the ordinary path, and the variant that was handed over
+                        // when something opened a form directly -- resolving to the card here would
+                        // throw that away and open Exeggutor on a move that only Alolan Exeggutor
+                        // learns.
+                        //
+                        // Falling back to the first form rather than to nothing: if the dataset has
+                        // stopped carrying the one asked for, a species is a better screen than an
                         // empty one. A read that answers for a card nobody is looking at changes
                         // nothing about the one they are.
                         activeVariantSlug =
                             if (isOnScreen) {
                                 msg.detail.variants
                                     .map { it.slug }
-                                    .firstOrNull { it == activeEntrySlug }
+                                    .firstOrNull { it == activeVariantSlug }
                                     ?: msg.detail.variants.first().slug
                             } else {
                                 activeVariantSlug

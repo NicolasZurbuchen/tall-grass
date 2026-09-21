@@ -140,6 +140,7 @@ object MoveFixtures {
     val charizardLearner =
         MoveLearner(
             variantSlug = "charizard",
+            cardSlug = "charizard",
             dexNumber = 6,
             name = "Charizard",
             formLabel = null,
