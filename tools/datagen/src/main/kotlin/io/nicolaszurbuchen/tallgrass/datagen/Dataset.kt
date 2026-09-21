@@ -17,6 +17,8 @@ data class Manifest(
     val variantCount: Int,
     val listedVariantCount: Int,
     val typeCount: Int,
+    val abilityCount: Int,
+    val moveCount: Int,
 )
 
 @Serializable
@@ -63,6 +65,104 @@ data class AbilityRefJson(
     val slug: String,
     val isHidden: Boolean,
     val slot: Int,
+)
+
+/**
+ * One ability.
+ *
+ * Both halves of `effect_entries` ship, and neither is `flavor_text_entries`: the effect entries are
+ * PokeAPI's own prose under BSD, while flavour text is verbatim copyrighted game text that #10
+ * forbids shipping. See #11, which settled this for every entity type. [shortEffect] is the line a
+ * card shows; [effect] is the paragraph the detail screen shows under it, and the two are written
+ * for those two jobs rather than one being a truncation of the other.
+ *
+ * **There is no category, tag or trigger field here**, and #27 asks for one. Three attempts at it are
+ * recorded in `DECISIONS.md § Rejected for now: a classification for abilities`; the short version is
+ * that upstream has no such field, and the taxonomies invented to replace it were not good enough to
+ * commit to a dataset this hard to change. See #65.
+ */
+@Serializable
+data class AbilityJson(
+    val slug: String,
+    val name: String,
+    val generation: Int,
+    val shortEffect: String,
+    val effect: String,
+)
+
+/**
+ * One move.
+ *
+ * [power] and [accuracy] are nullable because they are genuinely absent, not because a default was
+ * unavailable: 331 moves inflict no damage and 285 cannot miss. [pp] is nullable for the same kind
+ * of reason, and [shortEffect] because upstream has written none for 93 of the Generation VIII and
+ * IX moves -- a hole the screen shows as absent rather than filling with prose it invented.
+ *
+ * [statChanges] sits beside [meta] rather than inside it, which is upstream's own shape and matters
+ * here for a concrete reason: fifteen moves have stat changes and no meta row at all. Nesting them
+ * would drop the fact that Trailblaze raises Speed.
+ */
+@Serializable
+data class MoveJson(
+    val slug: String,
+    val name: String,
+    val generation: Int,
+    val type: String,
+    // "physical", "special" or "status", which is the axis the icon on a move card draws.
+    val damageClass: String,
+    val power: Int?,
+    val accuracy: Int?,
+    val pp: Int?,
+    val priority: Int,
+    val target: String,
+    // The percentage on "has a chance to burn the target", which the prose deliberately leaves out.
+    val effectChance: Int?,
+    val shortEffect: String?,
+    val effect: String?,
+    val meta: MoveMetaJson?,
+    // Stat stages the move moves, keyed by stat slug and signed: {"attack": -1}. Empty for the 745
+    // moves that move none, so a screen can ask the map rather than ask whether there is one.
+    val statChanges: Map<String, Int>,
+)
+
+/**
+ * The mechanical detail behind a move's prose -- how many times it hits, what it inflicts, how much
+ * it drains. Upstream's `move_meta`, and null for the 92 Generation VIII and IX moves it has not
+ * filled in yet.
+ *
+ * **A number here is null rather than 0 when there is nothing to say.** Upstream writes 0 for "no
+ * drain", "no flinch chance" and "normal crit rate" alike; carrying that through would make every
+ * reader re-derive which zeroes are facts.
+ *
+ * [ailmentChance] is the trap that rule exists for. Thirty-six moves name an ailment and store a
+ * chance of 0, which means *always* -- Thunder Wave does not paralyse 0% of the time. It is null
+ * here, so null beside a non-null [ailment] reads as certainty. [statChance] says the same about
+ * [MoveJson.statChanges]: Growl always lowers Attack.
+ *
+ * [drain] and [healing] are signed and the sign is the meaning. Drain is a share of the damage
+ * dealt, negative for recoil; healing is a share of the user's own maximum HP, negative for the two
+ * moves that cost HP to use.
+ */
+@Serializable
+data class MoveMetaJson(
+    // Upstream's own fourteen-way split -- "damage", "ailment", "net-good-stats", "damage-lower",
+    // "ohko", "unique" and eight more. The one classification axis here that was not invented; see
+    // DECISIONS.md on the ability categories that were.
+    val category: String,
+    // "burn", "paralysis", "confusion" and eighteen more. "unknown" for the four whose ailment
+    // genuinely varies: Tri Attack picks one of three.
+    val ailment: String?,
+    val ailmentChance: Int?,
+    val minHits: Int?,
+    val maxHits: Int?,
+    val minTurns: Int?,
+    val maxTurns: Int?,
+    val drain: Int?,
+    val healing: Int?,
+    // Stages above the normal critical-hit rate. 6 is the four moves that always crit.
+    val critRate: Int?,
+    val flinchChance: Int?,
+    val statChance: Int?,
 )
 
 @Serializable

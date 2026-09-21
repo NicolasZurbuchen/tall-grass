@@ -1047,3 +1047,142 @@ gaps wide enough to be told apart at a glance are around 110° and 330°.
 **The tiles lost their icons.** The reference draws a label and the watermark, and at 2.4:1 a card
 about seventy tall there is no third thing to put on it. An `ImageVector` column on the enum that
 nothing reads is worse than no column.
+
+### Rejected for now: a classification for abilities
+
+#27 asks for a category on every ability, as a scanning axis for a list of 314. Upstream has no such
+field, so it has to be invented. **Three shapes were built, measured against the real data, and
+rejected.** The dataset ships with no category, no tags and no trigger; the list filters by
+generation until there is a better answer. See #65.
+
+This is recorded at length because the next attempt should start from these failures rather than
+rediscover them, and because each one looked right until it met real abilities.
+
+**One category, resolved by a precedence order.** Nine members, first match wins. It fails because
+abilities do several things at once and one label can only keep one: Chlorophyll is weather *and*
+speed, Aura Guard is contact *and* mitigation, Anger Shell moves stats in both directions. A
+precedence order makes that choice **consistently, which is not the same as correctly** — and
+consistency is what made it look rigorous. Four of five sampled failures discarded a fact that was
+true.
+
+**Multi-valued tags, sixteen of them.** Fixes the lossiness — Chlorophyll carries both — but the
+*list* was never good. Sixteen is too many to scan, `UTILITY` and later `MOVES` were residues with a
+tag's name on them, and the boundaries stayed arguable: `IMMUNITY` against `DAMAGE_TAKEN` is a
+question about completeness that upstream's prose does not reliably answer, and the three-way `STATS`
+split needs to know *whose* stat moved, which "decreases their accuracy" does not say.
+
+**A single-valued trigger beside the tags.** The most tractable of the three and still wrong, in two
+ways that are worth naming:
+
+- **It conflates a moment with a condition.** Bad Dreams is `END_OF_TURN`, but it only does anything
+  if the opponent is asleep — the field has room for when it is evaluated or for what must be true,
+  not both. The enum mixed the two kinds outright: `ON_ENTRY` and `END_OF_TURN` are moments, while
+  `LOW_HP` is a condition that is true continuously.
+- **The names do not say whose event it is.** `ON_KO` meant *I knocked something out* and `ON_FAINT`
+  meant *I fainted*, and nothing in either name carries that. A test was written to pin the
+  distinction, which is the evidence rather than the fix: a name that needs a test to explain it has
+  already failed.
+
+What the three attempts have in common is that each was designed against the *data* and validated by
+a distribution — no bucket too large, none empty — when the thing that decides whether a taxonomy is
+good is the **question a player is asking**, and there was no screen yet to test that against. The
+distribution looked healthy every time.
+
+**The dataset ships without it rather than with a bad one.** `abilities.json` is committed and the
+database is generated from it; a classification baked in now is one every future row inherits and one
+that a screen would be built around. Shipping the 314 abilities with their names and both effect
+fields costs nothing and leaves the axis open.
+
+### The dataset is the main series only, decided by two tests rather than one
+
+`/api/v2/ability` returns 374 and this app ships 314; `/api/v2/move` returns 937 and it ships 919.
+
+The missing sixty are Pokémon Conquest's, a 2012 DS strategy spin-off, and the missing eighteen are
+Pokémon XD's Shadow moves. Three facts, each checked rather than assumed:
+
+- none has effect text in any language, so a card would be a name over an empty space;
+- none is on any Pokémon — `pokemon_abilities` uses 313 distinct ability ids and not one is ≥ 10000;
+- upstream numbers them from 10000 *and* flags `is_main_series = 0`.
+
+**Both tests are applied, not either alone.** They are two different claims — one is upstream's own
+judgement about a row and the other is its id convention — and a filter resting on one of them stops
+working quietly when upstream changes the other.
+
+**313 used, not 314.** `embody-aspect` is main-series with real effect text and appears on no Pokémon:
+it is Ogerpon's, form-gated in a way upstream's CSVs do not join. Its detail screen renders an empty
+"known by", which is correct rather than broken, and a test pins it so nobody later reads it as a
+join that failed.
+
+### A move's absent numbers are absent, not zero
+
+331 moves have no power, 285 have no accuracy, and 93 have no effect text. All three are nullable in
+the dataset and all three are drawn as absent.
+
+A status move with `power = 0` reads as a move that hits for nothing, which is a different and wrong
+claim; a never-miss move with `accuracy = 0` reads as one that never lands. The effect text is the
+interesting one: those 93 are all Generation VIII and IX, they carry no `effect_id` at all rather
+than one whose English row is missing, and upstream simply has not written them yet. The screen shows
+the space as empty, because "upstream does not say" is the honest rendering and inventing prose for a
+Pokédex is the one thing it must not do.
+
+PP is the counter-example and is why the other three are worth pinning: every move has one, so a null
+there would be a read that went wrong rather than a fact about the move.
+
+**Both effect fields ship.** `short_effect` is the line a card shows and `effect` is the paragraph
+under it on the detail screen, and the two are written for those two jobs rather than one being a
+truncation of the other. Both are `effect_entries`, which is PokeAPI own prose under BSD; neither is
+`flavor_text_entries`, which is verbatim game text and which #10 forbids shipping. Checked for the
+`[Pound]{move:pound}` link markup the API is known for: zero occurrences in either field, for either
+entity.
+
+### A move's mechanical detail is null where there is nothing to say
+
+Upstream's `move_meta` is the technical half of a move — how many times it hits, what it inflicts,
+how much it drains — and it is shipped flattened onto the move, with `stat_changes` beside it.
+
+**It stores its defaults explicitly, and the defaults are zeroes.** A move with no drain has
+`drain = 0`, a move with a normal critical-hit rate has `crit_rate = 0`, a move that causes no
+flinching has `flinch_chance = 0`. Carried through, 908 moves would tell the detail screen they drain
+0% of the damage they deal, and every reader would have to re-derive which zeroes were facts. So the
+generator drops them: **a number is present exactly when it says something the default does not**, and
+a screen draws the fields it finds.
+
+`ailment_chance` is the trap that rule exists for, and the reason it is worth a decision rather than a
+comment. Thirty-six moves name an ailment and store a chance of `0`, which means *always* — Thunder
+Wave does not paralyse 0% of the time. Read as a percentage it is the most wrong number this dataset
+could ship, and it would look like a rendering bug rather than a data one. Dropping it leaves a null
+beside a non-null ailment, which reads as certainty. `stat_chance` works the same way against the stat
+changes: Growl always lowers Attack, Rock Smash lowers Defense half the time.
+
+Two smaller calls fall out of the same reasoning:
+
+- **A chance never hangs off nothing.** Five moves carry an ailment chance with no ailment — Frost
+  Breath stores 100, and what it always does is crit. A percentage naming no effect cannot be drawn,
+  so it leaves with the ailment. The resulting invariant is what makes the pair safe to render: a
+  chance implies an effect.
+- **A varying ailment says so.** Tri Attack picks one of burn, freeze and paralysis, and upstream
+  files that as `-1`. It ships as `"unknown"` rather than as null, because null would strand its 20%
+  and the rule above would then quietly delete that too.
+
+**`stat_changes` is a sibling of the meta, not a field inside it.** That is upstream's own shape and
+it matters concretely: fifteen moves have stat changes and no meta row at all, so nesting them would
+drop the fact that Trailblaze raises Speed. The 92 moves with no meta row are the same recent ones
+that have no effect text — Generation VIII and IX, and upstream has not filled them in.
+
+**`category` is the one classification axis here that was not invented.** Fourteen values, upstream's
+own, and it is what the moves list filters on. The contrast with the abilities is the whole point: see
+*Rejected for now: a classification for abilities*, where three home-made taxonomies were built and
+thrown away for a subject that has no such field upstream.
+
+This leaves `effect_chance` on the move itself redundant. It is never the only chance available — no
+move has one without a meta row — and in 211 of its 266 cases it is the same number as the typed
+chance beside it. The other 55 are a flat `100` attached to nothing in particular. It stays for now,
+because removing a shipped column is its own change; it should go when something first has to choose
+between the two.
+
+**The move flags are not here yet, and they are the other half of the abilities.** Upstream tags each
+move with up to six — `contact`, `punch`, `sound`, `bite`, `powder`, `dance` and fifteen more — and
+`contact` is what makes "when hit by a move that makes contact, may paralyse the attacker" answerable
+from the moves side. They live only in the CSVs and not on any endpoint, which is #10's pinned SHA
+paying for itself. Held back because two of the 21 are noise on 64% of moves and 69 Generation IX
+moves are untagged, and both want deciding rather than defaulting. See #66.

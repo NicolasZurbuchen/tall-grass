@@ -7,7 +7,18 @@ import java.net.URI
 const val SOURCE_SHA: String = "4b82c204ddd19ecb8eda2ea044ccb59e222b721c"
 
 /** Bumped when the shape of the generated JSON changes, not when its contents do. */
-const val SCHEMA_VERSION: Int = 1
+const val SCHEMA_VERSION: Int = 3
+
+/**
+ * Upstream numbers spin-off content from 10000 in the same tables as the main series. Sixty of the
+ * 374 abilities are Pokemon Conquest's and eighteen of the 937 moves are Pokemon XD's Shadow moves;
+ * none of them has effect text, and no Pokemon in this dataset has one.
+ *
+ * The same threshold as `pokemon_forms`, and for an unrelated reason -- there it separates a
+ * species' base form from its variants. Both are upstream's one convention for "not the ordinary
+ * thing", applied to different tables.
+ */
+const val FIRST_SPIN_OFF_ID: Int = 10000
 
 /** Upstream ships every name in a dozen languages in one file; unfiltered reads look like duplicates. */
 const val ENGLISH: Int = 9

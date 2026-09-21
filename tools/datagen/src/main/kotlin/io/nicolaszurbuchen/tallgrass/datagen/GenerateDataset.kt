@@ -27,10 +27,14 @@ fun main(args: Array<String>) {
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
+    val abilities = buildAbilities(source)
+    val moves = buildMoves(source)
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
     outputDir.resolve("species.json").writeText(json.encodeToString(species))
     outputDir.resolve("variants.json").writeText(json.encodeToString(variants))
+    outputDir.resolve("abilities.json").writeText(json.encodeToString(abilities))
+    outputDir.resolve("moves.json").writeText(json.encodeToString(moves))
 
     val manifest =
         Manifest(
@@ -40,6 +44,8 @@ fun main(args: Array<String>) {
             variantCount = variants.size,
             listedVariantCount = variants.count { it.listedInDex },
             typeCount = types.types.size,
+            abilityCount = abilities.size,
+            moveCount = moves.size,
         )
     outputDir.resolve("manifest.json").writeText(json.encodeToString(manifest))
 
@@ -47,6 +53,8 @@ fun main(args: Array<String>) {
     println("  variants           ${manifest.variantCount}")
     println("  listed in the dex  ${manifest.listedVariantCount}")
     println("  types              ${manifest.typeCount}")
+    println("  abilities          ${manifest.abilityCount}")
+    println("  moves              ${manifest.moveCount}")
 }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
@@ -337,3 +345,160 @@ private fun VariantJson.sharesBattleDataWith(other: VariantJson): Boolean =
     stats == other.stats &&
         types == other.types &&
         abilities.map { it.slug }.sorted() == other.abilities.map { it.slug }.sorted()
+
+/**
+ * The 314 main-series abilities, categorised.
+ *
+ * Upstream numbers Pokemon Conquest's sixty abilities from 10000 in the same table and flags them
+ * `is_main_series = 0`. Both tests are applied rather than either alone, because they are two
+ * different claims: one is upstream's own judgement and the other is its id convention. None of the
+ * sixty has effect text in any language and none is on any Pokemon, so a card for Mountaineer would
+ * be a name over an empty space with an empty "known by" underneath.
+ */
+private fun buildAbilities(source: UpstreamSource): List<AbilityJson> {
+    val names =
+        source.read("ability_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("ability_id") to it["name"] }
+
+    val prose =
+        source.read("ability_prose")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associateBy { it.int("ability_id") }
+
+    return source.read("abilities")
+        .filter { it.bool("is_main_series") && it.int("id") < FIRST_SPIN_OFF_ID }
+        .map { row ->
+            val id = row.int("id")
+            val slug = row["identifier"]
+
+            // Fails the run rather than shipping a blank card. All 314 have one today, so an absence
+            // means upstream added an ability this pipeline has not been taught about -- and this
+            // program only runs when a human deliberately bumps the pin, which is the moment to
+            // notice. Moves are the opposite case and are nullable; see below.
+            val entry = prose[id] ?: error("No English effect entry for ability '$slug' ($id)")
+            val shortEffect = entry["short_effect"]
+
+            AbilityJson(
+                slug = slug,
+                name = names[id] ?: slug,
+                generation = row.int("generation_id"),
+                shortEffect = shortEffect,
+                // Paragraphs, and upstream writes them with a blank line between. Collapsed to one
+                // newline so the screen decides the spacing rather than inheriting a wiki's.
+                effect = entry["effect"].replace(BLANK_LINE, "\n").trim(),
+            )
+        }.sortedBy { it.slug }
+}
+
+/** Upstream separates paragraphs with a blank line, sometimes several. */
+private val BLANK_LINE = Regex("""\n\s*\n+""")
+
+/** Upstream's identifier for ailment id 0, which 703 of the 827 moves with a meta row carry. */
+private const val NO_AILMENT = "none"
+
+/**
+ * The 919 main-series moves.
+ *
+ * Same threshold and the same reason as the abilities above: ids from 10000 are Pokemon XD's
+ * eighteen Shadow moves, which exist in one 2005 spin-off.
+ *
+ * **93 of these have no effect text**, all of them Generation VIII and IX -- Tera Blast, Ice Spinner,
+ * Salt Cure, Last Respects. They carry no `effect_id` at all rather than one whose English row is
+ * missing, so the column is empty and not merely unjoinable. They ship with a null and the screen
+ * shows the space as empty, which is the honest rendering of "upstream does not say".
+ */
+private fun buildMoves(source: UpstreamSource): List<MoveJson> {
+    val names =
+        source.read("move_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("move_id") to it["name"] }
+
+    // Keyed by effect rather than by move: 453 effects cover 919 moves, because every move that
+    // "inflicts regular damage with no additional effect" shares one row.
+    val prose =
+        source.read("move_effect_prose")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associateBy { it.int("move_effect_id") }
+
+    val typeSlugs =
+        source.read("types")
+            .filter { it.int("id") <= LAST_REAL_TYPE_ID }
+            .associate { it.int("id") to it["identifier"] }
+
+    val damageClasses = source.read("move_damage_classes").associate { it.int("id") to it["identifier"] }
+    val targets = source.read("move_targets").associate { it.int("id") to it["identifier"] }
+
+    val categories = source.read("move_meta_categories").associate { it.int("id") to it["identifier"] }
+    val ailments = source.read("move_meta_ailments").associate { it.int("id") to it["identifier"] }
+    val meta = source.read("move_meta").associateBy { it.int("move_id") }
+
+    val statSlugs = source.read("stats").associate { it.int("id") to it["identifier"] }
+    val statChanges =
+        source.read("move_meta_stat_changes")
+            .groupBy { it.int("move_id") }
+            .mapValues { (_, rows) ->
+                // Sorted by upstream's stat id, which is the order the stat bars are already drawn
+                // in. The table has no ordering column of its own.
+                rows.sortedBy { it.int("stat_id") }
+                    .associate { statSlugs.getValue(it.int("stat_id")) to it.int("change") }
+            }
+
+    return source.read("moves")
+        .filter { it.int("id") < FIRST_SPIN_OFF_ID }
+        .map { row ->
+            val id = row.int("id")
+            val slug = row["identifier"]
+            val entry = row.intOrNull("effect_id")?.let { prose[it] }
+
+            MoveJson(
+                slug = slug,
+                name = names[row.int("id")] ?: slug,
+                generation = row.int("generation_id"),
+                type = typeSlugs[row.int("type_id")] ?: error("Move '$slug' has an unknown type"),
+                damageClass = damageClasses[row.int("damage_class_id")] ?: error("Move '$slug' has an unknown damage class"),
+                power = row.intOrNull("power"),
+                accuracy = row.intOrNull("accuracy"),
+                pp = row.intOrNull("pp"),
+                priority = row.int("priority"),
+                target = targets[row.int("target_id")] ?: error("Move '$slug' has an unknown target"),
+                effectChance = row.intOrNull("effect_chance"),
+                shortEffect = entry?.get("short_effect"),
+                effect = entry?.get("effect")?.replace(BLANK_LINE, "\n")?.trim(),
+                meta = meta[id]?.let { buildMoveMeta(slug, it, categories, ailments) },
+                statChanges = statChanges[id].orEmpty(),
+            )
+        }.sortedBy { it.slug }
+}
+
+/**
+ * Turns one `move_meta` row into [MoveMetaJson], dropping every number that only restates a default.
+ *
+ * Which zeroes are facts is not in the row -- it is in whether a neighbouring field is set. See
+ * `DECISIONS.md § A move's mechanical detail is null where there is nothing to say`.
+ */
+private fun buildMoveMeta(
+    slug: String,
+    row: CsvRow,
+    categories: Map<Int, String>,
+    ailments: Map<Int, String>,
+): MoveMetaJson {
+    val ailment = ailments[row.int("meta_ailment_id")]?.takeIf { it != NO_AILMENT }
+
+    return MoveMetaJson(
+        category = categories[row.int("meta_category_id")] ?: error("Move '$slug' has an unknown meta category"),
+        ailment = ailment,
+        // Five moves carry a chance with no ailment for it to be a chance of -- Frost Breath stores
+        // 100. A percentage naming no effect cannot be drawn, so it leaves with the ailment.
+        ailmentChance = row.int("ailment_chance").takeIf { it != 0 && ailment != null },
+        minHits = row.intOrNull("min_hits"),
+        maxHits = row.intOrNull("max_hits"),
+        minTurns = row.intOrNull("min_turns"),
+        maxTurns = row.intOrNull("max_turns"),
+        drain = row.int("drain").takeIf { it != 0 },
+        healing = row.int("healing").takeIf { it != 0 },
+        critRate = row.int("crit_rate").takeIf { it != 0 },
+        flinchChance = row.int("flinch_chance").takeIf { it != 0 },
+        statChance = row.int("stat_chance").takeIf { it != 0 },
+    )
+}

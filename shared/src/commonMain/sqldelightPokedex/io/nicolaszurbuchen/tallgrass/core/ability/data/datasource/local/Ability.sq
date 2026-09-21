@@ -1,0 +1,26 @@
+-- The 314 main-series abilities. Upstream's other sixty are Pokemon Conquest's, have no effect text
+-- and are on no Pokemon, so they are not generated. See GenerateDataset.buildAbilities.
+--
+-- There is no category, tag or trigger column, and #27 asks for one. Three attempts are recorded in
+-- DECISIONS.md, Rejected for now: a classification for abilities; #65 carries what is left to answer.
+-- The list screen filters by generation until then.
+--
+-- There is no foreign key to variantAbility, which holds the other half of the relationship and
+-- lives in Variant.sq: this database is generated whole-file from JSON that has already been
+-- validated, so a constraint here would catch nothing the generator has not already checked.
+CREATE TABLE ability (
+    slug        TEXT NOT NULL PRIMARY KEY,
+    name        TEXT NOT NULL,
+    generation  INTEGER NOT NULL,
+    -- Both halves of effect_entries, never flavor_text_entries: the effect entries are PokeAPI's own
+    -- prose under BSD, and flavour text is verbatim copyrighted game text. See #11.
+    -- The short one is the line on a card; the long one is the paragraph under it on the detail.
+    shortEffect TEXT NOT NULL,
+    effect      TEXT NOT NULL
+);
+
+countAbilities:
+SELECT count(*) FROM ability;
+
+insertAbility:
+INSERT INTO ability(slug, name, generation, shortEffect, effect) VALUES (?, ?, ?, ?, ?);

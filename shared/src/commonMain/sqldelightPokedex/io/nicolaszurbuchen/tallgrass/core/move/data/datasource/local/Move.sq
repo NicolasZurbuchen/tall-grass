@@ -1,0 +1,82 @@
+-- The 919 main-series moves. Upstream's other eighteen are Pokemon XD's Shadow moves and are not
+-- generated, on the same grounds as the Conquest abilities.
+--
+-- The nullable columns are all genuinely absent rather than defaulted: 331 moves inflict no damage,
+-- 285 cannot miss, and 93 Generation VIII and IX moves have no effect text upstream has written yet.
+-- Both effect fields are PokeAPI's own prose under BSD, never flavor_text_entries. See #11.
+CREATE TABLE move (
+    slug        TEXT NOT NULL PRIMARY KEY,
+    name        TEXT NOT NULL,
+    generation  INTEGER NOT NULL,
+    typeSlug    TEXT NOT NULL,
+    -- "physical", "special" or "status".
+    damageClass TEXT NOT NULL,
+    power       INTEGER,
+    accuracy    INTEGER,
+    pp          INTEGER,
+    priority    INTEGER NOT NULL,
+    -- Upstream's target vocabulary: "selected-pokemon", "all-opponents", "user", and thirteen more.
+    target      TEXT NOT NULL,
+    -- The percentage behind "has a chance to burn the target", which the prose leaves out.
+    effectChance INTEGER,
+    shortEffect TEXT,
+    effect      TEXT,
+
+    -- Upstream's `move_meta`, flattened. Null in every one of these means "nothing to say" rather
+    -- than zero, and all twelve are null together for the 92 Generation VIII and IX moves upstream
+    -- has not filled in. Reading a null as 0 is wrong in both directions at once: it puts "0% drain"
+    -- on 908 moves, and `ailmentChance` is null for the thirty-six whose ailment is *certain* --
+    -- Thunder Wave does not paralyse 0% of the time.
+    --
+    -- Upstream's own fourteen-way split, and the only classification axis in this database that was
+    -- not invented: "damage", "ailment", "net-good-stats", "ohko", "unique" and nine more. It is
+    -- what the moves list filters on, which is why it is indexed.
+    category     TEXT,
+    -- "burn", "paralysis", "confusion" and eighteen more, or "unknown" for the four moves whose
+    -- ailment genuinely varies.
+    ailment      TEXT,
+    ailmentChance INTEGER,
+    minHits      INTEGER,
+    maxHits      INTEGER,
+    minTurns     INTEGER,
+    maxTurns     INTEGER,
+    -- Signed percentages, and the sign is the meaning: drain is a share of the damage dealt and goes
+    -- negative for recoil, healing is a share of the user's own maximum HP and goes negative for the
+    -- two moves that cost HP to use.
+    drain        INTEGER,
+    healing      INTEGER,
+    -- Stages above the normal critical-hit rate. 6 is the four moves that always crit.
+    critRate     INTEGER,
+    flinchChance INTEGER,
+    statChance   INTEGER
+);
+
+-- The stat stages a move moves, signed, at most five per move.
+--
+-- A sibling of the meta columns rather than part of them, because fifteen moves have stat changes
+-- and no meta row: `statChance` can be null while there is still a stat change to draw. A null
+-- `statChance` beside rows here means the change is guaranteed, which is 60 of the 174 -- Growl
+-- always lowers Attack.
+--
+-- No ordering column, on the same grounds as `variantStat`: upstream has none, and the caller
+-- already knows the order it draws stats in.
+CREATE TABLE moveStatChange (
+    moveSlug TEXT NOT NULL,
+    statSlug TEXT NOT NULL,
+    change   INTEGER NOT NULL,
+    PRIMARY KEY (moveSlug, statSlug)
+);
+
+CREATE INDEX moveByType ON move(typeSlug);
+CREATE INDEX moveByDamageClass ON move(damageClass);
+CREATE INDEX moveByCategory ON move(category);
+
+countMoves:
+SELECT count(*) FROM move;
+
+insertMove:
+INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, effectChance, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns, drain, healing, critRate, flinchChance, statChance)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertMoveStatChange:
+INSERT INTO moveStatChange(moveSlug, statSlug, change) VALUES (?, ?, ?);
