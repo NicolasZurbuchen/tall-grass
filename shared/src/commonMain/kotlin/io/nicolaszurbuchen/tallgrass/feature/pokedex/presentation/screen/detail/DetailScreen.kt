@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -52,6 +54,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
+import io.nicolaszurbuchen.tallgrass.design.component.AppPokeball
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
@@ -59,6 +62,7 @@ import io.nicolaszurbuchen.tallgrass.design.theme.arcTopShape
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.rememberEntranceClock
 import io.nicolaszurbuchen.tallgrass.design.theme.rememberReducedMotion
+import io.nicolaszurbuchen.tallgrass.design.theme.rememberSpin
 import io.nicolaszurbuchen.tallgrass.design.theme.rise
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.AboutTab
@@ -221,6 +225,32 @@ fun DetailScreen(
                     }
                 }
             }
+
+        // Drawn before the sheet, so the sheet crops it: the watermark belongs to the hero and ends
+        // where the hero does. Everything else about the hero is drawn after the sheet instead --
+        // see the Column at the bottom of this box.
+        //
+        // Composed only while there is a hero to stand on it, which is how the spin stops: an
+        // infinite transition has no paused state, and leaving it out of the composition disposes
+        // it. See #12 section 6.
+        if (heroHeight > 0.dp && heroAlpha > 0f) {
+            val spin by rememberSpin()
+
+            AppPokeball(
+                color = Color.White.copy(alpha = HERO_BALL_ALPHA),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        // Centred on the artwork, which is the last thing in the hero column and so
+                        // ends where the column does.
+                        .offset(y = heroHeight - (ARTWORK_SIZE + HERO_BALL_SIZE) / 2)
+                        .requiredSize(HERO_BALL_SIZE)
+                        .graphicsLayer {
+                            rotationZ = spin
+                            alpha = heroAlpha
+                        },
+            )
+        }
 
         Column(
             modifier =
@@ -399,6 +429,14 @@ private val SHEET_ARC = 32.dp
 // bottom of their own frame, so the share of the box that overlaps is always more than the share of
 // the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
 private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
+
+// Smaller than the artwork rather than the same size, so the Pokemon stands over the band and not
+// inside the ring, which is what makes the two read as two things.
+private val HERO_BALL_SIZE = ARTWORK_SIZE * 0.85f
+
+// Heavier than the watermark on a card, because this one is a third covered by the sheet and has no
+// text on it to compete with.
+private const val HERO_BALL_ALPHA = 0.18f
 
 // The hero is gone in the first quarter of the drag. Front-loaded on purpose: the sheet is what the
 // reader is moving, so everything it takes the place of should be gone by the time they have decided
