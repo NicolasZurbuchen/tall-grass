@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.uimodel.DamageClassUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.moveNameKey
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveDetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveFactUiModel
@@ -25,6 +26,7 @@ private fun MoveDetailScreenPreview() {
                             name = "Flamethrower",
                             type = TypeUiModel.FIRE,
                             damageClass = DamageClassUiModel.SPECIAL,
+                            nameKey = moveNameKey("flamethrower"),
                             // The third of moves with no power draw a dash here rather than a zero.
                             stats =
                                 listOf(

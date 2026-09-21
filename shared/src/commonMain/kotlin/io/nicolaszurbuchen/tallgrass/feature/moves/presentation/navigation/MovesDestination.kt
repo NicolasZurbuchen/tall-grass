@@ -12,9 +12,9 @@ data object MovesListDestination : MovesDestination
 /**
  * One move, keyed by slug.
  *
- * Carries nothing else, unlike `DetailDestination`. A Pokemon's card hands its artwork forward so the
- * hero can render synchronously into a shared element; a move has no image, so the transition is an
- * ordinary push and the screen reads what it needs. See #11.
+ * Carries only the slug, unlike `DetailDestination`. A Pokemon's card hands its artwork forward so
+ * the hero can draw it on the first frame; a move has no image to hand over, and the two things that
+ * do travel -- the name and the type pill -- are keyed from the slug on both sides. See `SharedMove`.
  */
 @Serializable
 data class MoveDetailDestination(

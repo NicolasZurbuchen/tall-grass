@@ -6,6 +6,7 @@ import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetai
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.MoveDetailViewModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.moves.MovesRoute
 import io.nicolaszurbuchen.tallgrass.infra.navigation.NavKeyHandler
+import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementEntry
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -20,10 +21,11 @@ class MovesNavKeyHandler(
             )
         }
 
-        // No SharedElementEntry metadata: this is a push. Which move the screen is about reaches it
-        // through the ViewModel rather than the Route, because a Route may only take lambdas, a
-        // Modifier or a ViewModel, and the destination survives process death.
-        entry<MoveDetailDestination> { destination ->
+        // The name and the type pill travel from the card, so the host gives this the motion it
+        // gives a screen reached from an element rather than a push from the side. Which move the
+        // screen is about reaches it through the ViewModel rather than the Route, because a Route may
+        // only take lambdas, a Modifier or a ViewModel, and the destination survives process death.
+        entry<MoveDetailDestination>(metadata = SharedElementEntry.metadata) { destination ->
             MoveDetailRoute(
                 onNavigateToPokemon = { label ->
                     navigator.navigateToPokemon(

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.uimodel.DamageClassUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.moveNameKey
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
 
 @PreviewThemes
@@ -22,6 +23,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.FIRE,
                                 damageClass = DamageClassUiModel.SPECIAL,
                                 powerText = "90",
+                                nameKey = moveNameKey("flamethrower"),
                             ),
                             MoveUiModel(
                                 slug = "close-combat",
@@ -29,6 +31,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.FIGHTING,
                                 damageClass = DamageClassUiModel.PHYSICAL,
                                 powerText = "120",
+                                nameKey = moveNameKey("close-combat"),
                             ),
                             // The case the em dash exists for: a third of the list has no power, and
                             // a status move is not a move that hits for zero.
@@ -38,6 +41,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.ELECTRIC,
                                 damageClass = DamageClassUiModel.STATUS,
                                 powerText = "—",
+                                nameKey = moveNameKey("thunder-wave"),
                             ),
                             MoveUiModel(
                                 slug = "dragon-dance",
@@ -45,6 +49,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.DRAGON,
                                 damageClass = DamageClassUiModel.STATUS,
                                 powerText = "—",
+                                nameKey = moveNameKey("dragon-dance"),
                             ),
                             // The longest name in the dataset, which is what decides where the name
                             // has to stop rather than the power figure.
@@ -54,6 +59,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.ELECTRIC,
                                 damageClass = DamageClassUiModel.SPECIAL,
                                 powerText = "195",
+                                nameKey = moveNameKey("10-000-000-volt-thunderbolt"),
                             ),
                             MoveUiModel(
                                 slug = "moonblast",
@@ -61,6 +67,7 @@ private fun MovesScreenPreview() {
                                 type = TypeUiModel.FAIRY,
                                 damageClass = DamageClassUiModel.SPECIAL,
                                 powerText = "95",
+                                nameKey = moveNameKey("moonblast"),
                             ),
                         ),
                     error = null,

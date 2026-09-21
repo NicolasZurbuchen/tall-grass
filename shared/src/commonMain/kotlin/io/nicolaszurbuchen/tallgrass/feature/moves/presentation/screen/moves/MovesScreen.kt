@@ -14,7 +14,9 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
@@ -69,6 +71,13 @@ fun MovesScreen(
                     // counts from. Same reasoning as the dex grid's.
                     val firstOnScreen = remember { gridState.firstVisibleItemIndex }
 
+                    // At most one card is ever a shared element: the one that was tapped. Remembered
+                    // rather than saved, which is what makes the transition one-way -- the host
+                    // disposes this composition while the detail is open, so the way back finds no
+                    // sending half and cross-fades.
+                    // DECISIONS.md § The artwork flies out of the grid and does not fly back
+                    var heroSlug by remember { mutableStateOf<String?>(null) }
+
                     LazyVerticalGrid(
                         state = gridState,
                         columns = GridCells.Fixed(MOVES_GRID_COLUMNS),
@@ -80,7 +89,11 @@ fun MovesScreen(
                         itemsIndexed(items = state.moves, key = { _, move -> move.slug }) { index, move ->
                             MoveCard(
                                 move = move,
-                                onClick = { onMoveClick(move.slug) },
+                                isHero = move.slug == heroSlug,
+                                onClick = {
+                                    heroSlug = move.slug
+                                    onMoveClick(move.slug)
+                                },
                                 modifier = Modifier.rise(entranceFraction(index - firstOnScreen, elapsed)),
                             )
                         }

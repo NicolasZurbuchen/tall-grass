@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedeta
 import androidx.compose.runtime.Immutable
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.uimodel.DamageClassUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
+import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 
 /**
  * One move, ready to draw, in the order it is read: the three figures that decide whether to use it,
@@ -18,6 +19,7 @@ data class MoveContentUiModel(
     val name: String,
     val type: TypeUiModel,
     val damageClass: DamageClassUiModel,
+    val nameKey: SharedElementKey,
     val stats: List<MoveStatUiModel>,
     val effect: String?,
     val facts: List<MoveFactUiModel>,

@@ -18,6 +18,20 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
     val variant = detail?.variants?.firstOrNull { it.slug == activeVariantSlug }
     val entry = entries.firstOrNull { it.slug == activeEntrySlug }
 
+    // **The list the carousel walks, or none when this card is not in it.**
+    //
+    // A detail can be opened from somewhere that is not a dex list. The Learned by tab on a move
+    // hands over whichever Pokemon learns it, and only default forms are dex cards -- so Alolan
+    // Vulpix, every Mega and every Gigantamax arrive at a carousel that does not contain them.
+    //
+    // Read as a list they belong to, indexOfFirst returns -1, and coercing it to 0 puts the reader
+    // on the first card in the dex. It did exactly that: opening any variant from a move landed on
+    // Bulbasaur, because the carousel snapped to page 0 and then reported that page as a swipe.
+    //
+    // An empty list is the honest answer -- there is nothing either side of this card -- and the
+    // single-hero branch below already draws it.
+    val carousel = entries.takeIf { list -> list.any { it.slug == activeEntrySlug } }.orEmpty()
+
     // The form on screen if it has been read, the card the carousel is on if it has not, and the
     // handoff before even that. The handoff's slug fails to parse only if a saved destination
     // outlived the build that wrote it, and a grey-blue hero for a few milliseconds is the whole
@@ -62,10 +76,10 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
         tint = tint,
         // One card until the list lands, so the carousel is never empty and the hero never waits.
         heroes =
-            if (entries.isEmpty()) {
+            if (carousel.isEmpty()) {
                 listOf(DetailHeroUiModel(activeEntrySlug, heroName, artworkUrl, tint, heroKey))
             } else {
-                entries.map { candidate ->
+                carousel.map { candidate ->
                     if (candidate.slug == activeEntrySlug) {
                         candidate.toHeroUiModel(artworkUrl = artworkUrl, tint = tint, artworkKey = heroKey)
                     } else {
@@ -73,7 +87,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                     }
                 }
             },
-        activeIndex = entries.indexOfFirst { it.slug == activeEntrySlug }.coerceAtLeast(0),
+        activeIndex = carousel.indexOfFirst { it.slug == activeEntrySlug }.coerceAtLeast(0),
         content =
             if (detail == null || variant == null) {
                 null

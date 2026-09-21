@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.typeKey
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveContentUiModel
+import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedBoundsOrNone
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.header_back
@@ -98,6 +100,7 @@ fun MoveDetailHeader(
                         .padding(horizontal = gutter)
                         .padding(top = MaterialTheme.spacing.md)
                         .onSizeChanged { nameWidth = with(density) { it.width.toDp() } }
+                        .sharedBoundsOrNone(move.nameKey)
                         .graphicsLayer {
                             // From its own left edge, so the travel is a translation of a known width
                             // rather than a guess about where the middle of a line is.
@@ -116,7 +119,8 @@ fun MoveDetailHeader(
                     Modifier
                         .padding(horizontal = gutter)
                         .padding(top = MaterialTheme.spacing.sm, bottom = MaterialTheme.spacing.lg)
-                        .graphicsLayer { alpha = heroAlpha },
+                        .graphicsLayer { alpha = heroAlpha }
+                        .sharedBoundsOrNone(move.nameKey.typeKey()),
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = PILL_SIZE),
             )
         }
@@ -131,9 +135,10 @@ private val TOOLBAR_ROW_HEIGHT = 56.dp
 private const val TOOLBAR_NAME_SCALE = 0.45f
 private val NAME_RISE = 64.dp
 
-// Two off the slot it is otherwise set in, matching a Pokemon's hero pills: no role in the scale
-// means "chip, but large".
-private val PILL_SIZE = 14.sp
+// Larger than a Pokemon hero's 14sp, and larger than the slot it is copied from. This hero has one
+// pill where a Pokemon's has two plus a number and a genus line, so at chip size it read as a label
+// somebody had forgotten to finish rather than as the move's second fact.
+private val PILL_SIZE = 18.sp
 
 // The hero is gone in the first quarter of the drag.
 private const val HERO_FADE_BY = 0.25f

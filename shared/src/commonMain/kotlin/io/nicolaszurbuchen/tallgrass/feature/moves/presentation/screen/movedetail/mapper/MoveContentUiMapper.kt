@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedeta
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.moveNameKey
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveFactUiModel
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.uimodel.MoveStatUiModel
@@ -51,6 +52,7 @@ fun MoveDetail.toUiModel(): MoveContentUiModel =
         name = name,
         type = type.toUiModel(),
         damageClass = damageClass.toUiModel(),
+        nameKey = moveNameKey(slug),
         stats =
             listOf(
                 MoveStatUiModel(UiText.Resource(Res.string.move_detail_power), power?.toString() ?: ABSENT),

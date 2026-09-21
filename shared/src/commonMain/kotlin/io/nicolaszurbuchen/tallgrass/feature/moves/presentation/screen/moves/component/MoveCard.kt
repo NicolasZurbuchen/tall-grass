@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.component.DamageClassIcon
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.typeKey
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.moves.MoveUiModel
+import io.nicolaszurbuchen.tallgrass.infra.navigation.sharedBoundsOrNone
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.moves_power
@@ -40,13 +42,22 @@ import tallgrass.shared.generated.resources.moves_power
  * The figure sits on the glyph rather than in the opposite corner. A dex card puts its number up
  * there because the artwork is the thing being looked at; here the number is, and the glyph is the
  * ground it is read against.
+ *
+ * [isHero] is true for the single card whose name and type pill are travelling into the detail hero.
+ * A card that is not the hero draws exactly the same thing and registers nothing. See
+ * `DECISIONS.md § Only the tapped card is a shared element`.
  */
 @Composable
 fun MoveCard(
     move: MoveUiModel,
+    isHero: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // One key, or none. The pill derives its own from the name's so that the two cannot disagree
+    // about which card is leaving -- see `SharedMove`.
+    val heroKey = move.nameKey.takeIf { isHero }
+
     Card(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
@@ -76,16 +87,23 @@ fun MoveCard(
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.sharedBoundsOrNone(heroKey),
                 )
 
-                TypePill(type = move.type, modifier = Modifier.padding(top = MaterialTheme.spacing.sm))
+                TypePill(
+                    type = move.type,
+                    modifier =
+                        Modifier
+                            .padding(top = MaterialTheme.spacing.sm)
+                            .sharedBoundsOrNone(heroKey?.typeKey()),
+                )
             }
 
             Column(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(MaterialTheme.spacing.md),
             ) {
-                Text(text = move.powerText, style = MaterialTheme.typography.headlineSmall)
+                Text(text = move.powerText, style = MaterialTheme.typography.displayMedium)
                 Text(
                     text = stringResource(Res.string.moves_power),
                     style = MaterialTheme.typography.bodySmall,
@@ -96,8 +114,9 @@ fun MoveCard(
     }
 }
 
-// The dex card's, so the two grids scroll at the same rhythm.
-private const val CARD_ASPECT_RATIO = 1.35f
+// Wider than a dex card's 1.35, which is sized for artwork filling a corner. A move card carries a
+// name, a pill and a figure and nothing that needs the height, so the extra rows are free.
+private const val CARD_ASPECT_RATIO = 1.6f
 
 // Wider than the card's own half, so the glyph reads as something the card is cut out of rather than
 // as a symbol placed on it.

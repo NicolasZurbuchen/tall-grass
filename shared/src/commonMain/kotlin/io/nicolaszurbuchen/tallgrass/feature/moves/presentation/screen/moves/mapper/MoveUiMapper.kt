@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.moves.ma
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
+import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.moveNameKey
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.moves.MoveUiModel
 
 /**
@@ -19,6 +20,7 @@ fun Move.toUiModel(): MoveUiModel =
         type = type.toUiModel(),
         damageClass = damageClass.toUiModel(),
         powerText = power?.toString() ?: NO_POWER,
+        nameKey = moveNameKey(slug),
     )
 
 // An em dash rather than a zero. A status move has no power at all, and 0 would read as a move that
