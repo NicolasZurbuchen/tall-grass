@@ -141,7 +141,6 @@ private fun PokedexDatabase.insertMove(
         pp = 15,
         priority = 0,
         target = "selected-pokemon",
-        effectChance = null,
         shortEffect = null,
         effect = null,
         category = category,

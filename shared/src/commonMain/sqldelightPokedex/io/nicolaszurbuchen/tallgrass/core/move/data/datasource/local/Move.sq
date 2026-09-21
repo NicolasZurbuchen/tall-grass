@@ -17,8 +17,6 @@ CREATE TABLE move (
     priority    INTEGER NOT NULL,
     -- Upstream's target vocabulary: "selected-pokemon", "all-opponents", "user", and thirteen more.
     target      TEXT NOT NULL,
-    -- The percentage behind "has a chance to burn the target", which the prose leaves out.
-    effectChance INTEGER,
     shortEffect TEXT,
     effect      TEXT,
 
@@ -75,8 +73,8 @@ countMoves:
 SELECT count(*) FROM move;
 
 insertMove:
-INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, effectChance, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns, drain, healing, critRate, flinchChance, statChance)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns, drain, healing, critRate, flinchChance, statChance)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertMoveStatChange:
 INSERT INTO moveStatChange(moveSlug, statSlug, change) VALUES (?, ?, ?);
@@ -88,8 +86,10 @@ SELECT slug, name, typeSlug, damageClass, power
 FROM move
 ORDER BY name;
 
--- Columns named rather than a star, so the generated type is SelectMove and not the table type Move,
--- which would collide with the domain model of the same name in every mapper that touches both.
+-- Columns named rather than a star, though with effectChance gone the projection is now every column
+-- in order and SQLDelight generates the table type `Move` for it either way. That name collides with
+-- the domain model, so the one mapper that touches both imports it aliased. Named rather than starred
+-- anyway: the list is what says a column was dropped rather than forgotten.
 selectMove:
 SELECT slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target,
        shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns,

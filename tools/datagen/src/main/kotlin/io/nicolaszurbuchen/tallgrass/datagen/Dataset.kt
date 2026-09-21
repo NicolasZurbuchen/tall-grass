@@ -119,8 +119,6 @@ data class MoveJson(
     val pp: Int?,
     val priority: Int,
     val target: String,
-    // The percentage on "has a chance to burn the target", which the prose deliberately leaves out.
-    val effectChance: Int?,
     val shortEffect: String?,
     val effect: String?,
     val meta: MoveMetaJson?,

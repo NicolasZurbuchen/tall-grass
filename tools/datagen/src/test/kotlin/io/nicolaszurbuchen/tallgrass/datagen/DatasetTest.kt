@@ -356,9 +356,6 @@ class DatasetTest {
         assertEquals(35, tackle.pp)
         assertEquals(0, tackle.priority)
 
-        // The percentage the prose deliberately leaves out: "Has a chance to burn the target."
-        assertEquals(10, moves.single { it.slug == "fire-punch" }.effectChance)
-
         // Priority is signed, and a move that always goes last is the case a non-negative read would
         // silently flatten.
         assertTrue(moves.any { it.priority > 0 } && moves.any { it.priority < 0 })

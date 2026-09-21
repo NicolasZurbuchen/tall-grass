@@ -101,7 +101,6 @@ fun main(args: Array<String>) {
                 pp = entry.pp?.toLong(),
                 priority = entry.priority.toLong(),
                 target = entry.target,
-                effectChance = entry.effectChance?.toLong(),
                 shortEffect = entry.shortEffect,
                 effect = entry.effect,
                 category = entry.meta?.category,

@@ -466,7 +466,6 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
                 pp = row.intOrNull("pp"),
                 priority = row.int("priority"),
                 target = targets[row.int("target_id")] ?: error("Move '$slug' has an unknown target"),
-                effectChance = row.intOrNull("effect_chance"),
                 shortEffect = entry?.get("short_effect"),
                 effect = entry?.get("effect")?.replace(BLANK_LINE, "\n")?.trim(),
                 meta = meta[id]?.let { buildMoveMeta(slug, it, categories, ailments) },

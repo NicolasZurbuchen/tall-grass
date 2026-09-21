@@ -1,6 +1,5 @@
 package io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.mapper
 
-import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMove
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveStatChanges
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoves
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.BattleStat
@@ -14,6 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.Move as MoveRow
 
 class MoveLocalMapperTest {
     private fun listRow(
@@ -43,7 +43,7 @@ class MoveLocalMapperTest {
         ailmentChance: Long? = 10,
         drain: Long? = null,
         critRate: Long? = null,
-    ) = SelectMove(
+    ) = MoveRow(
         slug = "flamethrower",
         name = "Flamethrower",
         generation = 1,

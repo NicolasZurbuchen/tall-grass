@@ -1,6 +1,5 @@
 package io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.mapper
 
-import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMove
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveLearners
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveStatChanges
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoves
@@ -16,6 +15,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveMeta
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveStatChange
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveTarget
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
+import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.Move as MoveRow
 
 /**
  * Null when the row names a type or a damage class this build does not know, which means the bundled
@@ -35,7 +35,7 @@ fun SelectMoves.toDomain(): Move? {
 }
 
 /** Null on the same grounds as the list mapper's, plus a target this build does not know. */
-fun SelectMove.toDomain(statChanges: List<SelectMoveStatChanges>): MoveDetail? {
+fun MoveRow.toDomain(statChanges: List<SelectMoveStatChanges>): MoveDetail? {
     val type = PokemonType.fromSlug(typeSlug) ?: return null
     val damageClass = DamageClass.fromSlug(this.damageClass) ?: return null
     val target = MoveTarget.fromSlug(this.target) ?: return null
@@ -69,7 +69,7 @@ fun SelectMove.toDomain(statChanges: List<SelectMoveStatChanges>): MoveDetail? {
  * all of them is a read of the row rather than a guess: it is the one that is never null when
  * upstream has filled the move in.
  */
-private fun SelectMove.toMetaDomain(): MoveMeta? {
+private fun MoveRow.toMetaDomain(): MoveMeta? {
     val category = this.category?.let(MoveCategory::fromSlug) ?: return null
 
     return MoveMeta(

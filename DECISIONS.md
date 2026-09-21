@@ -1174,11 +1174,15 @@ own, and it is what the moves list filters on. The contrast with the abilities i
 *Rejected for now: a classification for abilities*, where three home-made taxonomies were built and
 thrown away for a subject that has no such field upstream.
 
-This leaves `effect_chance` on the move itself redundant. It is never the only chance available — no
-move has one without a meta row — and in 211 of its 266 cases it is the same number as the typed
-chance beside it. The other 55 are a flat `100` attached to nothing in particular. It stays for now,
-because removing a shipped column is its own change; it should go when something first has to choose
-between the two.
+**`effect_chance` on the move itself is gone**, and the typed chances are what replaced it. It was
+never the only chance available — no move has one without a meta row — and in 211 of its 266 cases it
+was the same number as the typed chance beside it. The other 55 were a flat `100` attached to nothing
+in particular: Frost Breath stored one, and what Frost Breath always does is crit.
+
+So it carried no fact of its own and disagreed with the field that did. Two chances on one move is a
+question a screen would have had to answer, and the answer would always have been "the typed one" --
+a rule with no reason behind it that somebody would eventually have had to learn. A second opinion
+that is right by coincidence is worse than no second opinion.
 
 **The move flags are not here yet, and they are the other half of the abilities.** Upstream tags each
 move with up to six — `contact`, `punch`, `sound`, `bite`, `powder`, `dance` and fifteen more — and
