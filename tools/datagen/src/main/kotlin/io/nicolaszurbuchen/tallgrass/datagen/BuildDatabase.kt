@@ -82,9 +82,11 @@ fun main(args: Array<String>) {
                 slug = entry.slug,
                 name = entry.name,
                 generation = entry.generation.toLong(),
-                category = entry.category.name,
+                trigger = entry.trigger.name,
                 shortEffect = entry.shortEffect,
+                effect = entry.effect,
             )
+            entry.tags.forEach { tag -> database.abilityQueries.insertAbilityTag(entry.slug, tag.name) }
         }
 
         moves.forEach { entry ->
@@ -101,6 +103,7 @@ fun main(args: Array<String>) {
                 target = entry.target,
                 effectChance = entry.effectChance?.toLong(),
                 shortEffect = entry.shortEffect,
+                effect = entry.effect,
             )
         }
 

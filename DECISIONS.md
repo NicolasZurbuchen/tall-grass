@@ -1048,47 +1048,57 @@ gaps wide enough to be told apart at a glance are around 110° and 330°.
 about seventy tall there is no third thing to put on it. An `ImageVector` column on the enum that
 nothing reads is worse than no column.
 
-### An ability's category is classified, overridden by hand, and committed
+### An ability carries every tag that is true of it, not one category
 
 Upstream has no category field for abilities — only a generation, an effect and a list of holders —
-so the eight-member taxonomy is original work. #27 settled that it should exist and be classified at
-generation time; the vocabulary was left open there and is settled here.
+so this is original work. #27 settled that it should exist; the shape is settled here.
 
-**Eight members, cut by direction rather than by mechanism.** `ENVIRONMENT`, `FORM`, `REACTIVE`,
-`IMMUNITY`, `RECOVERY`, `DEFENSE`, `OFFENSE`, `UTILITY`. The distribution over the real 314 is
-69/65/56/40/40/19/18/7, so nothing is dead and nothing is a quarter of the list.
+**It was a single category first, and that was wrong.** Sixteen tags now, and an ability carries as
+many as apply: Chlorophyll is `WEATHER` *and* `STATS_OFFENSE`, Dry Skin is four things, Water Bubble
+is four different things.
 
-An earlier set had a ninth member, `STATS`, holding everything that moved a stat stage. It put Moxie
-beside Intimidate — one raises the bearer's own Attack and the other lowers the opponent's, which are
-opposite intents sharing a mechanism — and it overlapped `DEFENSE` for the reader, since Intimidate
-and Multiscale both mean *I take less damage*. Cutting by direction dissolves both problems: the
-question a browser asks is "does this deal more or take less", never "does this do it with a stage or
-a multiplier".
+A single category needs a precedence order to resolve an ability that does two things, and a
+precedence order makes that choice **consistently, which is not the same as making it correctly**.
+Four of five sampled failures lost a fact that was true — Chlorophyll's Speed, Aura Guard's
+mitigation, Anger Shell's second direction, Armor Tail's turn control — and the fifth, Bad Dreams,
+fell into the residue bucket because no single label fitted. The model was lossy by construction, and
+no amount of rule-tuning reaches that.
 
-**Rejected: the two vocabularies already on record.** The design file's `Common / Weather / Recovery
-/ Defensive` and the prototype's `Pinch / Weather / Contact / Utility / Offensive` were both written
-before anyone had the data. Neither has a home for the eighteen form changers or the sixty-nine
-immunities, and `Common` is a frequency axis rather than a mechanical one. #27 already marks the
-prototype's thirteen hand-assigned categories as throwaway.
+**When an ability fires is a separate field.** `AbilityTrigger` is single-valued, and the asymmetry is
+a fact about the two questions rather than a simplification: *what does it do* genuinely has several
+answers and *when does it fire* mostly has one. The tell that they were different things was
+Electromorphosis. Asked whether it is "contact or damage dealt", the honest answer is that contact is
+*when* and damage is *what*, and a list holding both is two taxonomies wearing one name.
 
-**The order of the rules is half the taxonomy**, because first match wins. An ability that summons
-rain *and* doubles Speed is `ENVIRONMENT`; one that heals because it absorbed a move is `IMMUNITY`.
-The load-bearing one is `OFFENSE` above `DEFENSE`: neither rule can tell *whose* stat moved, since
-upstream writes "decreases their accuracy" for the bearer's own and "lowers opponents' Attack" for
-someone else's. Running offence first makes a trade-off ability read by its upside, which is what it
-is named for — Hustle strengthens physical moves at the cost of its own accuracy, and filing it under
-defence for the accuracy drop was the first thing the classifier got wrong.
+**`IMMUNITY` is about completeness, not about subject.** Levitate evades Ground entirely and Thick Fat
+halves it, so one is `IMMUNITY` and the other `DAMAGE_TAKEN`. What the immunity is *to* comes from the
+tag beside it: Limber is `IMMUNITY STATUS`, Clear Body is `IMMUNITY STATS`.
 
-**The corrections live in their own file.** #27 requires that a hand-fixed category stay fixed, and a
-generator that rewrites `abilities.json` wholesale would eat the fix on the next SHA bump. So
-`data/ability-categories.json` is hand-authored, never written by the generator, and wins where it
-has an entry. The classifier's output stays pure and fully regenerated — a rerun with no upstream
-change produces an empty diff — and a correction reads as its own line rather than as a hunk inside
-generated output. Two tests guard it from both sides: an override naming an ability that does not
-exist, and an override that did not take.
+**The three stat tags are cut by who the change helps, not by which way the number moved.** Lowering
+an opponent's Attack is defensive. This is the same cut that failed as a single category, and it
+works here for exactly one reason: Anger Shell no longer has to choose.
 
-The classifier is **not** expected to be right about all 314. It is a keyword pass over prose written
-for another purpose, and what makes that acceptable is the override file rather than the rules.
+**Rejected: an `OTHER` tag.** Five abilities carry none. Heavy Metal and Light Metal change the
+bearer's weight, Anticipation and Forewarn report what the opponent has, and Commander puts Tatsugiri
+inside a Dondozo; none of those is a reason to pick an ability. A card with no chip is the honest
+rendering, and a bucket nobody would ever filter by is not.
+
+**`MOVES` was added after the first run.** Twenty abilities finished with no tag at all and turned out
+to be one cluster rather than a residue: No Guard, Scrappy, Serene Grace, Normalize, Pressure,
+Infiltrator. "Which abilities change how my moves work" is a question a player asks, and nothing else
+on the list answered it.
+
+The rules are a keyword pass over prose written for another purpose and are **expected to be wrong
+about some of the 314**. What makes that acceptable is `data/ability-tags.json`: a human owns it, it
+replaces an ability's list outright, and the generator reads it and never writes it. #27 requires a
+hand-fixed answer to survive a regeneration, and a generator that rewrote the file wholesale would eat
+it on the next SHA bump. Two tests guard it from both sides — an override naming an ability that does
+not exist, and an override that did not take.
+
+One bug is worth recording because it cost a single character. A trailing `\b` after the stem `poison`
+matches the noun and not "poisoning", and upstream writes the participle for every contact ability in
+the game. Static, Flame Body, Poison Point and Cute Charm all silently lost their status tag, and the
+resulting count looked plausible enough not to question.
 
 ### The dataset is the main series only, decided by two tests rather than one
 
@@ -1124,3 +1134,10 @@ Pokédex is the one thing it must not do.
 
 PP is the counter-example and is why the other three are worth pinning: every move has one, so a null
 there would be a read that went wrong rather than a fact about the move.
+
+**Both effect fields ship.** `short_effect` is the line a card shows and `effect` is the paragraph
+under it on the detail screen, and the two are written for those two jobs rather than one being a
+truncation of the other. Both are `effect_entries`, which is PokeAPI own prose under BSD; neither is
+`flavor_text_entries`, which is verbatim game text and which #10 forbids shipping. Checked for the
+`[Pound]{move:pound}` link markup the API is known for: zero occurrences in either field, for either
+entity.

@@ -70,19 +70,24 @@ data class AbilityRefJson(
 /**
  * One ability.
  *
- * [shortEffect] is `effect_entries.short_effect` and never `flavor_text_entries`: the short effect is
- * PokeAPI's own structured summary under BSD, while flavour text is verbatim copyrighted game text
- * that #10 forbids shipping. See #11, which settled this for every entity type.
+ * Both halves of `effect_entries` ship, and neither is `flavor_text_entries`: the effect entries are
+ * PokeAPI's own prose under BSD, while flavour text is verbatim copyrighted game text that #10
+ * forbids shipping. See #11, which settled this for every entity type. [shortEffect] is the line a
+ * card shows; [effect] is the paragraph the detail screen shows under it, and the two are written
+ * for those two jobs rather than one being a truncation of the other.
  *
- * [category] is the classifier's answer unless `ability-categories.json` overrides it.
+ * [tags] is every one the classifier matched, unless `ability-tags.json` replaces the list.
+ * [trigger] is single-valued because when an ability fires mostly has one answer.
  */
 @Serializable
 data class AbilityJson(
     val slug: String,
     val name: String,
     val generation: Int,
-    val category: AbilityCategory,
+    val tags: List<AbilityTag>,
+    val trigger: AbilityTrigger,
     val shortEffect: String,
+    val effect: String,
 )
 
 /**
@@ -109,6 +114,7 @@ data class MoveJson(
     // The percentage on "has a chance to burn the target", which the prose deliberately leaves out.
     val effectChance: Int?,
     val shortEffect: String?,
+    val effect: String?,
 )
 
 @Serializable

@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
-    val abilities = buildAbilities(source, readCategoryOverrides(outputDir))
+    val abilities = buildAbilities(source, readTagOverrides(outputDir))
     val moves = buildMoves(source)
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
@@ -57,11 +57,16 @@ fun main(args: Array<String>) {
     println("  moves              ${manifest.moveCount}")
 
     abilities
-        .groupingBy { it.category }
+        .flatMap { it.tags }
+        .groupingBy { it }
         .eachCount()
         .entries
         .sortedByDescending { it.value }
-        .forEach { (category, count) -> println("    ${category.name.padEnd(12)} $count") }
+        .forEach { (tag, count) -> println("    ${tag.name.padEnd(14)} $count") }
+
+    println("  untagged           ${abilities.count { it.tags.isEmpty() }}")
+    println("  tags per ability   ${abilities.groupingBy { it.tags.size }.eachCount().toSortedMap()}")
+    println("  triggers           ${abilities.groupingBy { it.trigger }.eachCount().entries.sortedByDescending { it.value }}")
 }
 
 /**
@@ -75,11 +80,11 @@ fun main(args: Array<String>) {
  *
  * DECISIONS.md, An ability's category is classified, overridden by hand, and committed
  */
-private fun readCategoryOverrides(datasetDir: File): Map<String, AbilityCategory> {
-    val file = datasetDir.resolve("ability-categories.json")
+private fun readTagOverrides(datasetDir: File): Map<String, List<AbilityTag>> {
+    val file = datasetDir.resolve("ability-tags.json")
     if (!file.exists()) return emptyMap()
 
-    return json.decodeFromString<Map<String, AbilityCategory>>(file.readText())
+    return json.decodeFromString<Map<String, List<AbilityTag>>>(file.readText())
 }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
@@ -382,17 +387,17 @@ private fun VariantJson.sharesBattleDataWith(other: VariantJson): Boolean =
  */
 private fun buildAbilities(
     source: UpstreamSource,
-    overrides: Map<String, AbilityCategory>,
+    overrides: Map<String, List<AbilityTag>>,
 ): List<AbilityJson> {
     val names =
         source.read("ability_names")
             .filter { it.int("local_language_id") == ENGLISH }
             .associate { it.int("ability_id") to it["name"] }
 
-    val shortEffects =
+    val prose =
         source.read("ability_prose")
             .filter { it.int("local_language_id") == ENGLISH }
-            .associate { it.int("ability_id") to it["short_effect"] }
+            .associateBy { it.int("ability_id") }
 
     return source.read("abilities")
         .filter { it.bool("is_main_series") && it.int("id") < FIRST_SPIN_OFF_ID }
@@ -404,17 +409,31 @@ private fun buildAbilities(
             // means upstream added an ability this pipeline has not been taught about -- and this
             // program only runs when a human deliberately bumps the pin, which is the moment to
             // notice. Moves are the opposite case and are nullable; see below.
-            val shortEffect = shortEffects[id] ?: error("No English short_effect for ability '$slug' ($id)")
+            val entry = prose[id] ?: error("No English effect entry for ability '$slug' ($id)")
+            val shortEffect = entry["short_effect"]
 
             AbilityJson(
                 slug = slug,
                 name = names[id] ?: slug,
                 generation = row.int("generation_id"),
-                category = overrides[slug] ?: classifyAbility(shortEffect),
+                // The override replaces the list outright rather than adding to it, because the two
+                // ways the classifier goes wrong are opposite -- a loose pattern over-tags and a
+                // narrow one misses -- and a merge could only fix the second.
+                // Sorted and de-duplicated here rather than at either source, so a hand-written
+                // override does not have to know the enum's declaration order to produce a stable
+                // diff.
+                tags = (overrides[slug] ?: classifyAbility(shortEffect)).distinct().sortedBy { it.ordinal },
+                trigger = triggerOf(shortEffect),
                 shortEffect = shortEffect,
+                // Paragraphs, and upstream writes them with a blank line between. Collapsed to one
+                // newline so the screen decides the spacing rather than inheriting a wiki's.
+                effect = entry["effect"].replace(BLANK_LINE, "\n").trim(),
             )
         }.sortedBy { it.slug }
 }
+
+/** Upstream separates paragraphs with a blank line, sometimes several. */
+private val BLANK_LINE = Regex("""\n\s*\n+""")
 
 /**
  * The 919 main-series moves.
@@ -435,10 +454,10 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
 
     // Keyed by effect rather than by move: 453 effects cover 919 moves, because every move that
     // "inflicts regular damage with no additional effect" shares one row.
-    val shortEffects =
+    val prose =
         source.read("move_effect_prose")
             .filter { it.int("local_language_id") == ENGLISH }
-            .associate { it.int("move_effect_id") to it["short_effect"] }
+            .associateBy { it.int("move_effect_id") }
 
     val typeSlugs =
         source.read("types")
@@ -452,6 +471,7 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
         .filter { it.int("id") < FIRST_SPIN_OFF_ID }
         .map { row ->
             val slug = row["identifier"]
+            val entry = row.intOrNull("effect_id")?.let { prose[it] }
 
             MoveJson(
                 slug = slug,
@@ -465,7 +485,8 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
                 priority = row.int("priority"),
                 target = targets[row.int("target_id")] ?: error("Move '$slug' has an unknown target"),
                 effectChance = row.intOrNull("effect_chance"),
-                shortEffect = row.intOrNull("effect_id")?.let { shortEffects[it] },
+                shortEffect = entry?.get("short_effect"),
+                effect = entry?.get("effect")?.replace(BLANK_LINE, "\n")?.trim(),
             )
         }.sortedBy { it.slug }
 }

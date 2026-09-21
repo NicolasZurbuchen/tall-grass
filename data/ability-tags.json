@@ -1,0 +1,7 @@
+{
+  "as-one-glastrier": ["ABILITIES", "ITEMS", "STATS_OFFENSE"],
+  "as-one-spectrier": ["ABILITIES", "ITEMS", "STATS_OFFENSE"],
+  "aura-break": ["ABILITIES"],
+  "cursed-body": ["MOVES"],
+  "truant": ["PRIORITY"]
+}

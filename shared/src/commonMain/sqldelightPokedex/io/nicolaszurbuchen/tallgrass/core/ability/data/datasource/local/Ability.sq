@@ -8,18 +8,36 @@ CREATE TABLE ability (
     slug        TEXT NOT NULL PRIMARY KEY,
     name        TEXT NOT NULL,
     generation  INTEGER NOT NULL,
-    -- The closed taxonomy a screen filters on, classified at generation time because upstream has no
-    -- category field at all. See AbilityCategory.kt and #27.
-    category    TEXT NOT NULL,
-    -- effect_entries.short_effect, never flavor_text_entries: the short effect is PokeAPI's own
-    -- structured summary under BSD, and flavour text is verbatim copyrighted game text. See #11.
-    shortEffect TEXT NOT NULL
+    -- When it fires. Single-valued because that question mostly has one answer, unlike what it does.
+    -- See AbilityTrigger.kt.
+    trigger     TEXT NOT NULL,
+    -- Both halves of effect_entries, never flavor_text_entries: the effect entries are PokeAPI's own
+    -- prose under BSD, and flavour text is verbatim copyrighted game text. See #11.
+    -- The short one is the line on a card; the long one is the paragraph under it on the detail.
+    shortEffect TEXT NOT NULL,
+    effect      TEXT NOT NULL
 );
 
-CREATE INDEX abilityByCategory ON ability(category);
+-- What an ability does, one row per tag, because an ability does as many things as it does. A single
+-- category column was the first shape and it made every multi-faceted ability discard a true fact:
+-- Chlorophyll is weather AND speed. See AbilityTag.kt and DECISIONS.md.
+CREATE TABLE abilityTag (
+    abilitySlug TEXT NOT NULL,
+    tag         TEXT NOT NULL,
+    PRIMARY KEY (abilitySlug, tag)
+);
+
+CREATE INDEX abilityTagByTag ON abilityTag(tag);
+CREATE INDEX abilityByTrigger ON ability(trigger);
 
 countAbilities:
 SELECT count(*) FROM ability;
 
+countAbilityTags:
+SELECT count(*) FROM abilityTag;
+
 insertAbility:
-INSERT INTO ability(slug, name, generation, category, shortEffect) VALUES (?, ?, ?, ?, ?);
+INSERT INTO ability(slug, name, generation, trigger, shortEffect, effect) VALUES (?, ?, ?, ?, ?, ?);
+
+insertAbilityTag:
+INSERT INTO abilityTag(abilitySlug, tag) VALUES (?, ?);

@@ -3,6 +3,7 @@
 --
 -- The nullable columns are all genuinely absent rather than defaulted: 331 moves inflict no damage,
 -- 285 cannot miss, and 93 Generation VIII and IX moves have no effect text upstream has written yet.
+-- Both effect fields are PokeAPI's own prose under BSD, never flavor_text_entries. See #11.
 CREATE TABLE move (
     slug        TEXT NOT NULL PRIMARY KEY,
     name        TEXT NOT NULL,
@@ -18,7 +19,8 @@ CREATE TABLE move (
     target      TEXT NOT NULL,
     -- The percentage behind "has a chance to burn the target", which the prose leaves out.
     effectChance INTEGER,
-    shortEffect TEXT
+    shortEffect TEXT,
+    effect      TEXT
 );
 
 CREATE INDEX moveByType ON move(typeSlug);
@@ -28,5 +30,5 @@ countMoves:
 SELECT count(*) FROM move;
 
 insertMove:
-INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, effectChance, shortEffect)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, effectChance, shortEffect, effect)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
