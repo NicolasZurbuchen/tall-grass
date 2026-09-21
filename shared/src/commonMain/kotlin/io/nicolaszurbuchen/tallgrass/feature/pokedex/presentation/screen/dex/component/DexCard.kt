@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
+import io.nicolaszurbuchen.tallgrass.design.component.AppPokeball
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.nameKey
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.typeKey
@@ -53,6 +56,17 @@ fun DexCard(
         modifier = modifier.aspectRatio(CARD_ASPECT_RATIO),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Behind the Pokemon and a little wider than it, pushed past the corner it stands in so
+            // that the card's right and bottom edges take the far side of it.
+            AppPokeball(
+                color = Color.White.copy(alpha = BALL_ALPHA),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = BALL_CROP, y = BALL_CROP)
+                        .requiredSize(BALL_SIZE),
+            )
+
             AsyncImage(
                 model = entry.artworkUrl,
                 // The name is read out beside it, so describing the artwork too would have a screen
@@ -113,7 +127,7 @@ fun DexCard(
 // left side while the artwork fills the corner.
 private const val CARD_ASPECT_RATIO = 1.35f
 
-private val ARTWORK_SIZE = 100.dp
+private val ARTWORK_SIZE = 90.dp
 
 // Off the corner rather than flush to it, so the Pokemon reads as standing on the card instead of
 // being cropped by it.
@@ -122,3 +136,17 @@ private val ARTWORK_INSET = 4.dp
 // The number is supporting text on a saturated ground, where full white reads as loud as the name
 // beside it.
 private const val NUMBER_ALPHA = 0.7f
+
+// Wider than the artwork, so it reads as something the Pokemon stands in front of rather than as an
+// outline drawn around it.
+private val BALL_SIZE = 125.dp
+
+// How far past the corner it sits, the same amount in both directions -- the two edges crop it
+// together, which is what makes it look like one corner rather than two cuts. A fifth of the ball,
+// so growing the ball keeps the crop where it looks right rather than shaving less off a bigger
+// circle.
+private val BALL_CROP = BALL_SIZE * 0.19f
+
+// Fainter than a home tile's. This card already carries a name, a number and two pills over the same
+// colour, so the watermark is the fourth thing on it rather than the second.
+private const val BALL_ALPHA = 0.12f

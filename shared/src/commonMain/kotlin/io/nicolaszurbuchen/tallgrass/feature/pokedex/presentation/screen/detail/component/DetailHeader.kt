@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypePill
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
@@ -206,7 +207,7 @@ fun DetailHeader(
                         TypePill(
                             type = type,
                             modifier = Modifier.sharedBoundsOrNone(artworkKey?.typeKey(slot)),
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = PILL_SIZE),
                         )
                     }
                 }
@@ -240,6 +241,11 @@ private fun StepButton(
         )
     }
 }
+
+// Two off the slot it is otherwise set in. The hero's pills are the one place a chip is drawn at a
+// headline size, and no role in the scale means "chip, but large" -- titleLarge happens to be 14sp
+// and is the button slot, so reaching for it would be picking a number rather than a role.
+private val PILL_SIZE = 14.sp
 
 // Supporting text on a saturated ground, where full white reads as loud as the name above it.
 private const val GENUS_ALPHA = 0.7f

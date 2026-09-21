@@ -1,9 +1,15 @@
 package io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -12,7 +18,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.dp
+import io.nicolaszurbuchen.tallgrass.design.component.AppPokeball
+import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home.component.HomeTile
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.screen.home.uimodel.HomeTileUiModel
@@ -26,36 +38,63 @@ fun HomeScreen(
     onTileClick: (HomeTileUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(HOME_GRID_COLUMNS),
-        contentPadding = PaddingValues(MaterialTheme.spacing.md),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
-        modifier = modifier.fillMaxSize().systemBarsPadding(),
-    ) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Text(
-                text = stringResource(Res.string.home_title),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
+    val statusBar = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Text(
-                text = stringResource(Res.string.home_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.sm),
-            )
-        }
+    Box(modifier = modifier.fillMaxSize().clipToBounds()) {
+        // Centred on the trailing action of a top bar this screen does not have yet, which is what
+        // the design draws it around. Derived from the row rather than measured off a button, so it
+        // lands in the same place once there is one: half a toolbar below the status bar, and an
+        // icon button's own centre in from the right edge.
+        //
+        // Outside the system bars rather than inside them, so it runs up behind the status bar the
+        // way the tint on the detail screen does and the corner cropping it is the screen's.
+        AppPokeball(
+            // One small step off the background, towards whichever end of the scale the text is on
+            // -- which is darker in light and lighter in dark. No token says that: `surface` is a
+            // step up in both, so in light it is a white disc on a grey ground rather than a
+            // watermark, and `borderSubtle` is a step down in both and reads as a grey disc in dark.
+            color = lerp(MaterialTheme.appColors.background, MaterialTheme.appColors.textPrimary, CORNER_BALL_TINT),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(
+                        x = CORNER_BALL_SIZE / 2 - ACTION_INSET,
+                        y = statusBar + TOOLBAR_HEIGHT / 2 - CORNER_BALL_SIZE / 2,
+                    )
+                    .requiredSize(CORNER_BALL_SIZE),
+        )
 
-        items(HomeTileUiModel.entries) { tile ->
-            HomeTile(
-                label = stringResource(tile.label),
-                icon = tile.icon,
-                onClick = { onTileClick(tile) },
-            )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(HOME_GRID_COLUMNS),
+            contentPadding = PaddingValues(MaterialTheme.spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+            modifier = Modifier.fillMaxSize().systemBarsPadding(),
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    text = stringResource(Res.string.home_title),
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    text = stringResource(Res.string.home_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.sm),
+                )
+            }
+
+            items(HomeTileUiModel.entries) { tile ->
+                HomeTile(
+                    label = stringResource(tile.label),
+                    color = tile.color,
+                    onClick = { onTileClick(tile) },
+                )
+            }
         }
     }
 }
@@ -63,3 +102,14 @@ fun HomeScreen(
 // Two columns across eight tiles gives the 2x4 grid the home screen was designed around. A third
 // column would fit on a tablet but is not worth a size class until there is a tablet layout.
 private const val HOME_GRID_COLUMNS = 2
+
+// Larger than a tile's ball by enough to read as a different object rather than as a ninth card.
+private val CORNER_BALL_SIZE = 220.dp
+
+// What the ball is centred on. A 48dp icon button with Material's 4dp end margin has its middle
+// 28dp in from the edge, and the row it sits in is 56dp tall.
+private val TOOLBAR_HEIGHT = 56.dp
+private val ACTION_INSET = 28.dp
+
+// Just enough to be seen in both themes. Anything more and it stops being a watermark.
+private const val CORNER_BALL_TINT = 0.08f

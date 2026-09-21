@@ -4,11 +4,11 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.pokemon.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_egg_cycle_value
-import tallgrass.shared.generated.resources.pokedex_detail_gender_value
-import tallgrass.shared.generated.resources.pokedex_detail_genderless
+import tallgrass.shared.generated.resources.pokedex_detail_gender_share
 import tallgrass.shared.generated.resources.pokedex_detail_height_value
 import tallgrass.shared.generated.resources.pokedex_detail_weight_value
 
@@ -31,13 +31,13 @@ fun PokemonSpecies.toAboutUiModel(variant: PokemonVariant): AboutUiModel {
     return AboutUiModel(
         heightText = UiText.Resource(Res.string.pokedex_detail_height_value, listOf(fromTenths(variant.height))),
         weightText = UiText.Resource(Res.string.pokedex_detail_weight_value, listOf(fromTenths(variant.weight))),
-        genderText =
+        gender =
             if (genderRate < 0) {
-                UiText.Resource(Res.string.pokedex_detail_genderless)
+                GenderUiModel.Genderless
             } else {
-                UiText.Resource(
-                    Res.string.pokedex_detail_gender_value,
-                    listOf(share(EIGHTHS - genderRate), share(genderRate)),
+                GenderUiModel.Split(
+                    maleText = UiText.Resource(Res.string.pokedex_detail_gender_share, listOf(share(EIGHTHS - genderRate))),
+                    femaleText = UiText.Resource(Res.string.pokedex_detail_gender_share, listOf(share(genderRate))),
                 )
             },
         eggGroupsText = UiText.Raw(eggGroups.joinToString { it.toUiModel().label }),

@@ -7,9 +7,8 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
-import tallgrass.shared.generated.resources.Res
-import tallgrass.shared.generated.resources.pokedex_detail_genderless
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -48,6 +47,9 @@ class AboutUiMapperTest {
 
     private fun argsOf(text: UiText): List<Any> = (text as UiText.Resource).args
 
+    private fun splitOf(genderRate: Int): GenderUiModel.Split =
+        species(genderRate = genderRate).toAboutUiModel(variant()).gender as GenderUiModel.Split
+
     @Test
     fun toAboutUiModel_turnsDecimetresIntoMetresAndHectogramsIntoKilograms() {
         val about = species().toAboutUiModel(variant())
@@ -66,22 +68,30 @@ class AboutUiMapperTest {
     fun toAboutUiModel_splitsTheEighthsIntoAPercentageWithOneDecimal() {
         // A gender rate of 1 is one eighth female, which is 12.5% -- a number no integer percentage
         // can express, and the case that makes this arithmetic worth pinning.
-        assertEquals(listOf("87.5", "12.5"), argsOf(species(genderRate = 1).toAboutUiModel(variant()).genderText))
+        val split = splitOf(genderRate = 1)
+
+        assertEquals(listOf("87.5"), argsOf(split.maleText))
+        assertEquals(listOf("12.5"), argsOf(split.femaleText))
     }
 
     @Test
     fun toAboutUiModel_dropsTheDecimalWhenTheShareIsWhole() {
-        assertEquals(listOf("50", "50"), argsOf(species(genderRate = 4).toAboutUiModel(variant()).genderText))
-        assertEquals(listOf("100", "0"), argsOf(species(genderRate = 0).toAboutUiModel(variant()).genderText))
+        assertEquals(listOf("50"), argsOf(splitOf(genderRate = 4).maleText))
+        assertEquals(listOf("50"), argsOf(splitOf(genderRate = 4).femaleText))
+    }
+
+    @Test
+    fun toAboutUiModel_keepsTheEmptyShareRatherThanDroppingTheSymbol() {
+        // An all-male species is still a split, and drawing the female side as 0% says more than
+        // leaving the symbol off the row.
+        assertEquals(listOf("100"), argsOf(splitOf(genderRate = 0).maleText))
+        assertEquals(listOf("0"), argsOf(splitOf(genderRate = 0).femaleText))
     }
 
     @Test
     fun toAboutUiModel_saysGenderlessRatherThanDividingByNothing() {
         // Upstream writes -1 for a genderless species, which is a third case rather than a share.
-        assertEquals(
-            UiText.Resource(Res.string.pokedex_detail_genderless),
-            species(genderRate = -1).toAboutUiModel(variant()).genderText,
-        )
+        assertEquals(GenderUiModel.Genderless, species(genderRate = -1).toAboutUiModel(variant()).gender)
     }
 
     @Test

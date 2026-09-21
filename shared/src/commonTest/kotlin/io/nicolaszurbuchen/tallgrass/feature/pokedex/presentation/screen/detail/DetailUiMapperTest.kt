@@ -58,7 +58,7 @@ class DetailUiMapperTest {
         val mega = assertNotNull(state(activeSlug = "charizard-mega-x").toUiModel(charizardHandoff).content)
 
         assertNotEquals(ordinary.stats, mega.stats)
-        assertEquals(ordinary.about.genderText, mega.about.genderText)
+        assertEquals(ordinary.about.gender, mega.about.gender)
         assertEquals(ordinary.about.eggGroupsText, mega.about.eggGroupsText)
         assertEquals(ordinary.about.eggCycleText, mega.about.eggCycleText)
     }

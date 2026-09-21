@@ -962,3 +962,88 @@ rather than two that cross-fade, which means its width has to be measured before
 be computed: a title is centred against its own measurement. The chevrons flank a gap the size of the
 scaled name, so it arrives between them rather than beside them, and they do what the carousel's
 swipe does for a reader who would rather press a button.
+
+### The pokeball is a watermark, and it is cropped by whatever it is on
+
+The ornament appears six ways across three screens: on every home tile, in the home screen's corner,
+behind every dex card's artwork, and behind the hero. It is one composable in `design/` and it draws
+nothing but itself.
+
+**`design/` rather than `core/pokemon/`.** The placement rule asks whether a component models the
+subject, and this one does not — there is no Pokeball in the domain, nothing reads one, and the shape
+says no more about the card it is on than a logo says about a letterhead. `design/` is the layer that
+may know the brand; what it may not know is the domain.
+
+**No call site is cropped by the ornament.** Each one sizes it past the bounds of something that
+already clips — a card, the screen — and lets that edge take the rest. The alternative was a corner
+parameter, which is one rule per corner it ever gets put in, and the first one to be wanted was two
+corners at once.
+
+`requiredSize` rather than `size`, which is the mistake this is easy to make: `size` coerces into the
+incoming constraints, so a ball meant to overflow a 70dp card comes out 70dp tall and sitting neatly
+inside it.
+
+**Three different alphas, all white.** 0.16 on a home tile, which carries a label and nothing else;
+0.12 on a dex card, which already has a name, a number and two pills over the same colour, so the
+watermark is the fourth thing on it rather than the second; 0.18 behind the hero, which is a third
+covered by the sheet and has no text on it at all.
+
+### The hero's pokeball is drawn under the sheet, and the hero is drawn over it
+
+Everything else about the hero is drawn *after* the sheet, so the Pokemon stands on it. The watermark
+is the exception: it is drawn first, and the sheet crops it.
+
+That is not a layering quirk, it is the drawing. The ornament belongs to the hero and ends where the
+hero's ground does; carried over the sheet it would sit on the handle and the form pills, and in dark
+mode — where the sheet is not white and a white wash on it is visible — it would read as a second
+object rather than as a wash on the tint.
+
+It is positioned from the measured hero height rather than from the constants that produced it, for
+the same reason the sheet's resting position is: `heroHeight - (ARTWORK_SIZE + BALL_SIZE) / 2` is one
+subtraction against a number the layout reported, and the alternative is adding up a status bar, a
+toolbar row, a name, a row of pills and a genus and being wrong by a status bar.
+
+### The spin is stopped by not composing it
+
+`InfiniteTransition` costs about 40% CPU in a minimal repro (CMP-8146), and the cost is per instance
+— see #12 §6, which asks for one per screen, paused when off-screen.
+
+There is no paused state. `rememberSpin()` is the driver and not the drawing, so the screen that owns
+it can leave it out of the composition when the thing it turns has gone, which disposes the
+transition; the detail screen does exactly that once the sheet has faded the hero out. Returning a
+value rather than wrapping the ornament is what makes that possible, and it is also what lets one
+call drive several ornaments if a screen ever wants two.
+
+Linear, because an eased revolution has a visible slow point every five seconds and a pokeball has no
+top to arrive at. Under reduced motion it is held at zero rather than run instantly: Compose's
+duration scaling would turn a five-second turn into a strobe, which is not a reduction.
+
+### The gender split is two symbols, not a sentence
+
+"87.5% male, 12.5% female" reads as prose in a row that is otherwise read as a pair of numbers. The
+symbols in their conventional colours — which are not this app's colours, they are the ones every
+Pokedex before it has used — let the row be scanned rather than read.
+
+The change that mattered is not the formatting. `AboutUiModel` carried one `UiText` for gender, and
+that string was two different states wearing the same type: a share, and "Genderless", which is not a
+share of anything. `GenderUiModel` makes them the two cases they are, which is what lets the tab draw
+both symbols without first asking whether there are any.
+
+**An all-male species keeps its female symbol, showing 0%.** Dropping it would make the row a
+different shape for Tauros than for everything above it, and the zero is the information.
+
+### Eight tile colours, six of them read off the design
+
+The home grid's colours are carried on `HomeTileUiModel`, the way a type's colour is carried on
+`TypeUiModel`: a fact about the destination rather than about the card, so a second surface listing
+these gets the same eight without being told them again. They do not change between light and dark —
+they are labels, the way a tube line is a colour.
+
+Team Builder and Compare are not in the reference design. They are invented into the two hues the
+other six leave open — magenta and green — because everything nearer than that already belongs to a
+tile above: the six sit at roughly 165°, 357°, 210°, 40°, 265° and a desaturated 20°, and the only
+gaps wide enough to be told apart at a glance are around 110° and 330°.
+
+**The tiles lost their icons.** The reference draws a label and the watermark, and at 2.4:1 a card
+about seventy tall there is no third thing to put on it. An `ImageVector` column on the enum that
+nothing reads is worse than no column.

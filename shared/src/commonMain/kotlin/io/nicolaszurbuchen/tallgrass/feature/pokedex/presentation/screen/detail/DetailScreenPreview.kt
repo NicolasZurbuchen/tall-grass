@@ -8,6 +8,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
@@ -69,7 +70,7 @@ private fun DetailScreenPreview() {
                                 AboutUiModel(
                                     heightText = UiText.Raw("1.7 m"),
                                     weightText = UiText.Raw("90.5 kg"),
-                                    genderText = UiText.Raw("87.5% male, 12.5% female"),
+                                    gender = GenderUiModel.Split(UiText.Raw("87.5%"), UiText.Raw("12.5%")),
                                     eggGroupsText = UiText.Raw("Monster, Dragon"),
                                     eggCycleText = UiText.Raw("20 cycles"),
                                     growthText = UiText.Raw("Medium Slow"),

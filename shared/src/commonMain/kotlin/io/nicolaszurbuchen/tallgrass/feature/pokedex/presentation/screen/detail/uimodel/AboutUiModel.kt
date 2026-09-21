@@ -13,7 +13,7 @@ import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 data class AboutUiModel(
     val heightText: UiText,
     val weightText: UiText,
-    val genderText: UiText,
+    val gender: GenderUiModel,
     val eggGroupsText: UiText,
     val eggCycleText: UiText,
     val growthText: UiText,
