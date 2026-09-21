@@ -362,5 +362,104 @@ class DatasetTest {
         assertTrue(moves.any { it.priority > 0 } && moves.any { it.priority < 0 })
     }
 
+    @Test
+    fun moveMeta_isAbsentOnlyWhereUpstreamWroteNone() {
+        // 827 of the 919 have a meta row, and the 92 that do not are the same recent moves that have
+        // no effect text -- minus Syrup Bomb, which has meta and no prose. A meta row appearing on
+        // an older move would mean the join went wrong, not that upstream filled a gap.
+        assertEquals(92, moves.count { it.meta == null })
+        assertTrue(moves.none { it.meta == null && it.generation < 8 })
+
+        val categories = moves.mapNotNull { it.meta?.category }.toSet()
+        assertEquals(14, categories.size, "Upstream's fourteen: $categories")
+        assertTrue("damage" in categories && "net-good-stats" in categories && "unique" in categories)
+    }
+
+    @Test
+    fun moveMeta_dropsTheZeroesThatAreNotFacts() {
+        // The rule the whole type is built on: a number is present only when it says something the
+        // default does not. Upstream stores 0 for "no drain" and "normal crit rate" alike, so these
+        // counts are what separates a fact from a filled-in column.
+        val meta = moves.mapNotNull { it.meta }
+        assertEquals(22, meta.count { it.drain != null })
+        assertEquals(18, meta.count { it.healing != null })
+        assertEquals(26, meta.count { it.critRate != null })
+        assertEquals(30, meta.count { it.flinchChance != null })
+        assertEquals(28, meta.count { it.minHits != null })
+        assertEquals(44, meta.count { it.minTurns != null })
+
+        // Both are signed and the sign is the meaning. Struggle heals -25% of its user's maximum HP;
+        // Double-Edge drains -33% of the damage it dealt.
+        assertEquals(-25, moves.single { it.slug == "struggle" }.meta?.healing)
+        assertTrue(meta.any { (it.drain ?: 0) > 0 } && meta.any { (it.drain ?: 0) < 0 })
+    }
+
+    /**
+     * **The 0 that means "always".**
+     *
+     * Upstream stores `ailment_chance = 0` on the thirty-six moves whose ailment is certain, so a
+     * reader that trusts the column renders "Thunder Wave: 0% chance to paralyse" -- the most wrong
+     * number this dataset could ship, and one that looks like a rendering bug rather than a data
+     * one. The generator drops it, which leaves a null beside a non-null ailment meaning certainty.
+     */
+    @Test
+    fun aGuaranteedAilment_carriesNoPercentage() {
+        val thunderWave = moves.single { it.slug == "thunder-wave" }.meta
+        assertEquals("paralysis", thunderWave?.ailment)
+        assertEquals(null, thunderWave?.ailmentChance)
+
+        val firePunch = moves.single { it.slug == "fire-punch" }.meta
+        assertEquals("burn", firePunch?.ailment)
+        assertEquals(10, firePunch?.ailmentChance)
+
+        // The same rule against the stat changes: Growl always lowers Attack, Rock Smash sometimes
+        // lowers Defense.
+        val growl = moves.single { it.slug == "growl" }
+        assertEquals(mapOf("attack" to -1), growl.statChanges)
+        assertEquals(null, growl.meta?.statChance)
+        assertEquals(50, moves.single { it.slug == "rock-smash" }.meta?.statChance)
+    }
+
+    @Test
+    fun noChance_hangsOffNothing() {
+        // Five moves store an ailment chance with no ailment to attach it to -- Frost Breath keeps
+        // 100. A percentage that names no effect cannot be drawn, so it leaves with the ailment, and
+        // this is the invariant that makes the pair safe to render: a chance implies an effect.
+        val dangling = moves.filter { it.meta?.ailmentChance != null && it.meta?.ailment == null }
+        assertTrue(dangling.isEmpty(), "Moves with a chance of nothing: ${dangling.map { it.slug }}")
+
+        val statChanceWithoutStats = moves.filter { it.meta?.statChance != null && it.statChanges.isEmpty() }
+        assertTrue(statChanceWithoutStats.isEmpty(), "Moves with a stat chance and no stats: $statChanceWithoutStats")
+    }
+
+    @Test
+    fun aVaryingAilment_saysSoRatherThanNamingOne() {
+        // Tri Attack picks one of burn, freeze and paralysis. Upstream files that as -1, and
+        // flattening it to null would leave the 20% hanging off nothing -- which the test above
+        // would then read as correct.
+        assertEquals("unknown", moves.single { it.slug == "tri-attack" }.meta?.ailment)
+        assertEquals(20, moves.single { it.slug == "tri-attack" }.meta?.ailmentChance)
+        assertEquals(4, moves.count { it.meta?.ailment == "unknown" })
+    }
+
+    @Test
+    fun statChanges_surviveAMissingMetaRow() {
+        // Why statChanges is a sibling of meta rather than a field inside it. Fifteen moves have
+        // stat changes and no meta row at all; nesting them would silently drop every one.
+        val orphans = moves.filter { it.statChanges.isNotEmpty() && it.meta == null }
+        assertEquals(15, orphans.size)
+        assertEquals(mapOf("speed" to 1), moves.single { it.slug == "trailblaze" }.statChanges)
+
+        assertEquals(174, moves.count { it.statChanges.isNotEmpty() })
+        assertTrue(moves.all { move -> move.statChanges.values.all { it in -2..3 } })
+
+        // Ancient Power raises all five, and the map is written in the order the stat bars are drawn
+        // rather than alphabetically.
+        assertEquals(
+            listOf("attack", "defense", "special-attack", "special-defense", "speed"),
+            moves.single { it.slug == "ancient-power" }.statChanges.keys.toList(),
+        )
+    }
+
     // endregion
 }

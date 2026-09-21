@@ -394,6 +394,9 @@ private fun buildAbilities(source: UpstreamSource): List<AbilityJson> {
 /** Upstream separates paragraphs with a blank line, sometimes several. */
 private val BLANK_LINE = Regex("""\n\s*\n+""")
 
+/** Upstream's identifier for ailment id 0, which 703 of the 827 moves with a meta row carry. */
+private const val NO_AILMENT = "none"
+
 /**
  * The 919 main-series moves.
  *
@@ -426,9 +429,25 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
     val damageClasses = source.read("move_damage_classes").associate { it.int("id") to it["identifier"] }
     val targets = source.read("move_targets").associate { it.int("id") to it["identifier"] }
 
+    val categories = source.read("move_meta_categories").associate { it.int("id") to it["identifier"] }
+    val ailments = source.read("move_meta_ailments").associate { it.int("id") to it["identifier"] }
+    val meta = source.read("move_meta").associateBy { it.int("move_id") }
+
+    val statSlugs = source.read("stats").associate { it.int("id") to it["identifier"] }
+    val statChanges =
+        source.read("move_meta_stat_changes")
+            .groupBy { it.int("move_id") }
+            .mapValues { (_, rows) ->
+                // Sorted by upstream's stat id, which is the order the stat bars are already drawn
+                // in. The table has no ordering column of its own.
+                rows.sortedBy { it.int("stat_id") }
+                    .associate { statSlugs.getValue(it.int("stat_id")) to it.int("change") }
+            }
+
     return source.read("moves")
         .filter { it.int("id") < FIRST_SPIN_OFF_ID }
         .map { row ->
+            val id = row.int("id")
             val slug = row["identifier"]
             val entry = row.intOrNull("effect_id")?.let { prose[it] }
 
@@ -446,6 +465,40 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
                 effectChance = row.intOrNull("effect_chance"),
                 shortEffect = entry?.get("short_effect"),
                 effect = entry?.get("effect")?.replace(BLANK_LINE, "\n")?.trim(),
+                meta = meta[id]?.let { buildMoveMeta(slug, it, categories, ailments) },
+                statChanges = statChanges[id].orEmpty(),
             )
         }.sortedBy { it.slug }
+}
+
+/**
+ * Turns one `move_meta` row into [MoveMetaJson], dropping every number that only restates a default.
+ *
+ * Which zeroes are facts is not in the row -- it is in whether a neighbouring field is set. See
+ * `DECISIONS.md § A move's mechanical detail is null where there is nothing to say`.
+ */
+private fun buildMoveMeta(
+    slug: String,
+    row: CsvRow,
+    categories: Map<Int, String>,
+    ailments: Map<Int, String>,
+): MoveMetaJson {
+    val ailment = ailments[row.int("meta_ailment_id")]?.takeIf { it != NO_AILMENT }
+
+    return MoveMetaJson(
+        category = categories[row.int("meta_category_id")] ?: error("Move '$slug' has an unknown meta category"),
+        ailment = ailment,
+        // Five moves carry a chance with no ailment for it to be a chance of -- Frost Breath stores
+        // 100. A percentage naming no effect cannot be drawn, so it leaves with the ailment.
+        ailmentChance = row.int("ailment_chance").takeIf { it != 0 && ailment != null },
+        minHits = row.intOrNull("min_hits"),
+        maxHits = row.intOrNull("max_hits"),
+        minTurns = row.intOrNull("min_turns"),
+        maxTurns = row.intOrNull("max_turns"),
+        drain = row.int("drain").takeIf { it != 0 },
+        healing = row.int("healing").takeIf { it != 0 },
+        critRate = row.int("crit_rate").takeIf { it != 0 },
+        flinchChance = row.int("flinch_chance").takeIf { it != 0 },
+        statChance = row.int("stat_chance").takeIf { it != 0 },
+    )
 }

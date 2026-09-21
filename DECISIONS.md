@@ -1134,3 +1134,48 @@ truncation of the other. Both are `effect_entries`, which is PokeAPI own prose u
 `flavor_text_entries`, which is verbatim game text and which #10 forbids shipping. Checked for the
 `[Pound]{move:pound}` link markup the API is known for: zero occurrences in either field, for either
 entity.
+
+### A move's mechanical detail is null where there is nothing to say
+
+Upstream's `move_meta` is the technical half of a move — how many times it hits, what it inflicts,
+how much it drains — and it is shipped flattened onto the move, with `stat_changes` beside it.
+
+**It stores its defaults explicitly, and the defaults are zeroes.** A move with no drain has
+`drain = 0`, a move with a normal critical-hit rate has `crit_rate = 0`, a move that causes no
+flinching has `flinch_chance = 0`. Carried through, 908 moves would tell the detail screen they drain
+0% of the damage they deal, and every reader would have to re-derive which zeroes were facts. So the
+generator drops them: **a number is present exactly when it says something the default does not**, and
+a screen draws the fields it finds.
+
+`ailment_chance` is the trap that rule exists for, and the reason it is worth a decision rather than a
+comment. Thirty-six moves name an ailment and store a chance of `0`, which means *always* — Thunder
+Wave does not paralyse 0% of the time. Read as a percentage it is the most wrong number this dataset
+could ship, and it would look like a rendering bug rather than a data one. Dropping it leaves a null
+beside a non-null ailment, which reads as certainty. `stat_chance` works the same way against the stat
+changes: Growl always lowers Attack, Rock Smash lowers Defense half the time.
+
+Two smaller calls fall out of the same reasoning:
+
+- **A chance never hangs off nothing.** Five moves carry an ailment chance with no ailment — Frost
+  Breath stores 100, and what it always does is crit. A percentage naming no effect cannot be drawn,
+  so it leaves with the ailment. The resulting invariant is what makes the pair safe to render: a
+  chance implies an effect.
+- **A varying ailment says so.** Tri Attack picks one of burn, freeze and paralysis, and upstream
+  files that as `-1`. It ships as `"unknown"` rather than as null, because null would strand its 20%
+  and the rule above would then quietly delete that too.
+
+**`stat_changes` is a sibling of the meta, not a field inside it.** That is upstream's own shape and
+it matters concretely: fifteen moves have stat changes and no meta row at all, so nesting them would
+drop the fact that Trailblaze raises Speed. The 92 moves with no meta row are the same recent ones
+that have no effect text — Generation VIII and IX, and upstream has not filled them in.
+
+**`category` is the one classification axis here that was not invented.** Fourteen values, upstream's
+own, and it is what the moves list filters on. The contrast with the abilities is the whole point: see
+*Rejected for now: a classification for abilities*, where three home-made taxonomies were built and
+thrown away for a subject that has no such field upstream.
+
+This leaves `effect_chance` on the move itself redundant. It is never the only chance available — no
+move has one without a meta row — and in 211 of its 266 cases it is the same number as the typed
+chance beside it. The other 55 are a flat `100` attached to nothing in particular. It stays for now,
+because removing a shipped column is its own change; it should go when something first has to choose
+between the two.

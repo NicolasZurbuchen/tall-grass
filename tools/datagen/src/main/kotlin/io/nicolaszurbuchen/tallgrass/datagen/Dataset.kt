@@ -97,6 +97,10 @@ data class AbilityJson(
  * unavailable: 331 moves inflict no damage and 285 cannot miss. [pp] is nullable for the same kind
  * of reason, and [shortEffect] because upstream has written none for 93 of the Generation VIII and
  * IX moves -- a hole the screen shows as absent rather than filling with prose it invented.
+ *
+ * [statChanges] sits beside [meta] rather than inside it, which is upstream's own shape and matters
+ * here for a concrete reason: fifteen moves have stat changes and no meta row at all. Nesting them
+ * would drop the fact that Trailblaze raises Speed.
  */
 @Serializable
 data class MoveJson(
@@ -115,6 +119,50 @@ data class MoveJson(
     val effectChance: Int?,
     val shortEffect: String?,
     val effect: String?,
+    val meta: MoveMetaJson?,
+    // Stat stages the move moves, keyed by stat slug and signed: {"attack": -1}. Empty for the 745
+    // moves that move none, so a screen can ask the map rather than ask whether there is one.
+    val statChanges: Map<String, Int>,
+)
+
+/**
+ * The mechanical detail behind a move's prose -- how many times it hits, what it inflicts, how much
+ * it drains. Upstream's `move_meta`, and null for the 92 Generation VIII and IX moves it has not
+ * filled in yet.
+ *
+ * **A number here is null rather than 0 when there is nothing to say.** Upstream writes 0 for "no
+ * drain", "no flinch chance" and "normal crit rate" alike; carrying that through would make every
+ * reader re-derive which zeroes are facts.
+ *
+ * [ailmentChance] is the trap that rule exists for. Thirty-six moves name an ailment and store a
+ * chance of 0, which means *always* -- Thunder Wave does not paralyse 0% of the time. It is null
+ * here, so null beside a non-null [ailment] reads as certainty. [statChance] says the same about
+ * [MoveJson.statChanges]: Growl always lowers Attack.
+ *
+ * [drain] and [healing] are signed and the sign is the meaning. Drain is a share of the damage
+ * dealt, negative for recoil; healing is a share of the user's own maximum HP, negative for the two
+ * moves that cost HP to use.
+ */
+@Serializable
+data class MoveMetaJson(
+    // Upstream's own fourteen-way split -- "damage", "ailment", "net-good-stats", "damage-lower",
+    // "ohko", "unique" and eight more. The one classification axis here that was not invented; see
+    // DECISIONS.md on the ability categories that were.
+    val category: String,
+    // "burn", "paralysis", "confusion" and eighteen more. "unknown" for the four whose ailment
+    // genuinely varies: Tri Attack picks one of three.
+    val ailment: String?,
+    val ailmentChance: Int?,
+    val minHits: Int?,
+    val maxHits: Int?,
+    val minTurns: Int?,
+    val maxTurns: Int?,
+    val drain: Int?,
+    val healing: Int?,
+    // Stages above the normal critical-hit rate. 6 is the four moves that always crit.
+    val critRate: Int?,
+    val flinchChance: Int?,
+    val statChance: Int?,
 )
 
 @Serializable

@@ -102,7 +102,22 @@ fun main(args: Array<String>) {
                 effectChance = entry.effectChance?.toLong(),
                 shortEffect = entry.shortEffect,
                 effect = entry.effect,
+                category = entry.meta?.category,
+                ailment = entry.meta?.ailment,
+                ailmentChance = entry.meta?.ailmentChance?.toLong(),
+                minHits = entry.meta?.minHits?.toLong(),
+                maxHits = entry.meta?.maxHits?.toLong(),
+                minTurns = entry.meta?.minTurns?.toLong(),
+                maxTurns = entry.meta?.maxTurns?.toLong(),
+                drain = entry.meta?.drain?.toLong(),
+                healing = entry.meta?.healing?.toLong(),
+                critRate = entry.meta?.critRate?.toLong(),
+                flinchChance = entry.meta?.flinchChance?.toLong(),
+                statChance = entry.meta?.statChance?.toLong(),
             )
+            entry.statChanges.forEach { (stat, change) ->
+                database.moveQueries.insertMoveStatChange(entry.slug, stat, change.toLong())
+            }
         }
 
         variants.forEach { entry ->
