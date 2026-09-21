@@ -1179,3 +1179,10 @@ move has one without a meta row — and in 211 of its 266 cases it is the same n
 chance beside it. The other 55 are a flat `100` attached to nothing in particular. It stays for now,
 because removing a shipped column is its own change; it should go when something first has to choose
 between the two.
+
+**The move flags are not here yet, and they are the other half of the abilities.** Upstream tags each
+move with up to six — `contact`, `punch`, `sound`, `bite`, `powder`, `dance` and fifteen more — and
+`contact` is what makes "when hit by a move that makes contact, may paralyse the attacker" answerable
+from the moves side. They live only in the CSVs and not on any endpoint, which is #10's pinned SHA
+paying for itself. Held back because two of the 21 are noise on 64% of moves and 69 Generation IX
+moves are untagged, and both want deciding rather than defaulting. See #66.
