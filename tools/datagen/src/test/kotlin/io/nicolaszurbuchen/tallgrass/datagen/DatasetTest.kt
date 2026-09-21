@@ -29,7 +29,7 @@ class DatasetTest {
     private val moves by lazy { json.decodeFromString<List<MoveJson>>(dataDir.resolve("moves.json").readText()) }
 
     private val tagOverrides by lazy {
-        json.decodeFromString<Map<String, List<AbilityTag>>>(dataDir.resolve("ability-tags.json").readText())
+        json.decodeFromString<Map<String, List<AbilityTag>>>(dataDir.resolve("ability-tag-overrides.json").readText())
     }
 
     @Test
@@ -379,7 +379,7 @@ class DatasetTest {
         val known = abilities.map { it.slug }.toSet()
         val unknown = tagOverrides.keys.filterNot { it in known }
 
-        assertTrue(unknown.isEmpty(), "ability-tags.json names abilities that do not exist: $unknown")
+        assertTrue(unknown.isEmpty(), "ability-tag-overrides.json names abilities that do not exist: $unknown")
     }
 
     @Test

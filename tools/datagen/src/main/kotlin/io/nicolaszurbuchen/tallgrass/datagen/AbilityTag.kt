@@ -72,7 +72,7 @@ enum class AbilityTrigger {
  * facts about one ability produce two tags rather than a contest one of them loses.
  *
  * The cost is the opposite failure: a loose pattern over-tags rather than mis-tags. Both are fixed
- * the same way, by `data/ability-tags.json`, which replaces an ability's list outright.
+ * the same way, by `data/ability-tag-overrides.json`, which replaces an ability's list outright.
  */
 fun classifyAbility(shortEffect: String): List<AbilityTag> =
     TAG_RULES.filter { (_, pattern) -> pattern.containsMatchIn(shortEffect) }.map { it.first }

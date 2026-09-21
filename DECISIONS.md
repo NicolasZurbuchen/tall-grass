@@ -1089,7 +1089,7 @@ Infiltrator. "Which abilities change how my moves work" is a question a player a
 on the list answered it.
 
 The rules are a keyword pass over prose written for another purpose and are **expected to be wrong
-about some of the 314**. What makes that acceptable is `data/ability-tags.json`: a human owns it, it
+about some of the 314**. What makes that acceptable is `data/ability-tag-overrides.json`: a human owns it, it
 replaces an ability's list outright, and the generator reads it and never writes it. #27 requires a
 hand-fixed answer to survive a regeneration, and a generator that rewrote the file wholesale would eat
 it on the next SHA bump. Two tests guard it from both sides — an override naming an ability that does

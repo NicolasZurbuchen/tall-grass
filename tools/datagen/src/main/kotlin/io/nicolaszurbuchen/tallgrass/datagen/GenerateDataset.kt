@@ -72,16 +72,16 @@ fun main(args: Array<String>) {
 /**
  * The hand-authored corrections, which this program reads and never writes.
  *
- * #27 requires that a fixed category stay fixed, and a generator that rewrites `abilities.json`
+ * #27 requires that a hand-fixed answer stay fixed, and a generator that rewrites `abilities.json`
  * wholesale would eat the fix on the next SHA bump. Keeping the human's input in its own file means
  * the classifier's output stays pure and fully regenerated -- so a rerun with no upstream change
  * produces an empty diff -- while a correction reads as its own line rather than as a hunk inside
  * generated output.
  *
- * DECISIONS.md, An ability's category is classified, overridden by hand, and committed
+ * DECISIONS.md, An ability carries every tag that is true of it, not one category
  */
 private fun readTagOverrides(datasetDir: File): Map<String, List<AbilityTag>> {
-    val file = datasetDir.resolve("ability-tags.json")
+    val file = datasetDir.resolve("ability-tag-overrides.json")
     if (!file.exists()) return emptyMap()
 
     return json.decodeFromString<Map<String, List<AbilityTag>>>(file.readText())
