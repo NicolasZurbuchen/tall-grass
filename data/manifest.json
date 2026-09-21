@@ -1,10 +1,11 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 5,
   "sourceSha": "4b82c204ddd19ecb8eda2ea044ccb59e222b721c",
   "speciesCount": 1025,
   "variantCount": 1385,
   "listedVariantCount": 1025,
   "typeCount": 18,
   "abilityCount": 314,
-  "moveCount": 919
+  "moveCount": 919,
+  "learnerCount": 62777
 }

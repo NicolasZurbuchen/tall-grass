@@ -27,6 +27,7 @@ class DatasetTest {
     private val types by lazy { json.decodeFromString<TypeChartJson>(dataDir.resolve("types.json").readText()) }
     private val abilities by lazy { json.decodeFromString<List<AbilityJson>>(dataDir.resolve("abilities.json").readText()) }
     private val moves by lazy { json.decodeFromString<List<MoveJson>>(dataDir.resolve("moves.json").readText()) }
+    private val learnset by lazy { json.decodeFromString<List<LearnsetJson>>(dataDir.resolve("learnset.json").readText()) }
 
     @Test
     fun manifest_matchesTheFilesItDescribes() {
@@ -36,6 +37,7 @@ class DatasetTest {
         assertEquals(manifest.typeCount, types.types.size)
         assertEquals(manifest.abilityCount, abilities.size)
         assertEquals(manifest.moveCount, moves.size)
+        assertEquals(manifest.learnerCount, learnset.sumOf { it.learnedBy.size })
     }
 
     @Test
@@ -354,9 +356,6 @@ class DatasetTest {
         assertEquals(35, tackle.pp)
         assertEquals(0, tackle.priority)
 
-        // The percentage the prose deliberately leaves out: "Has a chance to burn the target."
-        assertEquals(10, moves.single { it.slug == "fire-punch" }.effectChance)
-
         // Priority is signed, and a move that always goes last is the case a non-negative read would
         // silently flatten.
         assertTrue(moves.any { it.priority > 0 } && moves.any { it.priority < 0 })
@@ -458,6 +457,89 @@ class DatasetTest {
         assertEquals(
             listOf("attack", "defense", "special-attack", "special-defense", "speed"),
             moves.single { it.slug == "ancient-power" }.statChanges.keys.toList(),
+        )
+    }
+
+    // endregion
+
+    // region learnset
+
+    @Test
+    fun learnset_coversEveryMoveAndNamesOnlyKnownPokemon() {
+        assertEquals(moves.size, learnset.size, "one entry per move, empty or not")
+        assertEquals(moves.map { it.slug }, learnset.map { it.slug })
+
+        val variantSlugs = variants.map { it.slug }.toSet()
+        val dangling = learnset.flatMap { it.learnedBy }.map { it.variant }.filterNot { it in variantSlugs }.distinct()
+
+        assertTrue(dangling.isEmpty(), "Learners naming a variant that is not in the dataset: $dangling")
+    }
+
+    /**
+     * **The regression this exists for cost Charizard every move it has.**
+     *
+     * Version group 32 is Pokemon Champions and every row in it is `train`, which is move mastery
+     * rather than a way of learning anything. Read as a Pokemon's newest appearance *before* the
+     * methods are filtered, it leaves 319 Pokemon with an empty learnset — and an empty list looks
+     * exactly like a Pokemon that genuinely learns nothing.
+     */
+    @Test
+    fun learnset_readsTheNewestGameThatTeachesRatherThanTheNewestGame() {
+        val charizard =
+            learnset.single { it.slug == "flamethrower" }.learnedBy.singleOrNull { it.variant == "charizard" }
+
+        assertEquals("level-up", charizard?.method)
+        assertEquals(46, charizard?.level)
+    }
+
+    @Test
+    fun learnset_holdsOneRowPerPokemonAndMove() {
+        // A move that is both a level-up move and a TM is one fact on a card, and upstream files it
+        // twice. Two rows would draw the Pokemon twice in the same list.
+        val duplicated =
+            learnset.flatMap { entry -> entry.learnedBy.map { entry.slug to it.variant } }
+                .groupingBy { it }
+                .eachCount()
+                .filterValues { it > 1 }
+
+        assertTrue(duplicated.isEmpty(), "A Pokemon listed twice for one move: $duplicated")
+        assertEquals(62777, learnset.sumOf { it.learnedBy.size })
+    }
+
+    @Test
+    fun learnset_putsALevelOnlyWhereALevelMeansSomething() {
+        // Upstream writes 0 in this column for every machine, egg and tutor row, and for the 160
+        // level-up moves a Pokemon knows without being taught. Carried through, a TM would read as
+        // being learned at level 0.
+        val levelled = learnset.flatMap { it.learnedBy }.filter { it.level != null }
+
+        assertTrue(levelled.all { it.method == "level-up" }, "A level on something that is not level-up")
+        assertTrue(levelled.all { (it.level ?: 0) > 0 })
+    }
+
+    @Test
+    fun learnset_isEmptyOnlyForMovesNobodyIsTaught() {
+        // Z-moves, Max moves and the handful that only exist mid-battle. An empty list here is a fact
+        // rather than a join that missed.
+        assertEquals(106, learnset.count { it.learnedBy.isEmpty() })
+        assertTrue(learnset.single { it.slug == "assist" }.learnedBy.isEmpty())
+        assertTrue(learnset.single { it.slug == "tackle" }.learnedBy.isNotEmpty())
+    }
+
+    @Test
+    fun everyPokemonWithNoLearnset_isAFormThatBorrowsOne() {
+        // A Mega and a Gigantamax learn what their base form learns and upstream does not repeat the
+        // rows. What would be wrong is a card in the grid with nothing behind it.
+        val taught = learnset.flatMap { it.learnedBy }.map { it.variant }.toSet()
+        val untaught = variants.filterNot { it.slug in taught }
+
+        assertTrue(
+            untaught.none { it.listedInDex },
+            "Dex cards with no moves: ${untaught.filter { it.listedInDex }.map { it.slug }}",
+        )
+        assertEquals(
+            setOf(FormKind.MEGA, FormKind.GIGANTAMAX, FormKind.ALTERNATE),
+            untaught.map { it.formKind }.toSet(),
         )
     }
 

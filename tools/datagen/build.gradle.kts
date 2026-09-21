@@ -40,6 +40,11 @@ tasks.test {
 val datasetDir = rootProject.file("data")
 val databaseFile = rootProject.file("shared/src/commonMain/composeResources/files/pokedex.db")
 
+// Shipped beside the database and read before it is opened: it is how a running app tells the
+// dataset it copied out on first run from the one in the package it is now running. See
+// DECISIONS.md on the bundled dataset being replaced rather than migrated.
+val datasetStampFile = rootProject.file("shared/src/commonMain/composeResources/files/pokedex.stamp")
+
 // Fetches the pinned upstream CSVs and rewrites `data/*.json`.
 //
 // Deliberately separate from buildPokedexDatabase and deliberately not wired into `build`: it
@@ -65,6 +70,7 @@ tasks.register<JavaExec>("buildPokedexDatabase") {
 
     inputs.dir(datasetDir).withPropertyName("dataset")
     outputs.file(databaseFile).withPropertyName("database")
+    outputs.file(datasetStampFile).withPropertyName("stamp")
 
-    args(datasetDir.absolutePath, databaseFile.absolutePath)
+    args(datasetDir.absolutePath, databaseFile.absolutePath, datasetStampFile.absolutePath)
 }

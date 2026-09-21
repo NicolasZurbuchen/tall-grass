@@ -21,6 +21,7 @@ private val json = Json { ignoreUnknownKeys = false }
 fun main(args: Array<String>) {
     val datasetDir = File(args[0])
     val outputFile = File(args[1])
+    val stampFile = File(args[2])
 
     val manifest = json.decodeFromString<Manifest>(datasetDir.resolve("manifest.json").readText())
     val types = json.decodeFromString<TypeChartJson>(datasetDir.resolve("types.json").readText())
@@ -28,6 +29,7 @@ fun main(args: Array<String>) {
     val variants = json.decodeFromString<List<VariantJson>>(datasetDir.resolve("variants.json").readText())
     val abilities = json.decodeFromString<List<AbilityJson>>(datasetDir.resolve("abilities.json").readText())
     val moves = json.decodeFromString<List<MoveJson>>(datasetDir.resolve("moves.json").readText())
+    val learnset = json.decodeFromString<List<LearnsetJson>>(datasetDir.resolve("learnset.json").readText())
 
     // Rebuilt from scratch every time. This database is replaced whole-file rather than migrated, so
     // there is nothing in the previous copy worth keeping and an append would silently double rows.
@@ -99,7 +101,6 @@ fun main(args: Array<String>) {
                 pp = entry.pp?.toLong(),
                 priority = entry.priority.toLong(),
                 target = entry.target,
-                effectChance = entry.effectChance?.toLong(),
                 shortEffect = entry.shortEffect,
                 effect = entry.effect,
                 category = entry.meta?.category,
@@ -153,6 +154,20 @@ fun main(args: Array<String>) {
                 )
             }
         }
+
+        // Last, because every row here names a move and a variant and nothing in the schema says so.
+        // A foreign key would, and this database has none by design -- it is built once from files
+        // that are already consistent, and DatasetTest is where that consistency is asserted.
+        learnset.forEach { entry ->
+            entry.learnedBy.forEach { learner ->
+                database.moveQueries.insertMoveLearner(
+                    moveSlug = entry.slug,
+                    variantSlug = learner.variant,
+                    method = learner.method,
+                    level = learner.level?.toLong(),
+                )
+            }
+        }
     }
 
     // The manifest's counts are what the generator believed it wrote. Comparing them with what the
@@ -168,6 +183,7 @@ fun main(args: Array<String>) {
             typeCount = database.typeQueries.countTypes().executeAsOne().toInt(),
             abilityCount = database.abilityQueries.countAbilities().executeAsOne().toInt(),
             moveCount = database.moveQueries.countMoves().executeAsOne().toInt(),
+            learnerCount = database.moveQueries.countMoveLearners().executeAsOne().toInt(),
         )
     check(written == manifest) { "Database disagrees with the manifest.\n  manifest: $manifest\n  database: $written" }
 
@@ -185,6 +201,12 @@ fun main(args: Array<String>) {
         "pokedex.db is stamped user_version=$stamped but the schema is version ${PokedexDatabase.Schema.version}. " +
             "A driver would read that as an empty database and try to create the tables again."
     }
+
+    // **What lets a shipped app notice that its dataset has moved on.** The copy a device makes on
+    // first run is never migrated -- it is replaced whole -- and nothing in the file itself says
+    // which dataset it is: SQLite's user_version tracks the schema, so a SHA bump that adds a
+    // thousand rows leaves it unchanged. The stamp is the fact the schema version cannot carry.
+    stampFile.writeText("${manifest.schemaVersion}:${manifest.sourceSha}")
 
     driver.close()
     println("Wrote ${outputFile.name} (${outputFile.length() / 1024} KiB) from ${manifest.sourceSha.take(7)}")

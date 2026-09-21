@@ -122,4 +122,55 @@ class DetailUiMapperTest {
         )
         assertNotNull(state().copy(error = AppError.Database.NotFound).toUiModel(charizardHandoff).error)
     }
+
+    /**
+     * **The bug this exists for opened every variant on Bulbasaur.**
+     *
+     * A detail can be reached from somewhere that is not a dex list — the Learned by tab on a move
+     * hands over whichever Pokemon learns it, and only default forms are dex cards. Alolan Vulpix,
+     * every Mega and every Gigantamax therefore arrive at a carousel that does not contain them.
+     *
+     * `indexOfFirst` returned -1, `coerceAtLeast(0)` made it 0, and the pager snapped to the first
+     * card in the dex and then reported that page as a swipe. The screen became Bulbasaur.
+     */
+    @Test
+    fun toUiModel_doesNotFallToTheFirstCardWhenTheActiveOneIsNotInTheList() {
+        val entries = listOf(bulbasaurEntry, charizardEntry)
+        val state =
+            DetailState(
+                entryVariantSlug = "charizard-mega-x",
+                query = DexQuery.All,
+                isLoading = false,
+                entries = entries,
+                details = mapOf("charizard-mega-x" to charizardDetail),
+                activeVariantSlug = "charizard-mega-x",
+            )
+
+        val ui = state.toUiModel(charizardHandoff)
+
+        assertEquals(0, ui.activeIndex)
+        assertEquals(1, ui.heroes.size, "a card with no list around it has no neighbours")
+        assertEquals("charizard-mega-x", ui.heroes.single().slug)
+    }
+
+    @Test
+    fun toUiModel_stillWalksTheListWhenTheActiveCardIsInIt() {
+        // The ordinary path, pinned beside the one above so the fix cannot be read as "never use the
+        // carousel".
+        val entries = listOf(bulbasaurEntry, charizardEntry)
+        val state =
+            DetailState(
+                entryVariantSlug = "charizard",
+                query = DexQuery.All,
+                isLoading = false,
+                entries = entries,
+                details = mapOf("charizard" to charizardDetail),
+                activeVariantSlug = "charizard",
+            )
+
+        val ui = state.toUiModel(charizardHandoff)
+
+        assertEquals(1, ui.activeIndex)
+        assertEquals(listOf("bulbasaur", "charizard"), ui.heroes.map { it.slug })
+    }
 }

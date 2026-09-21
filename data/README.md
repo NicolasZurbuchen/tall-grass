@@ -19,6 +19,7 @@ Editing any of them is pointless — the next run of `generateDataset` overwrite
 | `types.json` | the 18 types and the effectiveness chart |
 | `abilities.json` | 314 abilities |
 | `moves.json` | 919 moves |
+| `learnset.json` | 62,777 rows saying which Pokemon learn which move |
 
 There was briefly a hand-authored `ability-tag-overrides.json` holding corrections to a generated
 classification. Both are gone: see `DECISIONS.md § Rejected for now: a classification for abilities`
@@ -31,7 +32,7 @@ and #65. If a hand-authored file comes back, this section is where it gets calle
 ./gradlew :tools:datagen:generateDataset
 ```
 
-Reaches the network, reads the CSVs pinned in `Upstream.kt`, and rewrites the six generated files.
+Reaches the network, reads the CSVs pinned in `Upstream.kt`, and rewrites the seven generated files.
 **Deliberately not wired into `build`** — it runs when a human decides to move the pin, never as a
 side effect of compiling the app. Same pin in, byte-identical files out, which is what makes a
 changed line mean a changed fact rather than churn.
@@ -43,3 +44,10 @@ changed line mean a changed fact rather than churn.
 Builds `pokedex.db` from these files, offline. It writes through the app's own `.sq` schema rather
 than hand-written SQL, so a column the app queries and the generator forgets to fill cannot exist.
 It also checks the row counts back against `manifest.json` before declaring success.
+
+It writes a second file beside it, `pokedex.stamp`, holding the schema version and the pinned SHA.
+That is what lets an installed app notice its dataset has moved on: the copy a device makes on first
+run is replaced rather than migrated, and nothing in the database itself says which dataset it is —
+SQLite's `user_version` tracks the schema, so a pin bump that rewrites every row leaves it unchanged.
+Both files are gitignored. See `DECISIONS.md § The bundled dataset is replaced when it changes, not
+only when it is missing`.

@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
@@ -76,4 +77,27 @@ internal val charizardCostume =
         formLabel = "Party Hat",
         formKind = FormKind.COSMETIC,
         isDefault = false,
+    )
+
+/** Two dex cards, which is the shortest list that can have a wrong answer at index 0. */
+internal val bulbasaurEntry =
+    DexEntry(
+        slug = "bulbasaur",
+        dexNumber = 1,
+        name = "Bulbasaur",
+        formLabel = null,
+        artworkUrl = "https://example.invalid/1.png",
+        primaryType = PokemonType.GRASS,
+        secondaryType = PokemonType.POISON,
+    )
+
+internal val charizardEntry =
+    DexEntry(
+        slug = "charizard",
+        dexNumber = 6,
+        name = "Charizard",
+        formLabel = null,
+        artworkUrl = "https://example.invalid/6.png",
+        primaryType = PokemonType.FIRE,
+        secondaryType = PokemonType.FLYING,
     )
