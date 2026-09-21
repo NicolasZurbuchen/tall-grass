@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppPokeball
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
@@ -38,7 +39,11 @@ fun HomeScreen(
         // Outside the system bars rather than inside them: the corner it is cropped by is the
         // screen's, so it runs up behind the status bar the way the tint on the detail screen does.
         AppPokeball(
-            color = MaterialTheme.appColors.borderSubtle,
+            // One small step off the background, towards whichever end of the scale the text is on
+            // -- which is darker in light and lighter in dark. No token says that: `surface` is a
+            // step up in both, so in light it is a white disc on a grey ground rather than a
+            // watermark, and `borderSubtle` is a step down in both and reads as a grey disc in dark.
+            color = lerp(MaterialTheme.appColors.background, MaterialTheme.appColors.textPrimary, CORNER_BALL_TINT),
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
@@ -90,3 +95,6 @@ private const val HOME_GRID_COLUMNS = 2
 private val CORNER_BALL_SIZE = 220.dp
 private val CORNER_BALL_CROP_X = 72.dp
 private val CORNER_BALL_CROP_Y = (-84).dp
+
+// Just enough to be seen in both themes. Anything more and it stops being a watermark.
+private const val CORNER_BALL_TINT = 0.08f

@@ -430,9 +430,10 @@ private val SHEET_ARC = 32.dp
 // the drawing: at a tenth the smaller ones floated clear of the sheet altogether.
 private val ARTWORK_OVERLAP = ARTWORK_SIZE * 0.33f
 
-// Smaller than the artwork rather than the same size, so the Pokemon stands over the band and not
-// inside the ring, which is what makes the two read as two things.
-private val HERO_BALL_SIZE = ARTWORK_SIZE * 0.85f
+// Wider than the artwork, because the artwork is what stands in front of it: at the artwork's own
+// size a Pokemon that fills its frame -- which most of them do -- hides the ball completely and
+// leaves an arc showing over one shoulder.
+private val HERO_BALL_SIZE = ARTWORK_SIZE * 1.2f
 
 // Heavier than the watermark on a card, because this one is a third covered by the sheet and has no
 // text on it to compete with.
