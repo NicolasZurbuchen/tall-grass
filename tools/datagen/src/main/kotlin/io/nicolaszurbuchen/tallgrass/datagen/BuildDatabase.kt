@@ -82,11 +82,9 @@ fun main(args: Array<String>) {
                 slug = entry.slug,
                 name = entry.name,
                 generation = entry.generation.toLong(),
-                trigger = entry.trigger.name,
                 shortEffect = entry.shortEffect,
                 effect = entry.effect,
             )
-            entry.tags.forEach { tag -> database.abilityQueries.insertAbilityTag(entry.slug, tag.name) }
         }
 
         moves.forEach { entry ->

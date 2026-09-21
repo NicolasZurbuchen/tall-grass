@@ -1048,57 +1048,50 @@ gaps wide enough to be told apart at a glance are around 110° and 330°.
 about seventy tall there is no third thing to put on it. An `ImageVector` column on the enum that
 nothing reads is worse than no column.
 
-### An ability carries every tag that is true of it, not one category
+### Rejected for now: a classification for abilities
 
-Upstream has no category field for abilities — only a generation, an effect and a list of holders —
-so this is original work. #27 settled that it should exist; the shape is settled here.
+#27 asks for a category on every ability, as a scanning axis for a list of 314. Upstream has no such
+field, so it has to be invented. **Three shapes were built, measured against the real data, and
+rejected.** The dataset ships with no category, no tags and no trigger; the list filters by
+generation until there is a better answer. See #65.
 
-**It was a single category first, and that was wrong.** Sixteen tags now, and an ability carries as
-many as apply: Chlorophyll is `WEATHER` *and* `STATS_OFFENSE`, Dry Skin is four things, Water Bubble
-is four different things.
+This is recorded at length because the next attempt should start from these failures rather than
+rediscover them, and because each one looked right until it met real abilities.
 
-A single category needs a precedence order to resolve an ability that does two things, and a
-precedence order makes that choice **consistently, which is not the same as making it correctly**.
-Four of five sampled failures lost a fact that was true — Chlorophyll's Speed, Aura Guard's
-mitigation, Anger Shell's second direction, Armor Tail's turn control — and the fifth, Bad Dreams,
-fell into the residue bucket because no single label fitted. The model was lossy by construction, and
-no amount of rule-tuning reaches that.
+**One category, resolved by a precedence order.** Nine members, first match wins. It fails because
+abilities do several things at once and one label can only keep one: Chlorophyll is weather *and*
+speed, Aura Guard is contact *and* mitigation, Anger Shell moves stats in both directions. A
+precedence order makes that choice **consistently, which is not the same as correctly** — and
+consistency is what made it look rigorous. Four of five sampled failures discarded a fact that was
+true.
 
-**When an ability fires is a separate field.** `AbilityTrigger` is single-valued, and the asymmetry is
-a fact about the two questions rather than a simplification: *what does it do* genuinely has several
-answers and *when does it fire* mostly has one. The tell that they were different things was
-Electromorphosis. Asked whether it is "contact or damage dealt", the honest answer is that contact is
-*when* and damage is *what*, and a list holding both is two taxonomies wearing one name.
+**Multi-valued tags, sixteen of them.** Fixes the lossiness — Chlorophyll carries both — but the
+*list* was never good. Sixteen is too many to scan, `UTILITY` and later `MOVES` were residues with a
+tag's name on them, and the boundaries stayed arguable: `IMMUNITY` against `DAMAGE_TAKEN` is a
+question about completeness that upstream's prose does not reliably answer, and the three-way `STATS`
+split needs to know *whose* stat moved, which "decreases their accuracy" does not say.
 
-**`IMMUNITY` is about completeness, not about subject.** Levitate evades Ground entirely and Thick Fat
-halves it, so one is `IMMUNITY` and the other `DAMAGE_TAKEN`. What the immunity is *to* comes from the
-tag beside it: Limber is `IMMUNITY STATUS`, Clear Body is `IMMUNITY STATS`.
+**A single-valued trigger beside the tags.** The most tractable of the three and still wrong, in two
+ways that are worth naming:
 
-**The three stat tags are cut by who the change helps, not by which way the number moved.** Lowering
-an opponent's Attack is defensive. This is the same cut that failed as a single category, and it
-works here for exactly one reason: Anger Shell no longer has to choose.
+- **It conflates a moment with a condition.** Bad Dreams is `END_OF_TURN`, but it only does anything
+  if the opponent is asleep — the field has room for when it is evaluated or for what must be true,
+  not both. The enum mixed the two kinds outright: `ON_ENTRY` and `END_OF_TURN` are moments, while
+  `LOW_HP` is a condition that is true continuously.
+- **The names do not say whose event it is.** `ON_KO` meant *I knocked something out* and `ON_FAINT`
+  meant *I fainted*, and nothing in either name carries that. A test was written to pin the
+  distinction, which is the evidence rather than the fix: a name that needs a test to explain it has
+  already failed.
 
-**Rejected: an `OTHER` tag.** Five abilities carry none. Heavy Metal and Light Metal change the
-bearer's weight, Anticipation and Forewarn report what the opponent has, and Commander puts Tatsugiri
-inside a Dondozo; none of those is a reason to pick an ability. A card with no chip is the honest
-rendering, and a bucket nobody would ever filter by is not.
+What the three attempts have in common is that each was designed against the *data* and validated by
+a distribution — no bucket too large, none empty — when the thing that decides whether a taxonomy is
+good is the **question a player is asking**, and there was no screen yet to test that against. The
+distribution looked healthy every time.
 
-**`MOVES` was added after the first run.** Twenty abilities finished with no tag at all and turned out
-to be one cluster rather than a residue: No Guard, Scrappy, Serene Grace, Normalize, Pressure,
-Infiltrator. "Which abilities change how my moves work" is a question a player asks, and nothing else
-on the list answered it.
-
-The rules are a keyword pass over prose written for another purpose and are **expected to be wrong
-about some of the 314**. What makes that acceptable is `data/ability-tag-overrides.json`: a human owns it, it
-replaces an ability's list outright, and the generator reads it and never writes it. #27 requires a
-hand-fixed answer to survive a regeneration, and a generator that rewrote the file wholesale would eat
-it on the next SHA bump. Two tests guard it from both sides — an override naming an ability that does
-not exist, and an override that did not take.
-
-One bug is worth recording because it cost a single character. A trailing `\b` after the stem `poison`
-matches the noun and not "poisoning", and upstream writes the participle for every contact ability in
-the game. Static, Flame Body, Poison Point and Cute Charm all silently lost their status tag, and the
-resulting count looked plausible enough not to question.
+**The dataset ships without it rather than with a bad one.** `abilities.json` is committed and the
+database is generated from it; a classification baked in now is one every future row inherits and one
+that a screen would be built around. Shipping the 314 abilities with their names and both effect
+fields costs nothing and leaves the axis open.
 
 ### The dataset is the main series only, decided by two tests rather than one
 

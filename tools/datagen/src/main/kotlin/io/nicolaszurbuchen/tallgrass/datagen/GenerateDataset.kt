@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
-    val abilities = buildAbilities(source, readTagOverrides(outputDir))
+    val abilities = buildAbilities(source)
     val moves = buildMoves(source)
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
@@ -55,36 +55,6 @@ fun main(args: Array<String>) {
     println("  types              ${manifest.typeCount}")
     println("  abilities          ${manifest.abilityCount}")
     println("  moves              ${manifest.moveCount}")
-
-    abilities
-        .flatMap { it.tags }
-        .groupingBy { it }
-        .eachCount()
-        .entries
-        .sortedByDescending { it.value }
-        .forEach { (tag, count) -> println("    ${tag.name.padEnd(14)} $count") }
-
-    println("  untagged           ${abilities.count { it.tags.isEmpty() }}")
-    println("  tags per ability   ${abilities.groupingBy { it.tags.size }.eachCount().toSortedMap()}")
-    println("  triggers           ${abilities.groupingBy { it.trigger }.eachCount().entries.sortedByDescending { it.value }}")
-}
-
-/**
- * The hand-authored corrections, which this program reads and never writes.
- *
- * #27 requires that a hand-fixed answer stay fixed, and a generator that rewrites `abilities.json`
- * wholesale would eat the fix on the next SHA bump. Keeping the human's input in its own file means
- * the classifier's output stays pure and fully regenerated -- so a rerun with no upstream change
- * produces an empty diff -- while a correction reads as its own line rather than as a hunk inside
- * generated output.
- *
- * DECISIONS.md, An ability carries every tag that is true of it, not one category
- */
-private fun readTagOverrides(datasetDir: File): Map<String, List<AbilityTag>> {
-    val file = datasetDir.resolve("ability-tag-overrides.json")
-    if (!file.exists()) return emptyMap()
-
-    return json.decodeFromString<Map<String, List<AbilityTag>>>(file.readText())
 }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
@@ -385,10 +355,7 @@ private fun VariantJson.sharesBattleDataWith(other: VariantJson): Boolean =
  * sixty has effect text in any language and none is on any Pokemon, so a card for Mountaineer would
  * be a name over an empty space with an empty "known by" underneath.
  */
-private fun buildAbilities(
-    source: UpstreamSource,
-    overrides: Map<String, List<AbilityTag>>,
-): List<AbilityJson> {
+private fun buildAbilities(source: UpstreamSource): List<AbilityJson> {
     val names =
         source.read("ability_names")
             .filter { it.int("local_language_id") == ENGLISH }
@@ -416,14 +383,6 @@ private fun buildAbilities(
                 slug = slug,
                 name = names[id] ?: slug,
                 generation = row.int("generation_id"),
-                // The override replaces the list outright rather than adding to it, because the two
-                // ways the classifier goes wrong are opposite -- a loose pattern over-tags and a
-                // narrow one misses -- and a merge could only fix the second.
-                // Sorted and de-duplicated here rather than at either source, so a hand-written
-                // override does not have to know the enum's declaration order to produce a stable
-                // diff.
-                tags = (overrides[slug] ?: classifyAbility(shortEffect)).distinct().sortedBy { it.ordinal },
-                trigger = triggerOf(shortEffect),
                 shortEffect = shortEffect,
                 // Paragraphs, and upstream writes them with a blank line between. Collapsed to one
                 // newline so the screen decides the spacing rather than inheriting a wiki's.

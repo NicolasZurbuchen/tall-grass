@@ -76,16 +76,16 @@ data class AbilityRefJson(
  * card shows; [effect] is the paragraph the detail screen shows under it, and the two are written
  * for those two jobs rather than one being a truncation of the other.
  *
- * [tags] is every one the classifier matched, unless `ability-tags.json` replaces the list.
- * [trigger] is single-valued because when an ability fires mostly has one answer.
+ * **There is no category, tag or trigger field here**, and #27 asks for one. Three attempts at it are
+ * recorded in `DECISIONS.md § Rejected for now: a classification for abilities`; the short version is
+ * that upstream has no such field, and the taxonomies invented to replace it were not good enough to
+ * commit to a dataset this hard to change. See #65.
  */
 @Serializable
 data class AbilityJson(
     val slug: String,
     val name: String,
     val generation: Int,
-    val tags: List<AbilityTag>,
-    val trigger: AbilityTrigger,
     val shortEffect: String,
     val effect: String,
 )

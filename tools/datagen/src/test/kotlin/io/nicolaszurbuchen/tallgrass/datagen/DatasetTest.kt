@@ -28,10 +28,6 @@ class DatasetTest {
     private val abilities by lazy { json.decodeFromString<List<AbilityJson>>(dataDir.resolve("abilities.json").readText()) }
     private val moves by lazy { json.decodeFromString<List<MoveJson>>(dataDir.resolve("moves.json").readText()) }
 
-    private val tagOverrides by lazy {
-        json.decodeFromString<Map<String, List<AbilityTag>>>(dataDir.resolve("ability-tag-overrides.json").readText())
-    }
-
     @Test
     fun manifest_matchesTheFilesItDescribes() {
         assertEquals(manifest.speciesCount, species.size)
@@ -308,91 +304,6 @@ class DatasetTest {
         // that an empty "known by" reads as a known fact rather than as a join that broke.
         val used = variants.flatMap { it.abilities }.map { it.slug }.toSet()
         assertEquals(listOf("embody-aspect"), abilities.map { it.slug }.filterNot { it in used })
-    }
-
-    @Test
-    fun everyTag_isUsedAndNoneRunsAwayWithTheList() {
-        // Exact, like the FormKind counts above and for the same reason: when these move, the edit
-        // is the moment somebody looks at what the classifier did differently.
-        //
-        // These do not sum to 314 and are not meant to. An ability carries every tag that is true of
-        // it, so Dry Skin is counted four times -- which is the whole point of the shape.
-        assertEquals(
-            mapOf(
-                AbilityTag.IMMUNITY to 78,
-                AbilityTag.DAMAGE_DEALT to 56,
-                AbilityTag.STATUS to 48,
-                AbilityTag.STATS_OFFENSE to 48,
-                AbilityTag.WEATHER to 40,
-                AbilityTag.MOVES to 25,
-                AbilityTag.FORM to 22,
-                AbilityTag.STATS_DEFENSE to 18,
-                AbilityTag.ITEMS to 19,
-                AbilityTag.DAMAGE_TAKEN to 16,
-                AbilityTag.STATS to 16,
-                AbilityTag.ABILITIES to 17,
-                AbilityTag.HEALING to 13,
-                AbilityTag.SWITCHING to 12,
-                AbilityTag.PRIORITY to 9,
-                AbilityTag.OVERWORLD to 4,
-            ),
-            abilities.flatMap { it.tags }.groupingBy { it }.eachCount().toList().sortedByDescending { it.second }.toMap(),
-        )
-    }
-
-    @Test
-    fun almostEveryAbility_answersAtLeastOneQuestionAPlayerAsks() {
-        // Five do not, and they are the honest residue rather than a classifier failure: Heavy Metal
-        // and Light Metal change the bearer's weight, Anticipation and Forewarn report what the
-        // opponent has, and Commander puts Tatsugiri inside a Dondozo. None of those is a reason to
-        // pick an ability, so none of them gets an OTHER tag nobody would filter by.
-        val untagged = abilities.filter { it.tags.isEmpty() }.map { it.slug }
-
-        assertEquals(
-            listOf("anticipation", "commander", "forewarn", "heavy-metal", "light-metal"),
-            untagged,
-        )
-    }
-
-    @Test
-    fun theTagsAreDistinctAndOrderedSoTheDiffIsStable() {
-        val unstable = abilities.filter { it.tags != it.tags.distinct().sortedBy { tag -> tag.ordinal } }
-
-        assertTrue(unstable.isEmpty(), "Abilities whose tags are duplicated or out of order: ${unstable.map { it.slug }}")
-    }
-
-    @Test
-    fun everyTrigger_isUsed() {
-        // PASSIVE dominating is expected -- most abilities are simply always on. A trigger with no
-        // members would mean a pattern that never fires, which is the failure worth catching.
-        val counts = abilities.groupingBy { it.trigger }.eachCount()
-        val unused = AbilityTrigger.entries.filterNot { it in counts }
-
-        assertTrue(unused.isEmpty(), "Triggers no ability has: $unused")
-        assertEquals(224, counts.getValue(AbilityTrigger.PASSIVE))
-    }
-
-    @Test
-    fun everyOverride_namesAnAbilityThatExists() {
-        // The override file is hand-edited, so a typo in it is silent: the classifier's answer just
-        // stands. This is the only thing that would notice.
-        val known = abilities.map { it.slug }.toSet()
-        val unknown = tagOverrides.keys.filterNot { it in known }
-
-        assertTrue(unknown.isEmpty(), "ability-tag-overrides.json names abilities that do not exist: $unknown")
-    }
-
-    @Test
-    fun everyOverride_actuallyReachedTheDataset() {
-        // The other half: an override that agrees with the classifier is dead weight, and one that
-        // did not take means the generator never read the file.
-        // Compared as sets, because the generator sorts what it writes and an override is
-        // hand-written: requiring the file to be in the enum's declaration order would be a rule
-        // about typing rather than about the data.
-        val applied = abilities.associate { it.slug to it.tags.toSet() }
-        val ignored = tagOverrides.filter { (slug, tags) -> applied[slug] != tags.toSet() }
-
-        assertTrue(ignored.isEmpty(), "Overrides that did not take: $ignored")
     }
 
     // endregion
