@@ -142,19 +142,34 @@ fun DetailScreen(
             .collect { page -> state.heroes.getOrNull(page)?.let { onEntrySelected(it.slug) } }
     }
 
+    // True while a tab tap is animating the pager, which is the one time the pages it crosses are
+    // not somewhere the reader has asked to be. See the two effects below.
+    var isAnimatingTab by remember { mutableStateOf(false) }
+
     // Tapping a tab moves the pager, and only when the pager is not already there: a swipe reports
     // its new page before it settles, and animating to the page it just reached fights the finger.
     LaunchedEffect(tab) {
         if (tab != null && tabPagerState.currentPage != tab.ordinal) {
-            tabPagerState.animateScrollToPage(tab.ordinal)
+            isAnimatingTab = true
+            try {
+                tabPagerState.animateScrollToPage(tab.ordinal)
+            } finally {
+                isAnimatingTab = false
+            }
         }
     }
 
     // Swiping moves the tab row. `currentPage` rather than `settledPage`, so the underline crosses
     // with the finger at the halfway point instead of waiting for the animation to finish.
+    //
+    // **Silent while the tap above is animating**, which is what makes a tap across two tabs work.
+    // About to Moves crosses Base Stats, `currentPage` reports that crossing halfway through, and
+    // reporting it selected the middle tab -- which changed `tab`, restarted the effect above and
+    // cancelled the animation it was still running. The pager stopped on Base Stats, and the only
+    // taps that worked were the ones between neighbours, which cross nothing.
     LaunchedEffect(tabPagerState) {
         snapshotFlow { tabPagerState.currentPage }
-            .collect { page -> onTabSelected(DetailTabUiModel.entries[page]) }
+            .collect { page -> if (!isAnimatingTab) onTabSelected(DetailTabUiModel.entries[page]) }
     }
 
     val density = LocalDensity.current
