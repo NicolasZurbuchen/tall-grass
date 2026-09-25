@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
@@ -50,10 +51,14 @@ import tallgrass.shared.generated.resources.pokedex_detail_weight
  * exists to keep. See #5 and `AboutUiModel`.
  *
  * Abilities are deliberately absent — they live in the Moves tab. See #27.
+ *
+ * [tint] is the Pokemon's first type, which is also the hero's colour: the headings carry it so the
+ * sheet reads as part of the screen above it rather than as a white page that arrived separately.
  */
 @Composable
 fun AboutTab(
     about: AboutUiModel,
+    tint: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -70,12 +75,12 @@ fun AboutTab(
             Measurement(label = Res.string.pokedex_detail_weight, value = about.weightText, modifier = Modifier.weight(1f))
         }
 
-        SectionTitle(title = Res.string.pokedex_detail_breeding)
+        SectionTitle(title = Res.string.pokedex_detail_breeding, tint = tint)
         GenderRow(gender = about.gender)
         KeyValueRow(label = Res.string.pokedex_detail_egg_groups, value = about.eggGroupsText)
         KeyValueRow(label = Res.string.pokedex_detail_egg_cycle, value = about.eggCycleText)
 
-        SectionTitle(title = Res.string.pokedex_detail_training)
+        SectionTitle(title = Res.string.pokedex_detail_training, tint = tint)
 
         // Absent for the 49 forms upstream has not costed yet -- every one of them a Legends Z-A
         // Mega. The rows go rather than showing a dash, because a dash in a column of figures reads
@@ -110,12 +115,13 @@ private fun Measurement(
 @Composable
 private fun SectionTitle(
     title: StringResource,
+    tint: Color,
     modifier: Modifier = Modifier,
 ) {
     Text(
         text = stringResource(title),
         style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.appColors.textPrimary,
+        color = tint.asLabelColor(),
         modifier = modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.sm),
     )
 }

@@ -32,6 +32,7 @@ import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
@@ -62,7 +63,7 @@ fun StatsTab(
         Text(
             text = stringResource(Res.string.pokedex_detail_type_defenses),
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.appColors.textPrimary,
+            color = tint.asLabelColor(),
             modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.md),
         )
 
@@ -213,7 +214,7 @@ private fun MatchupChip(
     // The chip is its type's colour twice over: a wash of it behind, and the same hue pushed off
     // that wash in front.
     val ground = lerp(colors.surface, matchup.typeColor, GROUND_TINT)
-    val label = lerp(matchup.typeColor, if (colors.isDark) Color.White else Color.Black, LABEL_SHIFT)
+    val label = matchup.typeColor.asLabelColor()
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
@@ -233,7 +234,3 @@ private val LANE_HEIGHT = 6.dp
 // Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
 // label on top of it still has somewhere to go.
 private const val GROUND_TINT = 0.18f
-
-// How far the label moves off its own hue. The pure type colour measures 1.9:1 against a white
-// sheet, which is not a contrast ratio so much as a suggestion.
-private const val LABEL_SHIFT = 0.45f
