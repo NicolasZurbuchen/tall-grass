@@ -49,6 +49,11 @@ CREATE TABLE variantAbility (
     PRIMARY KEY (variantSlug, slot)
 );
 
+-- The primary key leads with variantSlug, which covers a Pokemon asking what it has. An ability
+-- asking who has it reads the table the other way and the key cannot answer that. Added now rather
+-- than with the table because the ability detail is its first reader.
+CREATE INDEX variantAbilityByAbility ON variantAbility(abilitySlug);
+
 countVariants:
 SELECT count(*) FROM variant;
 

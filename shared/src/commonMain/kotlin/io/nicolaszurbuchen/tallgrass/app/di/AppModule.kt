@@ -1,9 +1,11 @@
 package io.nicolaszurbuchen.tallgrass.app.di
 
 import io.nicolaszurbuchen.tallgrass.app.navigation.appNavigationModule
+import io.nicolaszurbuchen.tallgrass.core.ability.di.abilityModule
 import io.nicolaszurbuchen.tallgrass.core.move.di.moveModule
 import io.nicolaszurbuchen.tallgrass.core.pokemon.di.pokemonModule
 import io.nicolaszurbuchen.tallgrass.core.type.di.typeModule
+import io.nicolaszurbuchen.tallgrass.feature.abilities.di.abilitiesModule
 import io.nicolaszurbuchen.tallgrass.feature.moves.di.movesModule
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.di.pokedexModule
 import io.nicolaszurbuchen.tallgrass.infra.database.databaseModule
@@ -20,9 +22,11 @@ val appModule =
         infraNavigationModule,
         networkModule,
         storeModule,
+        abilityModule,
         moveModule,
         pokemonModule,
         typeModule,
+        abilitiesModule,
         movesModule,
         pokedexModule,
     )

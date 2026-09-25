@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.component.AppPokeball
+import io.nicolaszurbuchen.tallgrass.design.component.AppTabRow
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
@@ -68,7 +69,6 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.AboutTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailHeader
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailSheetSkeleton
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailTabRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.FormPillRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.HeroCarousel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.MovesTab
@@ -325,9 +325,10 @@ fun DetailScreen(
                         )
                     }
 
-                    DetailTabRow(
-                        selected = content.tab,
-                        onTabClick = onTabClick,
+                    AppTabRow(
+                        tabs = DetailTabUiModel.entries.map { it.label },
+                        selectedIndex = content.tab.ordinal,
+                        onTabClick = { index -> onTabClick(DetailTabUiModel.entries[index]) },
                         modifier =
                             Modifier
                                 .padding(horizontal = MaterialTheme.spacing.lg)

@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.component.DamageClassIcon
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
+import io.nicolaszurbuchen.tallgrass.design.component.AppTabRow
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.ShimmerPulse
@@ -65,7 +66,6 @@ import io.nicolaszurbuchen.tallgrass.design.theme.arcTopShape
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveDetailHeader
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveDetailSkeleton
-import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveDetailTabRow
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveLearnerCard
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveMechanics
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.screen.movedetail.component.MoveStats
@@ -250,9 +250,10 @@ fun MoveDetailScreen(
                 }
 
                 else -> {
-                    MoveDetailTabRow(
-                        selected = state.tab,
-                        onTabClick = onTabClick,
+                    AppTabRow(
+                        tabs = MoveDetailTabUiModel.entries.map { it.label },
+                        selectedIndex = state.tab.ordinal,
+                        onTabClick = { index -> onTabClick(MoveDetailTabUiModel.entries[index]) },
                         modifier = Modifier.padding(horizontal = MaterialTheme.spacing.lg),
                     )
 

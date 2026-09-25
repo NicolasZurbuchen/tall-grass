@@ -18,10 +18,11 @@ class HomeNavKeyHandler(
 
                         HomeTileUiModel.MOVES -> navigator.navigateToMoves()
 
+                        HomeTileUiModel.ABILITIES -> navigator.navigateToAbilities()
+
                         // Every other feature is still a ticket. The tiles render and do nothing,
                         // which is better than hiding them: the home screen is the app's table of
                         // contents and a shorter one would misrepresent what is coming.
-                        HomeTileUiModel.ABILITIES,
                         HomeTileUiModel.ITEMS,
                         HomeTileUiModel.REGIONS,
                         HomeTileUiModel.TYPE_CHART,
