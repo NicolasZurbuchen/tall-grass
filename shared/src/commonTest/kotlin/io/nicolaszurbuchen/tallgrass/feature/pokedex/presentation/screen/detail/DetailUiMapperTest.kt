@@ -173,4 +173,32 @@ class DetailUiMapperTest {
         assertEquals(1, ui.activeIndex)
         assertEquals(listOf("bulbasaur", "charizard"), ui.heroes.map { it.slug })
     }
+
+    /**
+     * **A form opened directly still walks the dex.**
+     *
+     * The other half of the card-versus-form split, and the regression the first fix caused. Alolan
+     * Exeggutor is reached through Exeggutor's card: the card is what the carousel swipes along and
+     * the form is what the screen opens on. Putting the variant in both fields left the carousel with
+     * a card it could not find, so the sheet opened on the right Pokemon with nothing either side of
+     * it — and the swipe that works from the grid silently did not.
+     */
+    @Test
+    fun toUiModel_swipesTheListWhenOpenedOnAFormOfACardThatIsInIt() {
+        val state =
+            DetailState(
+                entryVariantSlug = "charizard",
+                query = DexQuery.All,
+                isLoading = false,
+                entries = listOf(bulbasaurEntry, charizardEntry),
+                details = mapOf("charizard" to charizardDetail),
+                activeVariantSlug = "charizard-mega-x",
+            )
+
+        val ui = state.toUiModel(charizardHandoff)
+
+        assertEquals(1, ui.activeIndex, "the carousel is on Charizard's card")
+        assertEquals(listOf("bulbasaur", "charizard"), ui.heroes.map { it.slug })
+        assertEquals("charizard-mega-x", ui.content?.activeFormSlug, "and the Mega is the form on screen")
+    }
 }

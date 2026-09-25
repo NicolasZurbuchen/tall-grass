@@ -21,7 +21,8 @@ class MovesNavigatorImpl(
      * allowed to name the other.
      */
     override fun navigateToPokemon(
-        slug: String,
+        cardSlug: String,
+        formSlug: String,
         name: String,
         artworkUrl: String,
         primaryTypeSlug: String,
@@ -29,7 +30,8 @@ class MovesNavigatorImpl(
     ) {
         navigator.navigateTo(
             DetailDestination(
-                slug = slug,
+                slug = cardSlug,
+                formSlug = formSlug,
                 // The list that was open, not the whole dex. A move's learners are not a dex query
                 // the carousel can walk, so the detail opens without its neighbours rather than with
                 // the wrong ones.
@@ -40,11 +42,12 @@ class MovesNavigatorImpl(
                         artworkUrl = artworkUrl,
                         primaryTypeSlug = primaryTypeSlug,
                         secondaryTypeSlug = secondaryTypeSlug,
-                        // The key the hero receives on. Nothing sends on it here -- a learner card is
-                        // not registered as a shared element -- and the transition cross-fades, which
-                        // is the same path a back-navigation into the dex already takes.
+                        // Keyed on the form, because the form is what the hero draws. Nothing sends
+                        // on it here -- a learner card is not registered as a shared element -- so the
+                        // transition cross-fades, which is the same path a back-navigation into the
+                        // dex already takes.
                         // DECISIONS.md § The artwork flies out of the grid and does not fly back
-                        sharedElementKey = dexArtworkKey(slug),
+                        sharedElementKey = dexArtworkKey(formSlug),
                     ),
             ),
         )

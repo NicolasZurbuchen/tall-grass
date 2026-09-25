@@ -5,6 +5,8 @@ import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.FakeMoveRepository
+import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexRepository
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetPokemonDetailUseCase
@@ -54,7 +56,8 @@ class DetailExecutorTest {
         getDexEntries = GetDexEntriesUseCase(repository),
         getPokemonDetail = GetPokemonDetailUseCase(repository),
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
-    ).create(slug, DexQuery.All)
+        getMovesForVariant = GetMovesForVariantUseCase(FakeMoveRepository()),
+    ).create(slug, DexQuery.All, formSlug = null)
 
     @Test
     fun store_readsTheDetailWithoutBeingAsked() =

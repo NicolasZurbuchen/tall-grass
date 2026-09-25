@@ -27,10 +27,13 @@ class PokedexNavKeyHandler(
         // hero it had.
         entry<DetailDestination>(metadata = SharedElementEntry.metadata) { destination ->
             DetailRoute(
+                onNavigateToMove = navigator::navigateToMove,
                 onNavigateBack = { navigator.navigateBack() },
                 viewModel =
                     koinViewModel<DetailViewModel>(
-                        parameters = { parametersOf(destination.slug, destination.hero, destination.query) },
+                        parameters = {
+                            parametersOf(destination.slug, destination.hero, destination.query, destination.formSlug)
+                        },
                     ),
             )
         }

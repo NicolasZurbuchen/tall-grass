@@ -25,8 +25,9 @@ class DetailViewModel(
     variantSlug: String,
     query: DexQuery,
     private val hero: HeroHandoff,
+    formSlug: String?,
 ) : ViewModel() {
-    private val store = factory.create(variantSlug, query)
+    private val store = factory.create(variantSlug, query, formSlug)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val state: StateFlow<DetailUiModel> =

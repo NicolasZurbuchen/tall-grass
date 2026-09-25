@@ -19,4 +19,7 @@ data class DetailContentUiModel(
     val tab: DetailTabUiModel,
     val about: AboutUiModel,
     val stats: StatsUiModel,
+    // Empty while the tab has not been opened for this form, and empty for good for the Megas and
+    // Gigantamaxes that learn what their base form learns. The tab says which of the two it is.
+    val moves: List<VariantMoveUiModel>,
 )

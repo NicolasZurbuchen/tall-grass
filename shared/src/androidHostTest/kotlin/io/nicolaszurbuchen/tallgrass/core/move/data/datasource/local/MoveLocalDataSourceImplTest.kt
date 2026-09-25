@@ -112,6 +112,51 @@ class MoveLocalDataSourceImplTest {
             assertEquals(listOf("Absorb"), source.moves().map { it.name })
             assertTrue(source.moves().size == 1)
         }
+
+    /**
+     * **The order the Moves tab reads in, which SQL does not produce.**
+     *
+     * `selectMovesForVariant` is deliberately unordered: level-up first and by level within it, then
+     * the three methods that have no level, is `LearnMethod`'s declaration order, and a CASE
+     * expression in the query would be a second copy of it to keep in step. This is the test that
+     * would catch shipping whatever order SQLite happened to return.
+     */
+    @Test
+    fun movesFor_readLevelUpFirstAndByLevelWithinIt() =
+        runTest {
+            val database = inMemoryPokedex()
+            database.insertMove(slug = "flamethrower", name = "Flamethrower")
+            database.insertMove(slug = "ember", name = "Ember")
+            database.insertMove(slug = "earthquake", name = "Earthquake")
+            database.insertMove(slug = "dragon-dance", name = "Dragon Dance")
+
+            // Inserted worst-first: a TM, then a late level-up, then an egg move, then an early one.
+            database.moveQueries.insertMoveLearner("earthquake", "charizard", "machine", null)
+            database.moveQueries.insertMoveLearner("flamethrower", "charizard", "level-up", 46)
+            database.moveQueries.insertMoveLearner("dragon-dance", "charizard", "egg", null)
+            database.moveQueries.insertMoveLearner("ember", "charizard", "level-up", 4)
+
+            val source = MoveLocalDataSourceImpl(lazyOf(database.moveQueries), StandardTestDispatcher(testScheduler))
+
+            assertEquals(
+                listOf("Ember", "Flamethrower", "Earthquake", "Dragon Dance"),
+                source.movesFor("charizard").map { it.name },
+            )
+        }
+
+    @Test
+    fun movesFor_isEmptyForAFormThatLearnsNothingOfItsOwn() =
+        runTest {
+            // Every Mega and Gigantamax. An empty list is a fact about the form rather than a join
+            // that missed.
+            val database = inMemoryPokedex()
+            database.insertMove(slug = "flamethrower", name = "Flamethrower")
+            database.moveQueries.insertMoveLearner("flamethrower", "charizard", "level-up", 46)
+
+            val source = MoveLocalDataSourceImpl(lazyOf(database.moveQueries), StandardTestDispatcher(testScheduler))
+
+            assertTrue(source.movesFor("charizard-mega-x").isEmpty())
+        }
 }
 
 private fun inMemoryPokedex(): PokedexDatabase {

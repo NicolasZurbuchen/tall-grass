@@ -23,10 +23,15 @@ sealed interface MoveDetailIntent {
  * card's tap does — the hero draws the artwork and the colour on its first frame, and this list has
  * both. See `HeroHandoff` in the Pokedex feature, which this cannot name: a feature may only import
  * from its own subtree, so `app/` is where these become a destination.
+ *
+ * [cardSlug] and [formSlug] are the same string for most Pokemon and not for any variant: only default
+ * forms are dex cards, so Alolan Exeggutor is reached through Exeggutor. The card is what the detail's
+ * carousel swipes along and the form is what it opens on.
  */
 sealed interface MoveDetailLabel {
     data class NavigateToPokemon(
-        val slug: String,
+        val cardSlug: String,
+        val formSlug: String,
         val name: String,
         val artworkUrl: String,
         val primaryTypeSlug: String,

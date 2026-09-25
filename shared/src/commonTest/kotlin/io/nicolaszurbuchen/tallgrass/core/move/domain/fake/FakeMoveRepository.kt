@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.core.move.domain.fake
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.repository.MoveRepository
 
 /**
@@ -14,6 +15,7 @@ class FakeMoveRepository(
     private var moves: List<Move> = emptyList(),
     private var details: Map<String, MoveDetail> = emptyMap(),
     private var learners: Map<String, List<MoveLearner>> = emptyMap(),
+    private var variantMoves: Map<String, List<VariantMove>> = emptyMap(),
     private var failure: Throwable? = null,
 ) : MoveRepository {
     var movesCallCount: Int = 0
@@ -23,6 +25,9 @@ class FakeMoveRepository(
         private set
 
     var learnersCallCount: Int = 0
+        private set
+
+    var movesForCallCount: Int = 0
         private set
 
     override suspend fun moves(): List<Move> {
@@ -41,5 +46,11 @@ class FakeMoveRepository(
         learnersCallCount++
         failure?.let { throw it }
         return learners[slug].orEmpty()
+    }
+
+    override suspend fun movesFor(variantSlug: String): List<VariantMove> {
+        movesForCallCount++
+        failure?.let { throw it }
+        return variantMoves[variantSlug].orEmpty()
     }
 }

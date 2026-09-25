@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.mapper
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveLearners
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveStatChanges
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoves
+import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMovesForVariant
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.BattleStat
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.DamageClass
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.LearnMethod
@@ -14,6 +15,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveMeta
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveStatChange
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveTarget
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.Move as MoveRow
 
@@ -97,14 +99,39 @@ fun SelectMoveLearners.toDomain(): MoveLearner? {
     val method = LearnMethod.fromSlug(this.method) ?: return null
     val primary = primaryType?.let(PokemonType::fromSlug) ?: return null
 
+    // A species with no dex card is a hole in the grid, which another test already forbids. Dropping
+    // the row is still better than a card that cannot be opened.
+    val card = cardSlug ?: return null
+
     return MoveLearner(
         variantSlug = slug,
+        cardSlug = card,
         dexNumber = speciesDexNumber.toInt(),
         name = name,
         formLabel = formLabel,
         artworkUrl = artworkUrl,
         primaryType = primary,
         secondaryType = secondaryType?.let(PokemonType::fromSlug),
+        method = method,
+        level = level?.toInt(),
+    )
+}
+
+/**
+ * Null on the same grounds as the other three: a type, damage class or method this build does not
+ * know means the bundled dataset and this build disagree.
+ */
+fun SelectMovesForVariant.toDomain(): VariantMove? {
+    val type = PokemonType.fromSlug(typeSlug) ?: return null
+    val damageClass = DamageClass.fromSlug(this.damageClass) ?: return null
+    val method = LearnMethod.fromSlug(this.method) ?: return null
+
+    return VariantMove(
+        slug = slug,
+        name = name,
+        type = type,
+        damageClass = damageClass,
+        power = power?.toInt(),
         method = method,
         level = level?.toInt(),
     )

@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.runtime.Composable
+import io.nicolaszurbuchen.tallgrass.core.move.presentation.uimodel.DamageClassUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
@@ -12,6 +13,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
@@ -98,12 +100,42 @@ private fun DetailScreenPreview() {
                                             TypeMatchupUiModel("Bug", TypeUiModel.BUG.color, "¼"),
                                         ),
                                 ),
+                            // Both halves of the how column: a level where there is one, the method
+                            // where there is not.
+                            moves =
+                                listOf(
+                                    VariantMoveUiModel(
+                                        slug = "flamethrower",
+                                        name = "Flamethrower",
+                                        type = TypeUiModel.FIRE,
+                                        damageClass = DamageClassUiModel.SPECIAL,
+                                        powerText = "90",
+                                        howText = UiText.Raw("Lv 46"),
+                                    ),
+                                    VariantMoveUiModel(
+                                        slug = "dragon-dance",
+                                        name = "Dragon Dance",
+                                        type = TypeUiModel.DRAGON,
+                                        damageClass = DamageClassUiModel.STATUS,
+                                        powerText = "—",
+                                        howText = UiText.Raw("Egg"),
+                                    ),
+                                    VariantMoveUiModel(
+                                        slug = "earthquake",
+                                        name = "Earthquake",
+                                        type = TypeUiModel.GROUND,
+                                        damageClass = DamageClassUiModel.PHYSICAL,
+                                        powerText = "100",
+                                        howText = UiText.Raw("TM"),
+                                    ),
+                                ),
                         ),
                 ),
             onBackClick = { },
             onEntrySwipe = { },
             onFormClick = { },
             onTabClick = { },
+            onMoveClick = { },
             onRetryClick = { },
         )
     }

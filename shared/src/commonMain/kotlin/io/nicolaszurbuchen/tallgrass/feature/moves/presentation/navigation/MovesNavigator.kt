@@ -11,7 +11,8 @@ interface MovesNavigator {
      * place allowed to hold both sides, so it is where these five become a destination.
      */
     fun navigateToPokemon(
-        slug: String,
+        cardSlug: String,
+        formSlug: String,
         name: String,
         artworkUrl: String,
         primaryTypeSlug: String,

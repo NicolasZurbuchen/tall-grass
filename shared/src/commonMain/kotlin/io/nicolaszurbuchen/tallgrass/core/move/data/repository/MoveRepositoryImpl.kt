@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.MoveLocalDa
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.repository.MoveRepository
 
 class MoveRepositoryImpl(
@@ -14,4 +15,6 @@ class MoveRepositoryImpl(
     override suspend fun moveDetail(slug: String): MoveDetail? = localDataSource.detail(slug)
 
     override suspend fun moveLearners(slug: String): List<MoveLearner> = localDataSource.learners(slug)
+
+    override suspend fun movesFor(variantSlug: String): List<VariantMove> = localDataSource.movesFor(variantSlug)
 }

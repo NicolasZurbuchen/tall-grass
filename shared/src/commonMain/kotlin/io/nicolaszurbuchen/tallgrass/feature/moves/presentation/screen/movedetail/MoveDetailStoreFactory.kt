@@ -61,7 +61,8 @@ class MoveDetailStoreFactory(
 
             publish(
                 MoveDetailLabel.NavigateToPokemon(
-                    slug = learner.variantSlug,
+                    cardSlug = learner.cardSlug,
+                    formSlug = learner.variantSlug,
                     name = learner.name,
                     artworkUrl = learner.artworkUrl,
                     primaryTypeSlug = learner.primaryType.slug,
