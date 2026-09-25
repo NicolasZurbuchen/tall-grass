@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import io.nicolaszurbuchen.tallgrass.design.component.AppCollapsingSheet
 import io.nicolaszurbuchen.tallgrass.design.component.AppErrorBanner
 import io.nicolaszurbuchen.tallgrass.design.component.AppTabRow
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
@@ -142,76 +143,15 @@ fun AbilityDetailScreen(
     val statusBar = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     BoxWithConstraints(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.accent)) {
-        val restingTop = (heroHeight - SHEET_OVERLAP).coerceAtLeast(0.dp)
-        val raisedTop = statusBar + TOOLBAR_HEIGHT
-        val travelPx = with(density) { (restingTop - raisedTop).coerceAtLeast(0.dp).toPx() }
-
-        // Scrolling the sheet moves it before it scrolls its content, and only in the direction that
-        // has anywhere to go. Dragging up spends the drag on expanding until the sheet is up;
-        // dragging down spends it on collapsing, but only what the content underneath did not take,
-        // which is what keeps a scrolled tab scrolling rather than pulling the sheet with it.
-        val sheetScroll =
-            remember(travelPx) {
-                object : NestedScrollConnection {
-                    override fun onPreScroll(
-                        available: Offset,
-                        source: NestedScrollSource,
-                    ): Offset = drag(available.y, expanding = true)
-
-                    override fun onPostScroll(
-                        consumed: Offset,
-                        available: Offset,
-                        source: NestedScrollSource,
-                    ): Offset = drag(available.y, expanding = false)
-
-                    override suspend fun onPreFling(available: Velocity): Velocity {
-                        if (expansion.floatValue <= 0f || expansion.floatValue >= 1f) return Velocity.Zero
-
-                        settleSheet(expansion, available.y)
-
-                        return available
-                    }
-
-                    private fun drag(
-                        delta: Float,
-                        expanding: Boolean,
-                    ): Offset {
-                        if (travelPx <= 0f) return Offset.Zero
-                        if (expanding && delta >= 0f) return Offset.Zero
-                        if (!expanding && delta <= 0f) return Offset.Zero
-
-                        val next = (expansion.floatValue - delta / travelPx).coerceIn(0f, 1f)
-                        val moved = next - expansion.floatValue
-                        if (moved == 0f) return Offset.Zero
-
-                        expansion.floatValue = next
-
-                        return Offset(0f, -moved * travelPx)
-                    }
-                }
-            }
-
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(top = lerpDp(restingTop, raisedTop, progress))
-                    .nestedScroll(sheetScroll)
-                    .clip(arcTopShape(SHEET_ARC))
-                    .background(MaterialTheme.appColors.surface)
-                    .navigationBarsPadding(),
+        AppCollapsingSheet(
+            progress = { expansion.floatValue },
+            onProgressChange = { expansion.floatValue = it },
+            heroHeight = heroHeight,
+            overlap = SHEET_OVERLAP,
+            // Room under the arc's apex for the handle, and the same at every position: there is no
+            // artwork here for the sheet to be clearing as it rises.
+            headroom = MaterialTheme.spacing.md,
         ) {
-            // Room under the arc's apex for the handle.
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.md))
-
-            SheetHandle(
-                onDrag = { delta ->
-                    val step = if (travelPx > 0f) delta / travelPx else 0f
-                    expansion.floatValue = (expansion.floatValue - step).coerceIn(0f, 1f)
-                },
-                onRelease = { velocity -> settleSheet(expansion, velocity) },
-            )
-
             when {
                 state.error != null -> {
                     AppErrorBanner(
@@ -373,99 +313,11 @@ private fun SectionTitle(
     )
 }
 
-/**
- * The strip the sheet is dragged by, which is not the only part of it that moves it.
- *
- * Scrolling anywhere on the sheet opens it too — see the nested-scroll connection above. The handle
- * stays because that gesture is discoverable only by people already looking for it, and because it
- * is the one target that still works when the tab below has nothing to scroll.
- */
-@Composable
-private fun SheetHandle(
-    onDrag: (Float) -> Unit,
-    onRelease: suspend (Float) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(HANDLE_ROW_HEIGHT)
-                .draggable(
-                    orientation = Orientation.Vertical,
-                    state = rememberDraggableState(onDelta = onDrag),
-                    onDragStopped = { velocity -> onRelease(velocity) },
-                ),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(width = HANDLE_WIDTH, height = HANDLE_HEIGHT)
-                    .clip(MaterialTheme.shapes.extraSmall)
-                    .background(MaterialTheme.appColors.borderDefault),
-        )
-    }
-}
-
-/**
- * Runs the sheet to whichever end the gesture that just ended was heading for.
- *
- * **The only animation the sheet has, and it runs in the coroutine of the gesture that ended.** That
- * is what makes it safe: nothing else writes the position asynchronously any more, so the only thing
- * that can interrupt this is the reader taking hold of the sheet again, which is what should
- * interrupt it.
- */
-private suspend fun settleSheet(
-    expansion: MutableFloatState,
-    velocity: Float,
-) {
-    animate(
-        initialValue = expansion.floatValue,
-        targetValue = settleTarget(expansion.floatValue, velocity),
-        animationSpec = tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
-    ) { value, _ -> expansion.floatValue = value }
-}
-
-/**
- * Where a drag or a fling leaves the sheet.
- *
- * A flick decides on its own, whichever end it was nearer: releasing a short upward flick from a
- * sheet barely off its rest still opens it, which is what a flick means. Without one, the sheet goes
- * to whichever end it is closer to.
- */
-private fun settleTarget(
-    progress: Float,
-    velocity: Float,
-): Float =
-    when {
-        velocity < -FLING_VELOCITY -> 1f
-        velocity > FLING_VELOCITY -> 0f
-        else -> if (progress > HALFWAY) 1f else 0f
-    }
-
-// How far the sheet's middle sits above its corners, matching the other two details.
-private val SHEET_ARC = 32.dp
-
 // How far the sheet rides up over the hero at rest, matching a move's. There is no artwork on either
 // hero, so this is only enough for the arc to cut into the colour rather than meeting it in a
 // straight line.
 private val SHEET_OVERLAP = 24.dp
 
-// What the header is left as when the sheet is all the way up: the back arrow's row, with the name
-// in the middle of it.
-private val TOOLBAR_HEIGHT = 56.dp
-
-private val HANDLE_ROW_HEIGHT = 28.dp
-private val HANDLE_WIDTH = 36.dp
-private val HANDLE_HEIGHT = 4.dp
-
 // Three across, which is what a card holding a picture and two short lines wants. The same as a
 // move's Learned by grid, because it is the same card with a different second line.
 private const val HOLDER_GRID_COLUMNS = 3
-
-// Where a release with no flick in it goes.
-private const val HALFWAY = 0.5f
-
-// Pixels per second past which the flick decides instead of the position.
-private const val FLING_VELOCITY = 400f
