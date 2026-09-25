@@ -1,8 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -31,12 +30,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -76,7 +76,6 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.MovesTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.lerp as lerpDp
 
@@ -179,14 +178,21 @@ fun DetailScreen(
     val density = LocalDensity.current
     val dragScope = rememberCoroutineScope()
 
-    // 0 resting over the artwork, 1 up against the toolbar. An Animatable rather than a plain float,
-    // so releasing settles the sheet rather than leaving it wherever the finger stopped.
+    // 0 resting over the artwork, 1 up against the toolbar.
+    //
+    // **A plain float that drags write straight into, not an Animatable snapped from a coroutine.**
+    // That indirection is what left the sheet stranded mid-travel, in two ways. A frame carrying
+    // several deltas ran `drag` several times, each reading the same not-yet-updated value and each
+    // telling the scroll it had consumed its share, while only the last snap actually landed — so the
+    // sheet moved less than it claimed and could sit against a finger that was still moving. And a
+    // snap still queued when the finger lifted cancelled the settle meant to follow it, because an
+    // Animatable serialises its own mutations.
     //
     // Saved rather than remembered, because opening a move or an ability from the Moves tab leaves
-    // this screen and coming back rebuilds it. A plain remember put the sheet back at the bottom of
-    // the hero, undoing the drag the reader made to get to the thing they tapped.
-    val expansion = rememberSaveable(saver = SheetExpansionSaver) { Animatable(0f) }
-    val progress = expansion.value
+    // this screen and coming back rebuilds it. A float saves on its own, where an Animatable needed a
+    // Saver to unpick it.
+    val expansion = rememberSaveable { mutableFloatStateOf(0f) }
+    val progress = expansion.floatValue
 
     // Front-loaded: the hero is gone in the first quarter of the drag, so the sheet is never rising
     // behind something still solid.
@@ -207,16 +213,6 @@ fun DetailScreen(
         // dragging down spends it on collapsing, but only what the content underneath did not take,
         // which is what keeps a scrolled tab scrolling rather than pulling the sheet with it.
         // DECISIONS.md § The sheet expands and the hero becomes a toolbar
-        // The last snap either gesture asked for, waited on before a settle starts.
-        //
-        // **This is why the handle stopped halfway.** Every drag delta launches a coroutine that
-        // snaps the Animatable, and an Animatable serialises its own mutations: a snap that lands
-        // after the settle has begun cancels the settle and leaves the sheet wherever it had got to.
-        // Dragging the body never showed it, because a fling is dispatched a frame after the last
-        // scroll and the snap has already run by then -- the handle releases in the same frame as
-        // its last move, so its snap was still queued.
-        val lastSnap = remember { mutableStateOf<Job?>(null) }
-
         val sheetScroll =
             remember(travelPx) {
                 object : NestedScrollConnection {
@@ -232,17 +228,15 @@ fun DetailScreen(
                     ): Offset = drag(available.y, expanding = false)
 
                     override suspend fun onPreFling(available: Velocity): Velocity {
-                        if (expansion.value <= 0f || expansion.value >= 1f) return Velocity.Zero
+                        if (expansion.floatValue <= 0f || expansion.floatValue >= 1f) return Velocity.Zero
 
-                        lastSnap.value?.join()
-                        expansion.animateTo(
-                            settleTarget(expansion.value, available.y),
-                            tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
-                        )
+                        settleSheet(expansion, available.y)
 
                         return available
                     }
 
+                    // Writes before it answers, so what it reports consuming is what the sheet has
+                    // already moved.
                     private fun drag(
                         delta: Float,
                         expanding: Boolean,
@@ -251,11 +245,11 @@ fun DetailScreen(
                         if (expanding && delta >= 0f) return Offset.Zero
                         if (!expanding && delta <= 0f) return Offset.Zero
 
-                        val next = (expansion.value - delta / travelPx).coerceIn(0f, 1f)
-                        val moved = next - expansion.value
+                        val next = (expansion.floatValue - delta / travelPx).coerceIn(0f, 1f)
+                        val moved = next - expansion.floatValue
                         if (moved == 0f) return Offset.Zero
 
-                        lastSnap.value = dragScope.launch { expansion.snapTo(next) }
+                        expansion.floatValue = next
 
                         return Offset(0f, -moved * travelPx)
                     }
@@ -304,18 +298,10 @@ fun DetailScreen(
 
             SheetHandle(
                 onDrag = { delta ->
-                    dragScope.launch {
-                        val step = if (travelPx > 0f) delta / travelPx else 0f
-                        expansion.snapTo((expansion.value - step).coerceIn(0f, 1f))
-                    }
+                    val step = if (travelPx > 0f) delta / travelPx else 0f
+                    expansion.floatValue = (expansion.floatValue - step).coerceIn(0f, 1f)
                 },
-                onRelease = { velocity ->
-                    lastSnap.value?.join()
-                    expansion.animateTo(
-                        settleTarget(expansion.value, velocity),
-                        tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
-                    )
-                },
+                onRelease = { velocity -> settleSheet(expansion, velocity) },
             )
 
             val content = state.content
@@ -511,6 +497,25 @@ private const val HALFWAY = 0.5f
 private const val FLING_VELOCITY = 400f
 
 /**
+ * Runs the sheet to whichever end the gesture that just ended was heading for.
+ *
+ * **The only animation the sheet has, and it runs in the coroutine of the gesture that ended.** That
+ * is what makes it safe: nothing else writes the position asynchronously any more, so the only thing
+ * that can interrupt this is the reader taking hold of the sheet again, which is what should
+ * interrupt it.
+ */
+private suspend fun settleSheet(
+    expansion: MutableFloatState,
+    velocity: Float,
+) {
+    animate(
+        initialValue = expansion.floatValue,
+        targetValue = settleTarget(expansion.floatValue, velocity),
+        animationSpec = tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
+    ) { value, _ -> expansion.floatValue = value }
+}
+
+/**
  * Where a drag or a fling leaves the sheet.
  *
  * A flick decides on its own, whichever end it was nearer: releasing a short upward flick from a
@@ -549,13 +554,3 @@ private fun Modifier.invisibleWhen(invisible: Boolean): Modifier =
             if (!invisible) placeable.place(0, 0)
         }
     }
-
-/**
- * An `Animatable` cannot be saved, and the one number inside it is the whole of the sheet's position.
- *
- * Restored into a settled `Animatable` rather than an animation in flight: a sheet that was mid-drag
- * when the screen was left should come back where it was let go, not finish a gesture the reader has
- * long since forgotten making.
- */
-private val SheetExpansionSaver: Saver<Animatable<Float, AnimationVector1D>, Float> =
-    Saver(save = { it.value }, restore = { Animatable(it) })
