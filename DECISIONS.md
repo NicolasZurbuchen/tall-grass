@@ -223,13 +223,17 @@ composition bug waiting for a slot to shift under it.
 
 ### The About tab is a function of the species, with the form passed in
 
-`AboutUiModel` is built by an extension on `PokemonSpecies` that takes the variant as a parameter,
-and the variant is read for exactly two fields: height and weight. Everything else in the tab is
-breeding and training, which are true of Vulpix whichever region it is from.
+`AboutUiModel` is built by an extension on `PokemonSpecies` that takes the variant as a parameter.
+The species carries the breeding block — gender, egg groups, hatching — which is true of Vulpix
+whichever region it is from. The variant carries the measurements and the training figures.
 
 The rule is #5's, and the point of writing it into the mapper's signature is that it stops being a
 rule anyone has to remember. Breeding data moving when the form changes is the specific bug the
 Species/Variant split exists to prevent, and a mapper that cannot see the variant cannot cause it.
+
+**The split moved once.** It was originally height and weight from the variant and everything else
+from the species, training included — see *Training belongs to the form, breeding to the species*
+below for why that was wrong and what it would have shown.
 
 ### Which tab is open lives in the Store, as a nested enum
 
@@ -1245,3 +1249,56 @@ Deliberately a comparison rather than a version bump the copier is told about: t
 from the manifest the generator already writes, so nobody has to remember to increment anything. An
 unreadable stamp counts as a mismatch, which re-copies — the safe direction, and it costs one copy of
 a file the app is about to read anyway.
+
+### Training belongs to the form, breeding to the species
+
+The About tab's Training block gained EV yield and base experience, and both are read off the
+**variant** rather than the species — unlike growth rate, which sits beside them and is the species'.
+
+That is not a tidiness argument. 95 forms are worth a different amount of experience than their
+species' default form, and 42 award a different stat: Dugtrio trains Speed, Alolan Dugtrio trains
+Attack. Read off the species, the switcher would have shown the base form's figures under every other
+form's artwork — a wrong answer rather than a missing one, and one nothing would have flagged, since
+both numbers are plausible for the Pokémon on screen.
+
+Upstream keeps both on the `pokemon` row, so the split falls where the data already does. `effort`
+rides on `variantStat` next to `baseStat` because that is where upstream keeps it too, and because
+the row exists for the base stat whether or not a form awards anything.
+
+### A form upstream has not costed shows no training figures
+
+49 forms carry no base experience and award no effort against any stat — every one of them a Legends
+Z-A Mega, which upstream has added without filling either field in yet.
+
+`baseExperience` is null and `evYield` is null, and the About tab **drops both rows** rather than
+drawing a dash or a zero. The same rule as *A move's absent numbers are absent, not zero*: a Pokémon
+worth no experience is not a thing, so a zero there is a claim the dataset cannot support, and a dash
+in a column of figures reads as one anyway.
+
+The two halves are detected differently and that is worth knowing. Base experience is genuinely empty
+in the CSV, so it arrives as a null. Effort is not — the rows are there and they say zero, six times.
+So the test for "not costed" is **all six at zero**, which is safe because every costed form awards at
+least one. `DatasetTest` pins both that the two sets have the same 49 members and that the
+distribution of yields has nothing else at zero, because the day upstream fills one field and not the
+other is the day the inference stops being exact.
+
+`terapagos-terastal` is upstream's one row that exceeds the games' cap of three, awarding 2 Defense
+and 2 Special Defense on a battle-only form. It ships as written: capping it would be inventing a
+figure, and it is pinned so the next person to see a four does not read it as arithmetic gone wrong.
+
+### A section heading in the detail sheet is the Pokémon's own colour
+
+The Breeding, Training, Type Defenses, Abilities and Moves headings are drawn in the first type's
+colour rather than in `textPrimary`, which is the colour the hero above them and the status bar behind
+them are already in. The sheet is not a white page the Pokémon happens to be on.
+
+The colour cannot be used as it arrives. The eighteen type colours are chosen to be told apart from
+each other, and several are hopeless as text on a white sheet — Electric measures 1.5:1 against it,
+Ice 1.6:1, Steel 2.0:1. `Color.asLabelColor()` moves each toward the theme's far end, which keeps the
+hue readable as the type while buying the contrast back.
+
+**Extracted rather than written twice.** The matchup chips had solved the same problem with the same
+lerp and the same constant, and the comment explaining why was sitting in `StatsTab.kt` — where a
+reader looking for how a heading gets its colour would never find it. Filled shapes in a type's
+colour, like the stat bars and the move rows, keep using the colour itself: there is nothing to read
+through them.
