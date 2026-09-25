@@ -76,6 +76,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.MovesTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.lerp as lerpDp
 
@@ -206,6 +207,16 @@ fun DetailScreen(
         // dragging down spends it on collapsing, but only what the content underneath did not take,
         // which is what keeps a scrolled tab scrolling rather than pulling the sheet with it.
         // DECISIONS.md § The sheet expands and the hero becomes a toolbar
+        // The last snap either gesture asked for, waited on before a settle starts.
+        //
+        // **This is why the handle stopped halfway.** Every drag delta launches a coroutine that
+        // snaps the Animatable, and an Animatable serialises its own mutations: a snap that lands
+        // after the settle has begun cancels the settle and leaves the sheet wherever it had got to.
+        // Dragging the body never showed it, because a fling is dispatched a frame after the last
+        // scroll and the snap has already run by then -- the handle releases in the same frame as
+        // its last move, so its snap was still queued.
+        val lastSnap = remember { mutableStateOf<Job?>(null) }
+
         val sheetScroll =
             remember(travelPx) {
                 object : NestedScrollConnection {
@@ -223,6 +234,7 @@ fun DetailScreen(
                     override suspend fun onPreFling(available: Velocity): Velocity {
                         if (expansion.value <= 0f || expansion.value >= 1f) return Velocity.Zero
 
+                        lastSnap.value?.join()
                         expansion.animateTo(
                             settleTarget(expansion.value, available.y),
                             tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
@@ -243,7 +255,7 @@ fun DetailScreen(
                         val moved = next - expansion.value
                         if (moved == 0f) return Offset.Zero
 
-                        dragScope.launch { expansion.snapTo(next) }
+                        lastSnap.value = dragScope.launch { expansion.snapTo(next) }
 
                         return Offset(0f, -moved * travelPx)
                     }
@@ -298,6 +310,7 @@ fun DetailScreen(
                     }
                 },
                 onRelease = { velocity ->
+                    lastSnap.value?.join()
                     expansion.animateTo(
                         settleTarget(expansion.value, velocity),
                         tween(AppDuration.SHORT, easing = AppEasing.EaseOutQuint),
