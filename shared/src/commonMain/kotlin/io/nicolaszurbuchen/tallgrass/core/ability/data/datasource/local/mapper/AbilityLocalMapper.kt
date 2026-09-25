@@ -1,10 +1,12 @@
 package io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.mapper
 
 import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.SelectAbilities
+import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.SelectAbilitiesForVariant
 import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.SelectAbilityHolders
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.Ability
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityDetail
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityHolder
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.Ability as AbilityRow
 
@@ -54,3 +56,15 @@ fun SelectAbilityHolders.toDomain(): AbilityHolder? {
         isHidden = isHidden,
     )
 }
+
+/**
+ * Total, like the list row's: a variant-ability row carries a name, a line and a flag, and there is
+ * nothing in any of them this build could fail to recognise.
+ */
+fun SelectAbilitiesForVariant.toDomain(): VariantAbility =
+    VariantAbility(
+        slug = slug,
+        name = name,
+        shortEffect = shortEffect,
+        isHidden = isHidden,
+    )

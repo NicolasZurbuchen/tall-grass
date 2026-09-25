@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.AbilityL
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.Ability
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityDetail
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityHolder
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.repository.AbilityRepository
 
 class AbilityRepositoryImpl(
@@ -14,4 +15,6 @@ class AbilityRepositoryImpl(
     override suspend fun abilityDetail(slug: String): AbilityDetail? = localDataSource.detail(slug)
 
     override suspend fun abilityHolders(slug: String): List<AbilityHolder> = localDataSource.holders(slug)
+
+    override suspend fun abilitiesFor(variantSlug: String): List<VariantAbility> = localDataSource.abilitiesFor(variantSlug)
 }

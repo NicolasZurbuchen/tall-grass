@@ -16,5 +16,7 @@ interface PokedexNavigator {
      */
     fun navigateToMove(slug: String)
 
+    fun navigateToAbility(slug: String)
+
     fun navigateBack()
 }

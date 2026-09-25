@@ -5,6 +5,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
@@ -26,6 +27,7 @@ class DetailStoreFactory(
     private val getPokemonDetail: GetPokemonDetailUseCase,
     private val getTypeMatchups: GetTypeMatchupsUseCase,
     private val getMovesForVariant: GetMovesForVariantUseCase,
+    private val getAbilitiesForVariant: GetAbilitiesForVariantUseCase,
 ) {
     /**
      * Which Pokemon the screen is about, and which list it was reached through, are properties of
@@ -69,7 +71,7 @@ class DetailStoreFactory(
         // being loaded rather than landing on top of the one that is.
         private var detailJob: Job? = null
         private var readAheadJob: Job? = null
-        private var movesJob: Job? = null
+        private var tabJob: Job? = null
 
         override fun executeAction(action: DetailAction) {
             when (action) {
@@ -82,7 +84,7 @@ class DetailStoreFactory(
             when (intent) {
                 is DetailIntent.FormSelected -> {
                     dispatch(DetailMessage.FormSwitched(intent.variantSlug))
-                    loadMoves(intent.variantSlug)
+                    loadTab(intent.variantSlug)
                 }
 
                 is DetailIntent.EntrySelected -> {
@@ -94,11 +96,15 @@ class DetailStoreFactory(
 
                 is DetailIntent.TabSelected -> {
                     dispatch(DetailMessage.TabSwitched(intent.tab))
-                    if (intent.tab == DetailState.Tab.MOVES) loadMoves(state().activeVariantSlug)
+                    if (intent.tab == DetailState.Tab.MOVES) loadTab(state().activeVariantSlug)
                 }
 
                 is DetailIntent.MoveClicked -> {
                     publish(DetailLabel.NavigateToMove(intent.slug))
+                }
+
+                is DetailIntent.AbilityClicked -> {
+                    publish(DetailLabel.NavigateToAbility(intent.slug))
                 }
 
                 DetailIntent.BackClicked -> {
@@ -177,26 +183,34 @@ class DetailStoreFactory(
         }
 
         /**
-         * The moves of one form, read the first time its tab is opened for that form.
+         * Both halves of the Moves tab for one form, read the first time it is opened for that form.
          *
          * **Not read with the detail**, which is what keeps a reader who never opens this tab from
          * paying for a hundred rows on every swipe. Held per variant once read and never re-read:
-         * the learnset is baked into the binary and cannot change under a running app.
+         * both are baked into the binary and cannot change under a running app.
          *
-         * Keyed by variant rather than by card because a form learns its own moves — Alolan
-         * Exeggutor is not Exeggutor in a different colour — so switching forms lands here too, and
-         * the guard is on the map rather than on which tab is open.
+         * Keyed by variant rather than by card because a form has its own of each — Alolan Sandshrew
+         * has Slush Rush where Sandshrew has Sand Veil — so switching forms lands here too, and the
+         * guard is on the map rather than on which tab is open.
+         *
+         * **The guard is the moves map, which is the one that fills second.** If the abilities land
+         * and the moves throw, the guard stays false and the next visit reads both again, which is
+         * what should happen — a tab holding half of itself is not loaded.
          *
          * Failures are swallowed, like the carousel's: a tab that cannot be read is worth less than
          * an error message covering the Pokemon they came to see.
          */
-        private fun loadMoves(variantSlug: String) {
+        private fun loadTab(variantSlug: String) {
             if (state().moves.containsKey(variantSlug)) return
 
-            movesJob?.cancel()
-            movesJob =
+            tabJob?.cancel()
+            tabJob =
                 scope.launch {
                     try {
+                        // Abilities first: they are two or three rows against about sixty, they sit
+                        // at the top of the tab, and a reader looking at an empty tab sees the
+                        // cheaper half land rather than waiting for both.
+                        dispatch(DetailMessage.AbilitiesLoaded(variantSlug, getAbilitiesForVariant(variantSlug)))
                         dispatch(DetailMessage.MovesLoaded(variantSlug, getMovesForVariant(variantSlug)))
                     } catch (e: AppException) {
                         return@launch
@@ -323,6 +337,10 @@ class DetailStoreFactory(
                     // screen: a reader comparing two forms switches back and forth, and the second
                     // look should not read again.
                     copy(moves = moves + (msg.variantSlug to msg.moves))
+                }
+
+                is DetailMessage.AbilitiesLoaded -> {
+                    copy(abilities = abilities + (msg.variantSlug to msg.abilities))
                 }
 
                 is DetailMessage.TabSwitched -> {

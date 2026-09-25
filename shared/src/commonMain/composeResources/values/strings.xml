@@ -27,6 +27,11 @@
     <string name="pokedex_detail_tab_moves">Moves</string>
     <!-- The tab for a Pokemon that learns nothing: every Mega and Gigantamax, which learn what their
          base form learns and which upstream does not repeat rows for. -->
+    <string name="pokedex_detail_abilities">Abilities</string>
+    <!-- Over the move list on the same tab, which is why it is a heading rather than the tab name. -->
+    <string name="pokedex_detail_moves_heading">Moves</string>
+    <!-- Beside an ability name in the Moves tab: the third slot, which cannot be caught ordinarily. -->
+    <string name="pokedex_detail_ability_hidden">Hidden</string>
     <string name="pokedex_detail_no_moves">This form learns what its base form learns.</string>
     <string name="pokedex_detail_move_level">Lv %1$s</string>
 

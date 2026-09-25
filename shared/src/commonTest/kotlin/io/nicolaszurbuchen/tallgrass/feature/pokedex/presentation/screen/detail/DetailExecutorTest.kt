@@ -4,6 +4,9 @@ import app.cash.turbine.test
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.AbilityFixtures
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.FakeAbilityRepository
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.FakeMoveRepository
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
@@ -51,12 +54,15 @@ class DetailExecutorTest {
     private fun store(
         slug: String = "charizard",
         repository: FakePokedexRepository = FakePokedexRepository(details = mapOf("charizard" to charizardDetail)),
+        moves: FakeMoveRepository = FakeMoveRepository(),
+        abilities: FakeAbilityRepository = FakeAbilityRepository(),
     ) = DetailStoreFactory(
         storeFactory = DefaultStoreFactory(),
         getDexEntries = GetDexEntriesUseCase(repository),
         getPokemonDetail = GetPokemonDetailUseCase(repository),
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
-        getMovesForVariant = GetMovesForVariantUseCase(FakeMoveRepository()),
+        getMovesForVariant = GetMovesForVariantUseCase(moves),
+        getAbilitiesForVariant = GetAbilitiesForVariantUseCase(abilities),
     ).create(slug, DexQuery.All, formSlug = null)
 
     @Test
@@ -172,6 +178,71 @@ class DetailExecutorTest {
                 while (state.isLoading) state = awaitItem()
 
                 assertEquals(2, repository.detailCallCount)
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun tabSelected_fillsBothHalvesOfTheMovesTab() =
+        runTest {
+            // Abilities and moves are one read, because they are one tab. A reader who never opens
+            // it pays for neither.
+            val abilities =
+                FakeAbilityRepository(
+                    variantAbilities = mapOf("charizard" to listOf(AbilityFixtures.blaze, AbilityFixtures.solarPower)),
+                )
+            val store = store(abilities = abilities)
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+
+                assertEquals(0, abilities.abilitiesForCallCount)
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.MOVES))
+                while (state.abilities["charizard"] == null) state = awaitItem()
+
+                assertEquals(listOf(AbilityFixtures.blaze, AbilityFixtures.solarPower), state.abilities["charizard"])
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun tabSelected_doesNotReadAgainForAFormAlreadyRead() =
+        runTest {
+            // Held per variant once read, on the same grounds as the moves beside them: neither can
+            // change under a running app, both are baked into the binary.
+            val abilities =
+                FakeAbilityRepository(variantAbilities = mapOf("charizard" to listOf(AbilityFixtures.blaze)))
+            val store = store(abilities = abilities)
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.MOVES))
+                while (state.abilities["charizard"] == null) state = awaitItem()
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.ABOUT))
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.MOVES))
+
+                assertEquals(1, abilities.abilitiesForCallCount)
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun abilityClicked_publishesTheSlugItWasGiven() =
+        runTest {
+            val store = store()
+
+            store.labels.test {
+                store.accept(DetailIntent.AbilityClicked("blaze"))
+
+                assertEquals(DetailLabel.NavigateToAbility("blaze"), awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

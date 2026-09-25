@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.mapper.t
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.Ability
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityDetail
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityHolder
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
@@ -36,5 +37,15 @@ class AbilityLocalDataSourceImpl(
                 .selectAbilityHolders(slug)
                 .executeAsList()
                 .mapNotNull { it.toDomain() }
+        }
+
+    // Ordered by SQL rather than in Kotlin, unlike a variant's moves: slot order is a column and
+    // says what it means, where a move's order lives in LearnMethod's declaration.
+    override suspend fun abilitiesFor(variantSlug: String): List<VariantAbility> =
+        withContext(dispatcher) {
+            queries.value
+                .selectAbilitiesForVariant(variantSlug)
+                .executeAsList()
+                .map { it.toDomain() }
         }
 }

@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.core.ability.domain.fake
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.Ability
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityDetail
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityHolder
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 
 /**
@@ -47,6 +48,23 @@ object AbilityFixtures {
             generation = 3,
             shortEffect = "Has a 10% chance of making target Pokémon flinch with each hit.",
             effect = "Has a 10% chance of making target Pokémon flinch with each hit.",
+        )
+
+    val blaze =
+        VariantAbility(
+            slug = "blaze",
+            name = "Blaze",
+            shortEffect = "Strengthens Fire moves to 1.5× their power when at 1/3 max HP or less.",
+            isHidden = false,
+        )
+
+    /** The third slot, which is what the row says "Hidden" for. */
+    val solarPower =
+        VariantAbility(
+            slug = "solar-power",
+            name = "Solar Power",
+            shortEffect = "Boosts Special Attack in harsh sunlight, at the cost of HP each turn.",
+            isHidden = true,
         )
 
     val gastly =
