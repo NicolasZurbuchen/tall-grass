@@ -210,6 +210,8 @@ private fun buildVariants(
                     listedInDex = row.bool("is_default"),
                     height = row.int("height"),
                     weight = row.int("weight"),
+                    // Empty for 49 rows, all of them Legends Z-A Megas upstream has not costed yet.
+                    baseExperience = row.intOrNull("base_experience"),
                     artworkUrl = artworkUrl(id),
                     // The upstream `order` column would be the obvious choice and is empty for 139
                     // rows, most of Generation VIII and IX among them. The id works instead because
@@ -221,6 +223,15 @@ private fun buildVariants(
                     stats =
                         stats[id].orEmpty()
                             .mapNotNull { stat -> statSlugs[stat.int("stat_id")]?.let { it to stat.int("base_stat") } }
+                            .sortedBy { it.first }
+                            .toMap(),
+                    // The same six rows read for their other column. Only what the form actually
+                    // awards is kept, so a form upstream has not costed comes out empty rather than
+                    // claiming to yield nothing against all six.
+                    evYield =
+                        stats[id].orEmpty()
+                            .filter { stat -> stat.int("effort") > 0 }
+                            .mapNotNull { stat -> statSlugs[stat.int("stat_id")]?.let { it to stat.int("effort") } }
                             .sortedBy { it.first }
                             .toMap(),
                     abilities =

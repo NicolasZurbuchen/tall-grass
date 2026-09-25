@@ -134,6 +134,66 @@ class DatasetTest {
     }
 
     @Test
+    fun variants_carryTheTrainingFiguresTheAboutTabNeeds() {
+        val butterfree = variants.single { it.slug == "butterfree" }
+
+        assertEquals(178, butterfree.baseExperience)
+        assertEquals(mapOf("special-attack" to 2, "special-defense" to 1), butterfree.evYield)
+    }
+
+    @Test
+    fun trainingFigures_moveWithTheFormRatherThanTheSpecies() {
+        // The reason they sit on the variant rather than the species. 95 forms are worth a different
+        // amount of experience than their default form and 42 award a different stat, so reading
+        // either off the species would report the switcher's other pages wrong.
+        assertEquals(240, variants.single { it.slug == "charizard" }.baseExperience)
+        assertEquals(285, variants.single { it.slug == "charizard-mega-x" }.baseExperience)
+
+        // A regional form is the sharper case: Dugtrio trains Speed and the Alolan one trains
+        // Attack, which is a different answer rather than a larger one.
+        assertEquals(mapOf("speed" to 2), variants.single { it.slug == "dugtrio" }.evYield)
+        assertEquals(mapOf("attack" to 2), variants.single { it.slug == "dugtrio-alola" }.evYield)
+    }
+
+    @Test
+    fun aFormIsEitherCostedOrNotCostedAtAll() {
+        // 49 forms carry no base experience, all of them Legends Z-A Megas, and they are exactly the
+        // 49 that award no effort against any stat. That the two sets coincide is what says these
+        // are figures upstream has not written rather than a column that failed to read -- and it is
+        // what lets the About tab drop both rows on one test.
+        val noExperience = variants.filter { it.baseExperience == null }.map { it.slug }.toSet()
+        val noYield = variants.filter { it.evYield.isEmpty() }.map { it.slug }.toSet()
+
+        assertEquals(49, noExperience.size)
+        assertEquals(noExperience, noYield)
+
+        val notMegas = noExperience.filterNot { it.contains("-mega") }
+        assertTrue(notMegas.isEmpty(), "Uncosted forms that are not Megas: $notMegas")
+    }
+
+    @Test
+    fun aCostedForm_awardsAtLeastOneEffortValue() {
+        // The rule that makes "awards nothing" readable as "upstream has not said" rather than as a
+        // Pokemon worth no effort. A real zero would break it and nothing else would notice, so the
+        // whole distribution is pinned: three is the cap the games use, and `terapagos-terastal` is
+        // upstream's one row that exceeds it -- 2 Defense and 2 Special Defense, on a battle-only
+        // form. Left as upstream wrote it, because capping it would be inventing a figure.
+        val totals = variants.groupingBy { it.evYield.values.sum() }.eachCount()
+
+        assertEquals(mapOf(0 to 49, 1 to 388, 2 to 564, 3 to 383, 4 to 1), totals)
+        assertEquals(4, variants.single { it.slug == "terapagos-terastal" }.evYield.values.sum())
+    }
+
+    @Test
+    fun evYield_namesOnlyTheStatsTheStatsBlockDoes() {
+        // A yield against a stat the variant has no base figure for would draw a row the Stats tab
+        // cannot: upstream's `special` (id 9) is the one that could appear that way.
+        val stray = variants.filter { variant -> variant.evYield.keys.any { it !in variant.stats.keys } }
+
+        assertTrue(stray.isEmpty(), "Variants yielding against a stat they do not have: ${stray.map { it.slug }}")
+    }
+
+    @Test
     fun species_carryTheBreedingDataTheAboutTabNeeds() {
         val bulbasaur = species.single { it.dexNumber == 1 }
         assertEquals("bulbasaur", bulbasaur.slug)

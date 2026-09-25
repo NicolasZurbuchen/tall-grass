@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.DexLocal
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.PokemonDetailLocalDataSource
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EvYield
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
@@ -55,6 +56,8 @@ class PokedexRepositoryImplTest {
                         primaryType = PokemonType.ICE,
                         secondaryType = null,
                         stats = PokemonStats(38, 41, 40, 50, 65, 65),
+                        baseExperience = 60,
+                        evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 0, specialDefense = 0, speed = 1),
                     ),
                 ),
         )

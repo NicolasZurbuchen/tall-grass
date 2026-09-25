@@ -14,6 +14,11 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
  * [formKind] is what a screen filters on. Every form of a species is here, cosmetic ones included,
  * because whether a costume is worth showing is a question about the screen rather than about the
  * Pokemon — the detail switcher hides them and a count of them would need them present.
+ *
+ * [baseExperience] and [evYield] are both null for the 49 forms upstream has not costed yet, every
+ * one of them a Legends Z-A Mega. Null rather than zero and rather than an empty yield, because a
+ * form worth no experience and awarding no effort is not a thing that exists — a screen drawing
+ * either as a figure would be inventing one. See `DECISIONS.md`.
  */
 data class PokemonVariant(
     val slug: String,
@@ -28,4 +33,6 @@ data class PokemonVariant(
     val primaryType: PokemonType,
     val secondaryType: PokemonType?,
     val stats: PokemonStats,
+    val baseExperience: Int?,
+    val evYield: EvYield?,
 )

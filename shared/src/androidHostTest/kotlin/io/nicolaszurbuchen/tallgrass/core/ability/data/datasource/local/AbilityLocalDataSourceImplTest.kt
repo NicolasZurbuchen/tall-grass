@@ -207,6 +207,7 @@ private fun PokedexDatabase.insertVariant(
         listedInDex = listed,
         height = 7,
         weight = 69,
+        baseExperience = 64,
         artworkUrl = "https://example.invalid/$slug.png",
         sortOrder = sortOrder,
     )

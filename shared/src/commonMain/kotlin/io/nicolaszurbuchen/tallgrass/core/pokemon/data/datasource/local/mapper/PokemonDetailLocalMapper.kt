@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.SelectVa
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.Species
 import io.nicolaszurbuchen.tallgrass.core.pokemon.data.datasource.local.VariantStat
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EvYield
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
@@ -32,7 +33,10 @@ fun Species.toDomain(eggGroupSlugs: List<String>): PokemonSpecies? {
 }
 
 /** Null when the row's primary type is not one of the eighteen. A missing second type is ordinary. */
-fun SelectVariantDetails.toDomain(stats: PokemonStats): PokemonVariant? {
+fun SelectVariantDetails.toDomain(
+    stats: PokemonStats,
+    evYield: EvYield?,
+): PokemonVariant? {
     val primary = primaryType?.let(PokemonType::fromSlug) ?: return null
 
     return PokemonVariant(
@@ -47,6 +51,8 @@ fun SelectVariantDetails.toDomain(stats: PokemonStats): PokemonVariant? {
         primaryType = primary,
         secondaryType = secondaryType?.let(PokemonType::fromSlug),
         stats = stats,
+        baseExperience = baseExperience?.toInt(),
+        evYield = evYield,
     )
 }
 
@@ -72,6 +78,39 @@ fun List<VariantStat>.toStatsByVariantDomain(): Map<String, PokemonStats> =
                 )
 
             variantSlug to stats
+        }
+        .toMap()
+
+/**
+ * What each variant of one species awards, read off the same six rows as its base stats.
+ *
+ * **A variant awarding nothing against all six is left out**, which is upstream having no figure for
+ * it rather than a form worth no effort: every costed form awards at least one value. It is the one
+ * test there is — the rows are there and they say zero — and it is exact, because the 49 forms it
+ * catches are the same 49 that carry no base experience. `DatasetTest` pins both halves of that.
+ *
+ * A variant missing any of the six is left out for [toStatsByVariantDomain]'s reason as well: a
+ * yield that says nothing about Speed because the row was not read is a different claim from one
+ * that awards no Speed.
+ */
+fun List<VariantStat>.toEvYieldByVariantDomain(): Map<String, EvYield> =
+    groupBy { it.variantSlug }
+        .mapNotNull { (variantSlug, rows) ->
+            val byStat = rows.associate { it.statSlug to it.effort.toInt() }
+
+            val evYield =
+                EvYield(
+                    hp = byStat[STAT_HP] ?: return@mapNotNull null,
+                    attack = byStat[STAT_ATTACK] ?: return@mapNotNull null,
+                    defense = byStat[STAT_DEFENSE] ?: return@mapNotNull null,
+                    specialAttack = byStat[STAT_SPECIAL_ATTACK] ?: return@mapNotNull null,
+                    specialDefense = byStat[STAT_SPECIAL_DEFENSE] ?: return@mapNotNull null,
+                    speed = byStat[STAT_SPEED] ?: return@mapNotNull null,
+                )
+
+            if (byStat.values.all { it == 0 }) return@mapNotNull null
+
+            variantSlug to evYield
         }
         .toMap()
 

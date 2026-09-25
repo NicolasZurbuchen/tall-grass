@@ -136,14 +136,23 @@ fun main(args: Array<String>) {
                 listedInDex = entry.listedInDex,
                 height = entry.height.toLong(),
                 weight = entry.weight.toLong(),
+                baseExperience = entry.baseExperience?.toLong(),
                 artworkUrl = entry.artworkUrl,
                 sortOrder = entry.sortOrder.toLong(),
             )
             entry.types.forEachIndexed { index, type ->
                 database.variantQueries.insertVariantType(entry.slug, type, (index + 1).toLong())
             }
+            // The JSON lists only the stats a form awards; the table carries a figure for all six,
+            // because the row exists for the base stat anyway. A form upstream has not costed has an
+            // empty map here and comes out zero against all six, which is how the app reads it.
             entry.stats.forEach { (stat, value) ->
-                database.variantQueries.insertVariantStat(entry.slug, stat, value.toLong())
+                database.variantQueries.insertVariantStat(
+                    variantSlug = entry.slug,
+                    statSlug = stat,
+                    baseStat = value.toLong(),
+                    effort = (entry.evYield[stat] ?: 0).toLong(),
+                )
             }
             entry.abilities.forEach { ability ->
                 database.variantQueries.insertVariantAbility(

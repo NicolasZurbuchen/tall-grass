@@ -131,11 +131,21 @@ private fun PokedexDatabase.insertVariant(
         listedInDex = true,
         height = 6,
         weight = 99,
+        baseExperience = 60,
         artworkUrl = "https://example.invalid/$slug.png",
         sortOrder = sortOrder,
     )
     variantQueries.insertVariantType(slug, type, 1)
 
+    // Vulpix awards one Speed, which is also the only stat the two forms differ on -- so the same
+    // list says both what each form has and what beating it is worth.
     listOf("hp" to 38L, "attack" to 41L, "defense" to 40L, "special-attack" to 50L, "special-defense" to 65L, "speed" to speed)
-        .forEach { (statSlug, value) -> variantQueries.insertVariantStat(slug, statSlug, value) }
+        .forEach { (statSlug, value) ->
+            variantQueries.insertVariantStat(
+                variantSlug = slug,
+                statSlug = statSlug,
+                baseStat = value,
+                effort = if (statSlug == "speed") 1L else 0L,
+            )
+        }
 }

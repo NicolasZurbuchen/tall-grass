@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EvYield
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonSpecies
@@ -9,6 +10,9 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
+import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.pokedex_detail_stat_special_attack
+import tallgrass.shared.generated.resources.pokedex_detail_stat_special_defense
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,6 +35,8 @@ class AboutUiMapperTest {
     private fun variant(
         height: Int = 17,
         weight: Int = 905,
+        baseExperience: Int? = 240,
+        evYield: EvYield? = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
     ) = PokemonVariant(
         slug = "charizard",
         name = "Charizard",
@@ -43,9 +49,21 @@ class AboutUiMapperTest {
         primaryType = PokemonType.FIRE,
         secondaryType = PokemonType.FLYING,
         stats = PokemonStats(78, 84, 78, 109, 85, 100),
+        baseExperience = baseExperience,
+        evYield = evYield,
     )
 
     private fun argsOf(text: UiText): List<Any> = (text as UiText.Resource).args
+
+    /** A composed line flattened to what it is made of: literals as themselves, names as resources. */
+    private fun partsOf(text: UiText): List<Any> =
+        (text as UiText.Composite).parts.map { part ->
+            when (part) {
+                is UiText.Raw -> part.value
+                is UiText.Resource -> part.id
+                is UiText.Composite -> error("Nothing nests a composite here")
+            }
+        }
 
     private fun splitOf(genderRate: Int): GenderUiModel.Split =
         species(genderRate = genderRate).toAboutUiModel(variant()).gender as GenderUiModel.Split
@@ -111,5 +129,47 @@ class AboutUiMapperTest {
     @Test
     fun toAboutUiModel_countsTheEggCycleInCycles() {
         assertEquals(listOf("20"), argsOf(species().toAboutUiModel(variant()).eggCycleText))
+    }
+
+    @Test
+    fun toAboutUiModel_namesOnlyTheStatsAFormAwards() {
+        // Charizard yields three Special Attack and nothing else. The four stats it awards nothing
+        // against are what the line is mostly made of if they are not dropped.
+        val about = species().toAboutUiModel(variant())
+
+        assertEquals(listOf("3 ", Res.string.pokedex_detail_stat_special_attack), partsOf(about.evYieldText!!))
+    }
+
+    @Test
+    fun toAboutUiModel_separatesTheAwardsAndKeepsThemInTheOrderTheStatsTabUses() {
+        // Butterfree, which is the ordinary two-stat case: Special Attack comes before Special
+        // Defense because that is the order the bars are drawn in, not because of its figure.
+        val butterfree = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 2, specialDefense = 1, speed = 0)
+
+        assertEquals(
+            listOf(
+                "2 ",
+                Res.string.pokedex_detail_stat_special_attack,
+                ", ",
+                "1 ",
+                Res.string.pokedex_detail_stat_special_defense,
+            ),
+            partsOf(species().toAboutUiModel(variant(evYield = butterfree)).evYieldText!!),
+        )
+    }
+
+    @Test
+    fun toAboutUiModel_leavesBothTrainingFiguresOutWhenUpstreamHasNotCostedTheForm() {
+        // The 49 Legends Z-A Megas. Absent rather than zero: a Pokemon worth no experience and
+        // awarding no effort is not a thing, so the rows go rather than reporting one.
+        val about = species().toAboutUiModel(variant(baseExperience = null, evYield = null))
+
+        assertEquals(null, about.evYieldText)
+        assertEquals(null, about.baseExperienceText)
+    }
+
+    @Test
+    fun toAboutUiModel_drawsBaseExperienceAsTheFigureItIs() {
+        assertEquals(UiText.Raw("240"), species().toAboutUiModel(variant()).baseExperienceText)
     }
 }

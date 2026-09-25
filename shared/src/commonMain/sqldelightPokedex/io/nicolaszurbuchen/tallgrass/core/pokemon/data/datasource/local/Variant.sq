@@ -19,6 +19,9 @@ CREATE TABLE variant (
     -- Decimetres and hectograms, upstream's units. Converted at the presentation edge.
     height           INTEGER NOT NULL,
     weight           INTEGER NOT NULL,
+    -- What defeating this form is worth. Null for the 49 forms upstream has not costed yet, which
+    -- is a different claim from a form worth nothing -- there is no such form.
+    baseExperience   INTEGER,
     artworkUrl       TEXT NOT NULL,
     sortOrder        INTEGER NOT NULL
 );
@@ -34,10 +37,18 @@ CREATE TABLE variantType (
     PRIMARY KEY (variantSlug, slot)
 );
 
+-- A form's figure against each of the six stats: what it has, and what defeating it awards.
+--
+-- The two live on one row because upstream keeps them on one row and they are read together. effort
+-- is stored for all six rather than only where it is non-zero, unlike the JSON it is built from: the
+-- row exists either way for the base stat, so a sparse column here would buy nothing and cost a
+-- second table. A form upstream has not costed yet reads as zero against all six, which no filled-in
+-- form ever does -- see PokemonDetailLocalMapper.
 CREATE TABLE variantStat (
     variantSlug TEXT NOT NULL,
     statSlug    TEXT NOT NULL,
     baseStat    INTEGER NOT NULL,
+    effort      INTEGER NOT NULL,
     PRIMARY KEY (variantSlug, statSlug)
 );
 
@@ -82,14 +93,14 @@ selectVariantsBySpecies:
 SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
 
 insertVariant:
-INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, artworkUrl, sortOrder)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, baseExperience, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertVariantType:
 INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
 
 insertVariantStat:
-INSERT INTO variantStat(variantSlug, statSlug, baseStat) VALUES (?, ?, ?);
+INSERT INTO variantStat(variantSlug, statSlug, baseStat, effort) VALUES (?, ?, ?, ?);
 
 insertVariantAbility:
 INSERT INTO variantAbility(variantSlug, abilitySlug, isHidden, slot) VALUES (?, ?, ?, ?);
@@ -105,6 +116,7 @@ SELECT
     v.isDefault,
     v.height,
     v.weight,
+    v.baseExperience,
     v.artworkUrl,
     t1.typeSlug AS primaryType,
     t2.typeSlug AS secondaryType
@@ -117,7 +129,7 @@ ORDER BY v.sortOrder;
 -- Six rows per variant, read for the whole species in one go rather than per form: switching form
 -- must not hit the database, because the switch is what the transition between forms animates.
 selectStatsBySpecies:
-SELECT vs.variantSlug, vs.statSlug, vs.baseStat
+SELECT vs.variantSlug, vs.statSlug, vs.baseStat, vs.effort
 FROM variantStat vs
 JOIN variant v ON v.slug = vs.variantSlug
 WHERE v.speciesDexNumber = ?;
