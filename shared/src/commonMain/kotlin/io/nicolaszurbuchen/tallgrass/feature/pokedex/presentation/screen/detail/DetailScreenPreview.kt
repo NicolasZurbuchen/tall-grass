@@ -13,6 +13,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
@@ -100,6 +101,26 @@ private fun DetailScreenPreview() {
                                             TypeMatchupUiModel("Bug", TypeUiModel.BUG.color, "¼"),
                                         ),
                                 ),
+                            // A normal slot and the hidden one, which is what most Pokemon have.
+                            abilities =
+                                listOf(
+                                    VariantAbilityUiModel(
+                                        slug = "blaze",
+                                        name = "Blaze",
+                                        initial = "B",
+                                        shortEffect =
+                                            "Strengthens Fire moves to 1.5× their power when at 1/3 max HP or less.",
+                                        hiddenText = null,
+                                    ),
+                                    VariantAbilityUiModel(
+                                        slug = "solar-power",
+                                        name = "Solar Power",
+                                        initial = "S",
+                                        shortEffect =
+                                            "Boosts Special Attack in harsh sunlight, at the cost of HP each turn.",
+                                        hiddenText = UiText.Raw("Hidden"),
+                                    ),
+                                ),
                             // Both halves of the how column: a level where there is one, the method
                             // where there is not.
                             moves =
@@ -135,6 +156,7 @@ private fun DetailScreenPreview() {
             onEntrySwipe = { },
             onFormClick = { },
             onTabClick = { },
+            onAbilityClick = { },
             onMoveClick = { },
             onRetryClick = { },
         )

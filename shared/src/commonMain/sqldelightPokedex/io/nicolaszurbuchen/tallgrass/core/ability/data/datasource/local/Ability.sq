@@ -69,3 +69,16 @@ LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
 LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
 WHERE va.abilitySlug = ?
 ORDER BY v.speciesDexNumber, v.sortOrder;
+
+-- Which abilities one Pokemon has, for the Moves tab on its detail.
+--
+-- Ordered by slot, which is the game's own ordering and puts the hidden one last: slots 1 and 2 are
+-- what a Pokemon can be caught with and 3 is the one it cannot. No index for this one -- the primary
+-- key on variantAbility already leads with variantSlug, so this reads along it and the ORDER BY is
+-- free. `variantAbilityByAbility` exists for the opposite direction, which the key cannot answer.
+selectAbilitiesForVariant:
+SELECT a.slug, a.name, a.shortEffect, va.isHidden
+FROM variantAbility va
+JOIN ability a ON a.slug = va.abilitySlug
+WHERE va.variantSlug = ?
+ORDER BY va.slot;

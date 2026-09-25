@@ -129,6 +129,34 @@ class AbilityLocalDataSourceImplTest {
 
             assertTrue(source(database).holders("levitate").isEmpty())
         }
+
+    @Test
+    fun abilitiesFor_comeBackInSlotOrderWithTheHiddenOneLast() =
+        runTest {
+            // The game's own ordering: slots 1 and 2 are what a Pokemon can be caught with and 3 is
+            // the one it cannot. Inserted out of order, and the hidden one is not alphabetically
+            // last, so only the ORDER BY can produce this.
+            val database = inMemoryPokedex()
+            database.insertAbility(slug = "solar-power", name = "Solar Power")
+            database.insertAbility(slug = "blaze", name = "Blaze")
+            database.insertVariant(slug = "charmander", dexNumber = 4, name = "Charmander", types = listOf("fire"))
+            database.variantQueries.insertVariantAbility("charmander", "solar-power", true, 3)
+            database.variantQueries.insertVariantAbility("charmander", "blaze", false, 1)
+
+            val abilities = source(database).abilitiesFor("charmander")
+
+            assertEquals(listOf("Blaze", "Solar Power"), abilities.map { it.name })
+            assertEquals(listOf(false, true), abilities.map { it.isHidden })
+        }
+
+    @Test
+    fun abilitiesFor_isEmptyForASlugWithNoRows() =
+        runTest {
+            val database = inMemoryPokedex()
+            database.insertAbility(slug = "blaze", name = "Blaze")
+
+            assertTrue(source(database).abilitiesFor("missingno").isEmpty())
+        }
 }
 
 private fun kotlinx.coroutines.test.TestScope.source(database: PokedexDatabase) =

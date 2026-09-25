@@ -98,6 +98,7 @@ fun DetailScreen(
     onEntrySwipe: (String) -> Unit,
     onFormClick: (String) -> Unit,
     onTabClick: (DetailTabUiModel) -> Unit,
+    onAbilityClick: (String) -> Unit,
     onMoveClick: (String) -> Unit,
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -363,7 +364,12 @@ fun DetailScreen(
                                 }
 
                                 DetailTabUiModel.MOVES -> {
-                                    MovesTab(moves = content.moves, onMoveClick = onMoveClick)
+                                    MovesTab(
+                                        abilities = content.abilities,
+                                        moves = content.moves,
+                                        onAbilityClick = onAbilityClick,
+                                        onMoveClick = onMoveClick,
+                                    )
                                 }
                             }
                         }

@@ -105,6 +105,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                         },
                     about = detail.species.toAboutUiModel(variant),
                     stats = variant.toStatsUiModel(matchups[variant.slug].orEmpty()),
+                    abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
                     moves = moves[variant.slug].orEmpty().map { it.toUiModel() },
                 )
             },

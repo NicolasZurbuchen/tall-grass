@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
@@ -25,6 +26,10 @@ sealed interface DetailIntent {
         val slug: String,
     ) : DetailIntent
 
+    data class AbilityClicked(
+        val slug: String,
+    ) : DetailIntent
+
     data object BackClicked : DetailIntent
 
     data object RetryClicked : DetailIntent
@@ -40,6 +45,11 @@ sealed interface DetailLabel {
      * nothing to hand forward. See #11 on why that transition is a push.
      */
     data class NavigateToMove(
+        val slug: String,
+    ) : DetailLabel
+
+    /** An ability tapped in the Moves tab. Only the slug, for the same reason. */
+    data class NavigateToAbility(
         val slug: String,
     ) : DetailLabel
 }
@@ -71,6 +81,12 @@ sealed interface DetailMessage {
     data class MovesLoaded(
         val variantSlug: String,
         val moves: List<VariantMove>,
+    ) : DetailMessage
+
+    /** The other half of what the Moves tab shows, read in the same pass. */
+    data class AbilitiesLoaded(
+        val variantSlug: String,
+        val abilities: List<VariantAbility>,
     ) : DetailMessage
 
     data class DetailLoaded(
@@ -128,6 +144,9 @@ data class DetailState(
     // different colour. Read when the tab is first opened for a form rather than with the detail,
     // which is what keeps a reader who never opens it from paying for a hundred rows per swipe.
     val moves: Map<String, List<VariantMove>> = emptyMap(),
+    // Keyed by variant for the same reason, and read in the same pass: a form has its own abilities
+    // too, and Alolan Sandshrew's Slush Rush is not Sandshrew's Sand Veil.
+    val abilities: Map<String, List<VariantAbility>> = emptyMap(),
     val tab: Tab = Tab.ABOUT,
     val error: AppError? = null,
 ) {

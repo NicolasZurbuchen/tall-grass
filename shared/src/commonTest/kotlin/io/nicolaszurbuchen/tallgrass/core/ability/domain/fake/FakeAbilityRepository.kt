@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.core.ability.domain.fake
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.Ability
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityDetail
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.AbilityHolder
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.repository.AbilityRepository
 
 /**
@@ -14,6 +15,7 @@ class FakeAbilityRepository(
     private var abilities: List<Ability> = emptyList(),
     private var details: Map<String, AbilityDetail> = emptyMap(),
     private var holders: Map<String, List<AbilityHolder>> = emptyMap(),
+    private var variantAbilities: Map<String, List<VariantAbility>> = emptyMap(),
     private var failure: Throwable? = null,
 ) : AbilityRepository {
     var abilitiesCallCount: Int = 0
@@ -23,6 +25,9 @@ class FakeAbilityRepository(
         private set
 
     var holdersCallCount: Int = 0
+        private set
+
+    var abilitiesForCallCount: Int = 0
         private set
 
     override suspend fun abilities(): List<Ability> {
@@ -41,5 +46,11 @@ class FakeAbilityRepository(
         holdersCallCount++
         failure?.let { throw it }
         return holders[slug].orEmpty()
+    }
+
+    override suspend fun abilitiesFor(variantSlug: String): List<VariantAbility> {
+        abilitiesForCallCount++
+        failure?.let { throw it }
+        return variantAbilities[variantSlug].orEmpty()
     }
 }

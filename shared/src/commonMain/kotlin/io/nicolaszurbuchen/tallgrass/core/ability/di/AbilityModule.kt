@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.AbilityL
 import io.nicolaszurbuchen.tallgrass.core.ability.data.datasource.local.AbilityLocalDataSourceImpl
 import io.nicolaszurbuchen.tallgrass.core.ability.data.repository.AbilityRepositoryImpl
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.repository.AbilityRepository
+import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesUseCase
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilityDetailUseCase
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilityHoldersUseCase
@@ -24,4 +25,5 @@ val abilityModule =
         singleOf(::GetAbilitiesUseCase)
         singleOf(::GetAbilityDetailUseCase)
         singleOf(::GetAbilityHoldersUseCase)
+        singleOf(::GetAbilitiesForVariantUseCase)
     }

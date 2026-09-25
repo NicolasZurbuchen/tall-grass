@@ -19,6 +19,9 @@ data class DetailContentUiModel(
     val tab: DetailTabUiModel,
     val about: AboutUiModel,
     val stats: StatsUiModel,
+    // Both fill together, the first time the Moves tab is opened for this form. Every Pokemon has at
+    // least one ability, so an empty list here means the read has not happened yet.
+    val abilities: List<VariantAbilityUiModel>,
     // Empty while the tab has not been opened for this form, and empty for good for the Megas and
     // Gigantamaxes that learn what their base form learns. The tab says which of the two it is.
     val moves: List<VariantMoveUiModel>,
