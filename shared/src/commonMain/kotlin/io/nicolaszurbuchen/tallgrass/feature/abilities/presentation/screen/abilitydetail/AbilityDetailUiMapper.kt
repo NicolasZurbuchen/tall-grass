@@ -7,7 +7,7 @@ import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abili
 fun AbilityDetailState.toUiModel(): AbilityDetailUiModel =
     AbilityDetailUiModel(
         isLoading = isLoading,
-        ability = ability?.toUiModel(holders),
+        ability = ability?.toUiModel(),
         holders = holders.map { it.toUiModel() },
         tab =
             when (tab) {

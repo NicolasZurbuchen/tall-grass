@@ -30,15 +30,6 @@ fun AbilityDetailSkeleton(modifier: Modifier = Modifier) {
             Box(modifier = Modifier.size(width = TAB_WIDTH, height = TAB_HEIGHT).shimmerBlock())
         }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-            modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.lg),
-        ) {
-            repeat(STAT_TILES) {
-                Box(modifier = Modifier.weight(1f).height(TILE_HEIGHT).shimmerBlock())
-            }
-        }
-
         Column(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
             modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.lg),
@@ -53,11 +44,7 @@ fun AbilityDetailSkeleton(modifier: Modifier = Modifier) {
 private val TAB_WIDTH = 72.dp
 private val TAB_HEIGHT = 20.dp
 
-// What the three figures measure: a label, a value and the tile's padding.
-private val TILE_HEIGHT = 64.dp
 private val LINE_HEIGHT = 16.dp
-
-private const val STAT_TILES = 3
 
 // The short effect and the first lines of the paragraph under it. How much prose an ability has is
 // one of the things being read, so this stands in for the shape rather than for the length.

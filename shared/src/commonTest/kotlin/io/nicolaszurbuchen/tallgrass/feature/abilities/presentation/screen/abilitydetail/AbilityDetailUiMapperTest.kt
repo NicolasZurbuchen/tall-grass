@@ -20,8 +20,7 @@ class AbilityDetailUiMapperTest {
     }
 
     @Test
-    fun theHoldersReachBothTheGridAndTheFiguresAboveIt() {
-        // The Details tab counts what the Known by tab lists, which is why one read fills both.
+    fun theHoldersReachTheGridTheyAreListedIn() {
         val state =
             AbilityDetailState(
                 isLoading = false,
@@ -32,7 +31,7 @@ class AbilityDetailUiMapperTest {
         val ui = state.toUiModel()
 
         assertEquals(2, ui.holders.size)
-        assertEquals("2", ui.ability?.stats?.get(1)?.valueText)
+        assertEquals("Levitate", ui.ability?.name)
     }
 
     @Test

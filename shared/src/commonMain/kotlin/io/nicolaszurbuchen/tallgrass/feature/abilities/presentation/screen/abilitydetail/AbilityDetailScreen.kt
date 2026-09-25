@@ -62,7 +62,6 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.component.AbilityDetailHeader
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.component.AbilityDetailSkeleton
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.component.AbilityHolderCard
-import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.component.AbilityStats
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityDetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityHolderUiModel
@@ -86,9 +85,9 @@ import androidx.compose.ui.unit.lerp as lerpDp
  * type before it has a colour, and opens on the neutral surface until then; an ability has no colour
  * of its own to wait for, so there is nothing to find out and no reason to start grey.
  *
- * Two tabs, and a swipe between them. **Details** is what the ability is: the three figures that place
- * it, the sentence that says what it does, and the paragraph behind the sentence. **Known by** is who
- * has it — a different question and a different shape.
+ * Two tabs, and a swipe between them. **Details** is what the ability does: the sentence, and the
+ * paragraph behind the sentence. **Known by** is who has it — a different question and a different
+ * shape.
  */
 @Composable
 fun AbilityDetailScreen(
@@ -277,8 +276,8 @@ fun AbilityDetailScreen(
 /**
  * What the ability is, in the order it is read.
  *
- * A scrolling column rather than a lazy one: the longest this gets is three figures and two
- * paragraphs, the second of which runs to 1,555 characters for exactly one ability.
+ * A scrolling column rather than a lazy one: the longest this gets is two paragraphs, the second of
+ * which runs to 1,555 characters for exactly one ability.
  */
 @Composable
 private fun DetailsTab(
@@ -293,8 +292,6 @@ private fun DetailsTab(
                 .padding(horizontal = MaterialTheme.spacing.lg)
                 .padding(top = MaterialTheme.spacing.md, bottom = MaterialTheme.spacing.xxl),
     ) {
-        AbilityStats(stats = ability.stats)
-
         SectionTitle(title = Res.string.ability_detail_effect)
         Text(
             text = ability.shortEffect,

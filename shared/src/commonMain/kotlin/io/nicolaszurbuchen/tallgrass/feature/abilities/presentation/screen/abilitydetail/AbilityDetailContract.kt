@@ -67,8 +67,8 @@ sealed interface AbilityDetailMessage {
  *
  * [holders] arrives with the ability rather than when its tab is opened. The two reads are one round
  * trip to the same local database, and a tab that populates a beat after it is tapped reads as slower
- * than one that was always ready. They are also what the Details tab counts, so the first tab cannot
- * draw itself without them.
+ * than one that was always ready. The Details tab used to count them as well, which made this
+ * necessary rather than merely better; the figures are gone and the round trip is still the reason.
  */
 data class AbilityDetailState(
     val isLoading: Boolean = true,

@@ -6,7 +6,6 @@ import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityDetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityHolderUiModel
-import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail.uimodel.AbilityStatUiModel
 import io.nicolaszurbuchen.tallgrass.infra.preview.PreviewThemes
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 
@@ -22,12 +21,6 @@ private fun AbilityDetailScreenPreview() {
                         AbilityContentUiModel(
                             name = "Levitate",
                             generationText = UiText.Raw("Gen 3"),
-                            stats =
-                                listOf(
-                                    AbilityStatUiModel(UiText.Raw("Generation"), "3"),
-                                    AbilityStatUiModel(UiText.Raw("Pokémon"), "96"),
-                                    AbilityStatUiModel(UiText.Raw("Hidden"), "4"),
-                                ),
                             shortEffect = "Evades Ground moves.",
                             effect =
                                 "This Pokémon is immune to Ground-type moves, Spikes, Toxic Spikes and the " +

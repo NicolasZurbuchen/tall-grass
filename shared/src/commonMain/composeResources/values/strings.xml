@@ -75,10 +75,8 @@
     <string name="ability_detail_effect">Effect</string>
     <!-- Upstream long effect entry, shown only where it says more than the short one did. -->
     <string name="ability_detail_in_depth">In depth</string>
-    <string name="ability_detail_generation">Generation</string>
-    <string name="ability_detail_pokemon">Pok&#233;mon</string>
-    <!-- Both the figure on the detail and the word on a holder card: the ability in a Pokemon third
-         slot, which cannot be caught in the ordinary way. -->
+    <!-- The word on a holder card: the ability in a Pokemon third slot, which cannot be caught in
+         the ordinary way. -->
     <string name="ability_detail_hidden">Hidden</string>
     <string name="ability_detail_no_holders">No Pok&#233;mon has this ability.</string>
 
