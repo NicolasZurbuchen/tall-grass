@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.screen.abilitydetail
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -38,6 +39,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -125,7 +128,9 @@ fun AbilityDetailScreen(
 
     // 0 resting under the hero, 1 up against the toolbar. An Animatable rather than a plain float, so
     // releasing settles the sheet rather than leaving it wherever the finger stopped.
-    val expansion = remember { Animatable(0f) }
+    // Saved rather than remembered: this screen can be left for a Pokemon and come back, and a plain
+    // remember dropped the sheet to the bottom of the hero on the way back.
+    val expansion = rememberSaveable(saver = SheetExpansionSaver) { Animatable(0f) }
     val progress = expansion.value
 
     // The hero measures itself: a status bar, a name and a pill, and only the first of those has a
@@ -452,3 +457,13 @@ private const val HALFWAY = 0.5f
 
 // Pixels per second past which the flick decides instead of the position.
 private const val FLING_VELOCITY = 400f
+
+/**
+ * An `Animatable` cannot be saved, and the one number inside it is the whole of the sheet's position.
+ *
+ * Restored into a settled `Animatable` rather than an animation in flight: a sheet that was mid-drag
+ * when the screen was left should come back where it was let go, not finish a gesture the reader has
+ * long since forgotten making.
+ */
+private val SheetExpansionSaver: Saver<Animatable<Float, AnimationVector1D>, Float> =
+    Saver(save = { it.value }, restore = { Animatable(it) })

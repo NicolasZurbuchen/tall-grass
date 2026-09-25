@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -35,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -178,7 +180,11 @@ fun DetailScreen(
 
     // 0 resting over the artwork, 1 up against the toolbar. An Animatable rather than a plain float,
     // so releasing settles the sheet rather than leaving it wherever the finger stopped.
-    val expansion = remember { Animatable(0f) }
+    //
+    // Saved rather than remembered, because opening a move or an ability from the Moves tab leaves
+    // this screen and coming back rebuilds it. A plain remember put the sheet back at the bottom of
+    // the hero, undoing the drag the reader made to get to the thing they tapped.
+    val expansion = rememberSaveable(saver = SheetExpansionSaver) { Animatable(0f) }
     val progress = expansion.value
 
     // Front-loaded: the hero is gone in the first quarter of the drag, so the sheet is never rising
@@ -530,3 +536,13 @@ private fun Modifier.invisibleWhen(invisible: Boolean): Modifier =
             if (!invisible) placeable.place(0, 0)
         }
     }
+
+/**
+ * An `Animatable` cannot be saved, and the one number inside it is the whole of the sheet's position.
+ *
+ * Restored into a settled `Animatable` rather than an animation in flight: a sheet that was mid-drag
+ * when the screen was left should come back where it was let go, not finish a gesture the reader has
+ * long since forgotten making.
+ */
+private val SheetExpansionSaver: Saver<Animatable<Float, AnimationVector1D>, Float> =
+    Saver(save = { it.value }, restore = { Animatable(it) })
