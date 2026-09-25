@@ -65,6 +65,23 @@
     <!-- Under the figure on a move card, which is the move's power or an em dash. -->
     <string name="moves_power">POWER</string>
 
+    <string name="abilities_title">Abilities</string>
+    <!-- The generation an ability arrived in, on a card and in the detail hero. The only axis these
+         rows carry until #65 settles a category. -->
+    <string name="abilities_generation">Gen %1$s</string>
+
+    <string name="ability_detail_tab_about">Details</string>
+    <string name="ability_detail_tab_holders">Known by</string>
+    <string name="ability_detail_effect">Effect</string>
+    <!-- Upstream long effect entry, shown only where it says more than the short one did. -->
+    <string name="ability_detail_in_depth">In depth</string>
+    <string name="ability_detail_generation">Generation</string>
+    <string name="ability_detail_pokemon">Pok&#233;mon</string>
+    <!-- Both the figure on the detail and the word on a holder card: the ability in a Pokemon third
+         slot, which cannot be caught in the ordinary way. -->
+    <string name="ability_detail_hidden">Hidden</string>
+    <string name="ability_detail_no_holders">No Pok&#233;mon has this ability.</string>
+
     <string name="move_detail_battle_data">Battle Data</string>
     <string name="move_detail_power">Power</string>
     <string name="move_detail_accuracy">Accuracy</string>

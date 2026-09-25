@@ -10,4 +10,6 @@ interface HomeNavigator {
     fun navigateToPokedex()
 
     fun navigateToMoves()
+
+    fun navigateToAbilities()
 }

@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.app.navigation.impl
 
+import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.navigation.AbilitiesListDestination
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeNavigator
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MovesListDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexDestination
@@ -14,5 +15,9 @@ class HomeNavigatorImpl(
 
     override fun navigateToMoves() {
         navigator.navigateTo(MovesListDestination)
+    }
+
+    override fun navigateToAbilities() {
+        navigator.navigateTo(AbilitiesListDestination)
     }
 }
