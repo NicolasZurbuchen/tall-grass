@@ -1,4 +1,4 @@
-package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component
+package io.nicolaszurbuchen.tallgrass.design.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,37 +19,46 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
+import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 
 /**
- * Written against the enum rather than against Material's `TabRow`, because the underline here is a
- * short rule under the label rather than a full-width indicator, and the row stays left-aligned as
- * Location and Moves join it instead of redistributing every tab.
+ * A short rule under a left-aligned label, per tab.
+ *
+ * **Extracted at the third call site, which is the test `MoveDetailTabRow` wrote for itself**: two
+ * copies is a coincidence, three is a shape. The Pokemon detail, the move detail and the ability
+ * detail all draw this, and by the third one the cost of them drifting apart had overtaken the cost
+ * of the adapter each call site needs.
+ *
+ * That adapter is the index. Each screen has its own tab enum — the tabs are that screen's
+ * vocabulary and belong to it — so what crosses this boundary is a list of labels and a position in
+ * it, which is the most a purely presentational component can know. The call sites map back with
+ * `entries[index]`.
  */
 @Composable
-fun DetailTabRow(
-    selected: DetailTabUiModel,
-    onTabClick: (DetailTabUiModel) -> Unit,
+fun AppTabRow(
+    tabs: List<UiText>,
+    selectedIndex: Int,
+    onTabClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.lg),
         modifier = modifier.fillMaxWidth(),
     ) {
-        DetailTabUiModel.entries.forEach { tab ->
-            val isSelected = tab == selected
+        tabs.forEachIndexed { index, label ->
+            val isSelected = index == selectedIndex
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier =
                     Modifier
                         .clip(MaterialTheme.shapes.extraSmall)
-                        .clickable { onTabClick(tab) }
+                        .clickable { onTabClick(index) }
                         .padding(horizontal = MaterialTheme.spacing.xs, vertical = MaterialTheme.spacing.sm),
             ) {
                 Text(
-                    text = tab.label.asString(),
+                    text = label.asString(),
                     style = MaterialTheme.typography.titleSmall,
                     color = if (isSelected) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary,
                 )
