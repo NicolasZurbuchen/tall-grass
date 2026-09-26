@@ -1,5 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.locations.di
 
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.locationdetail.LocationDetailStoreFactory
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.locationdetail.LocationDetailViewModel
 import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.regiondetail.RegionDetailStoreFactory
 import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.regiondetail.RegionDetailViewModel
 import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.regions.RegionsStoreFactory
@@ -15,9 +17,11 @@ val locationsModule =
         viewModelOf(::RegionsViewModel)
 
         factoryOf(::RegionDetailStoreFactory)
+        factoryOf(::LocationDetailStoreFactory)
 
         // Parameterised rather than declared with viewModelOf, on the same grounds as the ability
         // detail: which region the screen is about arrives from the NavKey, so it is passed at
         // resolution rather than resolved.
         viewModel { (slug: String) -> RegionDetailViewModel(get(), slug) }
+        viewModel { (slug: String) -> LocationDetailViewModel(get(), slug) }
     }

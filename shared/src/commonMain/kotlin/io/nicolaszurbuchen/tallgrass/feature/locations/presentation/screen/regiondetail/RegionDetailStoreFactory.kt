@@ -59,6 +59,10 @@ class RegionDetailStoreFactory(
                     dispatch(RegionDetailMessage.QueryChanged(intent.query))
                 }
 
+                is RegionDetailIntent.LocationClicked -> {
+                    publish(RegionDetailLabel.NavigateToLocation(intent.slug))
+                }
+
                 is RegionDetailIntent.PokemonClicked -> {
                     openPokemon(intent.slug)
                 }

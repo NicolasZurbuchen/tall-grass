@@ -14,6 +14,10 @@ sealed interface RegionDetailIntent {
         val query: String,
     ) : RegionDetailIntent
 
+    data class LocationClicked(
+        val slug: String,
+    ) : RegionDetailIntent
+
     data class PokemonClicked(
         val slug: String,
     ) : RegionDetailIntent
@@ -22,6 +26,10 @@ sealed interface RegionDetailIntent {
 }
 
 sealed interface RegionDetailLabel {
+    data class NavigateToLocation(
+        val slug: String,
+    ) : RegionDetailLabel
+
     /**
      * The six fields a Pokemon detail needs to draw its hero before it has read anything.
      *

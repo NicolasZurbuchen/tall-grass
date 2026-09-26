@@ -10,17 +10,20 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegionDetailRoute(
+    onNavigateToLocation: (slug: String) -> Unit,
     onNavigateToPokemon: (RegionDetailLabel.NavigateToPokemon) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegionDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val onLocation by rememberUpdatedState(onNavigateToLocation)
     val onPokemon by rememberUpdatedState(onNavigateToPokemon)
 
     LaunchedEffect(Unit) {
         viewModel.labels.collect { label ->
             when (label) {
+                is RegionDetailLabel.NavigateToLocation -> onLocation(label.slug)
                 is RegionDetailLabel.NavigateToPokemon -> onPokemon(label)
             }
         }
@@ -30,6 +33,7 @@ fun RegionDetailRoute(
         state = state,
         onTabClick = { index -> viewModel.onIntent(RegionDetailIntent.TabSelected(index)) },
         onQueryChange = { query -> viewModel.onIntent(RegionDetailIntent.QueryChanged(query)) },
+        onLocationClick = { slug -> viewModel.onIntent(RegionDetailIntent.LocationClicked(slug)) },
         onPokemonClick = { slug -> viewModel.onIntent(RegionDetailIntent.PokemonClicked(slug)) },
         onBackClick = onNavigateBack,
         onRetryClick = { viewModel.onIntent(RegionDetailIntent.RetryClicked) },
