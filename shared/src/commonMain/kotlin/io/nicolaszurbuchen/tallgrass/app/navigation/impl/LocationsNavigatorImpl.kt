@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.app.navigation.impl
 
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.LocationDetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.LocationsNavigator
 import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.RegionDetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DetailDestination
@@ -13,6 +14,10 @@ class LocationsNavigatorImpl(
 ) : LocationsNavigator {
     override fun navigateToRegionDetail(slug: String) {
         navigator.navigateTo(RegionDetailDestination(slug))
+    }
+
+    override fun navigateToLocationDetail(slug: String) {
+        navigator.navigateTo(LocationDetailDestination(slug))
     }
 
     /**

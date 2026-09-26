@@ -98,6 +98,7 @@ private fun RegionDetailScreenPreview() {
                 ),
             onTabClick = { },
             onQueryChange = { },
+            onLocationClick = { },
             onPokemonClick = { },
             onBackClick = { },
             onRetryClick = { },

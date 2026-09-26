@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.regiondetail.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,19 +33,19 @@ import io.nicolaszurbuchen.tallgrass.infra.text.asString
  * slug at generation time and is decoration -- about one place in six is neutral, which is an
  * ordinary outcome rather than a hole.
  *
- * The row does not open anything yet. The location detail is the next screen to land, and a tap
- * target that does nothing is worse than one that is plainly not there -- so the row is a listing
- * until there is somewhere for it to go.
+ * A row with no encounters stays tappable. Berry Forest exists in every Kanto game and carries data
+ * in two of them, and the place is still worth opening to be told which two.
  */
 @Composable
 fun RegionLocationRow(
     location: RegionLocationUiModel,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surfaceRaised),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
