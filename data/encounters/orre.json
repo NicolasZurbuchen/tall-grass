@@ -1,0 +1,2018 @@
+{
+  "region": "orre",
+  "locations": [
+    {
+      "location": "agate-village",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "relic-forest",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "hitmontop",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "cipher-key-lair",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "1f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "growlithe",
+                  "minLevel": 28,
+                  "maxLevel": 28,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "paras",
+                  "minLevel": 28,
+                  "maxLevel": 28,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "2f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "shellder",
+                  "minLevel": 29,
+                  "maxLevel": 29,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "3f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "beedrill",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "pidgeotto",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "4f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "butterfree",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "magneton",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "tangela",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "5f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "hypno",
+                  "minLevel": 34,
+                  "maxLevel": 34,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "primeape",
+                  "minLevel": 34,
+                  "maxLevel": 34,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "zangoose",
+                  "minLevel": 28,
+                  "maxLevel": 28,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "roof",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "arbok",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "venomoth",
+                  "minLevel": 32,
+                  "maxLevel": 32,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "weepinbell",
+                  "minLevel": 32,
+                  "maxLevel": 32,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "cipher-lab",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "bf1",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "carvanha",
+                  "minLevel": 15,
+                  "maxLevel": 15,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "delcatty",
+                  "minLevel": 18,
+                  "maxLevel": 18,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "numel",
+                  "minLevel": 14,
+                  "maxLevel": 14,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "shroomish",
+                  "minLevel": 15,
+                  "maxLevel": 15,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf2",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "spinarak",
+                  "minLevel": 14,
+                  "maxLevel": 14,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "baltoy",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "gulpin",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "houndour",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "mareep",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "seedot",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "spheal",
+                  "minLevel": 17,
+                  "maxLevel": 17,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "citadark-isle",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "1f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "altaria",
+                  "minLevel": 36,
+                  "maxLevel": 36,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "dodrio",
+                  "minLevel": 34,
+                  "maxLevel": 34,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "farfetchd",
+                  "minLevel": 36,
+                  "maxLevel": 36,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "raticate",
+                  "minLevel": 34,
+                  "maxLevel": 34,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "2f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "magmar",
+                  "minLevel": 36,
+                  "maxLevel": 36,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "pinsir",
+                  "minLevel": 35,
+                  "maxLevel": 35,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "3f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "hitmonchan",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "hitmonlee",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "magcargo",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "rapidash",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "6f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "chansey",
+                  "minLevel": 39,
+                  "maxLevel": 39,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "lickitung",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "scyther",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf1",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "banette",
+                  "minLevel": 37,
+                  "maxLevel": 37,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "kangaskhan",
+                  "minLevel": 36,
+                  "maxLevel": 36,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "dome-1f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "lapras",
+                  "minLevel": 44,
+                  "maxLevel": 44,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "manectric",
+                  "minLevel": 44,
+                  "maxLevel": 44,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "marowak",
+                  "minLevel": 44,
+                  "maxLevel": 44,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "salamence",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "dome-2f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "articuno",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "exeggutor",
+                  "minLevel": 46,
+                  "maxLevel": 46,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "lugia",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "moltres",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "rhydon",
+                  "minLevel": 46,
+                  "maxLevel": 46,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "tauros",
+                  "minLevel": 46,
+                  "maxLevel": 46,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "zapdos",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "dome-bf1",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "dugtrio",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "dome-exterior",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "electabuzz",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "mr-mime",
+                  "minLevel": 42,
+                  "maxLevel": 42,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "poliwrath",
+                  "minLevel": 42,
+                  "maxLevel": 42,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "snorlax",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "solrock",
+                  "minLevel": 41,
+                  "maxLevel": 41,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "starmie",
+                  "minLevel": 41,
+                  "maxLevel": 41,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "swellow",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "golduck",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sableye",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "gateon-port",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "across-bridge",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "ledyba",
+                  "minLevel": 10,
+                  "maxLevel": 10,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "lighthouse-top",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "dragonite",
+                  "minLevel": 55,
+                  "maxLevel": 55,
+                  "chance": 100,
+                  "conditions": [
+                    "story-progress-catch-all-shadow-pokemon"
+                  ]
+                },
+                {
+                  "variant": "poochyena",
+                  "minLevel": 10,
+                  "maxLevel": 10,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "mt-battle",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "100f",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "ho-oh",
+                  "minLevel": 70,
+                  "maxLevel": 70,
+                  "chance": 100,
+                  "conditions": [
+                    "other-complete-mt-battle",
+                    "story-progress-catch-all-shadow-pokemon"
+                  ]
+                }
+              ]
+            },
+            {
+              "area": "10f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "entei",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "lobby",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "chikorita",
+                  "minLevel": 5,
+                  "maxLevel": 5,
+                  "chance": 100,
+                  "conditions": [
+                    "other-complete-mt-battle"
+                  ]
+                },
+                {
+                  "variant": "cyndaquil",
+                  "minLevel": 5,
+                  "maxLevel": 5,
+                  "chance": 100,
+                  "conditions": [
+                    "other-complete-mt-battle"
+                  ]
+                },
+                {
+                  "variant": "totodile",
+                  "minLevel": 5,
+                  "maxLevel": 5,
+                  "chance": 100,
+                  "conditions": [
+                    "other-complete-mt-battle"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "onbs",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "2f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "makuhita",
+                  "minLevel": 18,
+                  "maxLevel": 18,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "vulpix",
+                  "minLevel": 18,
+                  "maxLevel": 18,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "3f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "duskull",
+                  "minLevel": 19,
+                  "maxLevel": 19,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "4f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "mawile",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "roof",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "ralts",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "outskirt-stand",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "outside",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "espeon",
+                  "minLevel": 25,
+                  "maxLevel": 25,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "umbreon",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "togetic",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "inside",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "togepi",
+                  "minLevel": 25,
+                  "maxLevel": 25,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "inside",
+              "method": "npc-trade",
+              "slots": [
+                {
+                  "variant": "elekid",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": [
+                    "trade-togepi-or-togetic"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "phenac-city",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "card-e-room",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "mareep",
+                  "minLevel": 37,
+                  "maxLevel": 37,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "scizor",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "togepi",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "east-exit",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "quilava",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "mayors-house",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "makuhita",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "south-exit",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "croconaw",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "west-exit",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "bayleef",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "mayors-house",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "pineco",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "snorunt",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "prestige-precept-center",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "meowth",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "natu",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "roselia",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "stadium",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "grimer",
+                  "minLevel": 23,
+                  "maxLevel": 23,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "lunatone",
+                  "minLevel": 25,
+                  "maxLevel": 25,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "seel",
+                  "minLevel": 23,
+                  "maxLevel": 23,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "spearow",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "stadium-outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "swinub",
+                  "minLevel": 22,
+                  "maxLevel": 22,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "pokemon-hq-lab",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "pokemon-hq-lab",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "eevee",
+                  "minLevel": 10,
+                  "maxLevel": 10,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "teddiursa",
+                  "minLevel": 11,
+                  "maxLevel": 11,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "pokespot",
+      "versions": [
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "cave",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "nosepass",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "voltorb",
+                  "minLevel": 19,
+                  "maxLevel": 19,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "oasis",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "nosepass",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "rock",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "nosepass",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "cave",
+              "method": "pokespot",
+              "slots": [
+                {
+                  "variant": "zubat",
+                  "minLevel": 10,
+                  "maxLevel": 21,
+                  "chance": 50,
+                  "conditions": []
+                },
+                {
+                  "variant": "aron",
+                  "minLevel": 10,
+                  "maxLevel": 21,
+                  "chance": 35,
+                  "conditions": []
+                },
+                {
+                  "variant": "wooper",
+                  "minLevel": 10,
+                  "maxLevel": 21,
+                  "chance": 15,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "oasis",
+              "method": "pokespot",
+              "slots": [
+                {
+                  "variant": "hoppip",
+                  "minLevel": 10,
+                  "maxLevel": 20,
+                  "chance": 50,
+                  "conditions": []
+                },
+                {
+                  "variant": "phanpy",
+                  "minLevel": 10,
+                  "maxLevel": 20,
+                  "chance": 35,
+                  "conditions": []
+                },
+                {
+                  "variant": "surskit",
+                  "minLevel": 10,
+                  "maxLevel": 20,
+                  "chance": 15,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "rock",
+              "method": "pokespot",
+              "slots": [
+                {
+                  "variant": "sandshrew",
+                  "minLevel": 10,
+                  "maxLevel": 23,
+                  "chance": 50,
+                  "conditions": []
+                },
+                {
+                  "variant": "gligar",
+                  "minLevel": 10,
+                  "maxLevel": 20,
+                  "chance": 35,
+                  "conditions": []
+                },
+                {
+                  "variant": "trapinch",
+                  "minLevel": 10,
+                  "maxLevel": 20,
+                  "chance": 15,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "pyrite-bldg",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "1f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "yanma",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "4f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "mantine",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "remoraid",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "pyrite-cave",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "bf1",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "meditite",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf1-post-sewers",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "swablu",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "mirors-hideout",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "sudowoodo",
+                  "minLevel": 35,
+                  "maxLevel": 35,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "outside",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "qwilfish",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "south-sewers",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "dunsparce",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "mirors-hideout",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "mantine",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "remoraid",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "pyrite-town",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "dukings-house",
+              "method": "gift",
+              "slots": [
+                {
+                  "variant": "plusle",
+                  "minLevel": 13,
+                  "maxLevel": 13,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "duel-square",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "flaaffy",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "misdreavus",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "noctowl",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "quagsire",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "skiploom",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "slugma",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "entrance",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "furret",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "dukings-house",
+              "method": "npc-trade",
+              "slots": [
+                {
+                  "variant": "larvitar",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": [
+                    "trade-wooper"
+                  ]
+                },
+                {
+                  "variant": "meditite",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": [
+                    "trade-trapinch"
+                  ]
+                },
+                {
+                  "variant": "shuckle",
+                  "minLevel": 20,
+                  "maxLevel": 20,
+                  "chance": 100,
+                  "conditions": [
+                    "trade-surskit"
+                  ]
+                }
+              ]
+            },
+            {
+              "area": "colosseum",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "nosepass",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "realgam-tower",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "colosseum",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "absol",
+                  "minLevel": 48,
+                  "maxLevel": 48,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "houndoom",
+                  "minLevel": 48,
+                  "maxLevel": 48,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "metagross",
+                  "minLevel": 50,
+                  "maxLevel": 50,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "miltank",
+                  "minLevel": 48,
+                  "maxLevel": 48,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "tropius",
+                  "minLevel": 49,
+                  "maxLevel": 49,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "tyranitar",
+                  "minLevel": 55,
+                  "maxLevel": 55,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "realgam-tower",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "delibird",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "heracross",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "skarmory",
+                  "minLevel": 47,
+                  "maxLevel": 47,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sunflora",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "realgam-tower",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "entei",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "raikou",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sudowoodo",
+                  "minLevel": 35,
+                  "maxLevel": 35,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "suicune",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "version": "xd",
+          "tables": [
+            {
+              "area": "colosseum",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "nosepass",
+                  "minLevel": 26,
+                  "maxLevel": 26,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "shadow-pokemon-lab",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "bf1",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "aipom",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "murkrow",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "vibrava",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf2",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "ariados",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "forretress",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "granbull",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "raikou",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf1",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "hitmontop",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "bf2",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "bayleef",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "croconaw",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "quilava",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "snagem-hideout",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "2f",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "smeargle",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "ursaring",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "1f",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "bayleef",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "croconaw",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "delibird",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "gligar",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "heracross",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "hitmontop",
+                  "minLevel": 38,
+                  "maxLevel": 38,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "ledian",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "piloswine",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "quilava",
+                  "minLevel": 30,
+                  "maxLevel": 30,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sneasel",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "stantler",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sunflora",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "yanma",
+                  "minLevel": 33,
+                  "maxLevel": 33,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "2f",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "skarmory",
+                  "minLevel": 47,
+                  "maxLevel": 47,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "the-under",
+      "versions": [
+        {
+          "version": "colosseum",
+          "tables": [
+            {
+              "area": "deep-colosseum",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "shuckle",
+                  "minLevel": 45,
+                  "maxLevel": 45,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "subway",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "gligar",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "piloswine",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sneasel",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "stantler",
+                  "minLevel": 43,
+                  "maxLevel": 43,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "the-under",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "ledian",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "tv-studio",
+              "method": "snag",
+              "slots": [
+                {
+                  "variant": "suicune",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            },
+            {
+              "area": "deep-colosseum",
+              "method": "snag-rematch",
+              "slots": [
+                {
+                  "variant": "entei",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "raikou",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "sudowoodo",
+                  "minLevel": 35,
+                  "maxLevel": 35,
+                  "chance": 100,
+                  "conditions": []
+                },
+                {
+                  "variant": "suicune",
+                  "minLevel": 40,
+                  "maxLevel": 40,
+                  "chance": 100,
+                  "conditions": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

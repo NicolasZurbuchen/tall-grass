@@ -28,6 +28,22 @@ class DatasetTest {
     private val abilities by lazy { json.decodeFromString<List<AbilityJson>>(dataDir.resolve("abilities.json").readText()) }
     private val moves by lazy { json.decodeFromString<List<MoveJson>>(dataDir.resolve("moves.json").readText()) }
     private val learnset by lazy { json.decodeFromString<List<LearnsetJson>>(dataDir.resolve("learnset.json").readText()) }
+    private val versions by lazy { json.decodeFromString<List<VersionJson>>(dataDir.resolve("versions.json").readText()) }
+    private val regions by lazy { json.decodeFromString<List<RegionJson>>(dataDir.resolve("regions.json").readText()) }
+    private val locations by lazy { json.decodeFromString<List<LocationJson>>(dataDir.resolve("locations.json").readText()) }
+    private val conditions by lazy {
+        json.decodeFromString<List<EncounterConditionJson>>(dataDir.resolve("encounter-conditions.json").readText())
+    }
+
+    // Read in the regions' own order, which is the order the ids were assigned in when the database
+    // was built. Reading the directory instead would make that a function of the filesystem.
+    private val encounters by lazy {
+        regions.mapNotNull { region ->
+            dataDir.resolve("encounters/${region.slug}.json")
+                .takeIf { it.exists() }
+                ?.let { json.decodeFromString<RegionEncountersJson>(it.readText()) }
+        }
+    }
 
     @Test
     fun manifest_matchesTheFilesItDescribes() {
@@ -38,6 +54,15 @@ class DatasetTest {
         assertEquals(manifest.abilityCount, abilities.size)
         assertEquals(manifest.moveCount, moves.size)
         assertEquals(manifest.learnerCount, learnset.sumOf { it.learnedBy.size })
+        assertEquals(manifest.regionCount, regions.size)
+        assertEquals(manifest.locationCount, locations.size)
+        assertEquals(manifest.versionCount, versions.size)
+        assertEquals(
+            manifest.encounterSlotCount,
+            encounters.sumOf { region ->
+                region.locations.sumOf { location -> location.versions.sumOf { it.tables.sumOf { table -> table.slots.size } } }
+            },
+        )
     }
 
     @Test
@@ -604,4 +629,298 @@ class DatasetTest {
     }
 
     // endregion
+
+    @Test
+    fun regions_areTheElevenAndEachIsCurated() {
+        assertEquals(11, regions.size)
+        assertEquals(CURATED_REGIONS.map { it.slug }.toSet(), regions.map { it.slug }.toSet())
+        assertTrue(regions.all { it.blurb.isNotBlank() }, "Regions with no blurb: ${regions.filter { it.blurb.isBlank() }.map { it.slug }}")
+    }
+
+    /**
+     * The list runs Kanto to Paldea and then Orre, which is upstream's own id order.
+     *
+     * Ordering on generation would interleave Orre with Hoenn -- both Generation III -- and put the
+     * spin-off region in the middle of the main sequence.
+     */
+    @Test
+    fun regions_runInReleaseOrderWithTheSpinOffLast() {
+        assertEquals(
+            listOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "hisui", "paldea", "orre"),
+            regions.map { it.slug },
+        )
+        assertEquals(3, regions.single { it.slug == "orre" }.generation)
+    }
+
+    /**
+     * Orre is the region every derived field has to survive the absence of.
+     *
+     * Upstream has no Japanese name for it, no regional Pokedex, and -- the one that actually broke
+     * the generator -- no `version_group_regions` row either, which took Colosseum and XD off the
+     * only region that is nothing else.
+     */
+    @Test
+    fun orre_hasNoNativeNameAndNoPokedexButKeepsItsGames() {
+        val orre = regions.single { it.slug == "orre" }
+        assertEquals(null, orre.nativeName)
+        assertTrue(orre.pokedex.isEmpty(), "Orre has dex entries: ${orre.pokedex.size}")
+        assertEquals(listOf("colosseum", "xd"), orre.versions)
+        assertTrue(regions.filter { it.slug != "orre" }.all { it.nativeName != null })
+    }
+
+    /** Every other region has a dex, and Kanto's is the 151 everyone can check. */
+    @Test
+    fun everyRegionButOrre_hasARegionalPokedex() {
+        val empty = regions.filter { it.pokedex.isEmpty() }
+        assertEquals(listOf("orre"), empty.map { it.slug })
+        assertEquals(151, regions.single { it.slug == "kanto" }.pokedex.size)
+        assertEquals(242, regions.single { it.slug == "hisui" }.pokedex.size)
+    }
+
+    /**
+     * #5's correction, and the reason a regional dex cannot be read off the species.
+     *
+     * The same Dex number resolves to a different form depending on which region is asking, and
+     * `listedInDex` -- a National-dex flag, true for both -- cannot express it.
+     */
+    @Test
+    fun regionalDex_namesTheVariantNativeToThatRegion() {
+        val kanto = regions.single { it.slug == "kanto" }.pokedex
+        val alola = regions.single { it.slug == "alola" }.pokedex
+
+        assertEquals("vulpix", kanto.single { it.number == 37 }.variant)
+        assertTrue(alola.any { it.variant == "vulpix-alola" }, "Alola's dex has no Alolan Vulpix")
+        assertTrue(alola.none { it.variant == "vulpix" }, "Alola's dex has the Kantonian Vulpix")
+    }
+
+    /**
+     * Kalos ships three Pokedexes that each number from 1, so they are concatenated rather than
+     * sorted together. Sorted on the number alone they would read as three interleaved runs of
+     * 1..153, and the grid would show three Chespins before anything else.
+     */
+    @Test
+    fun kalos_concatenatesItsThreeDexesRatherThanInterleavingThem() {
+        val kalos = regions.single { it.slug == "kalos" }.pokedex
+        assertEquals(457, kalos.size)
+        assertEquals(1, kalos.first().number)
+        // The seam between Central and Coastal: the number restarts rather than carrying on.
+        assertEquals(listOf(152, 153, 1, 2), kalos.drop(151).take(4).map { it.number })
+        assertEquals(kalos.size, kalos.map { it.variant }.distinct().size)
+    }
+
+    @Test
+    fun everyRegion_hasBoxArtNamingVariantsThatExist() {
+        val slugs = variants.map { it.slug }.toSet()
+        val missing = regions.flatMap { region -> region.boxArt.map { region.slug to it } }.filterNot { it.second in slugs }
+        assertTrue(missing.isEmpty(), "Box art naming no variant: $missing")
+        // Two regions have no legendary pair on the cover and fall back to what they have.
+        assertEquals(listOf("arceus"), regions.single { it.slug == "hisui" }.boxArt)
+        assertTrue(regions.filterNot { it.slug == "hisui" }.all { it.boxArt.size == 2 })
+    }
+
+    @Test
+    fun everyLocation_belongsToAKnownRegion() {
+        val slugs = regions.map { it.slug }.toSet()
+        val orphans = locations.filterNot { it.region in slugs }
+        assertTrue(orphans.isEmpty(), "Locations with no region: ${orphans.take(5).map { it.slug }}")
+        assertEquals(96, locations.count { it.region == "kanto" })
+    }
+
+    @Test
+    fun everyEncounter_namesAKnownVariantLocationAndVersion() {
+        val variantSlugs = variants.map { it.slug }.toSet()
+        val locationSlugs = locations.map { it.slug }.toSet()
+        val versionSlugs = versions.map { it.slug }.toSet()
+
+        val badVariants = mutableSetOf<String>()
+        val badLocations = mutableSetOf<String>()
+        val badVersions = mutableSetOf<String>()
+
+        encounters.forEach { region ->
+            region.locations.forEach { location ->
+                if (location.location !in locationSlugs) badLocations += location.location
+                location.versions.forEach { version ->
+                    if (version.version !in versionSlugs) badVersions += version.version
+                    version.tables.forEach { table ->
+                        table.slots.forEach { if (it.variant !in variantSlugs) badVariants += it.variant }
+                    }
+                }
+            }
+        }
+
+        assertTrue(badVariants.isEmpty(), "Encounters naming no variant: $badVariants")
+        assertTrue(badLocations.isEmpty(), "Encounters naming no location: $badLocations")
+        assertTrue(badVersions.isEmpty(), "Encounters naming no version: $badVersions")
+    }
+
+    /**
+     * The correction on #8, pinned against the table it was found on.
+     *
+     * Condition tags are **AND-filters on a slot**, not alternative tables: a slot counts when every
+     * tag it carries is satisfied by the chosen state. Read as competing tables, HeartGold's Route 1
+     * walking slots look like 360% of a table. Read as one twelve-slot table whose fragments switch
+     * on and off, every complete state is exactly 100%.
+     *
+     * If this ever fails, the pipeline has started aggregating conditions away, and that is not
+     * recoverable from the output -- it has to be caught here.
+     */
+    @Test
+    fun conditionTags_filterSlotsRatherThanNamingSeparateTables() {
+        val table =
+            encounters.single { it.region == "kanto" }
+                .locations.single { it.location == "kanto-route-1" }
+                .versions.single { it.version == "heartgold" }
+                .tables.single { it.method == "walk" }
+
+        // Summed by method alone, the way the pre-correction reading would have, this is 360%.
+        assertEquals(360, table.slots.sumOf { it.chance })
+
+        val states =
+            listOf(
+                setOf("swarm-no", "time-day", "radio-off"),
+                setOf("swarm-no", "time-night", "radio-off"),
+                setOf("swarm-no", "time-morning", "radio-off"),
+                setOf("swarm-no", "time-night", "radio-sinnoh"),
+            )
+        states.forEach { state ->
+            val sum = table.slots.filter { state.containsAll(it.conditions) }.sumOf { it.chance }
+            assertEquals(100, sum, "State ${state.sorted()} sums to $sum, not 100")
+        }
+    }
+
+    /**
+     * Each rod is its own hundred per cent, which is why the method tabs are the actual method and
+     * never a "Fishing" group. Merged, Magikarp appears at 100% under Old Rod and 55% under Good Rod
+     * and the tab claims 255%.
+     */
+    @Test
+    fun eachMethod_isItsOwnDenominator() {
+        val rods =
+            encounters.flatMap { it.locations }
+                .flatMap { it.versions }
+                .flatMap { it.tables }
+                .filter { it.method in setOf("old-rod", "good-rod", "super-rod") }
+
+        assertTrue(rods.size > 100, "Only ${rods.size} rod tables, which is too few to be reading them all")
+
+        // Only the unconditioned tables, because summing a conditioned one across every state at
+        // once is the arithmetic the correction on #8 exists to forbid -- it is how a twelve-slot
+        // table reads as 360%.
+        val plain = rods.filter { table -> table.slots.all { it.conditions.isEmpty() } }
+        assertTrue(plain.size > 100, "Only ${plain.size} unconditioned rod tables")
+        assertTrue(
+            plain.none { it.slots.sumOf { slot -> slot.chance } > 200 },
+            "A rod table sums past 200%, which means two rods have been merged: " +
+                plain.filter { it.slots.sumOf { slot -> slot.chance } > 200 }.take(3).map { it.area to it.method },
+        )
+    }
+
+    /**
+     * A rarity belongs to a **slot**, so a variant holding four of a table's twelve slots is four
+     * rarities to add up -- but the same slot id arriving twice is one slot written twice, and adding
+     * that counts it twice.
+     *
+     * Upstream does exactly that for Generation II fishing. Cherrygrove's Super Rod table is stored
+     * three times over, once per time of day, with the `time` condition left off all three; added up
+     * it reads as 300%. Deduplicated by slot id it reads as 130 -- Krabby 60, Kingler 10, and then
+     * Corsola and Staryu at 30 each, which is the day and night variance upstream did not tag.
+     *
+     * The residual 30 is not a bug to fix here. It is the same untagged variance Alola's walking
+     * tables carry, and the reason #24 shows no running total and qualifies a rate as "up to".
+     */
+    @Test
+    fun aRepeatedSlotIsOneSlot_notTwo() {
+        val table =
+            encounters.single { it.region == "johto" }
+                .locations.single { it.location == "cherrygrove-city" }
+                .versions.single { it.version == "silver" }
+                .tables.single { it.method == "super-rod" }
+
+        assertEquals(130, table.slots.sumOf { it.chance })
+        assertEquals(60, table.slots.single { it.variant == "krabby" }.chance)
+        assertEquals(
+            listOf("corsola", "staryu"),
+            table.slots.filter { it.chance == 30 }.map { it.variant }.sorted(),
+        )
+    }
+
+    /**
+     * #21 decided Generation IX ships its gap explicitly rather than hiding it. Hisui is a second
+     * instance of the same gap that #21 never named -- Legends: Arceus has no encounter rows either --
+     * and the screens have to say so for both.
+     */
+    @Test
+    fun hisuiAndPaldea_haveNoEncounterDataAtAll() {
+        val withData = encounters.map { it.region }.toSet()
+        assertTrue("hisui" !in withData, "Hisui has encounter data now, so the empty state is wrong")
+        assertTrue("paldea" !in withData, "Paldea has encounter data now, so #21's gap has closed")
+        assertEquals(setOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "orre"), withData)
+
+        // Both regions still list their places. The absence is the answer, not a reason to hide them.
+        assertEquals(89, locations.count { it.region == "hisui" })
+        assertTrue(locations.filter { it.region == "hisui" }.all { it.versions.isEmpty() })
+    }
+
+    /**
+     * The reason `LocationJson.areas` exists at all.
+     *
+     * #24 folds a location's areas together on screen, and folding them in the data would be wrong:
+     * an area is the unit a rate is a percentage of, and one place can draw the same method from
+     * several of them. Fold Sinnoh's worst case together and a walking table sums to 2,200%.
+     */
+    @Test
+    fun oneLocation_canDrawOneMethodFromSeveralAreas() {
+        val worst =
+            encounters.flatMap { region -> region.locations.flatMap { location -> location.versions.map { location to it } } }
+                .flatMap { (location, version) ->
+                    version.tables.groupBy { it.method }.map { (method, tables) -> Triple(location.location, method, tables.size) }
+                }.maxByOrNull { it.third }
+
+        assertTrue(worst != null && worst.third > 1, "No location draws one method from several areas any more")
+    }
+
+    @Test
+    fun versionCodes_areUniqueWithinTheirConsoleRow() {
+        versions.groupBy { it.console }.forEach { (console, group) ->
+            val codes = group.map { it.code }
+            assertEquals(codes.size, codes.distinct().size, "$console has a repeated code: $codes")
+        }
+        // Row-local uniqueness is the whole point: these two collide and must not be made to agree.
+        assertEquals("Y", versions.single { it.slug == "yellow" }.code)
+        assertEquals("Y", versions.single { it.slug == "y" }.code)
+    }
+
+    /**
+     * The three Japan-only Generation I releases are dropped rather than drawn: for an English
+     * reader they are the games beside them, and they would put three cells on Kanto's grid that
+     * cannot be told apart from three others.
+     */
+    @Test
+    fun japanOnlyVersions_areNotShipped() {
+        val slugs = versions.map { it.slug }.toSet()
+        assertTrue(setOf("red-japan", "green-japan", "blue-japan").none { it in slugs })
+        assertEquals(12, regions.single { it.slug == "kanto" }.versions.size)
+    }
+
+    /** Every condition an encounter references has to resolve to an axis the selector can draw. */
+    @Test
+    fun everyConditionTag_resolvesToAKnownAxis() {
+        val known = conditions.map { it.slug }.toSet()
+        val used =
+            encounters.flatMap { it.locations }
+                .flatMap { it.versions }
+                .flatMap { it.tables }
+                .flatMap { table -> table.slots.flatMap { it.conditions } }
+                .toSet()
+
+        assertTrue(used.isNotEmpty())
+        assertTrue((used - known).isEmpty(), "Conditions with no axis: ${used - known}")
+        assertTrue(conditions.any { it.axis == "time" } && conditions.any { it.axis == "swarm" })
+
+        // Upstream files the Generation VIII weather values under `max-den-rating` rather than under
+        // a weather condition of their own, so the selector's axis for the Wild Area is that one.
+        // Recorded because the name reads like a mistake and is not: renaming it here would put this
+        // dataset out of step with the source it is regenerated from.
+        assertEquals("max-den-rating", conditions.single { it.slug == "weather-sandstorm" }.axis)
+    }
 }

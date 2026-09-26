@@ -1,0 +1,164 @@
+-- The eleven regions, and the games set in them.
+--
+-- `blurb` and the boxArt rows are the only curated content in this database. Upstream has no field
+-- for either, and #24 accepted the curation on the grounds that eleven rows is a table somebody can
+-- read in one sitting. A region's own in-game description would have been flavour text, which #10
+-- and #11 forbid shipping, so the blurb is written for this project instead.
+--
+-- `nativeName` is null for Orre alone, which upstream has no Japanese name for.
+CREATE TABLE region (
+    slug           TEXT NOT NULL PRIMARY KEY,
+    name           TEXT NOT NULL,
+    nativeName     TEXT,
+    -- The earliest generation among the region's own games. Kanto is I even though Gold and Silver
+    -- reach it, because those are Johto's games.
+    generation     INTEGER NOT NULL,
+    blurb          TEXT NOT NULL,
+    locationCount  INTEGER NOT NULL,
+    sortOrder      INTEGER NOT NULL
+);
+
+-- The pair of variants drawn on a region's card, in the order they are drawn.
+--
+-- A single defining mascot was rejected as an arbitrary editorial pick -- there is no argument for
+-- Ho-Oh over Lugia -- and a pair removes the choice. Two regions have no pair and carry what they
+-- have: Hisui is Arceus alone, Orre takes Colosseum's cover.
+CREATE TABLE regionBoxArt (
+    regionSlug  TEXT NOT NULL,
+    variantSlug TEXT NOT NULL,
+    slot        INTEGER NOT NULL,
+    PRIMARY KEY (regionSlug, slot)
+);
+
+-- One entry of a regional Pokedex.
+--
+-- `number` is the regional entry number and is not the National Dex number: Chikorita is 1 in Johto
+-- and 152 nationally. The grid draws the national number, the same as every other dex grid in the
+-- app, so this is carried for the record rather than for display.
+--
+-- **`sortOrder` and not `number` is the key of the ordering**, because a region can own more than one
+-- Pokedex and Kalos owns three that each number from 1. Concatenated in the order `CURATED_REGIONS`
+-- lists them, Kalos reads Central then Coastal then Mountain; sorted on `number` it would read as
+-- three interleaved runs of 1..153.
+--
+-- `variantSlug` is the region-native form, which is the whole point of a regional dex and the
+-- correction #5 records -- Kanto's 37 is `vulpix`, Alola's is `vulpix-alola`. It must never be
+-- conflated with `variant.listedInDex`, which answers a National-dex question and is true for both.
+--
+-- Orre has no rows here at all. Upstream has no Orre dex, and the tab says so rather than quietly
+-- showing the national one.
+CREATE TABLE regionDexEntry (
+    regionSlug  TEXT NOT NULL,
+    variantSlug TEXT NOT NULL,
+    number      INTEGER NOT NULL,
+    sortOrder   INTEGER NOT NULL,
+    PRIMARY KEY (regionSlug, variantSlug)
+);
+
+-- One playable version, which is one cell of the availability grid.
+--
+-- Every version is its own cell and no two share one: FireRed and LeafGreen do not share an
+-- encounter table, so they cannot share a cell, and nor can Red and Blue. See #9.
+--
+-- `code` is unique only within `console`, which is what the grouping is actually for rather than
+-- decoration: `Y` is Yellow on the GB row and Pokemon Y on the 3DS row.
+--
+-- `console` rather than generation, on the author's reasoning in #9 -- if I play Diamond I may not
+-- know it is the fourth generation, but I know I am holding a DS. Generation needed eight rows and
+-- scattered the Switch games across three of them.
+CREATE TABLE gameVersion (
+    slug        TEXT NOT NULL PRIMARY KEY,
+    name        TEXT NOT NULL,
+    code        TEXT NOT NULL,
+    console     TEXT NOT NULL,
+    generation  INTEGER NOT NULL,
+    sortOrder   INTEGER NOT NULL
+);
+
+-- Which regions a version is set in. Usually one; Gold, Silver and Crystal are set in Johto and
+-- reach Kanto as a second region, so their cells appear on both grids.
+CREATE TABLE regionVersion (
+    regionSlug  TEXT NOT NULL,
+    versionSlug TEXT NOT NULL,
+    PRIMARY KEY (regionSlug, versionSlug)
+);
+
+countRegions:
+SELECT count(*) FROM region;
+
+countGameVersions:
+SELECT count(*) FROM gameVersion;
+
+insertRegion:
+INSERT INTO region(slug, name, nativeName, generation, blurb, locationCount, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+insertRegionBoxArt:
+INSERT INTO regionBoxArt(regionSlug, variantSlug, slot) VALUES (?, ?, ?);
+
+insertRegionDexEntry:
+INSERT INTO regionDexEntry(regionSlug, variantSlug, number, sortOrder) VALUES (?, ?, ?, ?);
+
+insertGameVersion:
+INSERT INTO gameVersion(slug, name, code, console, generation, sortOrder) VALUES (?, ?, ?, ?, ?, ?);
+
+insertRegionVersion:
+INSERT INTO regionVersion(regionSlug, versionSlug) VALUES (?, ?);
+
+-- Every region, for the list. `blurb` is left out: it runs to about 250 characters and the card
+-- draws none of it, so reading all eleven would be prose nobody looks at.
+selectRegions:
+SELECT slug, name, nativeName, generation, locationCount
+FROM region
+ORDER BY sortOrder;
+
+-- The box art for every region in one read, because the list draws all eleven cards at once and
+-- eleven separate queries for two rows each is the shape that makes a list scroll badly.
+selectAllBoxArt:
+SELECT b.regionSlug, b.slot, v.slug, v.artworkUrl
+FROM regionBoxArt b
+JOIN variant v ON v.slug = b.variantSlug
+ORDER BY b.regionSlug, b.slot;
+
+-- One region, every column, for the About tab.
+selectRegion:
+SELECT slug, name, nativeName, generation, blurb, locationCount
+FROM region
+WHERE slug = ?;
+
+-- The cells of one region's availability grid, and the rows they group into.
+--
+-- Derived rather than hardcoded, which is what gives Kanto twelve cells instead of thirty and no 3DS
+-- row at all -- Kanto has no 3DS game. See #24.
+selectRegionVersions:
+SELECT v.slug, v.name, v.code, v.console, v.generation
+FROM regionVersion rv
+JOIN gameVersion v ON v.slug = rv.versionSlug
+WHERE rv.regionSlug = ?
+ORDER BY v.sortOrder;
+
+-- Every version, for the Pokemon side of the grid, which is not scoped to a region.
+selectGameVersions:
+SELECT slug, name, code, console, generation
+FROM gameVersion
+ORDER BY sortOrder;
+
+-- One region's Pokedex, as dex cards.
+--
+-- Joined to `variant` rather than to `species` because the entry names a form: this is the query
+-- #5's correction is about, and reading it off the species would show an Alolan Vulpix in Kanto.
+selectRegionDex:
+SELECT
+    d.number,
+    v.slug,
+    v.speciesDexNumber,
+    v.name,
+    v.artworkUrl,
+    t1.typeSlug AS primaryType,
+    t2.typeSlug AS secondaryType
+FROM regionDexEntry d
+JOIN variant v ON v.slug = d.variantSlug
+LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
+LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
+WHERE d.regionSlug = ?
+ORDER BY d.sortOrder;
