@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.component.DamageClassIcon
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
@@ -55,6 +56,7 @@ import tallgrass.shared.generated.resources.pokedex_detail_no_moves
 fun MovesTab(
     abilities: List<VariantAbilityUiModel>,
     moves: List<VariantMoveUiModel>,
+    tint: Color,
     onAbilityClick: (String) -> Unit,
     onMoveClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -64,7 +66,7 @@ fun MovesTab(
         // means the read has not landed — and a heading over a "none" that cannot happen would be
         // answering a question nobody asked.
         if (abilities.isNotEmpty()) {
-            SectionHeading(title = Res.string.pokedex_detail_abilities, isFirst = true)
+            SectionHeading(title = Res.string.pokedex_detail_abilities, tint = tint, isFirst = true)
 
             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
                 abilities.forEach { ability ->
@@ -73,7 +75,7 @@ fun MovesTab(
             }
         }
 
-        SectionHeading(title = Res.string.pokedex_detail_moves_heading, isFirst = abilities.isEmpty())
+        SectionHeading(title = Res.string.pokedex_detail_moves_heading, tint = tint, isFirst = abilities.isEmpty())
 
         if (moves.isEmpty()) {
             // Every Mega and Gigantamax, which learn what their base form learns and which upstream
@@ -103,13 +105,14 @@ fun MovesTab(
 @Composable
 private fun SectionHeading(
     title: StringResource,
+    tint: Color,
     isFirst: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Text(
         text = stringResource(title),
         style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.appColors.textPrimary,
+        color = tint.asLabelColor(),
         modifier =
             modifier.padding(
                 top = if (isFirst) MaterialTheme.spacing.xs else MaterialTheme.spacing.lg,

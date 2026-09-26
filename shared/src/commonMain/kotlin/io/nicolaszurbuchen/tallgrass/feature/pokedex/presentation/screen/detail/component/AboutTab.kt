@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
+import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
@@ -30,9 +31,11 @@ import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.ic_female
 import tallgrass.shared.generated.resources.ic_male
+import tallgrass.shared.generated.resources.pokedex_detail_base_exp
 import tallgrass.shared.generated.resources.pokedex_detail_breeding
 import tallgrass.shared.generated.resources.pokedex_detail_egg_cycle
 import tallgrass.shared.generated.resources.pokedex_detail_egg_groups
+import tallgrass.shared.generated.resources.pokedex_detail_ev_yield
 import tallgrass.shared.generated.resources.pokedex_detail_female
 import tallgrass.shared.generated.resources.pokedex_detail_gender
 import tallgrass.shared.generated.resources.pokedex_detail_genderless
@@ -43,15 +46,19 @@ import tallgrass.shared.generated.resources.pokedex_detail_training
 import tallgrass.shared.generated.resources.pokedex_detail_weight
 
 /**
- * Height and weight belong to the form on screen; everything under them belongs to the species and
- * does not move when the switcher is used. That is the rule the Species/Variant split exists to
- * keep, so it is worth seeing in the order of the rows. See #5.
+ * Breeding belongs to the species and does not move when the switcher is used; the measurements and
+ * the training figures belong to the form on screen. That is the rule the Species/Variant split
+ * exists to keep. See #5 and `AboutUiModel`.
  *
  * Abilities are deliberately absent — they live in the Moves tab. See #27.
+ *
+ * [tint] is the Pokemon's first type, which is also the hero's colour: the headings carry it so the
+ * sheet reads as part of the screen above it rather than as a white page that arrived separately.
  */
 @Composable
 fun AboutTab(
     about: AboutUiModel,
+    tint: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -68,12 +75,19 @@ fun AboutTab(
             Measurement(label = Res.string.pokedex_detail_weight, value = about.weightText, modifier = Modifier.weight(1f))
         }
 
-        SectionTitle(title = Res.string.pokedex_detail_breeding)
+        SectionTitle(title = Res.string.pokedex_detail_breeding, tint = tint)
         GenderRow(gender = about.gender)
         KeyValueRow(label = Res.string.pokedex_detail_egg_groups, value = about.eggGroupsText)
         KeyValueRow(label = Res.string.pokedex_detail_egg_cycle, value = about.eggCycleText)
 
-        SectionTitle(title = Res.string.pokedex_detail_training)
+        SectionTitle(title = Res.string.pokedex_detail_training, tint = tint)
+
+        // Absent for the 49 forms upstream has not costed yet -- every one of them a Legends Z-A
+        // Mega. The rows go rather than showing a dash, because a dash in a column of figures reads
+        // as a figure of zero.
+        about.evYieldText?.let { KeyValueRow(label = Res.string.pokedex_detail_ev_yield, value = it) }
+        about.baseExperienceText?.let { KeyValueRow(label = Res.string.pokedex_detail_base_exp, value = it) }
+
         KeyValueRow(label = Res.string.pokedex_detail_growth, value = about.growthText)
     }
 }
@@ -101,12 +115,13 @@ private fun Measurement(
 @Composable
 private fun SectionTitle(
     title: StringResource,
+    tint: Color,
     modifier: Modifier = Modifier,
 ) {
     Text(
         text = stringResource(title),
         style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.appColors.textPrimary,
+        color = tint.asLabelColor(),
         modifier = modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.sm),
     )
 }

@@ -42,6 +42,20 @@ data class SpeciesJson(
     val eggGroups: List<String>,
 )
 
+/**
+ * One battle-distinct form.
+ *
+ * [baseExperience] and [evYield] are what defeating this form is worth, and both are **absent for
+ * the forms upstream has not filled in yet** -- the 49 Legends Z-A Megas, which carry an empty
+ * `base_experience` and a zero against every stat's `effort`. Written as a null and an empty map
+ * rather than as a 0 and six zeroes, because a Pokemon that awards nothing is not a thing: every
+ * filled-in form is worth experience and yields between one and three effort values. See
+ * `DECISIONS.md § A move's absent numbers are absent, not zero`, which is the same rule.
+ *
+ * [evYield] holds only the stats that award something, for the same reason `move.meta` drops its
+ * defaults: carried whole, 1,385 forms would each list four stats they yield nothing against and
+ * every reader would have to re-derive which zeroes were facts.
+ */
 @Serializable
 data class VariantJson(
     val slug: String,
@@ -57,10 +71,12 @@ data class VariantJson(
     val listedInDex: Boolean,
     val height: Int,
     val weight: Int,
+    val baseExperience: Int?,
     val artworkUrl: String,
     val sortOrder: Int,
     val types: List<String>,
     val stats: Map<String, Int>,
+    val evYield: Map<String, Int>,
     val abilities: List<AbilityRefJson>,
 )
 

@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EvYield
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonStats
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
@@ -24,6 +25,8 @@ class StatsUiMapperTest {
             primaryType = PokemonType.FIRE,
             secondaryType = PokemonType.FLYING,
             stats = stats,
+            baseExperience = 240,
+            evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
         )
 
     @Test

@@ -76,6 +76,8 @@ private fun DetailScreenPreview() {
                                     gender = GenderUiModel.Split(UiText.Raw("87.5%"), UiText.Raw("12.5%")),
                                     eggGroupsText = UiText.Raw("Monster, Dragon"),
                                     eggCycleText = UiText.Raw("20 cycles"),
+                                    evYieldText = UiText.Raw("3 Sp. Atk"),
+                                    baseExperienceText = UiText.Raw("267"),
                                     growthText = UiText.Raw("Medium Slow"),
                                 ),
                             stats =

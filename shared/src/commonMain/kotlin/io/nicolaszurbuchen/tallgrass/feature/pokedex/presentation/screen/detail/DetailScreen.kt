@@ -296,7 +296,7 @@ fun DetailScreen(
                         ) {
                             when (DetailTabUiModel.entries[page]) {
                                 DetailTabUiModel.ABOUT -> {
-                                    AboutTab(about = content.about)
+                                    AboutTab(about = content.about, tint = tint)
                                 }
 
                                 DetailTabUiModel.STATS -> {
@@ -307,6 +307,7 @@ fun DetailScreen(
                                     MovesTab(
                                         abilities = content.abilities,
                                         moves = content.moves,
+                                        tint = tint,
                                         onAbilityClick = onAbilityClick,
                                         onMoveClick = onMoveClick,
                                     )

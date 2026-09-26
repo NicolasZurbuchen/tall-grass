@@ -54,6 +54,8 @@
     <string name="pokedex_detail_egg_cycle_value">%1$s cycles</string>
 
     <string name="pokedex_detail_training">Training</string>
+    <string name="pokedex_detail_ev_yield">EV Yield</string>
+    <string name="pokedex_detail_base_exp">Base Exp</string>
     <string name="pokedex_detail_growth">Growth</string>
 
     <string name="pokedex_detail_stat_hp">HP</string>

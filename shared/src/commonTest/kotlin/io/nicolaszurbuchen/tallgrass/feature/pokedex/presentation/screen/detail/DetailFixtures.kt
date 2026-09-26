@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EggGroup
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.EvYield
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.GrowthRate
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
@@ -41,6 +42,8 @@ internal val charizard =
         primaryType = PokemonType.FIRE,
         secondaryType = PokemonType.FLYING,
         stats = PokemonStats(hp = 78, attack = 84, defense = 78, specialAttack = 109, specialDefense = 85, speed = 100),
+        baseExperience = 240,
+        evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
     )
 
 internal val charizardMegaX =
@@ -56,6 +59,10 @@ internal val charizardMegaX =
         primaryType = PokemonType.FIRE,
         secondaryType = PokemonType.DRAGON,
         stats = PokemonStats(hp = 78, attack = 130, defense = 111, specialAttack = 130, specialDefense = 85, speed = 100),
+        // Worth more than the ordinary form, which is the half of training that moves here: the
+        // yield does not, and only regional forms change that. Breeding moves with neither.
+        baseExperience = 285,
+        evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
     )
 
 internal val charizardDetail = PokemonDetail(species = charizardSpecies, variants = listOf(charizard, charizardMegaX))
