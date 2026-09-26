@@ -2,6 +2,8 @@ package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
@@ -20,6 +22,19 @@ sealed interface DetailIntent {
 
     data class TabSelected(
         val tab: DetailState.Tab,
+    ) : DetailIntent
+
+    /** A cell of the availability grid, including a grey one -- see #9 on confirming a negative. */
+    data class LocationVersionSelected(
+        val versionSlug: String,
+    ) : DetailIntent
+
+    /** Tapping the breadcrumb, which puts the grid back. */
+    data object LocationVersionCleared : DetailIntent
+
+    /** A route tapped in the Location tab. The game it was tapped under is already in the State. */
+    data class PlaceClicked(
+        val locationSlug: String,
     ) : DetailIntent
 
     data class MoveClicked(
@@ -46,6 +61,17 @@ sealed interface DetailLabel {
      */
     data class NavigateToMove(
         val slug: String,
+    ) : DetailLabel
+
+    /**
+     * A route tapped in the Location tab, carrying the game it was tapped under.
+     *
+     * Both halves, because landing the reader back at the grid would ask them which game twice.
+     * See #24 on closing the loop between the two views.
+     */
+    data class NavigateToLocation(
+        val locationSlug: String,
+        val versionSlug: String,
     ) : DetailLabel
 
     /** An ability tapped in the Moves tab. Only the slug, for the same reason. */
@@ -81,6 +107,21 @@ sealed interface DetailMessage {
     data class MovesLoaded(
         val variantSlug: String,
         val moves: List<VariantMove>,
+    ) : DetailMessage
+
+    data class AvailabilityLoaded(
+        val variantSlug: String,
+        val availability: VariantAvailability,
+    ) : DetailMessage
+
+    data class LocationVersionSelected(
+        val versionSlug: String,
+    ) : DetailMessage
+
+    data object LocationVersionCleared : DetailMessage
+
+    data class VariantEncountersLoaded(
+        val encounters: List<VariantEncounter>,
     ) : DetailMessage
 
     /** The other half of what the Moves tab shows, read in the same pass. */
@@ -147,6 +188,14 @@ data class DetailState(
     // Keyed by variant for the same reason, and read in the same pass: a form has its own abilities
     // too, and Alolan Sandshrew's Slush Rush is not Sandshrew's Sand Veil.
     val abilities: Map<String, List<VariantAbility>> = emptyMap(),
+    // Keyed by variant, because a form is not found where its base form is: Alolan Vulpix lives on a
+    // different island from Vulpix. Read when the Location tab is first opened for a form.
+    val availability: Map<String, VariantAvailability> = emptyMap(),
+    // Only for the form and game on screen. Unlike the moves these are not worth keeping per form: a
+    // reader who switches form is asking a different question, and the read is one cell wide.
+    val locationVersion: String? = null,
+    val isLoadingPlaces: Boolean = false,
+    val places: List<VariantEncounter> = emptyList(),
     val tab: Tab = Tab.ABOUT,
     val error: AppError? = null,
 ) {
@@ -154,5 +203,6 @@ data class DetailState(
         ABOUT,
         STATS,
         MOVES,
+        LOCATION,
     }
 }

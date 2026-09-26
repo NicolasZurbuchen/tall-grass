@@ -16,8 +16,9 @@ import kotlinx.coroutines.flow.stateIn
 class LocationDetailViewModel(
     factory: LocationDetailStoreFactory,
     slug: String,
+    versionSlug: String?,
 ) : ViewModel() {
-    private val store = factory.create(slug)
+    private val store = factory.create(slug, versionSlug)
 
     // viewModelScope is the main dispatcher, and the mapper is pure, so it runs off it. No card cache
     // here: pinning a condition changes the rows on every tap, so there is no run of states that

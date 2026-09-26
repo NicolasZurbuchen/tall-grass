@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.location.domain.fake.LocationFixtures
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DexQuery
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -81,5 +82,56 @@ class DetailReducerTest {
 
         assertTrue(state.isLoading)
         assertNull(state.error)
+    }
+
+    @Test
+    fun switchingForm_clearsTheChosenGameAndItsPlaces() {
+        // Alolan Vulpix is not found where Vulpix is, so a cell left selected would show one form's
+        // places under another form's name.
+        val browsing =
+            initial.copy(
+                locationVersion = "heartgold",
+                places = listOf(LocationFixtures.pidgeyOnRoute1),
+            )
+
+        val state = reduce(browsing, DetailMessage.FormSwitched("charizard-mega-x"))
+
+        assertNull(state.locationVersion)
+        assertTrue(state.places.isEmpty())
+    }
+
+    @Test
+    fun availabilityIsKeptPerFormRatherThanForTheOneOnScreen() {
+        // A reader comparing two forms switches back and forth, and the second look should not read
+        // again -- the same call the moves cache makes.
+        val first =
+            reduce(initial, DetailMessage.AvailabilityLoaded("charizard", LocationFixtures.pidgeyAvailability))
+        val second =
+            reduce(first, DetailMessage.AvailabilityLoaded("charizard-mega-x", LocationFixtures.pidgeyAvailability))
+
+        assertEquals(setOf("charizard", "charizard-mega-x"), second.availability.keys)
+    }
+
+    @Test
+    fun choosingAGame_dropsThePreviousPlacesWhileTheNextOnesLoad() {
+        // Otherwise the rows for the old game sit under the new game's name for as long as the read
+        // takes, which is the one moment they are certainly wrong.
+        val browsing = initial.copy(locationVersion = "red", places = listOf(LocationFixtures.pidgeyOnRoute1))
+
+        val state = reduce(browsing, DetailMessage.LocationVersionSelected("heartgold"))
+
+        assertEquals("heartgold", state.locationVersion)
+        assertTrue(state.isLoadingPlaces)
+        assertTrue(state.places.isEmpty())
+    }
+
+    @Test
+    fun clearingTheGame_putsTheGridBack() {
+        val browsing = initial.copy(locationVersion = "heartgold", places = listOf(LocationFixtures.pidgeyOnRoute1))
+
+        val state = reduce(browsing, DetailMessage.LocationVersionCleared)
+
+        assertNull(state.locationVersion)
+        assertTrue(state.places.isEmpty())
     }
 }
