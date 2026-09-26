@@ -1434,3 +1434,28 @@ deny. The cost is that a table of rare encounters looks empty, and that is the c
 
 Rows whose method has no meaningful rate at all — raids, gifts, trades, SOS calls — draw no bar and
 no figure rather than a zero, and keep their level range, which is the part that is true either way.
+
+### Catch rate ships as a figure and a word
+
+#43 asks only that the value be legible without knowing 255 is the maximum. Both halves ship anyway:
+the figure over 255, and one of five words for it. The figure is the fact — anyone who knows the scale
+reads 45 and is done — and the word is a reading of it for everyone else.
+
+Five bands rather than a percentage, because the scale is not linear in what a reader cares about.
+The games' catch formula makes 255 and 200 feel identical in the hand, and 3 and 30 feel nothing
+alike; a bar reading "18%" would imply a precision the number does not have.
+
+It lives on the Location tab and not on About, which is the whole of #43: catch rate is a fact about
+*meeting* a Pokémon, and under the About tab's Training heading it read as a stat you improve.
+
+### The Pokémon side of the grid has no method tabs and no condition selector
+
+The route side has both. This side has neither, and that is #24's split rather than an omission: one
+Pokémon in one game yields one to three rows, where one route in one game yields up to twenty across
+as many as five tables.
+
+Tabs over three rows would be chrome over nothing, and a condition selector over them would be worse
+— it would invite the reader to pin a state to sharpen figures that are already as sharp as three
+rows get. The consequence is that a rate on this side can never be exact, so it is always written
+"up to", and the row names the condition state it belongs to instead of offering a control to change
+it.
