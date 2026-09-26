@@ -16,8 +16,8 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.model.GameVersion
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationCategory
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationSummary
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.Region
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 
 /**
@@ -78,19 +78,23 @@ fun SelectLocationsByRegion.toDomain(): LocationSummary =
     )
 
 /**
- * Null when the row names a primary type this build does not know: a dex card with no colour has
- * nothing to draw its hero from. The same rule the other dex reads apply.
+ * Null when the row names a primary type this build does not know, or has no dex card to be reached
+ * through. The same two rules every other join onto `variant` applies: a card with no colour, or one
+ * that cannot be opened.
+ *
+ * The card matters more here than anywhere else, because a regional dex deliberately names forms
+ * that are not cards -- Alola's 37 is `vulpix-alola`, which opens through `vulpix`.
  */
-fun SelectRegionDex.toDomain(): DexEntry? {
+fun SelectRegionDex.toDomain(): RegionDexEntry? {
     val primary = primaryType?.let(PokemonType::fromSlug) ?: return null
+    val card = cardSlug ?: return null
 
-    return DexEntry(
+    return RegionDexEntry(
         slug = slug,
+        cardSlug = card,
+        number = number.toInt(),
         dexNumber = speciesDexNumber.toInt(),
         name = name,
-        // A regional dex names one form per species and never two, so there is no pill to draw --
-        // the form label exists to tell two cards sharing a Dex number apart, and here there is one.
-        formLabel = null,
         artworkUrl = artworkUrl,
         primaryType = primary,
         secondaryType = secondaryType?.let(PokemonType::fromSlug),

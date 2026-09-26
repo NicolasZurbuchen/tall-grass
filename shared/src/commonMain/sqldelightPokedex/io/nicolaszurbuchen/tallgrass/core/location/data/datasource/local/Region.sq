@@ -151,6 +151,7 @@ selectRegionDex:
 SELECT
     d.number,
     v.slug,
+    card.slug AS cardSlug,
     v.speciesDexNumber,
     v.name,
     v.artworkUrl,
@@ -158,6 +159,7 @@ SELECT
     t2.typeSlug AS secondaryType
 FROM regionDexEntry d
 JOIN variant v ON v.slug = d.variantSlug
+LEFT JOIN variant card ON card.speciesDexNumber = v.speciesDexNumber AND card.listedInDex = 1
 LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
 LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
 WHERE d.regionSlug = ?
