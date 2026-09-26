@@ -151,3 +151,14 @@ WHERE e.variantSlug = ? AND e.versionSlug = ?;
 -- answered by any single game's rows.
 countEncountersForVariant:
 SELECT count(*) FROM encounter WHERE variantSlug = ?;
+
+-- Which ways one Pokemon can turn up anywhere, for the capture pills. `gift` and `npc-trade` are
+-- encounter methods upstream but are not wild catches, and the pills tell them apart.
+selectMethodsForVariant:
+SELECT DISTINCT method FROM encounter WHERE variantSlug = ?;
+
+-- The newest generation that has any encounter data at all, which is what "transfer only" is an
+-- absence from. Derived rather than written down as 8: Generation IX is empty today (#21) and this
+-- answer changes by itself on the day upstream fills it in.
+newestGenerationWithEncounters:
+SELECT max(v.generation) FROM encounter e JOIN gameVersion v ON v.slug = e.versionSlug;
