@@ -269,4 +269,29 @@
          the time. Where there is one area the fold is invisible, which is what #24 asked for. -->
     <string name="location_detail_area">%1$s</string>
 
+    <string name="pokedex_detail_tab_location">Location</string>
+    <!-- The coarse summary at the top of the Location tab. Not a collapse of the 67 encounter
+         methods: they come from unrelated places, and Transfer only is an absence. See #8. -->
+    <string name="pokedex_detail_capture_wild">Wild Catch</string>
+    <string name="pokedex_detail_capture_trade">Trade</string>
+    <string name="pokedex_detail_capture_gift">Gift / Event</string>
+    <string name="pokedex_detail_capture_transfer">Transfer Only</string>
+    <!-- Catch rate, which #43 moved here from the About tab Training block: it is a fact about
+         meeting a Pokemon rather than about raising one. -->
+    <string name="pokedex_detail_catch_rate">Catch rate</string>
+    <string name="pokedex_detail_catch_rate_value">%1$s / 255</string>
+    <!-- A word for the figure, because 45 means nothing without knowing 255 is the maximum. -->
+    <string name="pokedex_detail_catch_very_easy">Very easy</string>
+    <string name="pokedex_detail_catch_easy">Easy</string>
+    <string name="pokedex_detail_catch_moderate">Moderate</string>
+    <string name="pokedex_detail_catch_hard">Hard</string>
+    <string name="pokedex_detail_catch_very_hard">Very hard</string>
+    <string name="pokedex_detail_where">Where to find it</string>
+    <string name="pokedex_detail_places">%1$s places</string>
+    <string name="pokedex_detail_one_place">1 place</string>
+    <!-- Two empty states that must not be confused, the same pair the location detail draws.
+         See #21. -->
+    <string name="pokedex_detail_not_in_game">Not obtainable in %1$s. Transfer it in from another game.</string>
+    <string name="pokedex_detail_never_wild">This Pok&#233;mon is never found in the wild.</string>
+
 </resources>

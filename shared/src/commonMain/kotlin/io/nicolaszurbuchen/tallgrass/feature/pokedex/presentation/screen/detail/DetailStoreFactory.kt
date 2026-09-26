@@ -8,6 +8,8 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.error.AppException
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantAvailabilityUseCase
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantEncountersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
@@ -28,6 +30,8 @@ class DetailStoreFactory(
     private val getTypeMatchups: GetTypeMatchupsUseCase,
     private val getMovesForVariant: GetMovesForVariantUseCase,
     private val getAbilitiesForVariant: GetAbilitiesForVariantUseCase,
+    private val getVariantAvailability: GetVariantAvailabilityUseCase,
+    private val getVariantEncounters: GetVariantEncountersUseCase,
 ) {
     /**
      * Which Pokemon the screen is about, and which list it was reached through, are properties of
@@ -73,6 +77,11 @@ class DetailStoreFactory(
         private var readAheadJob: Job? = null
         private var tabJob: Job? = null
 
+        // Its own job, because a reader tapping across the grid outruns the reads: only the cell
+        // they stopped on should land, and the tab job is a different question that must not be
+        // cancelled by it.
+        private var placesJob: Job? = null
+
         override fun executeAction(action: DetailAction) {
             when (action) {
                 DetailAction.LoadCarousel -> loadCarousel()
@@ -97,6 +106,24 @@ class DetailStoreFactory(
                 is DetailIntent.TabSelected -> {
                     dispatch(DetailMessage.TabSwitched(intent.tab))
                     if (intent.tab == DetailState.Tab.MOVES) loadTab(state().activeVariantSlug)
+                    if (intent.tab == DetailState.Tab.LOCATION) loadAvailability(state().activeVariantSlug)
+                }
+
+                is DetailIntent.LocationVersionSelected -> {
+                    dispatch(DetailMessage.LocationVersionSelected(intent.versionSlug))
+                    loadPlaces(state().activeVariantSlug, intent.versionSlug)
+                }
+
+                DetailIntent.LocationVersionCleared -> {
+                    dispatch(DetailMessage.LocationVersionCleared)
+                }
+
+                is DetailIntent.PlaceClicked -> {
+                    // The game rides along from the cell the reader already chose. Nothing to
+                    // publish without one: the tab cannot show a place before a game is picked.
+                    state().locationVersion?.let { version ->
+                        publish(DetailLabel.NavigateToLocation(intent.locationSlug, version))
+                    }
                 }
 
                 is DetailIntent.MoveClicked -> {
@@ -223,6 +250,55 @@ class DetailStoreFactory(
         }
 
         /**
+         * Which games have this form at all, and the pills above the grid.
+         *
+         * Cached per variant on the same grounds as the moves: a reader comparing two forms switches
+         * back and forth, and the second look should not read again. Failures are swallowed for the
+         * same reason too -- a tab that cannot be read is worth less than an error message covering
+         * the Pokemon they came to see.
+         */
+        private fun loadAvailability(variantSlug: String) {
+            if (state().availability.containsKey(variantSlug)) return
+
+            scope.launch {
+                try {
+                    dispatch(DetailMessage.AvailabilityLoaded(variantSlug, getVariantAvailability(variantSlug)))
+                } catch (e: AppException) {
+                    return@launch
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    return@launch
+                }
+            }
+        }
+
+        /**
+         * Where this form turns up in one game.
+         *
+         * A grey cell reads like any other and comes back empty, which is deliberate: the two empty
+         * states are told apart by what the screen knows, not by refusing to look. See #21.
+         */
+        private fun loadPlaces(
+            variantSlug: String,
+            versionSlug: String,
+        ) {
+            placesJob?.cancel()
+            placesJob =
+                scope.launch {
+                    try {
+                        dispatch(DetailMessage.VariantEncountersLoaded(getVariantEncounters(variantSlug, versionSlug)))
+                    } catch (e: AppException) {
+                        dispatch(DetailMessage.VariantEncountersLoaded(emptyList()))
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        dispatch(DetailMessage.VariantEncountersLoaded(emptyList()))
+                    }
+                }
+        }
+
+        /**
          * Reads the cards either side of the one on screen, so a swipe finds them already there.
          *
          * Failures are swallowed. A card the reader has not asked for cannot produce an error
@@ -329,7 +405,9 @@ class DetailStoreFactory(
                 }
 
                 is DetailMessage.FormSwitched -> {
-                    copy(activeVariantSlug = msg.variantSlug)
+                    // The chosen game goes with the form. Alolan Vulpix is not found where Vulpix
+                    // is, so a cell left selected would show one form's places under another's name.
+                    copy(activeVariantSlug = msg.variantSlug, locationVersion = null, places = emptyList())
                 }
 
                 is DetailMessage.MovesLoaded -> {
@@ -341,6 +419,22 @@ class DetailStoreFactory(
 
                 is DetailMessage.AbilitiesLoaded -> {
                     copy(abilities = abilities + (msg.variantSlug to msg.abilities))
+                }
+
+                is DetailMessage.AvailabilityLoaded -> {
+                    copy(availability = availability + (msg.variantSlug to msg.availability))
+                }
+
+                is DetailMessage.LocationVersionSelected -> {
+                    copy(locationVersion = msg.versionSlug, isLoadingPlaces = true, places = emptyList())
+                }
+
+                DetailMessage.LocationVersionCleared -> {
+                    copy(locationVersion = null, places = emptyList())
+                }
+
+                is DetailMessage.VariantEncountersLoaded -> {
+                    copy(isLoadingPlaces = false, places = msg.encounters)
                 }
 
                 is DetailMessage.TabSwitched -> {

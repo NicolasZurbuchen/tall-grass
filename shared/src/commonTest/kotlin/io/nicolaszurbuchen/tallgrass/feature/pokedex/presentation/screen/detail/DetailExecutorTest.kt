@@ -8,6 +8,9 @@ import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.AbilityFixtures
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.FakeAbilityRepository
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.location.domain.fake.FakeLocationRepository
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantAvailabilityUseCase
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantEncountersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.FakeMoveRepository
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexRepository
@@ -56,6 +59,7 @@ class DetailExecutorTest {
         repository: FakePokedexRepository = FakePokedexRepository(details = mapOf("charizard" to charizardDetail)),
         moves: FakeMoveRepository = FakeMoveRepository(),
         abilities: FakeAbilityRepository = FakeAbilityRepository(),
+        locations: FakeLocationRepository = FakeLocationRepository(),
     ) = DetailStoreFactory(
         storeFactory = DefaultStoreFactory(),
         getDexEntries = GetDexEntriesUseCase(repository),
@@ -63,6 +67,8 @@ class DetailExecutorTest {
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
         getMovesForVariant = GetMovesForVariantUseCase(moves),
         getAbilitiesForVariant = GetAbilitiesForVariantUseCase(abilities),
+        getVariantAvailability = GetVariantAvailabilityUseCase(locations),
+        getVariantEncounters = GetVariantEncountersUseCase(locations),
     ).create(slug, DexQuery.All, formSlug = null)
 
     @Test

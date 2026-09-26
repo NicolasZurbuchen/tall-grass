@@ -74,6 +74,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.DetailSheetSkeleton
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.FormPillRow
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.HeroCarousel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.LocationTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.MovesTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.component.StatsTab
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
@@ -103,6 +104,9 @@ fun DetailScreen(
     onTabClick: (DetailTabUiModel) -> Unit,
     onAbilityClick: (String) -> Unit,
     onMoveClick: (String) -> Unit,
+    onVersionClick: (String) -> Unit,
+    onBreadcrumbClick: () -> Unit,
+    onPlaceClick: (String) -> Unit,
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -297,6 +301,16 @@ fun DetailScreen(
                             when (DetailTabUiModel.entries[page]) {
                                 DetailTabUiModel.ABOUT -> {
                                     AboutTab(about = content.about, tint = tint)
+                                }
+
+                                DetailTabUiModel.LOCATION -> {
+                                    LocationTab(
+                                        location = content.location,
+                                        tint = tint,
+                                        onVersionClick = onVersionClick,
+                                        onBreadcrumbClick = onBreadcrumbClick,
+                                        onPlaceClick = onPlaceClick,
+                                    )
                                 }
 
                                 DetailTabUiModel.STATS -> {
