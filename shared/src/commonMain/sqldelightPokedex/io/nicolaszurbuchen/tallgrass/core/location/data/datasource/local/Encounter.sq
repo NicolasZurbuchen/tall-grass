@@ -1,0 +1,153 @@
+-- What can be met where, in which game, and how often.
+--
+-- One row is one variant in one table, where a **table is (version, area, method)** and is the unit
+-- that sums to 100%. Upstream stores a twelve-slot table as twelve rows and one Pokemon may hold
+-- four of them; those four are summed at generation time into the one line a screen draws.
+--
+-- Summing stops there. It never crosses methods -- Magikarp is 100% on Old Rod and 55% on Good Rod,
+-- different denominators -- and it never crosses areas, for the reason `locationArea` exists. #24 is
+-- the ticket that insists a rate bar is scoped to the active method for exactly this.
+--
+-- `chance` is 0 for the methods that have no meaningful rate: raids, gifts, trades, SOS calls. The
+-- screen prints nothing there rather than a fabricated percentage.
+CREATE TABLE encounter (
+    -- Assigned by the generator rather than by SQLite. The rows are written once, in a fixed order,
+    -- and an explicit id means the condition tags can be written in the same pass instead of reading
+    -- last_insert_rowid() back 100,000 times.
+    id           INTEGER NOT NULL PRIMARY KEY,
+    locationSlug TEXT NOT NULL,
+    areaSlug     TEXT NOT NULL,
+    versionSlug  TEXT NOT NULL,
+    -- The actual method -- `walk`, `old-rod`, `super-rod`, `max-raid` -- and never one of the four
+    -- coarse groups. #9's correction: merging Old Rod into a "Fishing" tab produces bars summing to
+    -- 255%, because each method is its own 100% table.
+    method       TEXT NOT NULL,
+    variantSlug  TEXT NOT NULL,
+    minLevel     INTEGER NOT NULL,
+    maxLevel     INTEGER NOT NULL,
+    chance       INTEGER NOT NULL
+);
+
+-- The conditions one row needs in order to happen at all.
+--
+-- **These are AND-filters on the row, not alternative tables.** A row counts only when every tag it
+-- carries is satisfied by the chosen state. Kanto's Route 1 in HeartGold holds 42 walking rows that
+-- look like 360% of a table until you see they are fragments of one twelve-slot table, each tagged
+-- with the state that switches it on; every complete state resolves to exactly 100%.
+--
+-- That is why these are stored per row rather than aggregated away at generation time. Flattening to
+-- one rate per (variant, version, location, method) destroys the ability to reconstruct any state
+-- and cannot be undone. See the correction on #8, which is where this was found.
+CREATE TABLE encounterCondition (
+    encounterId   INTEGER NOT NULL,
+    conditionSlug TEXT NOT NULL,
+    PRIMARY KEY (encounterId, conditionSlug)
+);
+
+-- One axis a table can be conditioned on, and the states it can be in: time of day, season, weather,
+-- whether a swarm is on, which radio station is playing.
+--
+-- `isDefault` marks the state the games treat as ordinary -- `swarm-no`, `time-day`. It is not the
+-- app's "Any", which means *unpinned* and shows the best case across every state; that is a fourth
+-- option beside these rather than one of them.
+CREATE TABLE encounterConditionValue (
+    slug      TEXT NOT NULL PRIMARY KEY,
+    axis      TEXT NOT NULL,
+    isDefault INTEGER AS kotlin.Boolean NOT NULL
+);
+
+-- The two directions the same rows are read in, which is the whole shape of #24: a route asking what
+-- is on it, and a Pokemon asking where it is. Neither can lead with the other's column.
+CREATE INDEX encounterByLocation ON encounter(locationSlug, versionSlug);
+CREATE INDEX encounterByVariant ON encounter(variantSlug, versionSlug);
+
+countEncounters:
+SELECT count(*) FROM encounter;
+
+insertEncounter:
+INSERT INTO encounter(id, locationSlug, areaSlug, versionSlug, method, variantSlug, minLevel, maxLevel, chance)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertEncounterCondition:
+INSERT INTO encounterCondition(encounterId, conditionSlug) VALUES (?, ?);
+
+insertEncounterConditionValue:
+INSERT INTO encounterConditionValue(slug, axis, isDefault) VALUES (?, ?, ?);
+
+selectConditionValues:
+SELECT slug, axis, isDefault FROM encounterConditionValue ORDER BY axis, slug;
+
+-- Which versions have anything at all here, for the location's availability grid. The grid draws a
+-- cell for every version of the region either way; this says which of them come up green.
+selectEncounteredVersionsAtLocation:
+SELECT DISTINCT versionSlug FROM encounter WHERE locationSlug = ?;
+
+-- Which versions a Pokemon can be met in, for the Pokemon side of the same grid.
+selectEncounteredVersionsForVariant:
+SELECT DISTINCT versionSlug FROM encounter WHERE variantSlug = ?;
+
+-- Everything on one route in one game, which is the location detail once a cell is tapped.
+--
+-- Carries the artwork and types so the row can draw its sprite and the tapped Pokemon's hero has its
+-- colour before it has read anything -- the same reason selectAbilityHolders does it.
+selectEncountersAtLocation:
+SELECT
+    e.id,
+    e.areaSlug,
+    a.name AS areaName,
+    e.method,
+    e.minLevel,
+    e.maxLevel,
+    e.chance,
+    v.slug AS variantSlug,
+    card.slug AS cardSlug,
+    v.speciesDexNumber,
+    v.name,
+    v.artworkUrl,
+    t1.typeSlug AS primaryType,
+    t2.typeSlug AS secondaryType
+FROM encounter e
+JOIN variant v ON v.slug = e.variantSlug
+LEFT JOIN locationArea a ON a.locationSlug = e.locationSlug AND a.slug = e.areaSlug
+LEFT JOIN variant card ON card.speciesDexNumber = v.speciesDexNumber AND card.listedInDex = 1
+LEFT JOIN variantType t1 ON t1.variantSlug = v.slug AND t1.slot = 1
+LEFT JOIN variantType t2 ON t2.variantSlug = v.slug AND t2.slot = 2
+WHERE e.locationSlug = ? AND e.versionSlug = ?
+ORDER BY e.method, e.areaSlug, e.chance DESC, v.name;
+
+-- Everywhere one Pokemon turns up in one game, which is the Location tab once a cell is tapped.
+selectEncountersForVariant:
+SELECT
+    e.id,
+    e.locationSlug,
+    l.name AS locationName,
+    e.areaSlug,
+    a.name AS areaName,
+    e.method,
+    e.minLevel,
+    e.maxLevel,
+    e.chance
+FROM encounter e
+JOIN location l ON l.slug = e.locationSlug
+LEFT JOIN locationArea a ON a.locationSlug = e.locationSlug AND a.slug = e.areaSlug
+WHERE e.variantSlug = ? AND e.versionSlug = ?
+ORDER BY l.name, e.method, e.areaSlug;
+
+-- The condition tags for a set of rows, read in one go rather than per row: a busy route in
+-- HeartGold is 42 rows and 42 follow-up queries is the shape that makes a screen stutter.
+selectConditionsAtLocation:
+SELECT c.encounterId, c.conditionSlug
+FROM encounterCondition c
+JOIN encounter e ON e.id = c.encounterId
+WHERE e.locationSlug = ? AND e.versionSlug = ?;
+
+selectConditionsForVariant:
+SELECT c.encounterId, c.conditionSlug
+FROM encounterCondition c
+JOIN encounter e ON e.id = c.encounterId
+WHERE e.variantSlug = ? AND e.versionSlug = ?;
+
+-- Whether a Pokemon is ever wild anywhere, which is one of the five capture pills and cannot be
+-- answered by any single game's rows.
+countEncountersForVariant:
+SELECT count(*) FROM encounter WHERE variantSlug = ?;
