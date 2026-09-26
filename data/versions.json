@@ -1,0 +1,547 @@
+[
+  {
+    "slug": "lets-go-eevee",
+    "name": "Let’s Go, Eevee!",
+    "code": "LE",
+    "console": "SWITCH",
+    "generation": 7,
+    "versionGroup": "lets-go-pikachu-lets-go-eevee",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "lets-go-pikachu",
+    "name": "Let’s Go, Pikachu!",
+    "code": "LP",
+    "console": "SWITCH",
+    "generation": 7,
+    "versionGroup": "lets-go-pikachu-lets-go-eevee",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "shield",
+    "name": "Shield",
+    "code": "Sh",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "sword-shield",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "sword",
+    "name": "Sword",
+    "code": "Sw",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "sword-shield",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "the-isle-of-armor-shield",
+    "name": "Shield: The Isle of Armor",
+    "code": "ShA",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "the-isle-of-armor",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "the-isle-of-armor-sword",
+    "name": "Sword: The Isle of Armor",
+    "code": "SwA",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "the-isle-of-armor",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "the-crown-tundra-shield",
+    "name": "Shield: The Crown Tundra",
+    "code": "ShT",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "the-crown-tundra",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "the-crown-tundra-sword",
+    "name": "Sword: The Crown Tundra",
+    "code": "SwT",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "the-crown-tundra",
+    "regions": [
+      "galar"
+    ]
+  },
+  {
+    "slug": "brilliant-diamond",
+    "name": "Brilliant Diamond",
+    "code": "BD",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "brilliant-diamond-shining-pearl",
+    "regions": [
+      "sinnoh"
+    ]
+  },
+  {
+    "slug": "shining-pearl",
+    "name": "Shining Pearl",
+    "code": "SP",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "brilliant-diamond-shining-pearl",
+    "regions": [
+      "sinnoh"
+    ]
+  },
+  {
+    "slug": "legends-arceus",
+    "name": "Legends: Arceus",
+    "code": "LA",
+    "console": "SWITCH",
+    "generation": 8,
+    "versionGroup": "legends-arceus",
+    "regions": [
+      "hisui"
+    ]
+  },
+  {
+    "slug": "scarlet",
+    "name": "Scarlet",
+    "code": "Sc",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "scarlet-violet",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "violet",
+    "name": "Violet",
+    "code": "Vi",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "scarlet-violet",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "the-teal-mask-scarlet",
+    "name": "Scarlet: The Teal Mask",
+    "code": "ScM",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "the-teal-mask",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "the-teal-mask-violet",
+    "name": "Violet: The Teal Mask",
+    "code": "ViM",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "the-teal-mask",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "the-indigo-disk-scarlet",
+    "name": "Scarlet: The Indigo Disk",
+    "code": "ScD",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "the-indigo-disk",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "the-indigo-disk-violet",
+    "name": "Violet: The Indigo Disk",
+    "code": "ViD",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "the-indigo-disk",
+    "regions": [
+      "paldea"
+    ]
+  },
+  {
+    "slug": "legends-za",
+    "name": "Legends: Z-A",
+    "code": "ZA",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "legends-za",
+    "regions": []
+  },
+  {
+    "slug": "mega-dimension",
+    "name": "Mega Dimension",
+    "code": "MD",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "mega-dimension",
+    "regions": []
+  },
+  {
+    "slug": "champions",
+    "name": "Champions",
+    "code": "Ch",
+    "console": "SWITCH",
+    "generation": 9,
+    "versionGroup": "champions",
+    "regions": []
+  },
+  {
+    "slug": "x",
+    "name": "X",
+    "code": "X",
+    "console": "THREE_DS",
+    "generation": 6,
+    "versionGroup": "x-y",
+    "regions": [
+      "kalos"
+    ]
+  },
+  {
+    "slug": "y",
+    "name": "Y",
+    "code": "Y",
+    "console": "THREE_DS",
+    "generation": 6,
+    "versionGroup": "x-y",
+    "regions": [
+      "kalos"
+    ]
+  },
+  {
+    "slug": "alpha-sapphire",
+    "name": "Alpha Sapphire",
+    "code": "AS",
+    "console": "THREE_DS",
+    "generation": 6,
+    "versionGroup": "omega-ruby-alpha-sapphire",
+    "regions": [
+      "hoenn"
+    ]
+  },
+  {
+    "slug": "omega-ruby",
+    "name": "Omega Ruby",
+    "code": "OR",
+    "console": "THREE_DS",
+    "generation": 6,
+    "versionGroup": "omega-ruby-alpha-sapphire",
+    "regions": [
+      "hoenn"
+    ]
+  },
+  {
+    "slug": "moon",
+    "name": "Moon",
+    "code": "Mo",
+    "console": "THREE_DS",
+    "generation": 7,
+    "versionGroup": "sun-moon",
+    "regions": [
+      "alola"
+    ]
+  },
+  {
+    "slug": "sun",
+    "name": "Sun",
+    "code": "Su",
+    "console": "THREE_DS",
+    "generation": 7,
+    "versionGroup": "sun-moon",
+    "regions": [
+      "alola"
+    ]
+  },
+  {
+    "slug": "ultra-moon",
+    "name": "Ultra Moon",
+    "code": "UM",
+    "console": "THREE_DS",
+    "generation": 7,
+    "versionGroup": "ultra-sun-ultra-moon",
+    "regions": [
+      "alola"
+    ]
+  },
+  {
+    "slug": "ultra-sun",
+    "name": "Ultra Sun",
+    "code": "US",
+    "console": "THREE_DS",
+    "generation": 7,
+    "versionGroup": "ultra-sun-ultra-moon",
+    "regions": [
+      "alola"
+    ]
+  },
+  {
+    "slug": "diamond",
+    "name": "Diamond",
+    "code": "D",
+    "console": "DS",
+    "generation": 4,
+    "versionGroup": "diamond-pearl",
+    "regions": [
+      "sinnoh"
+    ]
+  },
+  {
+    "slug": "pearl",
+    "name": "Pearl",
+    "code": "P",
+    "console": "DS",
+    "generation": 4,
+    "versionGroup": "diamond-pearl",
+    "regions": [
+      "sinnoh"
+    ]
+  },
+  {
+    "slug": "platinum",
+    "name": "Platinum",
+    "code": "Pt",
+    "console": "DS",
+    "generation": 4,
+    "versionGroup": "platinum",
+    "regions": [
+      "sinnoh"
+    ]
+  },
+  {
+    "slug": "heartgold",
+    "name": "HeartGold",
+    "code": "HG",
+    "console": "DS",
+    "generation": 4,
+    "versionGroup": "heartgold-soulsilver",
+    "regions": [
+      "johto",
+      "kanto"
+    ]
+  },
+  {
+    "slug": "soulsilver",
+    "name": "SoulSilver",
+    "code": "SS",
+    "console": "DS",
+    "generation": 4,
+    "versionGroup": "heartgold-soulsilver",
+    "regions": [
+      "johto",
+      "kanto"
+    ]
+  },
+  {
+    "slug": "black",
+    "name": "Black",
+    "code": "B",
+    "console": "DS",
+    "generation": 5,
+    "versionGroup": "black-white",
+    "regions": [
+      "unova"
+    ]
+  },
+  {
+    "slug": "white",
+    "name": "White",
+    "code": "W",
+    "console": "DS",
+    "generation": 5,
+    "versionGroup": "black-white",
+    "regions": [
+      "unova"
+    ]
+  },
+  {
+    "slug": "black-2",
+    "name": "Black 2",
+    "code": "B2",
+    "console": "DS",
+    "generation": 5,
+    "versionGroup": "black-2-white-2",
+    "regions": [
+      "unova"
+    ]
+  },
+  {
+    "slug": "white-2",
+    "name": "White 2",
+    "code": "W2",
+    "console": "DS",
+    "generation": 5,
+    "versionGroup": "black-2-white-2",
+    "regions": [
+      "unova"
+    ]
+  },
+  {
+    "slug": "colosseum",
+    "name": "Colosseum",
+    "code": "Co",
+    "console": "GAME_CUBE",
+    "generation": 3,
+    "versionGroup": "colosseum",
+    "regions": []
+  },
+  {
+    "slug": "xd",
+    "name": "XD",
+    "code": "XD",
+    "console": "GAME_CUBE",
+    "generation": 3,
+    "versionGroup": "xd",
+    "regions": []
+  },
+  {
+    "slug": "ruby",
+    "name": "Ruby",
+    "code": "R",
+    "console": "GBA",
+    "generation": 3,
+    "versionGroup": "ruby-sapphire",
+    "regions": [
+      "hoenn"
+    ]
+  },
+  {
+    "slug": "sapphire",
+    "name": "Sapphire",
+    "code": "S",
+    "console": "GBA",
+    "generation": 3,
+    "versionGroup": "ruby-sapphire",
+    "regions": [
+      "hoenn"
+    ]
+  },
+  {
+    "slug": "emerald",
+    "name": "Emerald",
+    "code": "E",
+    "console": "GBA",
+    "generation": 3,
+    "versionGroup": "emerald",
+    "regions": [
+      "hoenn"
+    ]
+  },
+  {
+    "slug": "firered",
+    "name": "FireRed",
+    "code": "FR",
+    "console": "GBA",
+    "generation": 3,
+    "versionGroup": "firered-leafgreen",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "leafgreen",
+    "name": "LeafGreen",
+    "code": "LG",
+    "console": "GBA",
+    "generation": 3,
+    "versionGroup": "firered-leafgreen",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "blue",
+    "name": "Blue",
+    "code": "B",
+    "console": "GB_GBC",
+    "generation": 1,
+    "versionGroup": "red-blue",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "red",
+    "name": "Red",
+    "code": "R",
+    "console": "GB_GBC",
+    "generation": 1,
+    "versionGroup": "red-blue",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "yellow",
+    "name": "Yellow",
+    "code": "Y",
+    "console": "GB_GBC",
+    "generation": 1,
+    "versionGroup": "yellow",
+    "regions": [
+      "kanto"
+    ]
+  },
+  {
+    "slug": "gold",
+    "name": "Gold",
+    "code": "G",
+    "console": "GB_GBC",
+    "generation": 2,
+    "versionGroup": "gold-silver",
+    "regions": [
+      "johto",
+      "kanto"
+    ]
+  },
+  {
+    "slug": "silver",
+    "name": "Silver",
+    "code": "S",
+    "console": "GB_GBC",
+    "generation": 2,
+    "versionGroup": "gold-silver",
+    "regions": [
+      "johto",
+      "kanto"
+    ]
+  },
+  {
+    "slug": "crystal",
+    "name": "Crystal",
+    "code": "C",
+    "console": "GB_GBC",
+    "generation": 2,
+    "versionGroup": "crystal",
+    "regions": [
+      "johto",
+      "kanto"
+    ]
+  }
+]
