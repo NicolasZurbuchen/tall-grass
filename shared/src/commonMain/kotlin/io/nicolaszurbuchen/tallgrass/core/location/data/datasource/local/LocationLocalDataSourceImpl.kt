@@ -9,9 +9,9 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationDetail
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationSummary
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.Region
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDetail
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
@@ -62,7 +62,7 @@ class LocationLocalDataSourceImpl(
                 .map { it.toDomain() }
         }
 
-    override suspend fun regionDex(regionSlug: String): List<DexEntry> =
+    override suspend fun regionDex(regionSlug: String): List<RegionDexEntry> =
         withContext(dispatcher) {
             regionQueries.value
                 .selectRegionDex(regionSlug)

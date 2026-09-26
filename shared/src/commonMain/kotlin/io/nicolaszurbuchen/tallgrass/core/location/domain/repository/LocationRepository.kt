@@ -6,9 +6,9 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationDetail
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationSummary
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.Region
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDetail
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 
 interface LocationRepository {
     /** The eleven regions, in release order with the spin-off last. */
@@ -26,7 +26,7 @@ interface LocationRepository {
      * Empty for Orre, which upstream has no regional dex for. Every card names the **region-native**
      * form, so Kanto's 37 is the Kantonian Vulpix and Alola's is the Alolan one -- see #5.
      */
-    suspend fun regionDex(regionSlug: String): List<DexEntry>
+    suspend fun regionDex(regionSlug: String): List<RegionDexEntry>
 
     /** One place and the grid of its region's games, or null when no row carries that slug. */
     suspend fun locationDetail(slug: String): LocationDetail?

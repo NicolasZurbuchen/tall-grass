@@ -87,6 +87,38 @@
     <string name="ability_detail_hidden">Hidden</string>
     <string name="ability_detail_no_holders">No Pok&#233;mon has this ability.</string>
 
+    <string name="regions_title">Regions</string>
+    <!-- Under the title on the region list. Eleven is a fact about the dataset rather than a count
+         that moves, so it is written out. -->
+    <string name="regions_subtitle">Eleven worlds, eleven Pok&#233;dex</string>
+    <!-- On a region card, under its name. -->
+    <string name="regions_generation">Gen %1$s</string>
+    <string name="regions_locations">%1$s locations</string>
+
+    <string name="region_detail_tab_about">About</string>
+    <string name="region_detail_tab_locations">Locations</string>
+    <string name="region_detail_tab_pokedex">Pok&#233;dex</string>
+    <!-- The three tiles above the blurb. -->
+    <string name="region_detail_stat_pokedex">Pok&#233;dex</string>
+    <string name="region_detail_stat_locations">Locations</string>
+    <string name="region_detail_stat_games">Games</string>
+    <string name="region_detail_details">Details</string>
+    <string name="region_detail_introduced">Introduced</string>
+    <string name="region_detail_native_name">Native name</string>
+    <string name="region_detail_games">Games</string>
+    <string name="region_detail_generation">Generation %1$s</string>
+    <!-- Placeholder in the Locations tab search field. -->
+    <string name="region_detail_search">Search %1$s locations</string>
+    <!-- Under a location row: how many of the region games have anything to meet there. Zero is an
+         answer rather than a gap; see #24 on Berry Forest. -->
+    <string name="region_detail_location_games">%1$s games</string>
+    <string name="region_detail_location_one_game">1 game</string>
+    <string name="region_detail_location_no_data">No encounter data</string>
+    <string name="region_detail_showing">Showing %1$s of %2$s.</string>
+    <string name="region_detail_no_matches">No place here matches that.</string>
+    <!-- Orre, the one region upstream has no regional Pok&#233;dex for. -->
+    <string name="region_detail_no_pokedex">This region has no Pok&#233;dex of its own.</string>
+
     <string name="move_detail_battle_data">Battle Data</string>
     <string name="move_detail_power">Power</string>
     <string name="move_detail_accuracy">Accuracy</string>

@@ -54,10 +54,14 @@ class LocationLocalMapperTest {
     }
 
     @Test
-    fun regionDex_carriesNoFormLabel() {
-        // A regional dex names one form per species and never two, so there is no pill to draw: the
-        // label exists to tell two cards sharing a Dex number apart, and here there is only one.
-        assertNull(dexRow(primaryType = "fire").toDomain()?.formLabel)
+    fun regionDex_keepsTheFormAndTheCardItOpensThroughApart() {
+        // A regional dex deliberately names forms that are not cards, so a row with no card is
+        // dropped rather than drawn as something that cannot be tapped through.
+        val entry = dexRow(primaryType = "fire").toDomain()
+
+        assertEquals("vulpix", entry?.slug)
+        assertEquals("vulpix", entry?.cardSlug)
+        assertNull(dexRow(primaryType = "fire", cardSlug = null).toDomain())
     }
 
     @Test
@@ -135,16 +139,19 @@ class LocationLocalMapperTest {
             generation = 4,
         )
 
-    private fun dexRow(primaryType: String?) =
-        SelectRegionDex(
-            number = 37,
-            slug = "vulpix",
-            speciesDexNumber = 37,
-            name = "Vulpix",
-            artworkUrl = "vulpix.png",
-            primaryType = primaryType,
-            secondaryType = null,
-        )
+    private fun dexRow(
+        primaryType: String?,
+        cardSlug: String? = "vulpix",
+    ) = SelectRegionDex(
+        number = 37,
+        slug = "vulpix",
+        cardSlug = cardSlug,
+        speciesDexNumber = 37,
+        name = "Vulpix",
+        artworkUrl = "vulpix.png",
+        primaryType = primaryType,
+        secondaryType = null,
+    )
 
     private fun encounterRow(
         cardSlug: String? = "pidgey",
