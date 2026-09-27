@@ -43,6 +43,10 @@ import tallgrass.shared.generated.resources.location_detail_legend_yes
  * the moment somebody asks, and it is what lets the two empty states be told apart: Scarlet says the
  * data is not available yet, and Black says transfer it in from another game.
  *
+ * **The whole grid sits on a raised card, the same card the breadcrumb becomes.** That is what makes
+ * the two states read as one control in two positions rather than as a loose block of chips that is
+ * sometimes replaced by a row, and it gives the cells an edge to sit inside.
+ *
  * Grouping by console rather than by generation is the author's call in #9: *if I play Diamond, I may
  * not know it is the fourth generation, but I know I am holding a DS.* It also carries real weight,
  * because the codes are unique only within a row -- `Y` is Yellow on one and Pokemon Y on another.
@@ -55,7 +59,12 @@ fun AvailabilityGrid(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-        modifier = modifier.fillMaxWidth(),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.appColors.surfaceRaised)
+                .padding(MaterialTheme.spacing.md),
     ) {
         grid.rows.forEach { row ->
             Row(
@@ -79,11 +88,9 @@ fun AvailabilityGrid(
                                     .size(CELL_SIZE)
                                     .clip(MaterialTheme.shapes.extraSmall)
                                     .background(
-                                        if (cell.isAvailable) {
-                                            AVAILABILITY_YES
-                                        } else {
-                                            MaterialTheme.appColors.surfaceRaised
-                                        },
+                                        // The card behind is already surfaceRaised, so an empty cell
+                                        // takes the flatter surface to read as a hole in it.
+                                        if (cell.isAvailable) AVAILABILITY_YES else MaterialTheme.appColors.surface,
                                     ).clickable { onVersionClick(cell.slug) },
                         ) {
                             Text(
@@ -105,7 +112,7 @@ fun AvailabilityGrid(
             modifier = Modifier.padding(top = MaterialTheme.spacing.xs),
         ) {
             LegendEntry(AVAILABILITY_YES, stringResource(Res.string.location_detail_legend_yes))
-            LegendEntry(MaterialTheme.appColors.surfaceRaised, stringResource(Res.string.location_detail_legend_no))
+            LegendEntry(MaterialTheme.appColors.surface, stringResource(Res.string.location_detail_legend_no))
         }
     }
 }

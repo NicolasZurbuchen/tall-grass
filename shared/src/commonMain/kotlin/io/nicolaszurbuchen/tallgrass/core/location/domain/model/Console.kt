@@ -7,9 +7,9 @@ package io.nicolaszurbuchen.tallgrass.core.location.domain.model
  * fourth generation, but I know I am holding a DS. Generation needed eight rows and scattered the
  * Switch games across three of them.
  *
- * [GAME_CUBE] is not one of the five rows #9 named and exists because Orre does: Colosseum and XD are
- * that region's only games. A row is drawn only where a region has games in it, so it appears on Orre
- * and nowhere else -- the same rule that gives Kanto no 3DS row.
+ * Five rows, which is the five #9 named. There is no GameCube row: its only games are Colosseum and
+ * XD, and this app covers the main series, so neither they nor the region that exists for them are in
+ * the dataset.
  *
  * The declaration order is the order the rows are drawn, newest machine first.
  */
@@ -17,7 +17,6 @@ enum class Console {
     SWITCH,
     THREE_DS,
     DS,
-    GAME_CUBE,
     GBA,
     GB_GBC,
     ;

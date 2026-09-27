@@ -29,7 +29,6 @@ enum class RegionThemeUiModel(
     GALAR("galar", Color(0xFF7A5BC9)),
     HISUI("hisui", Color(0xFF9DB945)),
     PALDEA("paldea", Color(0xFFEE97CE)),
-    ORRE("orre", Color(0xFF8FA0B5)),
     ;
 
     companion object {

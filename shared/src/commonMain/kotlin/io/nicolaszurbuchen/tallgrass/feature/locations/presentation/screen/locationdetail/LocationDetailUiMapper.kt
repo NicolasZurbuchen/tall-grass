@@ -66,7 +66,13 @@ fun LocationDetailState.toUiModel(): LocationDetailUiModel {
         methods = methods.map { it.toEncounterMethodUiModel() },
         selectedMethod = method,
         axes = rows.toConditionAxesUiModel(conditions, pinned),
-        areas = rows.toEncounterAreasUiModel(conditions, pinned),
+        areas =
+            rows.toEncounterAreasUiModel(
+                conditions = conditions,
+                pinned = pinned,
+                locationSlug = location?.slug.orEmpty(),
+                locationName = location?.name.orEmpty(),
+            ),
         emptyText =
             when {
                 selectedCell == null || isLoadingEncounters || encounters.isNotEmpty() -> {

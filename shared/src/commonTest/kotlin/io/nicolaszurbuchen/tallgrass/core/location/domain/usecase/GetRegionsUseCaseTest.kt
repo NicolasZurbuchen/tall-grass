@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class GetRegionsUseCaseTest {
-    private val regions = listOf(LocationFixtures.kanto, LocationFixtures.orre)
+    private val regions = listOf(LocationFixtures.kanto, LocationFixtures.johto)
 
     @Test
     fun invoke_returnsWhatTheRepositoryHolds() =
@@ -22,10 +22,10 @@ class GetRegionsUseCaseTest {
     fun invoke_keepsTheRepositoryOrder() =
         runTest {
             // The list runs in release order with the spin-off last, and that order is the
-            // repository's to decide -- re-sorting here would put Orre beside Hoenn.
+            // repository's to decide: release order is not something a mapper can rediscover.
             val useCase = GetRegionsUseCase(FakeLocationRepository(regions = regions))
 
-            assertEquals(listOf("kanto", "orre"), useCase().map { it.slug })
+            assertEquals(listOf("kanto", "johto"), useCase().map { it.slug })
         }
 
     @Test

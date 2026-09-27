@@ -631,50 +631,54 @@ class DatasetTest {
     // endregion
 
     @Test
-    fun regions_areTheElevenAndEachIsCurated() {
-        assertEquals(11, regions.size)
+    fun regions_areTheTenAndEachIsCurated() {
+        assertEquals(10, regions.size)
         assertEquals(CURATED_REGIONS.map { it.slug }.toSet(), regions.map { it.slug }.toSet())
         assertTrue(regions.all { it.blurb.isNotBlank() }, "Regions with no blurb: ${regions.filter { it.blurb.isBlank() }.map { it.slug }}")
     }
 
     /**
-     * The list runs Kanto to Paldea and then Orre, which is upstream's own id order.
+     * The list runs Kanto to Paldea, which is upstream's own id order and the order they shipped in.
      *
-     * Ordering on generation would interleave Orre with Hoenn -- both Generation III -- and put the
-     * spin-off region in the middle of the main sequence.
+     * Ordering on generation would be nearly the same and not quite: Galar and Hisui are both
+     * Generation VIII.
      */
     @Test
-    fun regions_runInReleaseOrderWithTheSpinOffLast() {
+    fun regions_runInReleaseOrder() {
         assertEquals(
-            listOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "hisui", "paldea", "orre"),
+            listOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "hisui", "paldea"),
             regions.map { it.slug },
         )
-        assertEquals(3, regions.single { it.slug == "orre" }.generation)
     }
 
     /**
-     * Orre is the region every derived field has to survive the absence of.
+     * Orre is not generated, and neither are the two games it exists for.
      *
-     * Upstream has no Japanese name for it, no regional Pokedex, and -- the one that actually broke
-     * the generator -- no `version_group_regions` row either, which took Colosseum and XD off the
-     * only region that is nothing else.
+     * This is a main-series Pokedex and Colosseum and XD are spin-offs. Dropping the versions is what
+     * drops the region -- a region with no games has no grid to put a cell on -- and it takes the
+     * GameCube row off every grid with them.
      */
     @Test
-    fun orre_hasNoNativeNameAndNoPokedexButKeepsItsGames() {
-        val orre = regions.single { it.slug == "orre" }
-        assertEquals(null, orre.nativeName)
-        assertTrue(orre.pokedex.isEmpty(), "Orre has dex entries: ${orre.pokedex.size}")
-        assertEquals(listOf("colosseum", "xd"), orre.versions)
-        assertTrue(regions.filter { it.slug != "orre" }.all { it.nativeName != null })
+    fun theSpinOffRegionAndItsGamesAreNotGenerated() {
+        assertTrue(regions.none { it.slug == "orre" })
+        assertTrue(versions.none { it.slug == "colosseum" || it.slug == "xd" })
+        assertTrue(locations.none { it.region == "orre" })
+        assertTrue(encounters.none { it.region == "orre" })
     }
 
-    /** Every other region has a dex, and Kanto's is the 151 everyone can check. */
+    /** Every region has a dex now that the one without it is gone, and Kanto's is the 151 anyone knows. */
     @Test
-    fun everyRegionButOrre_hasARegionalPokedex() {
-        val empty = regions.filter { it.pokedex.isEmpty() }
-        assertEquals(listOf("orre"), empty.map { it.slug })
+    fun everyRegion_hasARegionalPokedex() {
+        assertTrue(regions.none { it.pokedex.isEmpty() })
         assertEquals(151, regions.single { it.slug == "kanto" }.pokedex.size)
         assertEquals(242, regions.single { it.slug == "hisui" }.pokedex.size)
+    }
+
+    /** And a Japanese name, which is why the field is no longer nullable. */
+    @Test
+    fun everyRegion_hasANativeName() {
+        assertTrue(regions.all { it.nativeName.isNotBlank() })
+        assertEquals("カントー", regions.single { it.slug == "kanto" }.nativeName)
     }
 
     /**
@@ -854,7 +858,7 @@ class DatasetTest {
         val withData = encounters.map { it.region }.toSet()
         assertTrue("hisui" !in withData, "Hisui has encounter data now, so the empty state is wrong")
         assertTrue("paldea" !in withData, "Paldea has encounter data now, so #21's gap has closed")
-        assertEquals(setOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar", "orre"), withData)
+        assertEquals(setOf("kanto", "johto", "hoenn", "sinnoh", "unova", "kalos", "alola", "galar"), withData)
 
         // Both regions still list their places. The absence is the answer, not a reason to hide them.
         assertEquals(89, locations.count { it.region == "hisui" })

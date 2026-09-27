@@ -116,21 +116,6 @@
     ]
   },
   {
-    "slug": "agate-village",
-    "name": "Agate Village",
-    "region": "orre",
-    "category": "TOWN",
-    "areas": [
-      {
-        "slug": "relic-forest",
-        "name": "Agate Village (Relic Forest)"
-      }
-    ],
-    "versions": [
-      "colosseum"
-    ]
-  },
-  {
     "slug": "aipom-hill",
     "name": "Aipom Hill",
     "region": "hisui",
@@ -2180,68 +2165,6 @@
     ]
   },
   {
-    "slug": "cipher-key-lair",
-    "name": "Cipher Key Lair",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "1f",
-        "name": "Cipher Key Lair 1F"
-      },
-      {
-        "slug": "2f",
-        "name": "Cipher Key Lair 2F"
-      },
-      {
-        "slug": "3f",
-        "name": "Cipher Key Lair 3F"
-      },
-      {
-        "slug": "4f",
-        "name": "Cipher Key Lair 4F"
-      },
-      {
-        "slug": "5f",
-        "name": "Cipher Key Lair 5F"
-      },
-      {
-        "slug": "outside",
-        "name": "Cipher Key Lair (Outside)"
-      },
-      {
-        "slug": "roof",
-        "name": "Cipher Key Lair Roof"
-      }
-    ],
-    "versions": [
-      "xd"
-    ]
-  },
-  {
-    "slug": "cipher-lab",
-    "name": "Cipher Lab",
-    "region": "orre",
-    "category": "BUILDING",
-    "areas": [
-      {
-        "slug": "bf1",
-        "name": "Cipher Lab B1F"
-      },
-      {
-        "slug": "bf2",
-        "name": "Cipher Lab B2F"
-      },
-      {
-        "slug": "outside",
-        "name": "Cipher Lab (Outside)"
-      }
-    ],
-    "versions": [
-      "xd"
-    ]
-  },
-  {
     "slug": "circhester",
     "name": "Circhester",
     "region": "galar",
@@ -2255,57 +2178,6 @@
     "versions": [
       "shield",
       "sword"
-    ]
-  },
-  {
-    "slug": "citadark-isle",
-    "name": "Citadark Isle",
-    "region": "orre",
-    "category": "WATER",
-    "areas": [
-      {
-        "slug": "1f",
-        "name": "Citadark Isle 1F"
-      },
-      {
-        "slug": "2f",
-        "name": "Citadark Isle 2F"
-      },
-      {
-        "slug": "3f",
-        "name": "Citadark Isle 3F"
-      },
-      {
-        "slug": "6f",
-        "name": "Citadark Isle 6F"
-      },
-      {
-        "slug": "bf1",
-        "name": "Citadark Isle B1F"
-      },
-      {
-        "slug": "dome-1f",
-        "name": "Citadark Isle Dome 1F"
-      },
-      {
-        "slug": "dome-2f",
-        "name": "Citadark Isle Dome 2F"
-      },
-      {
-        "slug": "dome-bf1",
-        "name": "Citadark Isle Dome B1F"
-      },
-      {
-        "slug": "dome-exterior",
-        "name": "Citadark Isle Dome Exterior"
-      },
-      {
-        "slug": "outside",
-        "name": "Citadark Isle (Outside)"
-      }
-    ],
-    "versions": [
-      "xd"
     ]
   },
   {
@@ -4373,29 +4245,6 @@
       }
     ],
     "versions": []
-  },
-  {
-    "slug": "gateon-port",
-    "name": "Gateon Port",
-    "region": "orre",
-    "category": "BUILDING",
-    "areas": [
-      {
-        "slug": "across-bridge",
-        "name": "Gateon Port (Across Bridge)"
-      },
-      {
-        "slug": "gateon-port",
-        "name": null
-      },
-      {
-        "slug": "lighthouse-top",
-        "name": "Gateon Port (Lighthouse Top)"
-      }
-    ],
-    "versions": [
-      "xd"
-    ]
   },
   {
     "slug": "gear-station",
@@ -10137,30 +9986,6 @@
     ]
   },
   {
-    "slug": "mt-battle",
-    "name": "Mt. Battle",
-    "region": "orre",
-    "category": "MOUNTAIN",
-    "areas": [
-      {
-        "slug": "100f",
-        "name": "Mt. Battle 100F"
-      },
-      {
-        "slug": "10f",
-        "name": "Mt. Battle 10F"
-      },
-      {
-        "slug": "lobby",
-        "name": "Mt. Battle Lobby"
-      }
-    ],
-    "versions": [
-      "colosseum",
-      "xd"
-    ]
-  },
-  {
     "slug": "mt-chimney",
     "name": "Mt. Chimney",
     "region": "hoenn",
@@ -10869,33 +10694,6 @@
     ]
   },
   {
-    "slug": "onbs",
-    "name": "ONBS",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "2f",
-        "name": "ONBS 2F"
-      },
-      {
-        "slug": "3f",
-        "name": "ONBS 3F"
-      },
-      {
-        "slug": "4f",
-        "name": "ONBS 4F"
-      },
-      {
-        "slug": "roof",
-        "name": "ONBS Roof"
-      }
-    ],
-    "versions": [
-      "xd"
-    ]
-  },
-  {
     "slug": "one-island",
     "name": "One Island",
     "region": "kanto",
@@ -11033,26 +10831,6 @@
     "versions": [
       "firered",
       "leafgreen"
-    ]
-  },
-  {
-    "slug": "outskirt-stand",
-    "name": "Outskirt Stand",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "inside",
-        "name": "Outskirt Stand (Inside)"
-      },
-      {
-        "slug": "outside",
-        "name": "Outskirt Stand (Outside)"
-      }
-    ],
-    "versions": [
-      "colosseum",
-      "xd"
     ]
   },
   {
@@ -11478,50 +11256,6 @@
     ]
   },
   {
-    "slug": "phenac-city",
-    "name": "Phenac City",
-    "region": "orre",
-    "category": "TOWN",
-    "areas": [
-      {
-        "slug": "card-e-room",
-        "name": "Phenac City (Card E Room)"
-      },
-      {
-        "slug": "east-exit",
-        "name": "Phenac City (East Exit)"
-      },
-      {
-        "slug": "mayors-house",
-        "name": "Phenac City (Mayor's House)"
-      },
-      {
-        "slug": "prestige-precept-center",
-        "name": "Phenac City Prestige Precept Center"
-      },
-      {
-        "slug": "south-exit",
-        "name": "Phenac City (South Exit)"
-      },
-      {
-        "slug": "stadium",
-        "name": "Phenac City Stadium"
-      },
-      {
-        "slug": "stadium-outside",
-        "name": "Phenac City Stadium (Outside)"
-      },
-      {
-        "slug": "west-exit",
-        "name": "Phenac City (West Exit)"
-      }
-    ],
-    "versions": [
-      "colosseum",
-      "xd"
-    ]
-  },
-  {
     "slug": "pinwheel-forest",
     "name": "Pinwheel Forest",
     "region": "unova",
@@ -11654,25 +11388,6 @@
     "versions": []
   },
   {
-    "slug": "pokemon-hq-lab",
-    "name": "Pokemon Hq Lab",
-    "region": "orre",
-    "category": "BUILDING",
-    "areas": [
-      {
-        "slug": "outside",
-        "name": "Pokemon HQ Lab (Outside)"
-      },
-      {
-        "slug": "pokemon-hq-lab",
-        "name": null
-      }
-    ],
-    "versions": [
-      "xd"
-    ]
-  },
-  {
     "slug": "pokemon-league",
     "name": "Pokémon League",
     "region": "paldea",
@@ -11780,29 +11495,6 @@
     "versions": [
       "x",
       "y"
-    ]
-  },
-  {
-    "slug": "pokespot",
-    "name": "Pokespot",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "cave",
-        "name": "Cave Pokespot"
-      },
-      {
-        "slug": "oasis",
-        "name": "Oasis Pokespot"
-      },
-      {
-        "slug": "rock",
-        "name": "Rock Pokespot"
-      }
-    ],
-    "versions": [
-      "xd"
     ]
   },
   {
@@ -12061,84 +11753,6 @@
     "versions": []
   },
   {
-    "slug": "pyrite-bldg",
-    "name": "Pyrite Bldg",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "1f",
-        "name": "Pyrite Bldg 1F"
-      },
-      {
-        "slug": "4f",
-        "name": "Pyrite Bldg 4F"
-      }
-    ],
-    "versions": [
-      "colosseum"
-    ]
-  },
-  {
-    "slug": "pyrite-cave",
-    "name": "Pyrite Cave",
-    "region": "orre",
-    "category": "CAVE",
-    "areas": [
-      {
-        "slug": "bf1",
-        "name": "Pyrite Cave B1F"
-      },
-      {
-        "slug": "bf1-post-sewers",
-        "name": "Pyrite Cave B1F (Post Sewers)"
-      },
-      {
-        "slug": "mirors-hideout",
-        "name": "Pyrite Cave (Miror's Hideout)"
-      },
-      {
-        "slug": "outside",
-        "name": "Pyrite Cave (Outside)"
-      },
-      {
-        "slug": "south-sewers",
-        "name": "Pyrite Cave (South Sewers)"
-      }
-    ],
-    "versions": [
-      "colosseum"
-    ]
-  },
-  {
-    "slug": "pyrite-town",
-    "name": "Pyrite Town",
-    "region": "orre",
-    "category": "TOWN",
-    "areas": [
-      {
-        "slug": "colosseum",
-        "name": "Pyrite Town Colosseum"
-      },
-      {
-        "slug": "duel-square",
-        "name": "Pyrite Town (Duel Square)"
-      },
-      {
-        "slug": "dukings-house",
-        "name": "Pyrite Town (Duking's House)"
-      },
-      {
-        "slug": "entrance",
-        "name": "Pyrite Town (Entrance)"
-      }
-    ],
-    "versions": [
-      "colosseum",
-      "xd"
-    ]
-  },
-  {
     "slug": "radiant-chamber",
     "name": "Radiant Chamber",
     "region": "kalos",
@@ -12182,26 +11796,6 @@
       "diamond",
       "pearl",
       "platinum"
-    ]
-  },
-  {
-    "slug": "realgam-tower",
-    "name": "Realgam Tower",
-    "region": "orre",
-    "category": "BUILDING",
-    "areas": [
-      {
-        "slug": "colosseum",
-        "name": "Realgam Tower Colosseum"
-      },
-      {
-        "slug": "realgam-tower",
-        "name": null
-      }
-    ],
-    "versions": [
-      "colosseum",
-      "xd"
     ]
   },
   {
@@ -13478,25 +13072,6 @@
     "versions": []
   },
   {
-    "slug": "shadow-pokemon-lab",
-    "name": "Shadow Pokémon Lab",
-    "region": "orre",
-    "category": "BUILDING",
-    "areas": [
-      {
-        "slug": "bf1",
-        "name": "Shadow Pokémon Lab B1F"
-      },
-      {
-        "slug": "bf2",
-        "name": "Shadow Pokémon Lab B2F"
-      }
-    ],
-    "versions": [
-      "colosseum"
-    ]
-  },
-  {
     "slug": "shady-house",
     "name": "Shady House",
     "region": "alola",
@@ -14458,25 +14033,6 @@
     "versions": [
       "shield",
       "sword"
-    ]
-  },
-  {
-    "slug": "snagem-hideout",
-    "name": "Snagem Hideout",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "1f",
-        "name": "Snagem Hideout 1F"
-      },
-      {
-        "slug": "2f",
-        "name": "Snagem Hideout 2F"
-      }
-    ],
-    "versions": [
-      "colosseum"
     ]
   },
   {
@@ -15518,37 +15074,6 @@
       }
     ],
     "versions": []
-  },
-  {
-    "slug": "the-under",
-    "name": "The Under",
-    "region": "orre",
-    "category": "OTHER",
-    "areas": [
-      {
-        "slug": "colosseum",
-        "name": "The Under Colosseum"
-      },
-      {
-        "slug": "deep-colosseum",
-        "name": "The Under (Deep Colosseum)"
-      },
-      {
-        "slug": "subway",
-        "name": "The Under (Subway)"
-      },
-      {
-        "slug": "the-under",
-        "name": null
-      },
-      {
-        "slug": "tv-studio",
-        "name": "The Under (TV Studio)"
-      }
-    ],
-    "versions": [
-      "colosseum"
-    ]
   },
   {
     "slug": "three-island",

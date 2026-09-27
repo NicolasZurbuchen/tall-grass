@@ -1,15 +1,16 @@
--- The eleven regions, and the games set in them.
+-- The ten main-series regions, and the games set in them.
 --
 -- `blurb` and the boxArt rows are the only curated content in this database. Upstream has no field
 -- for either, and #24 accepted the curation on the grounds that eleven rows is a table somebody can
 -- read in one sitting. A region's own in-game description would have been flavour text, which #10
 -- and #11 forbid shipping, so the blurb is written for this project instead.
 --
--- `nativeName` is null for Orre alone, which upstream has no Japanese name for.
+-- Ten regions, not eleven: Orre exists only in Colosseum and XD, which are spin-offs, and this app
+-- covers the main series. Nothing generates it, so nothing here has to survive its absences.
 CREATE TABLE region (
     slug           TEXT NOT NULL PRIMARY KEY,
     name           TEXT NOT NULL,
-    nativeName     TEXT,
+    nativeName     TEXT NOT NULL,
     -- The earliest generation among the region's own games. Kanto is I even though Gold and Silver
     -- reach it, because those are Johto's games.
     generation     INTEGER NOT NULL,

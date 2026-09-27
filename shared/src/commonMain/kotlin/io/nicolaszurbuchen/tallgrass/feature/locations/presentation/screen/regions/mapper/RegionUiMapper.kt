@@ -22,7 +22,6 @@ fun Region.toUiModel(): RegionUiModel =
     RegionUiModel(
         slug = slug,
         name = name,
-        nativeName = nativeName,
         generationText = UiText.Resource(Res.string.regions_generation, listOf(generation)),
         locationsText = UiText.Resource(Res.string.regions_locations, listOf(locationCount)),
         color = slug.toRegionThemeUiModel()?.color,

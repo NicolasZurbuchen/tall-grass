@@ -44,15 +44,14 @@ fun List<GameVersion>.toAvailabilityGridUiModel(encountered: Set<String>): Avail
     )
 
 /**
- * Exhaustive by construction, the same way the type mapper is: both enums list the same six members,
- * so a seventh console breaks this at compile time rather than leaving a row with no label.
+ * Exhaustive by construction, the same way the type mapper is: both enums list the same five members,
+ * so a sixth console breaks this at compile time rather than leaving a row with no label.
  */
 fun Console.toUiModel(): ConsoleUiModel =
     when (this) {
         Console.SWITCH -> ConsoleUiModel.SWITCH
         Console.THREE_DS -> ConsoleUiModel.THREE_DS
         Console.DS -> ConsoleUiModel.DS
-        Console.GAME_CUBE -> ConsoleUiModel.GAME_CUBE
         Console.GBA -> ConsoleUiModel.GBA
         Console.GB_GBC -> ConsoleUiModel.GB_GBC
     }

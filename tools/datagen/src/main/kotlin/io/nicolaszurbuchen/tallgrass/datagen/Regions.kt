@@ -32,8 +32,8 @@ data class CuratedRegion(
  * itself.
  *
  * Kalos is the one region with no single dex at all -- it ships three, and any one of them is a third
- * of the region -- so it is the reason this is a list. Orre is the other end: Colosseum and XD have no
- * regional dex upstream, and an empty list is the honest answer rather than a substituted one.
+ * of the region -- so it is the reason this is a list. Every region here has one, now that the
+ * spin-off region is not generated: Orre was the only one upstream had no regional dex for.
  */
 val CURATED_REGIONS: List<CuratedRegion> =
     listOf(
@@ -128,16 +128,5 @@ val CURATED_REGIONS: List<CuratedRegion> =
                 "A wide open region with a crater at its centre, crossed in whatever order the traveller likes. " +
                     "Three separate stories run across the same map at once, and the land between them is " +
                     "continuous rather than routed.",
-        ),
-        CuratedRegion(
-            slug = "orre",
-            // Espeon and Umbreon, from Colosseum's cover -- the region has no legendary pair either.
-            boxArt = listOf("espeon", "umbreon"),
-            // Upstream has no Orre dex. The Pokedex tab says so rather than substituting the national one.
-            pokedexes = emptyList(),
-            blurb =
-                "A desert region off the main sequence, with almost no wild grass in it at all. Most of what lives " +
-                    "here has already been taken and mistreated by somebody else, so the work is snatching Pokemon " +
-                    "back rather than catching them.",
         ),
     )

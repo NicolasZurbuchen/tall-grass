@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,15 +37,16 @@ import tallgrass.shared.generated.resources.regions_subtitle
 import tallgrass.shared.generated.resources.regions_title
 
 /**
- * The eleven regions, in release order with the spin-off last.
+ * The ten main-series regions, in release order.
  *
- * **A single column of wide cards rather than the dex's two-column grid.** A region card is a box
- * with a pair of mascots falling off its corner and four lines of text beside them, and at half the
- * width the artwork wins and the words stop being readable. Eleven rows is also short enough to be
- * scanned rather than scrolled, which a grid would not improve.
+ * **Two columns, the same as the dex grid.** One wide card per row was too big: ten of them needed
+ * scrolling for no reason, and the mascots ended up larger than the words. Halved, a card drops the
+ * Japanese name and keeps the pair inset rather than bled off the corner -- see `RegionCard`.
  *
- * No search. Eleven is barely more than a screenful, and a field over it would be furniture -- the
- * Locations tab inside a region is where the list gets long enough to need one.
+ * Orre is not here. It exists only in Colosseum and XD, which are spin-offs, and this app covers the
+ * main series.
+ *
+ * No search. Ten cards is one screenful, and a field over it would be furniture.
  */
 @Composable
 fun RegionsScreen(
@@ -83,17 +85,19 @@ fun RegionsScreen(
                 }
 
                 else -> {
-                    val listState = rememberLazyListState()
+                    val gridState = rememberLazyGridState()
                     val elapsed by rememberEntranceClock(enabled = !rememberReducedMotion())
 
                     // Captured once, not read every frame: the stagger counts from the top of the
                     // viewport, and scrolling during the entrance would keep moving the row it
                     // counts from. Same reasoning as the dex grid's.
-                    val firstOnScreen = remember { listState.firstVisibleItemIndex }
+                    val firstOnScreen = remember { gridState.firstVisibleItemIndex }
 
-                    LazyColumn(
-                        state = listState,
+                    LazyVerticalGrid(
+                        state = gridState,
+                        columns = GridCells.Fixed(GRID_COLUMNS),
                         contentPadding = PaddingValues(MaterialTheme.spacing.md),
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
                         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
                         modifier = Modifier.fillMaxSize(),
                     ) {
@@ -114,8 +118,10 @@ fun RegionsScreen(
 @Composable
 private fun RegionsListSkeleton() {
     ShimmerPulse {
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(GRID_COLUMNS),
             contentPadding = PaddingValues(MaterialTheme.spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
             userScrollEnabled = false,
             modifier = Modifier.fillMaxWidth(),
@@ -125,6 +131,10 @@ private fun RegionsListSkeleton() {
     }
 }
 
-// A screenful, not all eleven: nothing below the fold is visible, and the other two lists settled the
-// same question the same way.
-private const val SKELETON_CARDS = 4
+// A screenful, not all ten: nothing below the fold is visible, and the other two lists settled the
+// same question the same way. Six rather than four now that they come two to a row.
+private const val SKELETON_CARDS = 6
+
+// Two columns, which is what the ten cards want: at full width a region card left the artwork much
+// larger than the words and a list of ten needed scrolling for no reason.
+private const val GRID_COLUMNS = 2

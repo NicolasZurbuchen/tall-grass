@@ -11055,22 +11055,5 @@
       "the-indigo-disk-violet"
     ],
     "locationCount": 84
-  },
-  {
-    "slug": "orre",
-    "name": "Orre",
-    "nativeName": null,
-    "generation": 3,
-    "blurb": "A desert region off the main sequence, with almost no wild grass in it at all. Most of what lives here has already been taken and mistreated by somebody else, so the work is snatching Pokemon back rather than catching them.",
-    "boxArt": [
-      "espeon",
-      "umbreon"
-    ],
-    "pokedex": [],
-    "versions": [
-      "colosseum",
-      "xd"
-    ],
-    "locationCount": 18
   }
 ]

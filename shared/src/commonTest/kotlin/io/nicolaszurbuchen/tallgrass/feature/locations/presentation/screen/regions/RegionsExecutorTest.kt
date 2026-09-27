@@ -39,7 +39,7 @@ class RegionsExecutorTest {
     @Test
     fun store_readsTheRegionsWithoutBeingAsked() =
         runTest {
-            val regions = listOf(LocationFixtures.kanto, LocationFixtures.orre)
+            val regions = listOf(LocationFixtures.kanto, LocationFixtures.johto)
             val store = store(FakeLocationRepository(regions = regions))
 
             store.stateFlow.test {

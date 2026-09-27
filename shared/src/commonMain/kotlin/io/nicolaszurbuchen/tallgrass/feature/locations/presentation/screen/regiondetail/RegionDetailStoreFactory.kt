@@ -55,10 +55,6 @@ class RegionDetailStoreFactory(
                     }
                 }
 
-                is RegionDetailIntent.QueryChanged -> {
-                    dispatch(RegionDetailMessage.QueryChanged(intent.query))
-                }
-
                 is RegionDetailIntent.LocationClicked -> {
                     publish(RegionDetailLabel.NavigateToLocation(intent.slug))
                 }
@@ -138,10 +134,6 @@ class RegionDetailStoreFactory(
 
                 is RegionDetailMessage.TabChanged -> {
                     copy(tab = msg.tab)
-                }
-
-                is RegionDetailMessage.QueryChanged -> {
-                    copy(query = msg.query)
                 }
 
                 is RegionDetailMessage.LoadFailed -> {

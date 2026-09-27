@@ -39,23 +39,18 @@ class LocationLocalDataSourceImplTest {
         }
 
     @Test
-    fun regions_keepOneWithNoJapaneseName() =
+    fun regionDetail_countsItsOwnPokedex() =
         runTest {
-            // Orre, and only Orre. A null there is an answer rather than a broken row, so the card
-            // has to survive it.
+            // Its own read rather than a column, so the count cannot drift from the rows the Pokedex
+            // tab actually draws.
             val database = inMemoryPokedex()
-            database.insertRegion(slug = "orre", name = "Orre", nativeName = null)
+            database.insertRegion(slug = "kanto", name = "Kanto")
+            database.insertVariant("bulbasaur", 1)
+            database.insertVariant("charmander", 4)
+            database.regionQueries.insertRegionDexEntry("kanto", "bulbasaur", 1, 0)
+            database.regionQueries.insertRegionDexEntry("kanto", "charmander", 4, 1)
 
-            assertNull(source(database).regions().single().nativeName)
-        }
-
-    @Test
-    fun regionDetail_countsItsPokedexAndIsZeroForOrre() =
-        runTest {
-            val database = inMemoryPokedex()
-            database.insertRegion(slug = "orre", name = "Orre", nativeName = null)
-
-            assertEquals(0, source(database).regionDetail("orre")?.pokedexSize)
+            assertEquals(2, source(database).regionDetail("kanto")?.pokedexSize)
         }
 
     @Test
@@ -242,7 +237,7 @@ private fun inMemoryPokedex(): PokedexDatabase {
 private fun PokedexDatabase.insertRegion(
     slug: String,
     name: String,
-    nativeName: String? = "カントー",
+    nativeName: String = "カントー",
 ) {
     regionQueries.insertRegion(
         slug = slug,

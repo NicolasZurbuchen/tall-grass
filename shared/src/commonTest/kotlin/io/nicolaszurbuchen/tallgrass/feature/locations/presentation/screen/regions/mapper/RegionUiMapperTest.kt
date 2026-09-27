@@ -23,11 +23,13 @@ class RegionUiMapperTest {
     }
 
     @Test
-    fun card_keepsTheMissingJapaneseNameMissing() {
-        // Orre, and only Orre. The card leaves the line out rather than substituting the English
-        // name, which would read as a translation that had not been done.
-        assertNull(LocationFixtures.orre.toUiModel().nativeName)
-        assertEquals("カントー", LocationFixtures.kanto.toUiModel().nativeName)
+    fun card_carriesOnlyWhatFitsAtHalfWidth() {
+        // Two columns, so the card is a name and two facts. The Japanese name is not among them any
+        // more -- there is no room for a third line beside artwork this size, and the About tab has it.
+        val card = LocationFixtures.kanto.toUiModel()
+
+        assertEquals("Kanto", card.name)
+        assertNotNull(card.locationsText)
     }
 
     @Test

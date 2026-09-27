@@ -27,17 +27,22 @@ import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.screen.regio
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 
 /**
- * One region, drawn on its own colour with its box-art pair falling off the bottom-right corner.
+ * One region, drawn on its own colour with its box-art pair in the bottom-right corner.
  *
  * **The pair is the card's visual anchor**, which is #24's call: a single defining mascot was an
- * arbitrary editorial pick, and two removes the choice. They overlap deliberately, the second one
- * smaller and behind, so the card reads as a box rather than as two stickers.
+ * arbitrary editorial pick, and two removes the choice. They overlap deliberately, the second smaller
+ * and behind, so the card reads as a box rather than as two stickers.
  *
  * Hisui is the only region with one, and it is centred rather than left in half a pair's position --
  * Legends: Arceus shipped without a pair, and the layout says so instead of looking broken.
  *
- * The artwork is decorative: the region's name is beside it in words, so there is nothing for a
- * screen reader to find here that the card does not already say.
+ * **The artwork is inset rather than bled off the corner.** At two columns a card is half as wide as
+ * it was, and mascots running past the edge read as clipped rather than as deliberate; kept inside,
+ * the pair reads as the box art it is. The Japanese name went with the same change -- there is no room
+ * for a third line of text beside artwork this size, and the About tab carries it.
+ *
+ * The artwork is decorative: the region's name is beside it in words, so there is nothing here for a
+ * screen reader to find that the card does not already say.
  */
 @Composable
 fun RegionCard(
@@ -54,24 +59,15 @@ fun RegionCard(
                 .background(region.color ?: MaterialTheme.appColors.surfaceRaised)
                 .clickable(onClick = onClick),
     ) {
-        BoxArt(urls = region.boxArt, modifier = Modifier.align(Alignment.BottomEnd))
+        BoxArt(
+            urls = region.boxArt,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(ART_INSET),
+        )
 
         Column(modifier = Modifier.padding(MaterialTheme.spacing.md)) {
-            region.nativeName?.let { native ->
-                // Absent for Orre, and the line simply goes: one card of eleven sitting a little
-                // higher reads as a card, where a blank line reads as something that failed.
-                Text(
-                    text = native,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = NATIVE_ALPHA),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
             Text(
                 text = region.name,
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -105,7 +101,7 @@ private fun BoxArt(
                 model = behind,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(SECOND_ART).offset(x = SECOND_OFFSET, y = SECOND_OFFSET),
+                modifier = Modifier.size(SECOND_ART).offset(x = PAIR_OFFSET),
             )
         }
 
@@ -116,30 +112,30 @@ private fun BoxArt(
             modifier =
                 Modifier
                     .size(FIRST_ART)
-                    .offset(
-                        // A lone mascot sits square in the corner instead of leaving a gap where
-                        // its partner would have been.
-                        x = if (urls.size > 1) FIRST_OFFSET else SECOND_OFFSET,
-                        y = FIRST_OFFSET,
-                    ),
+                    // A lone mascot sits square in the corner instead of leaving a gap where its
+                    // partner would have been.
+                    .offset(x = if (urls.size > 1) -PAIR_OFFSET else 0.dp),
         )
     }
 }
 
-// Wider than tall, so eleven of them stack into a list that can be scanned rather than scrolled.
-private const val CARD_RATIO = 1.55f
+// Close to square, because two columns of them is what the list is now: a wide card at half the width
+// leaves the artwork bigger than the words.
+private const val CARD_RATIO = 1.05f
 
-// The kana is a grace note rather than a label, so it sits well back from the name.
-private const val NATIVE_ALPHA = 0.7f
 private const val FACT_ALPHA = 0.85f
 
 // Far enough back that white text stays readable over the artwork's lighter areas, near enough that
 // the Pokemon is still recognisably itself.
 private const val ART_ALPHA = 0.9f
 
-private val FIRST_ART = 78.dp
-private val SECOND_ART = 62.dp
+private val FIRST_ART = 56.dp
+private val SECOND_ART = 44.dp
 
-// Both run off the corner: the card is a window onto the pair rather than a frame around it.
-private val FIRST_OFFSET = 10.dp
-private val SECOND_OFFSET = 22.dp
+// The pair leans apart by this much either side of centre, so both are visible without either running
+// out of the card.
+private val PAIR_OFFSET = 10.dp
+
+// Keeps the pair off the card's edges. At two columns there is not enough width to bleed artwork past
+// the corner without it reading as clipped.
+private val ART_INSET = 6.dp

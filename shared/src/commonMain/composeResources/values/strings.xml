@@ -107,17 +107,11 @@
     <string name="region_detail_native_name">Native name</string>
     <string name="region_detail_games">Games</string>
     <string name="region_detail_generation">Generation %1$s</string>
-    <!-- Placeholder in the Locations tab search field. -->
-    <string name="region_detail_search">Search %1$s locations</string>
     <!-- Under a location row: how many of the region games have anything to meet there. Zero is an
          answer rather than a gap; see #24 on Berry Forest. -->
     <string name="region_detail_location_games">%1$s games</string>
     <string name="region_detail_location_one_game">1 game</string>
     <string name="region_detail_location_no_data">No encounter data</string>
-    <string name="region_detail_showing">Showing %1$s of %2$s.</string>
-    <string name="region_detail_no_matches">No place here matches that.</string>
-    <!-- Orre, the one region upstream has no regional Pok&#233;dex for. -->
-    <string name="region_detail_no_pokedex">This region has no Pok&#233;dex of its own.</string>
 
     <string name="move_detail_battle_data">Battle Data</string>
     <string name="move_detail_power">Power</string>
@@ -241,7 +235,6 @@
     <string name="console_switch">Switch</string>
     <string name="console_three_ds">3DS</string>
     <string name="console_ds">DS</string>
-    <string name="console_game_cube">GameCube</string>
     <string name="console_gba">GBA</string>
     <string name="console_gb_gbc">GB / GBC</string>
 
@@ -261,8 +254,8 @@
          which is why a rate under it is qualified rather than exact. See #24. -->
     <string name="location_detail_conditions">Conditions</string>
     <string name="location_detail_any">Any</string>
-    <string name="location_detail_rate_up_to">up to %1$s%%</string>
-    <string name="location_detail_rate_exact">%1$s%%</string>
+    <string name="location_detail_rate_up_to">up to %1$s%</string>
+    <string name="location_detail_rate_exact">%1$s%</string>
     <string name="location_detail_level_range">Lv %1$s-%2$s</string>
     <string name="location_detail_level_one">Lv %1$s</string>
     <!-- Shown only when a location draws one method from more than one area, which is 14.5% of

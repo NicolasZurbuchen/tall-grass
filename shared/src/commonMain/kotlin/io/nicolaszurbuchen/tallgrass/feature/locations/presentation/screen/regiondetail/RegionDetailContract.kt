@@ -10,10 +10,6 @@ sealed interface RegionDetailIntent {
         val index: Int,
     ) : RegionDetailIntent
 
-    data class QueryChanged(
-        val query: String,
-    ) : RegionDetailIntent
-
     data class LocationClicked(
         val slug: String,
     ) : RegionDetailIntent
@@ -63,10 +59,6 @@ sealed interface RegionDetailMessage {
         val tab: RegionDetailState.Tab,
     ) : RegionDetailMessage
 
-    data class QueryChanged(
-        val query: String,
-    ) : RegionDetailMessage
-
     data class LoadFailed(
         val error: AppError,
     ) : RegionDetailMessage
@@ -79,17 +71,12 @@ sealed interface RegionDetailMessage {
  * tapped reads as slower than one that was always ready -- the same call the ability detail made for
  * its holders. The largest of the three is Kalos at 457 dex rows, which is well inside what the dex
  * grid already reads in one go.
- *
- * [query] filters the Locations tab and nothing else. It lives in the Store rather than in the
- * composable because the tabs are a pager: swiping away and back would otherwise clear what was
- * typed.
  */
 data class RegionDetailState(
     val isLoading: Boolean = true,
     val region: RegionDetail? = null,
     val locations: List<LocationSummary> = emptyList(),
     val dex: List<RegionDexEntry> = emptyList(),
-    val query: String = "",
     val tab: Tab = Tab.ABOUT,
     val error: AppError? = null,
 ) {

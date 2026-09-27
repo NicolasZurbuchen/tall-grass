@@ -26,7 +26,7 @@ class RegionsReducerTest {
     @Test
     fun regionsLoaded_stopsLoadingAndHoldsTheRegions() =
         with(reduce) {
-            val regions = listOf(LocationFixtures.kanto, LocationFixtures.orre)
+            val regions = listOf(LocationFixtures.kanto, LocationFixtures.johto)
 
             val state = RegionsState(isLoading = true).reduce(RegionsMessage.RegionsLoaded(regions))
 

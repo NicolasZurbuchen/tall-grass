@@ -35,7 +35,7 @@ class GetRegionLocationsUseCaseTest {
         runTest {
             val useCase = GetRegionLocationsUseCase(FakeLocationRepository(locations = locations))
 
-            assertEquals(emptyList(), useCase("orre"))
+            assertEquals(emptyList(), useCase("johto"))
         }
 
     @Test

@@ -17,8 +17,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 /**
  * The world, small enough to hold in one head and chosen for the cases rather than for the names.
  *
- * Kanto and Orre, because between them they cover every absence the screens have to survive: Orre has
- * no Japanese name, no regional Pokedex, and games upstream does not file under any region. Route 1
+ * Kanto and Johto, which between them cover a region reached by another region's games. Route 1
  * carries a conditioned walking table, which is the shape the correction on #8 is about.
  */
 object LocationFixtures {
@@ -51,15 +50,6 @@ object LocationFixtures {
             generation = 6,
         )
 
-    val colosseum =
-        GameVersion(
-            slug = "colosseum",
-            name = "Colosseum",
-            code = "Co",
-            console = Console.GAME_CUBE,
-            generation = 3,
-        )
-
     val kanto =
         Region(
             slug = "kanto",
@@ -70,15 +60,14 @@ object LocationFixtures {
             boxArt = listOf("charizard.png", "blastoise.png"),
         )
 
-    val orre =
+    val johto =
         Region(
-            slug = "orre",
-            name = "Orre",
-            // Upstream has no Japanese name for this one, and only this one.
-            nativeName = null,
-            generation = 3,
-            locationCount = 18,
-            boxArt = listOf("espeon.png", "umbreon.png"),
+            slug = "johto",
+            name = "Johto",
+            nativeName = "ジョウト",
+            generation = 2,
+            locationCount = 67,
+            boxArt = listOf("ho-oh.png", "lugia.png"),
         )
 
     val kantoDetail =
@@ -93,17 +82,16 @@ object LocationFixtures {
             versions = listOf(heartgold, red),
         )
 
-    val orreDetail =
+    val johtoDetail =
         RegionDetail(
-            slug = "orre",
-            name = "Orre",
-            nativeName = null,
-            generation = 3,
-            blurb = "A desert region off the main sequence.",
-            locationCount = 18,
-            // Upstream has no Orre dex, and the tab says so rather than showing the national one.
-            pokedexSize = 0,
-            versions = listOf(colosseum),
+            slug = "johto",
+            name = "Johto",
+            nativeName = "ジョウト",
+            generation = 2,
+            blurb = "West of Kanto and older than it.",
+            locationCount = 67,
+            pokedexSize = 251,
+            versions = listOf(heartgold),
         )
 
     val route1Summary =

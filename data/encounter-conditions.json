@@ -1155,11 +1155,6 @@
     "isDefault": false
   },
   {
-    "slug": "other-complete-mt-battle",
-    "axis": "story-progress",
-    "isDefault": false
-  },
-  {
     "slug": "story-progress-awakened-beasts",
     "axis": "story-progress",
     "isDefault": false
@@ -1196,11 +1191,6 @@
   },
   {
     "slug": "story-progress-before-national-dex",
-    "axis": "story-progress",
-    "isDefault": false
-  },
-  {
-    "slug": "story-progress-catch-all-shadow-pokemon",
     "axis": "story-progress",
     "isDefault": false
   },
@@ -1640,27 +1630,12 @@
     "isDefault": true
   },
   {
-    "slug": "trade-surskit",
-    "axis": "trade",
-    "isDefault": true
-  },
-  {
     "slug": "trade-tangela",
     "axis": "trade",
     "isDefault": true
   },
   {
-    "slug": "trade-togepi-or-togetic",
-    "axis": "trade",
-    "isDefault": true
-  },
-  {
     "slug": "trade-toxel",
-    "axis": "trade",
-    "isDefault": true
-  },
-  {
-    "slug": "trade-trapinch",
     "axis": "trade",
     "isDefault": true
   },
@@ -1681,11 +1656,6 @@
   },
   {
     "slug": "trade-weezing-galar",
-    "axis": "trade",
-    "isDefault": true
-  },
-  {
-    "slug": "trade-wooper",
     "axis": "trade",
     "isDefault": true
   },

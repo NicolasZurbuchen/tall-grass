@@ -15,10 +15,6 @@ data class RegionsUiModel(
 /**
  * One card in the region list.
  *
- * [nativeName] is null for Orre alone, and the card simply leaves the line out rather than reserving
- * space for it -- one card of eleven being a little shorter reads as a card, where an empty line
- * reads as something that failed to load.
- *
  * [boxArt] is one or two artwork URLs and the card lays out differently for each: a pair overlaps,
  * a single one sits centred. Hisui is the only region with one, because Legends: Arceus shipped
  * without a pair on its cover.
@@ -27,7 +23,6 @@ data class RegionsUiModel(
 data class RegionUiModel(
     val slug: String,
     val name: String,
-    val nativeName: String?,
     val generationText: UiText,
     val locationsText: UiText,
     val color: Color?,

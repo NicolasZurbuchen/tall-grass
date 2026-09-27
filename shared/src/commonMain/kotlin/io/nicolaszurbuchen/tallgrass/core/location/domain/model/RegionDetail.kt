@@ -8,13 +8,12 @@ package io.nicolaszurbuchen.tallgrass.core.location.domain.model
  * it, and unlike the 1,025 a species-level version would need, it finishes.
  *
  * [versions] is every game set here, in grid order, and is derived rather than curated -- which is
- * what gives Kanto twelve and no 3DS row at all. [pokedexSize] is 0 for Orre, which upstream has no
- * regional dex for; the tab says so rather than substituting the national one.
+ * what gives Kanto twelve cells and no 3DS row at all.
  */
 data class RegionDetail(
     val slug: String,
     val name: String,
-    val nativeName: String?,
+    val nativeName: String,
     val generation: Int,
     val blurb: String,
     val locationCount: Int,

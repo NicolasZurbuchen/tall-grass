@@ -268,18 +268,17 @@ data class VersionJson(
  * [blurb] and [boxArt] are curated; see `CURATED_REGIONS`, which explains why. Everything else here is
  * derived, including [nativeName], which is free in upstream's names table.
  *
- * [nativeName] is null for exactly one region. Orre is the only one upstream has no Japanese name for,
- * which is of a piece with the rest of it -- no regional dex either, and two games nothing else in the
- * dataset references.
+ * [nativeName] is not nullable. It was, for Orre alone -- the one region upstream has no Japanese name
+ * for -- and Orre is a spin-off region that is no longer generated, so every region here has one.
  *
- * [pokedex] is empty for Orre and holds more than one entry only for Kalos, whose three dexes are each
- * a third of the region. See `CURATED_REGIONS`.
+ * [pokedex] holds more than one entry only for Kalos, whose three dexes are each a third of the
+ * region. See `CURATED_REGIONS`.
  */
 @Serializable
 data class RegionJson(
     val slug: String,
     val name: String,
-    val nativeName: String?,
+    val nativeName: String,
     val generation: Int,
     val blurb: String,
     val boxArt: List<String>,
