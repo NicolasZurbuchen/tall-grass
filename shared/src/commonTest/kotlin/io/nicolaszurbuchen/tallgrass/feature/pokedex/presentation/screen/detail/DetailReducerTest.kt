@@ -101,6 +101,22 @@ class DetailReducerTest {
     }
 
     @Test
+    fun swipingToAnotherCard_clearsTheChosenGameAndItsPlaces() {
+        // For the same reason as the form switch above, and more so: the next card need not even have
+        // the game that was chosen, so the cell the rows were read under can be gone from the grid.
+        val browsing =
+            initial.copy(
+                locationVersion = "heartgold",
+                places = listOf(LocationFixtures.pidgeyOnRoute1),
+            )
+
+        val state = reduce(browsing, DetailMessage.EntrySwitched("bulbasaur"))
+
+        assertNull(state.locationVersion)
+        assertTrue(state.places.isEmpty())
+    }
+
+    @Test
     fun availabilityIsKeptPerFormRatherThanForTheOneOnScreen() {
         // A reader comparing two forms switches back and forth, and the second look should not read
         // again -- the same call the moves cache makes.

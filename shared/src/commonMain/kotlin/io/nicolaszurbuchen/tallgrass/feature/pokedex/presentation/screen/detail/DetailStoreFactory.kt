@@ -93,7 +93,7 @@ class DetailStoreFactory(
             when (intent) {
                 is DetailIntent.FormSelected -> {
                     dispatch(DetailMessage.FormSwitched(intent.variantSlug))
-                    loadTab(intent.variantSlug)
+                    loadOpenTab()
                 }
 
                 is DetailIntent.EntrySelected -> {
@@ -105,8 +105,7 @@ class DetailStoreFactory(
 
                 is DetailIntent.TabSelected -> {
                     dispatch(DetailMessage.TabSwitched(intent.tab))
-                    if (intent.tab == DetailState.Tab.MOVES) loadTab(state().activeVariantSlug)
-                    if (intent.tab == DetailState.Tab.LOCATION) loadAvailability(state().activeVariantSlug)
+                    loadOpenTab()
                 }
 
                 is DetailIntent.LocationVersionSelected -> {
@@ -180,6 +179,7 @@ class DetailStoreFactory(
             force: Boolean = false,
         ) {
             if (!force && state().details.containsKey(entrySlug)) {
+                loadOpenTab()
                 readAhead()
                 return
             }
@@ -198,6 +198,7 @@ class DetailStoreFactory(
                         }
 
                         dispatch(DetailMessage.DetailLoaded(entrySlug, record.first, record.second))
+                        loadOpenTab()
                         readAhead()
                     } catch (e: AppException) {
                         dispatch(DetailMessage.LoadFailed(e.error))
@@ -210,6 +211,28 @@ class DetailStoreFactory(
         }
 
         /**
+         * Whatever the tab in front of the reader reads for itself, for the form now on screen.
+         *
+         * **Called from every way that pair can change**, and there are three: choosing a tab,
+         * switching form, and swiping onto another card. It used to be wired to the first only, so a
+         * reader already on Moves or Location who swiped kept a tab pointed at a form it had never
+         * read for -- an empty move list, and a Location tab on its skeleton for good, because absence
+         * is what both of them use for "not read yet".
+         *
+         * Cheap to call on every swipe: each read is still guarded by what it already holds.
+         */
+        private fun loadOpenTab() {
+            when (state().tab) {
+                DetailState.Tab.MOVES -> loadTab(state().activeVariantSlug)
+
+                DetailState.Tab.LOCATION -> loadAvailability(state().activeVariantSlug)
+
+                // Filled by the detail read itself, so there is nothing of their own to fetch.
+                DetailState.Tab.ABOUT, DetailState.Tab.STATS -> Unit
+            }
+        }
+
+        /**
          * Both halves of the Moves tab for one form, read the first time it is opened for that form.
          *
          * **Not read with the detail**, which is what keeps a reader who never opens this tab from
@@ -217,8 +240,8 @@ class DetailStoreFactory(
          * both are baked into the binary and cannot change under a running app.
          *
          * Keyed by variant rather than by card because a form has its own of each — Alolan Sandshrew
-         * has Slush Rush where Sandshrew has Sand Veil — so switching forms lands here too, and the
-         * guard is on the map rather than on which tab is open.
+         * has Slush Rush where Sandshrew has Sand Veil — so switching forms and swiping both land
+         * here, through [loadOpenTab]. The guard is the map, so a form looked at twice is read once.
          *
          * **The guard is the moves map, which is the one that fills second.** If the abilities land
          * and the moves throw, the guard stays false and the next visit reads both again, which is
@@ -397,9 +420,14 @@ class DetailStoreFactory(
                 }
 
                 is DetailMessage.EntrySwitched -> {
+                    // The chosen game goes with the card, for the reason under FormSwitched below: a
+                    // cell left selected would show the previous Pokemon's routes under this one's
+                    // name, and the grid it was chosen from is not even the same shape.
                     copy(
                         activeEntrySlug = msg.entrySlug,
                         activeVariantSlug = msg.entrySlug,
+                        locationVersion = null,
+                        places = emptyList(),
                         error = null,
                     )
                 }
