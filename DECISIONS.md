@@ -1404,3 +1404,33 @@ do on the way past a different feature.
 same image persists across the boundary, which it does here; but the keys that would match the two
 sides live in the Pokedex feature, so opening a Pokémon from a regional dex cross-fades instead. The
 transition arrives when the card does.
+
+### "Any" is the absence of a pin, not a value
+
+The condition selector offers the states a table varies on plus an "Any" that is not one of them.
+Pinning an axis filters to that state; leaving it unpinned satisfies every value on that axis at once.
+
+That is what makes the two rate regimes possible. With anything unpinned the figures are a **best
+case** across the states that remain, written "up to X%"; pin every axis the table varies on and the
+rows are one state and the figures are exact and total 100. A reader can always tell which regime
+they are in, because the selector itself darkens as soon as anything is pinned.
+
+**Rejected: defaulting each axis to the state the games call ordinary** — `swarm-no`, `time-day`.
+Upstream marks them, so it was available for free, and it is wrong for this screen: a reader opening
+a route wants to know what lives there, not what lives there at noon with no swarm running. Nine
+Pokémon on HeartGold's Route 1 with nothing touched is the at-a-glance answer; six of them, silently
+filtered, is not.
+
+**Rejected: a running total under the table.** It was noise once "up to" made the regime explicit,
+and it would have been worse than noise: where upstream leaves day and night untagged the honest sum
+is 130%, and a total invites somebody to go hunting for an arithmetic bug that is upstream's.
+
+### A rate bar is a share of a hundred, not of the biggest row
+
+The bar behind an encounter row is scaled to 100%, so a 5% Pokémon draws a bar one twentieth of the
+width. Normalising to the largest row in the table would fill the bar for whatever turns up most,
+which says that the commonest Pokémon on a route is a certainty — the exact claim a rate exists to
+deny. The cost is that a table of rare encounters looks empty, and that is the correct impression.
+
+Rows whose method has no meaningful rate at all — raids, gifts, trades, SOS calls — draw no bar and
+no figure rather than a zero, and keep their level range, which is the part that is true either way.

@@ -188,4 +188,85 @@
     <string name="error_database_not_found_subtitle">This entry is not part of the bundled dataset.</string>
     <string name="error_unexpected_title">Something went wrong</string>
     <string name="error_unexpected_subtitle">Please try again.</string>
+    <!-- Encounter method labels. The actual method and never a coarse group: each one is its own
+         100% table, so merging Old Rod into a "Fishing" tab produces bars summing to 255%. See #9.
+         Curated only where title-casing the upstream slug reads wrong; the other twenty of the 64
+         methods in the dataset fall back to the slug with its hyphens opened out. -->
+    <string name="encounter_method_walk">Tall grass</string>
+    <string name="encounter_method_dark_grass">Dark grass</string>
+    <string name="encounter_method_grass_spots">Grass patch</string>
+    <string name="encounter_method_overworld">Overworld</string>
+    <string name="encounter_method_overworld_water">Overworld (water)</string>
+    <string name="encounter_method_overworld_flying">Overworld (flying)</string>
+    <string name="encounter_method_overworld_dirt">Overworld (dirt)</string>
+    <string name="encounter_method_overworld_special">Overworld (rare)</string>
+    <string name="encounter_method_overworld_flying_special">Sky (rare)</string>
+    <string name="encounter_method_wanderer">Roaming</string>
+    <string name="encounter_method_wanderer_water">Roaming (water)</string>
+    <string name="encounter_method_roaming_grass">Roaming (grass)</string>
+    <string name="encounter_method_surf">Surf</string>
+    <string name="encounter_method_surf_spots">Surf spot</string>
+    <string name="encounter_method_old_rod">Old Rod</string>
+    <string name="encounter_method_good_rod">Good Rod</string>
+    <string name="encounter_method_super_rod">Super Rod</string>
+    <string name="encounter_method_super_rod_spots">Super Rod spot</string>
+    <string name="encounter_method_bubbling_spots">Bubbling spot</string>
+    <string name="encounter_method_cave_spots">Cave spot</string>
+    <string name="encounter_method_headbutt">Headbutt tree</string>
+    <string name="encounter_method_headbutt_low">Headbutt tree (low)</string>
+    <string name="encounter_method_headbutt_normal">Headbutt tree</string>
+    <string name="encounter_method_headbutt_high">Headbutt tree (high)</string>
+    <string name="encounter_method_rock_smash">Rock Smash</string>
+    <string name="encounter_method_honey_tree">Honey tree</string>
+    <string name="encounter_method_berry_trees">Berry tree</string>
+    <string name="encounter_method_max_raid">Max Raid</string>
+    <string name="encounter_method_dynamax_adventure">Dynamax Adventure</string>
+    <string name="encounter_method_horde">Horde</string>
+    <string name="encounter_method_sos">SOS call</string>
+    <string name="encounter_method_sos_from_bubbling_spot">SOS call (bubbling spot)</string>
+    <string name="encounter_method_static">Static encounter</string>
+    <string name="encounter_method_gift">Gift</string>
+    <string name="encounter_method_gift_egg">Gift egg</string>
+    <string name="encounter_method_npc_trade">In-game trade</string>
+    <string name="encounter_method_island_scan">Island Scan</string>
+    <string name="encounter_method_hidden_grotto">Hidden Grotto</string>
+    <string name="encounter_method_ceiling_ambush">Ceiling ambush</string>
+    <string name="encounter_method_rough_terrain">Rough terrain</string>
+    <string name="encounter_method_snag">Snagged</string>
+    <string name="encounter_method_red_flowers">Red flowers</string>
+    <string name="encounter_method_yellow_flowers">Yellow flowers</string>
+    <string name="encounter_method_purple_flowers">Purple flowers</string>
+
+    <!-- Availability grid: the console rows, which is how #9 groups the cells. -->
+    <string name="console_switch">Switch</string>
+    <string name="console_three_ds">3DS</string>
+    <string name="console_ds">DS</string>
+    <string name="console_game_cube">GameCube</string>
+    <string name="console_gba">GBA</string>
+    <string name="console_gb_gbc">GB / GBC</string>
+
+    <string name="location_detail_available_in">Available in</string>
+    <string name="location_detail_legend_yes">Has encounters</string>
+    <string name="location_detail_legend_no">None</string>
+    <!-- The breadcrumb the grid collapses into once a game is chosen. Tapping it opens the grid
+         again, which is why the grid is never scrolled away. See #9. -->
+    <string name="location_detail_species">%1$s species</string>
+    <string name="location_detail_one_species">1 species</string>
+    <string name="location_detail_none_here">Nothing to meet here.</string>
+    <!-- Two empty states that must not be confused: a gap in the data, and a fact about the game.
+         See #21. -->
+    <string name="location_detail_no_data_yet">Encounter data for this game is not available yet.</string>
+    <string name="location_detail_not_in_game">Nothing has been recorded here in %1$s.</string>
+    <!-- The condition selector. "Any" means unpinned and shows the best case across every state,
+         which is why a rate under it is qualified rather than exact. See #24. -->
+    <string name="location_detail_conditions">Conditions</string>
+    <string name="location_detail_any">Any</string>
+    <string name="location_detail_rate_up_to">up to %1$s%%</string>
+    <string name="location_detail_rate_exact">%1$s%%</string>
+    <string name="location_detail_level_range">Lv %1$s-%2$s</string>
+    <string name="location_detail_level_one">Lv %1$s</string>
+    <!-- Shown only when a location draws one method from more than one area, which is 14.5% of
+         the time. Where there is one area the fold is invisible, which is what #24 asked for. -->
+    <string name="location_detail_area">%1$s</string>
+
 </resources>

@@ -61,6 +61,7 @@ fun RegionDetailScreen(
     state: RegionDetailUiModel,
     onTabClick: (Int) -> Unit,
     onQueryChange: (String) -> Unit,
+    onLocationClick: (String) -> Unit,
     onPokemonClick: (String) -> Unit,
     onBackClick: () -> Unit,
     onRetryClick: () -> Unit,
@@ -124,7 +125,7 @@ fun RegionDetailScreen(
                     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                         when (RegionTabUiModel.entries[page]) {
                             RegionTabUiModel.ABOUT -> AboutPage(state)
-                            RegionTabUiModel.LOCATIONS -> LocationsPage(state, onQueryChange)
+                            RegionTabUiModel.LOCATIONS -> LocationsPage(state, onQueryChange, onLocationClick)
                             RegionTabUiModel.POKEDEX -> PokedexPage(state, onPokemonClick)
                         }
                     }
@@ -155,6 +156,7 @@ private fun AboutPage(state: RegionDetailUiModel) {
 private fun LocationsPage(
     state: RegionDetailUiModel,
     onQueryChange: (String) -> Unit,
+    onLocationClick: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -185,7 +187,10 @@ private fun LocationsPage(
             modifier = Modifier.fillMaxSize(),
         ) {
             items(items = state.locations, key = { it.slug }) { location ->
-                RegionLocationRow(location = location)
+                RegionLocationRow(
+                    location = location,
+                    onClick = { onLocationClick(location.slug) },
+                )
             }
 
             // Only while something is typed: a reader who has filtered needs to know how much of the

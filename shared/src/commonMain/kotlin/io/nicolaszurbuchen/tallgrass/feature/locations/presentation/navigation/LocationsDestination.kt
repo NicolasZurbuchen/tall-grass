@@ -22,3 +22,16 @@ data object RegionsDestination : LocationsDestination
 data class RegionDetailDestination(
     val slug: String,
 ) : LocationsDestination
+
+/**
+ * One place, keyed by slug.
+ *
+ * **A push, not a shared element.** #11 classifies it that way for the region-to-location move, and
+ * the rule agrees: nothing travels across the boundary, because a location row carries a coloured
+ * marker rather than an image. The encounter rows *inside* this screen are the other way round --
+ * each carries a sprite the Pokemon detail draws, which is the shared element #11 does list.
+ */
+@Serializable
+data class LocationDetailDestination(
+    val slug: String,
+) : LocationsDestination
