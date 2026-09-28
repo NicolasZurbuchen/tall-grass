@@ -1,7 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.core.location.domain.usecase
 
 import io.nicolaszurbuchen.tallgrass.core.location.domain.fake.FakeLocationRepository
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -10,18 +10,24 @@ import kotlin.test.assertFailsWith
 
 class GetRegionDexUseCaseTest {
     private val kantonianVulpix =
-        DexEntry(
+        RegionDexEntry(
             slug = "vulpix",
+            cardSlug = "vulpix",
+            number = 37,
             dexNumber = 37,
             name = "Vulpix",
-            formLabel = null,
             artworkUrl = "vulpix.png",
             primaryType = PokemonType.FIRE,
             secondaryType = null,
         )
 
     private val alolanVulpix =
-        kantonianVulpix.copy(slug = "vulpix-alola", artworkUrl = "vulpix-alola.png", primaryType = PokemonType.ICE)
+        kantonianVulpix.copy(
+            slug = "vulpix-alola",
+            number = 253,
+            artworkUrl = "vulpix-alola.png",
+            primaryType = PokemonType.ICE,
+        )
 
     private val dexes = mapOf("kanto" to listOf(kantonianVulpix), "alola" to listOf(alolanVulpix))
 

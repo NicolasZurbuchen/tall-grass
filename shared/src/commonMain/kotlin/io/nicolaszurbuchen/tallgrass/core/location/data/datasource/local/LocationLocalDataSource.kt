@@ -6,9 +6,9 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationDetail
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationSummary
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.Region
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDetail
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 
 interface LocationLocalDataSource {
     suspend fun regions(): List<Region>
@@ -17,7 +17,7 @@ interface LocationLocalDataSource {
 
     suspend fun locationsIn(regionSlug: String): List<LocationSummary>
 
-    suspend fun regionDex(regionSlug: String): List<DexEntry>
+    suspend fun regionDex(regionSlug: String): List<RegionDexEntry>
 
     suspend fun locationDetail(slug: String): LocationDetail?
 

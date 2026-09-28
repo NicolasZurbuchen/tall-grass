@@ -3,6 +3,7 @@ package io.nicolaszurbuchen.tallgrass.app.navigation
 import androidx.navigation3.runtime.NavKey
 import io.nicolaszurbuchen.tallgrass.app.navigation.impl.AbilitiesNavigatorImpl
 import io.nicolaszurbuchen.tallgrass.app.navigation.impl.HomeNavigatorImpl
+import io.nicolaszurbuchen.tallgrass.app.navigation.impl.LocationsNavigatorImpl
 import io.nicolaszurbuchen.tallgrass.app.navigation.impl.MovesNavigatorImpl
 import io.nicolaszurbuchen.tallgrass.app.navigation.impl.PokedexNavigatorImpl
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.navigation.AbilitiesNavKeyHandler
@@ -10,6 +11,8 @@ import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.navigation.A
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeNavKeyHandler
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeNavigator
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeRootDestination
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.LocationsNavKeyHandler
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.LocationsNavigator
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MovesNavKeyHandler
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MovesNavigator
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.PokedexNavKeyHandler
@@ -32,9 +35,11 @@ val appNavigationModule =
         singleOf(::PokedexNavigatorImpl) bind PokedexNavigator::class
         singleOf(::MovesNavigatorImpl) bind MovesNavigator::class
         singleOf(::AbilitiesNavigatorImpl) bind AbilitiesNavigator::class
+        singleOf(::LocationsNavigatorImpl) bind LocationsNavigator::class
 
         singleOf(::HomeNavKeyHandler) { named("home") } bind NavKeyHandler::class
         singleOf(::PokedexNavKeyHandler) { named("pokedex") } bind NavKeyHandler::class
         singleOf(::MovesNavKeyHandler) { named("moves") } bind NavKeyHandler::class
         singleOf(::AbilitiesNavKeyHandler) { named("abilities") } bind NavKeyHandler::class
+        singleOf(::LocationsNavKeyHandler) { named("locations") } bind NavKeyHandler::class
     }

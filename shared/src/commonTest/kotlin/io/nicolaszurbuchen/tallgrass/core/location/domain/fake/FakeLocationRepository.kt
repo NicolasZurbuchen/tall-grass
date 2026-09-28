@@ -6,10 +6,10 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationDetail
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.LocationSummary
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.Region
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDetail
+import io.nicolaszurbuchen.tallgrass.core.location.domain.model.RegionDexEntry
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
 import io.nicolaszurbuchen.tallgrass.core.location.domain.repository.LocationRepository
-import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 
 /**
  * Counted per query rather than in total, on the same grounds as `FakeAbilityRepository`: a region's
@@ -24,7 +24,7 @@ class FakeLocationRepository(
     private var regions: List<Region> = emptyList(),
     private var regionDetails: Map<String, RegionDetail> = emptyMap(),
     private var locations: Map<String, List<LocationSummary>> = emptyMap(),
-    private var dexes: Map<String, List<DexEntry>> = emptyMap(),
+    private var dexes: Map<String, List<RegionDexEntry>> = emptyMap(),
     private var locationDetails: Map<String, LocationDetail> = emptyMap(),
     private var encountersAt: Map<Pair<String, String>, List<Encounter>> = emptyMap(),
     private var encountersFor: Map<Pair<String, String>, List<VariantEncounter>> = emptyMap(),
@@ -77,7 +77,7 @@ class FakeLocationRepository(
         return locations[regionSlug].orEmpty()
     }
 
-    override suspend fun regionDex(regionSlug: String): List<DexEntry> {
+    override suspend fun regionDex(regionSlug: String): List<RegionDexEntry> {
         regionDexCallCount++
         failure?.let { throw it }
         return dexes[regionSlug].orEmpty()

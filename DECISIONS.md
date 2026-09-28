@@ -1368,3 +1368,39 @@ noise out while still rescuing the one region upstream forgot.
 Kanto through Paldea and then Orre, which is upstream's own id order. Ordering on generation instead
 puts Orre beside Hoenn — both are Generation III — and drops the spin-off region into the middle of
 the main sequence, which is not how anybody lists them.
+
+### A region's colour is curated beside the model, not derived from its mascots
+
+Upstream has no colour for a region, the same way it has none for a type — the eighteen type colours
+are this app's too. So the eleven live in `core/location/presentation/`, beside the model rather than
+in `design/`: a region's colour is a fact about the region and not about appearance in general, and
+`design/` may not depend on the domain. `TypeUiModel` is the precedent.
+
+**Rejected: deriving the colour from the box art's primary type.** It needs no curation at all and it
+collides three times over — Kanto and Johto both take Charizard's and Ho-Oh's fire orange, Kalos and
+Galar both take Xerneas's and Zacian's fairy pink, Alola and Orre both psychic. The colours exist to
+be told apart down a list of eleven, so three pairs of twins is the one thing they cannot do.
+
+The values are the prototype's, which picked them to say something: Kanto takes Red's red, Johto
+Gold's gold, Sinnoh the blue of Diamond's box.
+
+A twelfth region this build has no colour for resolves to null and the card draws on the theme's own
+surface. Not a fixed grey, which would be the one colour in the app that ignores the theme, and not a
+borrowed one, which would make a new region look like Kanto.
+
+### The region Pokédex tab draws its own card, and pays a transition for it
+
+#24 says the tab "reuses the main dex grid, filtered. Nothing new to build." That is right about the
+data and wrong about the code: `DexCard` is bound to the Pokedex feature's shared-element keys and to
+`DexEntryUiModel`, and a feature may not import from another feature.
+
+The three ways out were lifting `DexCard` into `core/pokemon/presentation/component/`, which is where
+the package-placement procedure actually puts it; relaxing the feature-boundary rule; and writing a
+second card. The second card won for now on scope — lifting it touches the signature dex-to-detail
+transition, which is the one piece of animation that is already load-bearing, and that is not work to
+do on the way past a different feature.
+
+**The cost is a transition.** #11's rule classifies a card-to-detail move as a shared element when the
+same image persists across the boundary, which it does here; but the keys that would match the two
+sides live in the Pokedex feature, so opening a Pokémon from a regional dex cross-fades instead. The
+transition arrives when the card does.

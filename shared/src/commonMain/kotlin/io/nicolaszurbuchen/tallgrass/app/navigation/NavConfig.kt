@@ -5,6 +5,8 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.navigation.AbilitiesListDestination
 import io.nicolaszurbuchen.tallgrass.feature.abilities.presentation.navigation.AbilityDetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.home.presentation.navigation.HomeRootDestination
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.RegionDetailDestination
+import io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation.RegionsDestination
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MoveDetailDestination
 import io.nicolaszurbuchen.tallgrass.feature.moves.presentation.navigation.MovesListDestination
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.DetailDestination
@@ -41,6 +43,8 @@ val navConfig =
                     subclass(MoveDetailDestination::class)
                     subclass(AbilitiesListDestination::class)
                     subclass(AbilityDetailDestination::class)
+                    subclass(RegionsDestination::class)
+                    subclass(RegionDetailDestination::class)
                 }
             }
     }

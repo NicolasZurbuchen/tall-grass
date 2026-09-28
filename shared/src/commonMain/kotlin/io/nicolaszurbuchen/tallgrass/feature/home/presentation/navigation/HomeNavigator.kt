@@ -12,4 +12,6 @@ interface HomeNavigator {
     fun navigateToMoves()
 
     fun navigateToAbilities()
+
+    fun navigateToRegions()
 }
