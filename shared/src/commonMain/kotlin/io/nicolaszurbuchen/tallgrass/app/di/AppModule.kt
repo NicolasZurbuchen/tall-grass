@@ -2,6 +2,7 @@ package io.nicolaszurbuchen.tallgrass.app.di
 
 import io.nicolaszurbuchen.tallgrass.app.navigation.appNavigationModule
 import io.nicolaszurbuchen.tallgrass.core.ability.di.abilityModule
+import io.nicolaszurbuchen.tallgrass.core.location.di.locationModule
 import io.nicolaszurbuchen.tallgrass.core.move.di.moveModule
 import io.nicolaszurbuchen.tallgrass.core.pokemon.di.pokemonModule
 import io.nicolaszurbuchen.tallgrass.core.type.di.typeModule
@@ -23,6 +24,7 @@ val appModule =
         networkModule,
         storeModule,
         abilityModule,
+        locationModule,
         moveModule,
         pokemonModule,
         typeModule,

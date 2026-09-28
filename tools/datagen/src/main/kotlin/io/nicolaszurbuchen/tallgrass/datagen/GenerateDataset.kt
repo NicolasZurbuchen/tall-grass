@@ -31,12 +31,46 @@ fun main(args: Array<String>) {
     val moves = buildMoves(source)
     val learnset = buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
 
+    val gameVersions = buildVersions(source)
+    val places = buildLocations(source)
+    val harvest =
+        buildEncounters(
+            source = source,
+            versions = gameVersions,
+            knownVariants = variants.map { it.slug }.toSet(),
+            regionByLocation = places.associate { it.slug to it.region },
+        )
+    val locations = places.withEncounteredVersions(harvest.regions)
+    val regions =
+        buildRegions(
+            source = source,
+            versions = gameVersions,
+            locations = locations,
+            encountersByRegion =
+                harvest.regions.associate { region ->
+                    region.region to region.locations.flatMap { it.versions }.map { it.version }.toSet()
+                },
+        )
+    val conditions = buildEncounterConditions(source, harvest.referencedConditions)
+
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
     outputDir.resolve("species.json").writeText(json.encodeToString(species))
     outputDir.resolve("variants.json").writeText(json.encodeToString(variants))
     outputDir.resolve("abilities.json").writeText(json.encodeToString(abilities))
     outputDir.resolve("moves.json").writeText(json.encodeToString(moves))
     outputDir.resolve("learnset.json").writeText(json.encodeToString(learnset))
+    outputDir.resolve("versions.json").writeText(json.encodeToString(gameVersions))
+    outputDir.resolve("regions.json").writeText(json.encodeToString(regions))
+    outputDir.resolve("locations.json").writeText(json.encodeToString(locations))
+    outputDir.resolve("encounter-conditions.json").writeText(json.encodeToString(conditions))
+
+    // One file per region rather than one of 28 MB. Written into their own directory because eleven
+    // more files beside seven would bury the seven.
+    val encounterDir = outputDir.resolve("encounters").also { it.mkdirs() }
+    encounterDir.listFiles()?.forEach { it.delete() }
+    harvest.regions.forEach { region ->
+        encounterDir.resolve("${region.region}.json").writeText(json.encodeToString(region))
+    }
 
     val manifest =
         Manifest(
@@ -49,6 +83,10 @@ fun main(args: Array<String>) {
             abilityCount = abilities.size,
             moveCount = moves.size,
             learnerCount = learnset.sumOf { it.learnedBy.size },
+            regionCount = regions.size,
+            locationCount = locations.size,
+            versionCount = gameVersions.size,
+            encounterSlotCount = harvest.regions.sumOf { region -> region.locations.sumOf { it.slotCount() } },
         )
     outputDir.resolve("manifest.json").writeText(json.encodeToString(manifest))
 
@@ -59,7 +97,14 @@ fun main(args: Array<String>) {
     println("  abilities          ${manifest.abilityCount}")
     println("  moves              ${manifest.moveCount}")
     println("  learnset rows      ${manifest.learnerCount}")
+    println("  regions            ${manifest.regionCount}")
+    println("  locations          ${manifest.locationCount}")
+    println("  versions           ${manifest.versionCount}")
+    println("  encounter slots    ${manifest.encounterSlotCount}")
+    println("  rows not placed    ${harvest.dropped}")
 }
+
+private fun LocationEncountersJson.slotCount(): Int = versions.sumOf { version -> version.tables.sumOf { it.slots.size } }
 
 private fun buildTypeChart(source: UpstreamSource): TypeChartJson {
     val names =
@@ -619,3 +664,369 @@ private val METHOD_PRIORITY = listOf(LEVEL_UP, "machine", "egg", "tutor")
 
 /** The one method that carries a number, which is why it is named rather than spelled twice. */
 private const val LEVEL_UP = "level-up"
+
+/**
+ * Every version the app draws a cell for.
+ *
+ * Ordered newest console first and, within a console, oldest game first -- which is how the grid
+ * reads: the row a player is most likely to be holding is at the top, and the games inside it run in
+ * the order they came out.
+ */
+private fun buildVersions(source: UpstreamSource): List<VersionJson> {
+    val names =
+        source.read("version_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("version_id") to it["name"] }
+
+    val groups = source.read("version_groups").associateBy { it.int("id") }
+
+    val regionsByGroup =
+        source.read("version_group_regions")
+            .groupBy({ it.int("version_group_id") }, { it.int("region_id") })
+
+    val regionSlugs = source.read("regions").associate { it.int("id") to it["identifier"] }
+
+    return source.read("versions")
+        .filter { isShippedVersion(it["identifier"]) }
+        .map { row ->
+            val group = groups.getValue(row.int("version_group_id"))
+            val generation = group.int("generation_id")
+            VersionJson(
+                slug = row["identifier"],
+                name = names[row.int("id")] ?: row["identifier"],
+                code = versionCodeOf(row["identifier"]),
+                console = consoleOf(group["identifier"], generation),
+                generation = generation,
+                versionGroup = group["identifier"],
+                regions = regionsByGroup[group.int("id")].orEmpty().mapNotNull { regionSlugs[it] }.sorted(),
+            )
+        }.sortedWith(
+            compareBy(
+                { it.console.ordinal },
+                { groups.values.first { group -> group["identifier"] == it.versionGroup }.int("order") },
+                { it.slug },
+            ),
+        )
+}
+
+/** Upstream's condition values, restricted to the axes this dataset's encounters actually reference. */
+private fun buildEncounterConditions(
+    source: UpstreamSource,
+    referenced: Set<String>,
+): List<EncounterConditionJson> {
+    val axes = source.read("encounter_conditions").associate { it.int("id") to it["identifier"] }
+
+    return source.read("encounter_condition_values")
+        .filter { it["identifier"] in referenced }
+        .map {
+            EncounterConditionJson(
+                slug = it["identifier"],
+                axis = axes.getValue(it.int("encounter_condition_id")),
+                isDefault = it.bool("is_default"),
+            )
+        }.sortedWith(compareBy({ it.axis }, { it.slug }))
+}
+
+/**
+ * Everything read out of `encounters.csv`, grouped the way the two screens read it.
+ *
+ * The one transformation applied here is summing a variant's slots **within a single table and a
+ * single condition state**. Upstream stores a twelve-slot table as twelve rows and a Pokemon may hold
+ * four of them; on screen the four are one 45% line. Summing any wider than that is the mistake the
+ * correction on #8 exists to prevent, and it cannot be undone afterwards.
+ */
+private fun buildEncounters(
+    source: UpstreamSource,
+    versions: List<VersionJson>,
+    knownVariants: Set<String>,
+    regionByLocation: Map<String, String>,
+): EncounterHarvest {
+    val methods = source.read("encounter_methods")
+    val methodSlugs = methods.associate { it.int("id") to it["identifier"] }
+    val methodOrder = methods.associate { it["identifier"] to it.int("order") }
+
+    val slots =
+        source.read("encounter_slots")
+            .associate {
+                it.int("id") to (methodSlugs.getValue(it.int("encounter_method_id")) to (it.intOrNull("rarity") ?: 0))
+            }
+
+    val conditionSlugs = source.read("encounter_condition_values").associate { it.int("id") to it["identifier"] }
+
+    val conditionsByEncounter =
+        source.read("encounter_condition_value_map")
+            .groupBy({ it.int("encounter_id") }, { conditionSlugs.getValue(it.int("encounter_condition_value_id")) })
+
+    val versionSlugs = source.read("versions").associate { it.int("id") to it["identifier"] }
+    val shipped = versions.map { it.slug }.toSet()
+    val versionRank = versions.withIndex().associate { (index, version) -> version.slug to index }
+
+    val areas = source.read("location_areas").associateBy { it.int("id") }
+    val locationSlugs = source.read("locations").associate { it.int("id") to it["identifier"] }
+    val variantSlugs = source.read("pokemon").associate { it.int("id") to it["identifier"] }
+
+    // Grouped all the way down before anything is summed, because the key of the innermost map is
+    // exactly the tuple a rate is a percentage of.
+    val byRegion =
+        mutableMapOf<String, MutableMap<String, MutableMap<String, MutableMap<TableKey, MutableMap<SlotKey, MutableMap<Int, Int>>>>>>()
+    val referencedConditions = mutableSetOf<String>()
+    var dropped = 0
+
+    source.read("encounters").forEach { row ->
+        val version = versionSlugs[row.int("version_id")]?.takeIf { it in shipped }
+        val area = areas[row.int("location_area_id")]
+        val variant = variantSlugs[row.int("pokemon_id")]?.takeIf { it in knownVariants }
+        val slot = slots[row.int("encounter_slot_id")]
+        val location = area?.let { locationSlugs[it.int("location_id")] }
+        val region = location?.let { regionByLocation[it] }
+
+        if (version == null || variant == null || slot == null || location == null || region == null) {
+            dropped++
+            return@forEach
+        }
+
+        val conditions = conditionsByEncounter[row.int("id")].orEmpty().sorted()
+        referencedConditions += conditions
+
+        val key = SlotKey(variant, row.int("min_level"), row.int("max_level"), conditions)
+        val table = TableKey(area["identifier"].ifEmpty { location }, slot.first)
+
+        // Keyed by the upstream slot id, and **assigned rather than added**.
+        //
+        // Rarity is a property of the slot, so a Pokemon holding four of a table's twelve slots is
+        // four rarities to add up -- but the *same* slot id arriving twice is one slot written twice,
+        // and adding it counts it twice. Upstream does exactly that for Generation II fishing:
+        // Cherrygrove's Super Rod table is stored three times over, once per time of day, with the
+        // time condition left off all three. Added up it reads as 300%.
+        byRegion
+            .getOrPut(region) { mutableMapOf() }
+            .getOrPut(location) { mutableMapOf() }
+            .getOrPut(version) { mutableMapOf() }
+            .getOrPut(table) { mutableMapOf() }
+            .getOrPut(key) { mutableMapOf() }[row.int("encounter_slot_id")] = slot.second
+    }
+
+    val encounters =
+        byRegion.map { (region, locations) ->
+            RegionEncountersJson(
+                region = region,
+                locations =
+                    locations.map { (location, byVersion) ->
+                        LocationEncountersJson(
+                            location = location,
+                            versions =
+                                byVersion.map { (version, tables) ->
+                                    VersionEncountersJson(
+                                        version = version,
+                                        tables =
+                                            tables.map { (table, rows) -> table.toJson(rows) }
+                                                .sortedWith(compareBy({ methodOrder[it.method] ?: 0 }, { it.area })),
+                                    )
+                                }.sortedBy { versionRank[it.version] },
+                        )
+                    }.sortedBy { it.location },
+            )
+        }.sortedBy { it.region }
+
+    return EncounterHarvest(encounters, referencedConditions, dropped)
+}
+
+private data class TableKey(
+    val area: String,
+    val method: String,
+)
+
+private fun TableKey.toJson(rows: Map<SlotKey, Map<Int, Int>>): EncounterTableJson =
+    EncounterTableJson(
+        area = area,
+        method = method,
+        slots =
+            rows.map { (key, bySlotId) ->
+                EncounterSlotJson(
+                    variant = key.variant,
+                    minLevel = key.minLevel,
+                    maxLevel = key.maxLevel,
+                    // Summed across the distinct slots this variant holds, never across repeats of one.
+                    chance = bySlotId.values.sum(),
+                    conditions = key.conditions,
+                )
+            }.sortedWith(
+                compareByDescending<EncounterSlotJson> { it.chance }
+                    .thenBy { it.variant }
+                    .thenBy { it.conditions.joinToString() },
+            ),
+    )
+
+private data class SlotKey(
+    val variant: String,
+    val minLevel: Int,
+    val maxLevel: Int,
+    val conditions: List<String>,
+)
+
+private class EncounterHarvest(
+    val regions: List<RegionEncountersJson>,
+    val referencedConditions: Set<String>,
+    val dropped: Int,
+)
+
+/**
+ * Every place that belongs to a region.
+ *
+ * The 91 locations upstream files under no region are dropped. Nothing can reach them -- the only
+ * route to a location is through the region that lists it -- and none carries an encounter, so
+ * nothing goes but rows in a file.
+ *
+ * [LocationJson.versions] is empty here and filled by [withEncounteredVersions] once the encounters
+ * are built, because it is a fact about them rather than about the place.
+ */
+private fun buildLocations(source: UpstreamSource): List<LocationJson> {
+    val regionSlugs = source.read("regions").associate { it.int("id") to it["identifier"] }
+
+    val names =
+        source.read("location_names")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("location_id") to it["name"] }
+
+    val areaNames =
+        source.read("location_area_prose")
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("location_area_id") to it["name"] }
+
+    val areasByLocation = source.read("location_areas").groupBy { it.int("location_id") }
+
+    return source.read("locations")
+        .filter { it.intOrNull("region_id") != null }
+        .map { row ->
+            val id = row.int("id")
+            val slug = row["identifier"]
+            val name = names[id] ?: slug
+
+            LocationJson(
+                slug = slug,
+                name = name,
+                region = regionSlugs.getValue(row.int("region_id")),
+                category = locationCategoryOf(slug),
+                areas =
+                    areasByLocation[id].orEmpty().map { area ->
+                        val label = areaNames[area.int("id")]
+                        LocationAreaJson(
+                            slug = area["identifier"].ifEmpty { slug },
+                            // Upstream names a location's main area after the location itself, so a
+                            // screen drawing it beside the heading would print the same words twice.
+                            name = label?.takeIf { it != name && area["identifier"].isNotEmpty() },
+                        )
+                    }.sortedBy { it.slug },
+                versions = emptyList(),
+            )
+        }.sortedBy { it.slug }
+}
+
+private fun List<LocationJson>.withEncounteredVersions(encounters: List<RegionEncountersJson>): List<LocationJson> {
+    val versionsByLocation =
+        encounters
+            .flatMap { it.locations }
+            .associate { entry -> entry.location to entry.versions.map { it.version } }
+
+    return map { it.copy(versions = versionsByLocation[it.slug].orEmpty()) }
+}
+
+/** The eleven regions, their curated facts, and the regional dex each one is the dex of. */
+private fun buildRegions(
+    source: UpstreamSource,
+    versions: List<VersionJson>,
+    locations: List<LocationJson>,
+    encountersByRegion: Map<String, Set<String>>,
+): List<RegionJson> {
+    val regionNames = source.read("region_names")
+
+    val names =
+        regionNames
+            .filter { it.int("local_language_id") == ENGLISH }
+            .associate { it.int("region_id") to it["name"] }
+
+    // Upstream's `ja-hrkt`, which is the name every other Pokedex shows. Absent for Orre alone.
+    val nativeNames =
+        regionNames
+            .filter { it.int("local_language_id") == JAPANESE }
+            .associate { it.int("region_id") to it["name"] }
+
+    val pokedexIds =
+        source.read("pokedexes")
+            .filter { it.bool("is_main_series") }
+            .associate { it["identifier"] to it.int("id") }
+
+    val dexEntries = source.read("pokemon_dex_numbers").groupBy { it.int("pokedex_id") }
+    val speciesSlugs = source.read("pokemon_species").associate { it.int("id") to it["identifier"] }
+    val variantsBySpecies = source.read("pokemon").groupBy({ it.int("species_id") }, { it["identifier"] })
+
+    val locationCounts = locations.groupingBy { it.region }.eachCount()
+    val curated = CURATED_REGIONS.associateBy { it.slug }
+
+    // Ordered by upstream's own id, which runs Kanto to Paldea and then Orre. Ordering on generation
+    // instead would interleave Orre with Hoenn -- both Generation III -- and drop the spin-off region
+    // into the middle of the main sequence, which is not how anyone lists them.
+    return source.read("regions").sortedBy { it.int("id") }.map { row ->
+        val id = row.int("id")
+        val slug = row["identifier"]
+        val entry = curated.getValue(slug)
+
+        // Upstream's own region-to-version-group table, and only where it is silent, the versions
+        // that actually have encounters here.
+        //
+        // A fallback rather than a union, and the difference matters both ways. `version_group_regions`
+        // has no row for Orre at all, so without the fallback the region that is only Colosseum and XD
+        // would have no games, no generation and no grid. But encounters alone are noisier than
+        // upstream's own statement: two rows put Black and White inside `team-flare-secret-hq`, which
+        // is a Kalos location, and a union took Kalos to be a Generation V region on the strength of
+        // them.
+        val declared = versions.filter { slug in it.regions }
+        val regionVersions =
+            declared.ifEmpty { versions.filter { it.slug in encountersByRegion[slug].orEmpty() } }
+
+        RegionJson(
+            slug = slug,
+            name = names[id] ?: slug,
+            nativeName = nativeNames[id],
+            // The generation a region belongs to is the earliest its own games are from. Kanto is
+            // Generation I even though Gold and Silver reach it, because they are Johto's games.
+            generation = regionVersions.minOfOrNull { it.generation } ?: 0,
+            blurb = entry.blurb,
+            boxArt = entry.boxArt,
+            pokedex =
+                entry.pokedexes
+                    // Sorted inside each dex and then concatenated, rather than sorted across all of
+                    // them. Kalos ships three dexes that each number from 1, so a sort on the number
+                    // alone would interleave them into three overlapping runs of 1..153.
+                    .flatMap { dex ->
+                        dexEntries[pokedexIds.getValue(dex)].orEmpty().sortedBy { it.int("pokedex_number") }
+                    }.mapNotNull { dexRow ->
+                        val speciesId = dexRow.int("species_id")
+                        val species = speciesSlugs[speciesId] ?: return@mapNotNull null
+                        RegionDexEntryJson(
+                            number = dexRow.int("pokedex_number"),
+                            variant = regionNativeVariant(species, slug, variantsBySpecies[speciesId].orEmpty()),
+                        )
+                    }.distinctBy { it.variant },
+            versions = regionVersions.map { it.slug },
+            locationCount = locationCounts[slug] ?: 0,
+        )
+    }
+}
+
+/**
+ * Which form of a species a regional dex means.
+ *
+ * #5's correction: a regional dex shows the variant native to that region, so Kanto's #037 is the
+ * Kantonian Vulpix and Alola's is the Alolan one. Regional forms are suffixed with their region --
+ * the same naming the variant key already leans on -- so the slug is the whole match and nothing
+ * extra needs storing.
+ *
+ * Every region with no regional forms of its own, which is Kanto through Unova and Orre, falls
+ * through to the default variant.
+ */
+private fun regionNativeVariant(
+    species: String,
+    region: String,
+    variants: List<String>,
+): String = variants.firstOrNull { it == "$species-$region" } ?: species

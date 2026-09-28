@@ -1302,3 +1302,69 @@ lerp and the same constant, and the comment explaining why was sitting in `Stats
 reader looking for how a heading gets its colour would never find it. Filled shapes in a type's
 colour, like the stat bars and the move rows, keep using the colour itself: there is nothing to read
 through them.
+
+### An encounter rate is a percentage of an area, not of a place
+
+#24 folds a location's areas together on screen, and Canalave City reading as one place with several
+rods is right. Folding them in the **data** is not: an area is the unit a rate is a share of, and
+14.5% of this dataset's (version, location, method) groups draw one method from more than one area —
+up to 22 of them. Merged, a Sinnoh walking table sums to 2,200%.
+
+So `encounter` carries `areaSlug` and the table that sums to 100% is (version, area, method). The
+folding is something the screen does, and never something the dataset did to it first. Where a
+location has one area for a method, which is 85.5% of them, the screen shows nothing extra and the
+fold is invisible — which is the behaviour #24 asked for, reached without breaking the denominator.
+
+The same argument is why the method tabs are the actual method and never a group: Old Rod and Good
+Rod merged give Magikarp 100% under one and 55% under the other, and a "Fishing" tab claiming 255%.
+
+### A repeated slot id is one slot written twice
+
+A rarity belongs to an encounter **slot**, so a Pokémon holding four of a table's twelve slots is four
+rarities to add together. The same slot id arriving twice is not: it is one slot recorded twice, and
+adding it counts it twice.
+
+Upstream does exactly that for Generation II fishing. Cherrygrove City's Super Rod table is stored
+three times over, once per time of day, with the `time` condition left off all three copies. Summed
+naively it reads as 300%; summed over distinct slot ids it reads as 130% — Krabby 60, Kingler 10, and
+Corsola and Staryu at 30 each, which is the day/night variance upstream did not tag.
+
+**The residual 30 is not a bug and is not corrected.** 14% of complete condition states in this
+dataset do not total 100%, concentrated in Alola and Galar where the same tagging is missing. That is
+the reason #24 shows no running total and qualifies a rate as "up to X%": a total would put 130% on
+screen and invite somebody to go looking for the arithmetic error, which is upstream's and not ours.
+
+### A region's Pokédex is the one its first games shipped
+
+Upstream gives a region as many as ten Pokédexes — Alola has ten, Kalos five, Galar and Paldea three
+each once their downloadable chapters are counted. The Pokédex tab shows one grid, so one has to be
+chosen, and the rule taken is **the dex as the region's first games shipped it**: `original-johto`
+(251) rather than HeartGold's 256, `original-alola` (302) rather than the Ultra expansion, `galar`
+(400) without the Isle of Armor or the Crown Tundra.
+
+It is a rule rather than a taste call, so a new region classifies itself. Kalos is the one region it
+cannot settle alone — its three dexes are each a third of the region and no one of them is Kalos — so
+the curated table holds a list, and Kalos concatenates to 457. Orre holds an empty list, because
+upstream has no Orre dex and substituting the national one would be inventing an answer.
+
+**Rejected: the union of every dex a region owns.** Fully derived and needing no curation, but Kanto
+then reads as 153 rather than 151, because Let's Go adds Meltan and Melmetal. The headline number
+stops matching what a reader expects, and the Pokédex tab's first job is to be recognisable.
+
+### Orre is reconstructed from its encounters, because upstream does not file it anywhere
+
+`version_group_regions` has a row for every region except Orre. Derive a region's games from that
+table alone and the one region that is nothing but Colosseum and XD comes out with no games, no
+generation, and an availability grid with no cells in it.
+
+So the games fall back to whichever versions actually have encounters in the region's own locations —
+but **only where upstream is silent**, never as a union with it. Two rows upstream places Black and
+White inside `team-flare-secret-hq`, which is in Kalos, and a union read Kalos as a Generation V
+region on the strength of them. Preferring upstream's own statement everywhere it exists keeps that
+noise out while still rescuing the one region upstream forgot.
+
+### The regions list runs in release order, with the spin-off last
+
+Kanto through Paldea and then Orre, which is upstream's own id order. Ordering on generation instead
+puts Orre beside Hoenn — both are Generation III — and drops the spin-off region into the middle of
+the main sequence, which is not how anybody lists them.

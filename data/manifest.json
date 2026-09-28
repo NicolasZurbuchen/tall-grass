@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "sourceSha": "4b82c204ddd19ecb8eda2ea044ccb59e222b721c",
   "speciesCount": 1025,
   "variantCount": 1385,
@@ -7,5 +7,9 @@
   "typeCount": 18,
   "abilityCount": 314,
   "moveCount": 919,
-  "learnerCount": 62777
+  "learnerCount": 62777,
+  "regionCount": 11,
+  "locationCount": 1013,
+  "versionCount": 50,
+  "encounterSlotCount": 98875
 }

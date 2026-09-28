@@ -30,6 +30,20 @@ fun main(args: Array<String>) {
     val abilities = json.decodeFromString<List<AbilityJson>>(datasetDir.resolve("abilities.json").readText())
     val moves = json.decodeFromString<List<MoveJson>>(datasetDir.resolve("moves.json").readText())
     val learnset = json.decodeFromString<List<LearnsetJson>>(datasetDir.resolve("learnset.json").readText())
+    val versions = json.decodeFromString<List<VersionJson>>(datasetDir.resolve("versions.json").readText())
+    val regions = json.decodeFromString<List<RegionJson>>(datasetDir.resolve("regions.json").readText())
+    val locations = json.decodeFromString<List<LocationJson>>(datasetDir.resolve("locations.json").readText())
+    val conditions =
+        json.decodeFromString<List<EncounterConditionJson>>(datasetDir.resolve("encounter-conditions.json").readText())
+
+    // One file per region, read back in the order the regions are listed so the ids the encounter
+    // rows get are a function of the dataset rather than of the filesystem's directory order.
+    val encounters =
+        regions.mapNotNull { region ->
+            datasetDir.resolve("encounters/${region.slug}.json")
+                .takeIf { it.exists() }
+                ?.let { json.decodeFromString<RegionEncountersJson>(it.readText()) }
+        }
 
     // Rebuilt from scratch every time. This database is replaced whole-file rather than migrated, so
     // there is nothing in the previous copy worth keeping and an append would silently double rows.
@@ -164,6 +178,90 @@ fun main(args: Array<String>) {
             }
         }
 
+        versions.forEachIndexed { index, entry ->
+            database.regionQueries.insertGameVersion(
+                slug = entry.slug,
+                name = entry.name,
+                code = entry.code,
+                console = entry.console.name,
+                generation = entry.generation.toLong(),
+                sortOrder = index.toLong(),
+            )
+            entry.regions.forEach { region ->
+                database.regionQueries.insertRegionVersion(regionSlug = region, versionSlug = entry.slug)
+            }
+        }
+
+        regions.forEachIndexed { index, entry ->
+            database.regionQueries.insertRegion(
+                slug = entry.slug,
+                name = entry.name,
+                nativeName = entry.nativeName,
+                generation = entry.generation.toLong(),
+                blurb = entry.blurb,
+                locationCount = entry.locationCount.toLong(),
+                sortOrder = index.toLong(),
+            )
+            entry.boxArt.forEachIndexed { slot, variant ->
+                database.regionQueries.insertRegionBoxArt(entry.slug, variant, (slot + 1).toLong())
+            }
+            entry.pokedex.forEachIndexed { order, dexEntry ->
+                database.regionQueries.insertRegionDexEntry(
+                    regionSlug = entry.slug,
+                    variantSlug = dexEntry.variant,
+                    number = dexEntry.number.toLong(),
+                    sortOrder = order.toLong(),
+                )
+            }
+        }
+
+        locations.forEach { entry ->
+            database.locationQueries.insertLocation(
+                slug = entry.slug,
+                name = entry.name,
+                regionSlug = entry.region,
+                category = entry.category.name,
+                versionCount = entry.versions.size.toLong(),
+            )
+            entry.areas.forEach { area ->
+                database.locationQueries.insertLocationArea(area.slug, entry.slug, area.name)
+            }
+        }
+
+        conditions.forEach { entry ->
+            database.encounterQueries.insertEncounterConditionValue(entry.slug, entry.axis, entry.isDefault)
+        }
+
+        // The id is assigned here rather than by SQLite, which is what lets the condition tags be
+        // written in the same pass. It is a counter over a fixed traversal of files that are
+        // themselves sorted, so the same dataset produces the same ids every time.
+        var encounterId = 0L
+        encounters.forEach { region ->
+            region.locations.forEach { location ->
+                location.versions.forEach { version ->
+                    version.tables.forEach { table ->
+                        table.slots.forEach { slot ->
+                            encounterId++
+                            database.encounterQueries.insertEncounter(
+                                id = encounterId,
+                                locationSlug = location.location,
+                                areaSlug = table.area,
+                                versionSlug = version.version,
+                                method = table.method,
+                                variantSlug = slot.variant,
+                                minLevel = slot.minLevel.toLong(),
+                                maxLevel = slot.maxLevel.toLong(),
+                                chance = slot.chance.toLong(),
+                            )
+                            slot.conditions.forEach { condition ->
+                                database.encounterQueries.insertEncounterCondition(encounterId, condition)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Last, because every row here names a move and a variant and nothing in the schema says so.
         // A foreign key would, and this database has none by design -- it is built once from files
         // that are already consistent, and DatasetTest is where that consistency is asserted.
@@ -193,6 +291,10 @@ fun main(args: Array<String>) {
             abilityCount = database.abilityQueries.countAbilities().executeAsOne().toInt(),
             moveCount = database.moveQueries.countMoves().executeAsOne().toInt(),
             learnerCount = database.moveQueries.countMoveLearners().executeAsOne().toInt(),
+            regionCount = database.regionQueries.countRegions().executeAsOne().toInt(),
+            locationCount = database.locationQueries.countLocations().executeAsOne().toInt(),
+            versionCount = database.regionQueries.countGameVersions().executeAsOne().toInt(),
+            encounterSlotCount = database.encounterQueries.countEncounters().executeAsOne().toInt(),
         )
     check(written == manifest) { "Database disagrees with the manifest.\n  manifest: $manifest\n  database: $written" }
 

@@ -1,0 +1,70 @@
+-- Every place that belongs to a region.
+--
+-- Upstream's 91 region-less locations are not generated. The only route to a location is through the
+-- region that lists it, so nothing could reach them, and none of them carries an encounter.
+--
+-- `category` is read out of the slug and is decoration for the marker beside the row -- upstream has
+-- no such field and no other table classifies a place. A miss costs nothing and lands on OTHER.
+CREATE TABLE location (
+    slug       TEXT NOT NULL PRIMARY KEY,
+    name       TEXT NOT NULL,
+    regionSlug TEXT NOT NULL,
+    category   TEXT NOT NULL,
+    -- How many versions have at least one encounter here, which is the sub-line the Locations list
+    -- shows. Zero is a real answer and the row says so: Berry Forest exists in every Kanto game and
+    -- has encounters in two of them, and that absence is itself the lore. See #24.
+    versionCount INTEGER NOT NULL
+);
+
+-- One sub-area of a place.
+--
+-- The location detail is per **location** and folds its areas together, which is #24's call:
+-- Canalave City's several fishing spots read as one place with several rods.
+--
+-- The areas survive that folding anyway, and have to. An area is the unit a rate is a percentage
+-- *of*, and 14.5% of this dataset's (version, location, method) groups draw from more than one of
+-- them -- up to 22. Fold them in the data and a rate bar sums past 2,000%. So the folding is a thing
+-- the screen does, and never a thing the dataset did to it first.
+--
+-- `name` is null when the area is the place itself: upstream leaves the identifier empty for a
+-- location's main area and names it after the location, which a screen would print twice.
+CREATE TABLE locationArea (
+    slug         TEXT NOT NULL,
+    locationSlug TEXT NOT NULL,
+    name         TEXT,
+    PRIMARY KEY (locationSlug, slug)
+);
+
+-- The Locations tab reads every place in one region, and the list is long -- 128 in Sinnoh.
+CREATE INDEX locationByRegion ON location(regionSlug, name);
+
+countLocations:
+SELECT count(*) FROM location;
+
+insertLocation:
+INSERT INTO location(slug, name, regionSlug, category, versionCount) VALUES (?, ?, ?, ?, ?);
+
+insertLocationArea:
+INSERT INTO locationArea(slug, locationSlug, name) VALUES (?, ?, ?);
+
+-- One region's places, for its Locations tab.
+--
+-- Alphabetical by name, which is the order the search bar above it implies: a reader looking for
+-- Route 3 types "rou" and wants the routes together. Upstream's ids are an internal ordering that
+-- happens to run roughly along the game's critical path, which reads as unsorted to anyone who is
+-- not replaying it.
+selectLocationsByRegion:
+SELECT slug, name, category, versionCount
+FROM location
+WHERE regionSlug = ?
+ORDER BY name;
+
+-- One place, with the region it is in, for the detail screen's header.
+selectLocation:
+SELECT l.slug, l.name, l.category, l.versionCount, r.slug AS regionSlug, r.name AS regionName
+FROM location l
+JOIN region r ON r.slug = l.regionSlug
+WHERE l.slug = ?;
+
+selectLocationAreas:
+SELECT slug, name FROM locationArea WHERE locationSlug = ? ORDER BY slug;

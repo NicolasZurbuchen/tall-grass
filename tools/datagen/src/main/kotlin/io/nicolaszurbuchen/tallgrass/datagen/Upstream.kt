@@ -7,7 +7,7 @@ import java.net.URI
 const val SOURCE_SHA: String = "4b82c204ddd19ecb8eda2ea044ccb59e222b721c"
 
 /** Bumped when the shape of the generated JSON changes, not when its contents do. */
-const val SCHEMA_VERSION: Int = 6
+const val SCHEMA_VERSION: Int = 7
 
 /**
  * Upstream numbers spin-off content from 10000 in the same tables as the main series. Sixty of the
@@ -22,6 +22,13 @@ const val FIRST_SPIN_OFF_ID: Int = 10000
 
 /** Upstream ships every name in a dozen languages in one file; unfiltered reads look like duplicates. */
 const val ENGLISH: Int = 9
+
+/**
+ * `ja-hrkt`, upstream's kana spelling, and not `ja` (11) -- which is the kanji one and is filled in
+ * for far less. The region screens show it beside the English name, which is the one place in this
+ * app a second language earns its space: カントー is what the region is called.
+ */
+const val JAPANESE: Int = 1
 
 /** 19 is Stellar, a Terastal type no Pokemon has; 10001 and up are placeholders. */
 const val LAST_REAL_TYPE_ID: Int = 18

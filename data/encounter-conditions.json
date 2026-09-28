@@ -1,0 +1,1762 @@
+[
+  {
+    "slug": "alolan-diglett-found-10",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-100",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-150",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-20",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-30",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-40",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-5",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-50",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "alolan-diglett-found-75",
+    "axis": "alolan-diglett-found",
+    "isDefault": false
+  },
+  {
+    "slug": "backlot-mentioned",
+    "axis": "backlot",
+    "isDefault": false
+  },
+  {
+    "slug": "backlot-not-mentioned",
+    "axis": "backlot",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-blue",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-green",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-pink",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-purple",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-red",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "berry-tree-type-yellow",
+    "axis": "berry-tree-type",
+    "isDefault": true
+  },
+  {
+    "slug": "bug-catching-contest-no",
+    "axis": "bug-catching-contest",
+    "isDefault": true
+  },
+  {
+    "slug": "bug-catching-contest-yes",
+    "axis": "bug-catching-contest",
+    "isDefault": false
+  },
+  {
+    "slug": "coins-100",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-1000",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-120",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-1200",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-1500",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-180",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-200",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-2100",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-2222",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-230",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-2500",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-2680",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-2800",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-3333",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-4600",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-500",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-5500",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-5555",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-6500",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-6666",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-700",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-750",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-800",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-8888",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "coins-9999",
+    "axis": "coins",
+    "isDefault": true
+  },
+  {
+    "slug": "first-party-pokemon-high-friendship",
+    "axis": "first-party-pokemon",
+    "isDefault": false
+  },
+  {
+    "slug": "friend-safari-slot-1",
+    "axis": "friend-safari-slot",
+    "isDefault": true
+  },
+  {
+    "slug": "friend-safari-slot-2",
+    "axis": "friend-safari-slot",
+    "isDefault": true
+  },
+  {
+    "slug": "friend-safari-slot-3",
+    "axis": "friend-safari-slot",
+    "isDefault": true
+  },
+  {
+    "slug": "great-marsh-daily-slot-1-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-15-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-2-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-3-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-4-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-5-of-32",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": false
+  },
+  {
+    "slug": "great-marsh-daily-slot-none",
+    "axis": "great-marsh-daily-slot",
+    "isDefault": true
+  },
+  {
+    "slug": "headbutt-tree-common",
+    "axis": "headbutt-tree",
+    "isDefault": false
+  },
+  {
+    "slug": "headbutt-tree-rare",
+    "axis": "headbutt-tree",
+    "isDefault": false
+  },
+  {
+    "slug": "headbutt-tree-secret",
+    "axis": "headbutt-tree",
+    "isDefault": false
+  },
+  {
+    "slug": "honey-tree-group-a",
+    "axis": "honey-tree-group",
+    "isDefault": false
+  },
+  {
+    "slug": "honey-tree-group-b",
+    "axis": "honey-tree-group",
+    "isDefault": false
+  },
+  {
+    "slug": "honey-tree-group-c",
+    "axis": "honey-tree-group",
+    "isDefault": false
+  },
+  {
+    "slug": "item-adamant-orb",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-armor-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-claw-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-clear-bell",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-cover-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-dark-stone",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-dome-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-fossilized-bird",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-fossilized-dino",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-fossilized-drake",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-fossilized-fish",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-helix-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-ice-key",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-iron-key",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-light-stone",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-lunar-wing",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-lustrous-orb",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-odd-keystone",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-old-amber",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-plume-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-reins-of-unity",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-root-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-skull-fossil",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "item-tidal-bell",
+    "axis": "item",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-10",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-14",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-15",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-18",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-20",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-28",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-3",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-35",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-4",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-42",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-49",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-5",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-56",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-forest-min-8",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-inactive",
+    "axis": "johto-safari-blocks",
+    "isDefault": true
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-10",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-15",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-21",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-24",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-28",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-3",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-35",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-4",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-42",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-49",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-5",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-56",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-6",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-63",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-peak-min-8",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-10",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-12",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-14",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-15",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-2",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-24",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-28",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-3",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-35",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-4",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-49",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-5",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-plains-min-6",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-10",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-12",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-13",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-14",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-15",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-16",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-18",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-2",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-20",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-24",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-28",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-3",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-35",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-4",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-42",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-49",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-5",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-6",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-7",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-8",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "johto-safari-blocks-water-min-9",
+    "axis": "johto-safari-blocks",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rarity-common",
+    "axis": "max-den-rarity",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rarity-rare",
+    "axis": "max-den-rarity",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rarity-special",
+    "axis": "max-den-rarity",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rating-1-star",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rating-2-star",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rating-3-star",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rating-4-star",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "max-den-rating-5-star",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-fog",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-intense-sun",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-normal",
+    "axis": "max-den-rating",
+    "isDefault": true
+  },
+  {
+    "slug": "weather-overcast",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-raining",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-sandstorm",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-snowing",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-snowstorm",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "weather-thunderstorm",
+    "axis": "max-den-rating",
+    "isDefault": false
+  },
+  {
+    "slug": "other-captured-all-ultra-beasts",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-captured-reshiram-or-zekrom",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-castform-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-caught-articuno",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-caught-moltres",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-caught-zapdos",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-choose-regidrago-pattern",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-choose-regieleki-pattern",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-correct-password",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-dialga-or-palkia-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-dialga-palkia-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-eat-curry-with-cobalion-terrakion-virizion",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-event-arceus-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-find-50-cavern-footprints",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-find-50-grassland-footprints",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-find-50-iron-will-footprints",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-found-11-times-roaming",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-giratina-not-caught-in-distortion-world",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-groudon-kyogre-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-grow-iceroot-carrot",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-grow-shaderoot-carrot",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-level-100-pokemon-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-nicknamed-cold-item-regice-regirock-registeel3",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-raikou-entei-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-received-kanto-starter",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-regirock-regice-registeel-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-regirock-regice-registeel-regieleki-regidrago-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-reshiram-zekrom-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-scan-qr-code",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-snorlax-11-beat-league",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-talk-to-cynthias-grandmother",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-talked-to-32-people",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-talked-to-32-people-underground",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-tornadus-thundurus-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-uxie-mesprit-azelf-in-party",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-virtual-console",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "other-witness-galarian-bird-fight",
+    "axis": "other",
+    "isDefault": false
+  },
+  {
+    "slug": "radar-off",
+    "axis": "radar",
+    "isDefault": true
+  },
+  {
+    "slug": "radar-on",
+    "axis": "radar",
+    "isDefault": false
+  },
+  {
+    "slug": "radio-hoenn",
+    "axis": "radio",
+    "isDefault": false
+  },
+  {
+    "slug": "radio-off",
+    "axis": "radio",
+    "isDefault": true
+  },
+  {
+    "slug": "radio-sinnoh",
+    "axis": "radio",
+    "isDefault": false
+  },
+  {
+    "slug": "save-data-from-lets-go-eevee",
+    "axis": "save-data",
+    "isDefault": false
+  },
+  {
+    "slug": "save-data-from-lets-go-pikachu",
+    "axis": "save-data",
+    "isDefault": false
+  },
+  {
+    "slug": "season-autumn",
+    "axis": "season",
+    "isDefault": false
+  },
+  {
+    "slug": "season-spring",
+    "axis": "season",
+    "isDefault": false
+  },
+  {
+    "slug": "season-summer",
+    "axis": "season",
+    "isDefault": false
+  },
+  {
+    "slug": "season-winter",
+    "axis": "season",
+    "isDefault": false
+  },
+  {
+    "slug": "slot2-emerald",
+    "axis": "slot2",
+    "isDefault": false
+  },
+  {
+    "slug": "slot2-firered",
+    "axis": "slot2",
+    "isDefault": false
+  },
+  {
+    "slug": "slot2-leafgreen",
+    "axis": "slot2",
+    "isDefault": false
+  },
+  {
+    "slug": "slot2-none",
+    "axis": "slot2",
+    "isDefault": true
+  },
+  {
+    "slug": "slot2-ruby",
+    "axis": "slot2",
+    "isDefault": false
+  },
+  {
+    "slug": "slot2-sapphire",
+    "axis": "slot2",
+    "isDefault": false
+  },
+  {
+    "slug": "special-encounter-couldnt-capture-before",
+    "axis": "special-encounter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-bulbasaur",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-charmander",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-chespin",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-fennekin",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-froakie",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-grookey",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-scorbunny",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-sobble",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "starter-squirtle",
+    "axis": "starter",
+    "isDefault": false
+  },
+  {
+    "slug": "defeated-ghetsis",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "other-complete-mt-battle",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-awakened-beasts",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-beat-elite-four-round-two",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-beat-galactic-coronet",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-beat-olivias-trial",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-beat-red",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-beat-team-galactic-iron-island",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-before-hall-of-fame",
+    "axis": "story-progress",
+    "isDefault": true
+  },
+  {
+    "slug": "story-progress-before-national-dex",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-catch-all-shadow-pokemon",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-catch-five-ultra-beasts",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-cure-eldritch-nightmares",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-defeat-jupiter",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-defeat-mars",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-defeated-groudon-or-kyogre",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-finished-looker-sidequest",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-hall-of-fame",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-juniper-cave-of-being",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-master-dojo-complete-first-trial",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-master-dojo-complete-third-trial",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-national-dex",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-oak-eterna-city",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-quake-badge",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-receive-tm-from-claire",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-returned-machine-part",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-save-village-from-glastrier-spectrier",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-vermilion-copycat",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "story-progress-zephyr-badge",
+    "axis": "story-progress",
+    "isDefault": false
+  },
+  {
+    "slug": "swarm-no",
+    "axis": "swarm",
+    "isDefault": true
+  },
+  {
+    "slug": "swarm-yes",
+    "axis": "swarm",
+    "isDefault": false
+  },
+  {
+    "slug": "time-04-00-to-19-59",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-20-00-to-21-59",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-21-00-to-03-59",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-day",
+    "axis": "time",
+    "isDefault": true
+  },
+  {
+    "slug": "time-minute-00-to-19",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-minute-20-to-39",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-minute-40-to-59",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-morning",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "time-night",
+    "axis": "time",
+    "isDefault": false
+  },
+  {
+    "slug": "trade-abra",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-any-pokemon",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-bagon",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-bellossom",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-bellsprout",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-bonsly",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-buizel",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-bunnelby",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-chansey",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-clefairy",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-corsola-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-cottonee",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-cubone",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-darumaka-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-ditto",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-dragonair",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-drowzee",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-dugtrio",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-emolga",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-excadrill",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-exeggutor",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-farfetchd-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-finneon",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-forretress",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-frosmoth",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-gloom",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-golduck",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-growlithe",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-haunter",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-hippowdon",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-kangaskhan",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-krabby",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-lickitung",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-machop",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-mantine",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-maractus",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-marowak",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-medicham",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-meowth-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-minccino",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-mr-mime-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-nidoran-f",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-nidoran-m",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-nidorina",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-nidorino",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-obstagoon",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-petilil",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-pikachu",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-poliwhirl",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-ponyta",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-ponyta-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-raichu",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-ralts",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-skitty",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-slakoth",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-slowbro",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-spearow",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-stunfisk-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-surskit",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-tangela",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-togepi-or-togetic",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-toxel",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-trapinch",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-vanillish",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-venonat",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-volbeat",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-weezing-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-wooper",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-yamask-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trade-zigzagoon-galar",
+    "axis": "trade",
+    "isDefault": true
+  },
+  {
+    "slug": "trash-can-type-daily",
+    "axis": "trash-can-type",
+    "isDefault": true
+  },
+  {
+    "slug": "trash-can-type-thursday",
+    "axis": "trash-can-type",
+    "isDefault": true
+  },
+  {
+    "slug": "trash-can-type-tuesday",
+    "axis": "trash-can-type",
+    "isDefault": true
+  },
+  {
+    "slug": "tv-option-blue",
+    "axis": "tv-option",
+    "isDefault": true
+  },
+  {
+    "slug": "tv-option-red",
+    "axis": "tv-option",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-friday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-monday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-saturday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-sunday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-thursday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-tuesday",
+    "axis": "weekday",
+    "isDefault": false
+  },
+  {
+    "slug": "weekday-wednesday",
+    "axis": "weekday",
+    "isDefault": false
+  }
+]

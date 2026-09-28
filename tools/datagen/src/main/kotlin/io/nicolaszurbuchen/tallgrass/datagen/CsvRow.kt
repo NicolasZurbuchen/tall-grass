@@ -13,9 +13,13 @@ class CsvRow(
         return cells.getOrElse(index) { "" }
     }
 
-    fun int(column: String): Int = this[column].toIntOrNull() ?: error("Column '$column' is not an integer: '${this[column]}'")
+    // Trimmed, because upstream does not always write a clean number: five rows of
+    // `encounter_methods.csv` store their order as ' 45' rather than '45'. A leading space is never
+    // meaningful in a numeric column, so this reads them rather than making every call site guess
+    // which columns upstream has been careless with.
+    fun int(column: String): Int = this[column].trim().toIntOrNull() ?: error("Column '$column' is not an integer: '${this[column]}'")
 
-    fun intOrNull(column: String): Int? = this[column].takeIf { it.isNotEmpty() }?.toIntOrNull()
+    fun intOrNull(column: String): Int? = this[column].trim().takeIf { it.isNotEmpty() }?.toIntOrNull()
 
     fun bool(column: String): Boolean = this[column] == "1"
 }
