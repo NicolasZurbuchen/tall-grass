@@ -31,6 +31,9 @@ class EncounterTableUiMapperTest {
             EncounterCondition("radio-hoenn", "radio", isDefault = false),
         )
 
+    /** The mapper needs the place, so the tests say it once. */
+    private fun List<Encounter>.areas(pinned: Map<String, String>) = toEncounterAreasUiModel(conditions, pinned, "kanto-route-1", "Route 1")
+
     private val table =
         listOf(
             row("pidgey", chance = 20, conditions = listOf("swarm-no", "time-morning")),
@@ -49,7 +52,7 @@ class EncounterTableUiMapperTest {
     @Test
     fun aCompleteState_sumsToExactlyOneHundred() {
         val pinned = mapOf("time" to "time-morning", "swarm" to "swarm-no", "radio" to "radio-off")
-        val rows = table.toEncounterAreasUiModel(conditions, pinned).single().rows
+        val rows = table.areas(pinned).single().rows
 
         assertEquals(100, rows.sumOf { (it.rateFraction * 100).toInt() })
         assertEquals(listOf("rattata", "hoothoot", "pidgey", "sentret", "furret"), rows.map { it.variantSlug })
@@ -59,7 +62,7 @@ class EncounterTableUiMapperTest {
     fun aCompleteState_leavesOutTheRowsItExcludes() {
         // The swarm row is a different state, not a smaller share of this one.
         val pinned = mapOf("time" to "time-morning", "swarm" to "swarm-no", "radio" to "radio-off")
-        val rows = table.toEncounterAreasUiModel(conditions, pinned).single().rows
+        val rows = table.areas(pinned).single().rows
 
         assertTrue(rows.none { it.variantSlug == "poochyena" })
     }
@@ -68,23 +71,44 @@ class EncounterTableUiMapperTest {
     fun anUnpinnedAxis_satisfiesAllOfItsValuesAtOnce() {
         // Which is what "Any" means: nothing is excluded. Eight rows come back as seven lines,
         // because Hoothoot appears in two states and folds to its best one.
-        val rows = table.toEncounterAreasUiModel(conditions, emptyMap()).single().rows
+        val rows = table.areas(emptyMap()).single().rows
 
         assertEquals(table.map { it.variantSlug }.distinct().size, rows.size)
         assertEquals(0.45f, rows.single { it.variantSlug == "hoothoot" }.rateFraction)
     }
 
     @Test
-    fun anythingUnpinned_makesTheFiguresABestCase() {
-        val rows = table.toEncounterAreasUiModel(conditions, mapOf("time" to "time-morning")).single().rows
+    fun aRateIsABestCaseOnlyWhereItActuallyVaries() {
+        // The first version asked the table: any axis unpinned and every row said "up to". That was
+        // wrong for most rows. With time pinned, Hoothoot is 20% whatever the swarm and the radio do,
+        // so it is exact -- while Sentret, which is swarm-tagged, still varies and still says so.
+        val rows = table.areas(mapOf("time" to "time-morning")).single().rows.associateBy { it.variantSlug }
 
-        assertTrue(rows.all { it.isBestCase })
+        assertFalse(rows.getValue("hoothoot").isBestCase)
+        assertTrue(rows.getValue("sentret").isBestCase)
+        assertTrue(rows.getValue("furret").isBestCase)
+    }
+
+    @Test
+    fun anUnconditionedRowIsNeverABestCase() {
+        // Horsea on Kanto's Route 19 is 25% on the Super Rod in every state there is, and writing
+        // "up to 25%" of a figure that cannot move undersells it.
+        val mixed =
+            listOf(
+                row("horsea", chance = 25, conditions = emptyList()),
+                row("tentacool", chance = 60, conditions = listOf("time-morning")),
+            )
+
+        val rows = mixed.areas(emptyMap()).single().rows.associateBy { it.variantSlug }
+
+        assertFalse(rows.getValue("horsea").isBestCase)
+        assertTrue(rows.getValue("tentacool").isBestCase)
     }
 
     @Test
     fun everyAxisPinned_makesTheFiguresExact() {
         val pinned = mapOf("time" to "time-morning", "swarm" to "swarm-no", "radio" to "radio-off")
-        val rows = table.toEncounterAreasUiModel(conditions, pinned).single().rows
+        val rows = table.areas(pinned).single().rows
 
         assertTrue(rows.none { it.isBestCase })
     }
@@ -99,7 +123,7 @@ class EncounterTableUiMapperTest {
                 row("pidgey", chance = 20, conditions = listOf("time-night")),
             )
 
-        val rows = split.toEncounterAreasUiModel(conditions, emptyMap()).single().rows
+        val rows = split.areas(emptyMap()).single().rows
 
         assertEquals(1, rows.size)
         assertEquals(0.45f, rows.single().rateFraction)
@@ -115,14 +139,14 @@ class EncounterTableUiMapperTest {
                 row("pidgey", chance = 15, conditions = listOf("time-morning")),
             )
 
-        assertEquals(0.45f, slots.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single().rateFraction)
+        assertEquals(0.45f, slots.areas(emptyMap()).single().rows.single().rateFraction)
     }
 
     @Test
     fun aMethodWithNoMeaningfulRate_printsNoFigure() {
         // Raids, gifts, trades and SOS calls carry a zero, and the row says nothing rather than 0%.
         val gift = listOf(row("togepi", chance = 0, conditions = emptyList()))
-        val rendered = gift.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single()
+        val rendered = gift.areas(emptyMap()).single().rows.single()
 
         assertNull(rendered.rateText)
         assertEquals(0f, rendered.rateFraction)
@@ -134,34 +158,63 @@ class EncounterTableUiMapperTest {
 
         assertEquals(
             UiText.Resource(Res.string.location_detail_level_one, listOf(3)),
-            single.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single().levelText,
+            single.areas(emptyMap()).single().rows.single().levelText,
         )
 
         val range = listOf(row("pidgey", chance = 10, conditions = emptyList(), minLevel = 2, maxLevel = 4))
 
         assertEquals(
             UiText.Resource(Res.string.location_detail_level_range, listOf(2, 4)),
-            range.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single().levelText,
+            range.areas(emptyMap()).single().rows.single().levelText,
         )
     }
 
     @Test
-    fun areas_areNamedOnlyWhenThereIsMoreThanOne() {
-        // The fold #24 asks for is invisible in the 85.5% of cases with a single area, and the name
-        // appears exactly where it is needed to keep two denominators apart.
-        val oneArea = table.toEncounterAreasUiModel(conditions, emptyMap())
+    fun oneArea_isNotLabelledAtAll() {
+        // The fold #24 asks for is invisible in the 85.5% of cases with a single area.
+        val oneArea = table.areas(emptyMap())
 
         assertEquals(1, oneArea.size)
         assertNull(oneArea.single().name)
+    }
 
-        val twoAreas =
+    @Test
+    fun severalAreas_areAllLabelledEvenWhereUpstreamNamedNone() {
+        // Brooklet Hill's four areas have no prose name between them, and unlabelled they read as
+        // duplicates: three identical bubbling spots at 50% apiece, apparently adding to 150%. They
+        // are three separate tables that each total 100, and the labels are what say so.
+        val areas =
+            listOf(
+                row("magikarp", chance = 50, conditions = emptyList(), area = "north", areaName = null),
+                row("magikarp", chance = 50, conditions = emptyList(), area = "south", areaName = null),
+                row("magikarp", chance = 50, conditions = emptyList(), area = "totems-den", areaName = null),
+            ).toEncounterAreasUiModel(conditions, emptyMap(), "brooklet-hill", "Brooklet Hill")
+
+        assertEquals(listOf("North", "South", "Totems den"), areas.map { it.name })
+    }
+
+    @Test
+    fun theWholePlaceArea_takesThePlacesOwnName() {
+        // Postwick has a gift in Leon's room and another in the town itself; "Postwick" reads better
+        // there than the slug spelled out would.
+        val areas =
+            listOf(
+                row("zigzagoon", chance = 0, conditions = emptyList(), area = "postwick", areaName = null),
+                row("wooloo", chance = 0, conditions = emptyList(), area = "leons-room", areaName = null),
+            ).toEncounterAreasUiModel(conditions, emptyMap(), "postwick", "Postwick")
+
+        assertEquals(listOf("Leons room", "Postwick"), areas.map { it.name })
+    }
+
+    @Test
+    fun aProseName_winsOverTheSlug() {
+        val areas =
             listOf(
                 row("magikarp", chance = 100, conditions = emptyList(), area = "canalave-city", areaName = null),
                 row("magikarp", chance = 100, conditions = emptyList(), area = "canalave-city-sea", areaName = "Sea"),
-            ).toEncounterAreasUiModel(conditions, emptyMap())
+            ).toEncounterAreasUiModel(conditions, emptyMap(), "canalave-city", "Canalave City")
 
-        assertEquals(2, twoAreas.size)
-        assertEquals(listOf(null, "Sea"), twoAreas.map { it.name })
+        assertEquals(listOf("Canalave City", "Sea"), areas.map { it.name })
     }
 
     @Test
@@ -202,8 +255,8 @@ class EncounterTableUiMapperTest {
         // Stretching it to fill would say the commonest Pokemon on a route is a certainty.
         val thin = listOf(row("chansey", chance = 1, conditions = emptyList()))
 
-        assertEquals(0.01f, thin.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single().rateFraction)
-        assertFalse(thin.toEncounterAreasUiModel(conditions, emptyMap()).single().rows.single().rateFraction == 1f)
+        assertEquals(0.01f, thin.areas(emptyMap()).single().rows.single().rateFraction)
+        assertFalse(thin.areas(emptyMap()).single().rows.single().rateFraction == 1f)
     }
 
     private fun row(

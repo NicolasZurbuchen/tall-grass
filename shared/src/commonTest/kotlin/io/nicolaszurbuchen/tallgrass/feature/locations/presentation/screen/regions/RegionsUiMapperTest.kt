@@ -21,9 +21,9 @@ class RegionsUiMapperTest {
 
     @Test
     fun loaded_mapsEveryRegionToACard() {
-        val state = RegionsState(isLoading = false, regions = listOf(LocationFixtures.kanto, LocationFixtures.orre))
+        val state = RegionsState(isLoading = false, regions = listOf(LocationFixtures.kanto, LocationFixtures.johto))
 
-        assertEquals(listOf("kanto", "orre"), state.toUiModel().regions.map { it.slug })
+        assertEquals(listOf("kanto", "johto"), state.toUiModel().regions.map { it.slug })
     }
 
     @Test

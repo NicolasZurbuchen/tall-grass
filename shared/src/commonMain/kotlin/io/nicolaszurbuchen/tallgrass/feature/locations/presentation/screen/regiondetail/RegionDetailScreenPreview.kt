@@ -37,8 +37,6 @@ private fun RegionDetailScreenPreview() {
                             nativeName = "カントー",
                             gamesList = "Red · Blue · Yellow · Gold · Silver",
                         ),
-                    query = "",
-                    searchHint = UiText.Raw("Search 96 locations"),
                     locations =
                         listOf(
                             RegionLocationUiModel(
@@ -72,7 +70,6 @@ private fun RegionDetailScreenPreview() {
                                 hasEncounters = false,
                             ),
                         ),
-                    matchesText = null,
                     dex =
                         listOf(
                             RegionDexCardUiModel(
@@ -97,7 +94,6 @@ private fun RegionDetailScreenPreview() {
                     error = null,
                 ),
             onTabClick = { },
-            onQueryChange = { },
             onLocationClick = { },
             onPokemonClick = { },
             onBackClick = { },

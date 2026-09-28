@@ -8,6 +8,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.navigation.Her
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toAboutUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toFormPillsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toHeroUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toLocationUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toStatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
@@ -102,11 +103,19 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                             DetailState.Tab.ABOUT -> DetailTabUiModel.ABOUT
                             DetailState.Tab.STATS -> DetailTabUiModel.STATS
                             DetailState.Tab.MOVES -> DetailTabUiModel.MOVES
+                            DetailState.Tab.LOCATION -> DetailTabUiModel.LOCATION
                         },
                     about = detail.species.toAboutUiModel(variant),
                     stats = variant.toStatsUiModel(matchups[variant.slug].orEmpty()),
                     abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
                     moves = moves[variant.slug].orEmpty().map { it.toUiModel() },
+                    location =
+                        availability[variant.slug].toLocationUiModel(
+                            captureRate = detail.species.captureRate,
+                            selectedVersion = locationVersion,
+                            isLoadingPlaces = isLoadingPlaces,
+                            places = places,
+                        ),
                 )
             },
     )

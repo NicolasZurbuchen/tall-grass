@@ -14,23 +14,20 @@ import io.nicolaszurbuchen.tallgrass.infra.text.UiText
  * nothing travels into this screen yet, because the shared-element transition #11 classifies for the
  * box-art pair is a later pass.
  *
- * [locations] is already filtered by the query. The unfiltered count rides along in [matchesText],
- * which is the line under the list -- a reader who has typed something needs to know how much of the
- * region they are no longer looking at.
+ * [locations] is every place in the region. There is no search: the first attempt lost focus on every
+ * keystroke, because the field sits inside a pager page that recomposes whole, and a broken field is
+ * worse than a long list. See `DECISIONS.md`.
  */
 @Immutable
 data class RegionDetailUiModel(
     val isLoading: Boolean,
     val name: String,
-    val nativeName: String?,
+    val nativeName: String,
     val subtitleText: UiText?,
     val color: Color?,
     val tab: RegionTabUiModel,
     val about: RegionAboutUiModel?,
-    val query: String,
-    val searchHint: UiText?,
     val locations: List<RegionLocationUiModel>,
-    val matchesText: UiText?,
     val dex: List<RegionDexCardUiModel>,
     val error: AppErrorUiModel?,
 )

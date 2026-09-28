@@ -1434,3 +1434,96 @@ deny. The cost is that a table of rare encounters looks empty, and that is the c
 
 Rows whose method has no meaningful rate at all — raids, gifts, trades, SOS calls — draw no bar and
 no figure rather than a zero, and keep their level range, which is the part that is true either way.
+
+### Catch rate ships as a figure and a word
+
+#43 asks only that the value be legible without knowing 255 is the maximum. Both halves ship anyway:
+the figure over 255, and one of five words for it. The figure is the fact — anyone who knows the scale
+reads 45 and is done — and the word is a reading of it for everyone else.
+
+Five bands rather than a percentage, because the scale is not linear in what a reader cares about.
+The games' catch formula makes 255 and 200 feel identical in the hand, and 3 and 30 feel nothing
+alike; a bar reading "18%" would imply a precision the number does not have.
+
+It lives on the Location tab and not on About, which is the whole of #43: catch rate is a fact about
+*meeting* a Pokémon, and under the About tab's Training heading it read as a stat you improve.
+
+### The Pokémon side of the grid has no method tabs and no condition selector
+
+The route side has both. This side has neither, and that is #24's split rather than an omission: one
+Pokémon in one game yields one to three rows, where one route in one game yields up to twenty across
+as many as five tables.
+
+Tabs over three rows would be chrome over nothing, and a condition selector over them would be worse
+— it would invite the reader to pin a state to sharpen figures that are already as sharp as three
+rows get. The consequence is that a rate on this side can never be exact, so it is always written
+"up to", and the row names the condition state it belongs to instead of offering a control to change
+it.
+
+### The app is a main-series Pokédex, so Orre is not in it
+
+Colosseum and XD are GameCube spin-offs: a different developer, a different genre, and almost no wild
+grass. They are dropped at the version list, which is the one place that can't be routed around — a
+version with no cell has no grid to appear on.
+
+Dropping them drops **Orre**, whose only games they are, and the GameCube row with it. That also
+retires three special cases the region screens were carrying: the region with no Japanese name, the
+region with no Pokédex, and the fallback that reconstructed a region's games from its encounters
+because `version_group_regions` had no row for it. `RegionJson.nativeName` and `Region.nativeName`
+are no longer nullable, and the Pokédex tab no longer has an empty state, because neither absence can
+happen now.
+
+**The earlier entry on reconstructing Orre from its encounters is superseded.** That fallback existed
+for one region and was always the riskier half of a union — two rows put Black and White inside a
+Kalos location. With Orre gone it rescued nothing, so upstream's own table is the only source again.
+
+### A rate is a best case only where it actually varies
+
+The first version asked the table: if any axis was unpinned, every row in it was written "up to X%".
+That is wrong for most rows. Horsea on Kanto's Sea Route 19 is 25% on the Super Rod in every state
+there is — its table carries no condition tags at all — and "up to 25%" of a figure that cannot move
+undersells it.
+
+So each variant is asked separately. Its share is computed in every state the current pins still
+allow, and if the answer never changes, the figure is exact. Pidgey at 45% by day and nothing at night
+varies and says "up to"; Horsea does not.
+
+**Each axis gets one more state than it has listed values**, meaning "none of these". Upstream lists
+only the states that have rows, so a table whose only time tag is `time-morning` still has a rest of
+the day, and in it every morning-tagged row is absent. Without that extra state such a row looked
+constant and would have been called exact — which it is not, since there is no control to pin and no
+way to make it so.
+
+Past 256 states the enumeration is abandoned and the question falls back to whether a row carries any
+tag at all. Galar's Wild Area tables combine weather with story progress and the product is not
+bounded by anything this code controls.
+
+### An area is always labelled once there is more than one of them
+
+#24 folds a location's areas together, and where a method comes from one area nothing is labelled —
+which is 85.5% of cases. Where it comes from several, **every** table gets a label, including the ones
+upstream never named.
+
+Brooklet Hill is why. Its four areas have no prose name between them, so three bubbling-spot tables
+drew as three unlabelled blocks of the same three Pokémon: Magikarp at 50% three times over,
+apparently adding to 150%. They are three separate tables that each total 100, and the label is the
+only thing that says so.
+
+Where upstream has no name the slug stands in, spelled out — "North", "South", "Totems den". The one
+area whose slug *is* the location's takes the location's own name, because it is the place itself
+rather than a corner of it: "Postwick" beside "Leons room".
+
+### The region list is two columns, and the Locations tab has no search
+
+Both were too big and too broken respectively.
+
+One wide card per row meant ten regions needed scrolling for no reason, and at full width the box-art
+pair ended up larger than the words. Halved, a card carries a name and two facts; the Japanese name
+went with the change, because there is no room for a third line beside artwork that size and the About
+tab already shows it. The pair is inset rather than bled off the corner — at half width, mascots
+running past the edge read as clipped rather than deliberate.
+
+The search field on the Locations tab lost focus on every keystroke: it sits inside a pager page,
+which recomposes whole each time the query changes. A field that cannot be typed into is worse than a
+long list, so it is gone rather than left broken. The filtering, the match count and their strings went
+with it.

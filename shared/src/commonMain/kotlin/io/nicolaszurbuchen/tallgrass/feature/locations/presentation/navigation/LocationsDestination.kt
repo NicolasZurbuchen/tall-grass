@@ -34,4 +34,13 @@ data class RegionDetailDestination(
 @Serializable
 data class LocationDetailDestination(
     val slug: String,
+    /**
+     * The game to open on, when the reader arrived from a Pokemon that is found here in it.
+     *
+     * Null from a region's Locations list, where no game has been chosen yet. This is the
+     * cross-link #24 asks for: tapping a route in a Pokemon's Location tab opens that route *in
+     * that game*, which closes the loop between the two views instead of dropping the reader back
+     * at the grid.
+     */
+    val versionSlug: String? = null,
 ) : LocationsDestination

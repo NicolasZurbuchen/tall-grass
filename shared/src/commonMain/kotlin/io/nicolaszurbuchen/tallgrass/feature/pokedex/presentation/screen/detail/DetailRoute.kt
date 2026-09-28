@@ -13,6 +13,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DetailRoute(
     onNavigateToMove: (String) -> Unit,
     onNavigateToAbility: (String) -> Unit,
+    onNavigateToLocation: (locationSlug: String, versionSlug: String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel = koinViewModel(),
@@ -21,13 +22,26 @@ fun DetailRoute(
     val onNavigateBackUpdated by rememberUpdatedState(onNavigateBack)
     val onNavigateToMoveUpdated by rememberUpdatedState(onNavigateToMove)
     val onNavigateToAbilityUpdated by rememberUpdatedState(onNavigateToAbility)
+    val onNavigateToLocationUpdated by rememberUpdatedState(onNavigateToLocation)
 
     LaunchedEffect(Unit) {
         viewModel.labels.collect { label ->
             when (label) {
-                DetailLabel.NavigateBack -> onNavigateBackUpdated()
-                is DetailLabel.NavigateToMove -> onNavigateToMoveUpdated(label.slug)
-                is DetailLabel.NavigateToAbility -> onNavigateToAbilityUpdated(label.slug)
+                DetailLabel.NavigateBack -> {
+                    onNavigateBackUpdated()
+                }
+
+                is DetailLabel.NavigateToMove -> {
+                    onNavigateToMoveUpdated(label.slug)
+                }
+
+                is DetailLabel.NavigateToAbility -> {
+                    onNavigateToAbilityUpdated(label.slug)
+                }
+
+                is DetailLabel.NavigateToLocation -> {
+                    onNavigateToLocationUpdated(label.locationSlug, label.versionSlug)
+                }
             }
         }
     }
@@ -46,12 +60,16 @@ fun DetailRoute(
                     DetailTabUiModel.ABOUT -> DetailState.Tab.ABOUT
                     DetailTabUiModel.STATS -> DetailState.Tab.STATS
                     DetailTabUiModel.MOVES -> DetailState.Tab.MOVES
+                    DetailTabUiModel.LOCATION -> DetailState.Tab.LOCATION
                 }
 
             viewModel.onIntent(DetailIntent.TabSelected(selected))
         },
         onAbilityClick = { slug -> viewModel.onIntent(DetailIntent.AbilityClicked(slug)) },
         onMoveClick = { slug -> viewModel.onIntent(DetailIntent.MoveClicked(slug)) },
+        onVersionClick = { slug -> viewModel.onIntent(DetailIntent.LocationVersionSelected(slug)) },
+        onBreadcrumbClick = { viewModel.onIntent(DetailIntent.LocationVersionCleared) },
+        onPlaceClick = { slug -> viewModel.onIntent(DetailIntent.PlaceClicked(slug)) },
         onRetryClick = { viewModel.onIntent(DetailIntent.RetryClicked) },
         modifier = modifier,
     )

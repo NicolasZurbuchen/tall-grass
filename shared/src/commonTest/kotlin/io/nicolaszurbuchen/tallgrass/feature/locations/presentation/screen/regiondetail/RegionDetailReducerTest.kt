@@ -43,23 +43,12 @@ class RegionDetailReducerTest {
     @Test
     fun tabChanged_movesTheTabAndTouchesNothingElse() =
         with(reduce) {
-            val before = RegionDetailState(region = LocationFixtures.kantoDetail, query = "route")
+            val before = RegionDetailState(region = LocationFixtures.kantoDetail)
             val after = before.reduce(RegionDetailMessage.TabChanged(RegionDetailState.Tab.POKEDEX))
 
             assertEquals(RegionDetailState.Tab.POKEDEX, after.tab)
-            assertEquals("route", after.query)
             assertEquals(before.region, after.region)
-        }
-
-    @Test
-    fun queryChanged_survivesATabChange() =
-        with(reduce) {
-            // The tabs are a pager, so swiping away and back would clear what was typed if the query
-            // lived in the composable rather than here.
-            val typed = RegionDetailState().reduce(RegionDetailMessage.QueryChanged("berry"))
-            val swiped = typed.reduce(RegionDetailMessage.TabChanged(RegionDetailState.Tab.ABOUT))
-
-            assertEquals("berry", swiped.query)
+            assertEquals(before.locations, after.locations)
         }
 
     @Test

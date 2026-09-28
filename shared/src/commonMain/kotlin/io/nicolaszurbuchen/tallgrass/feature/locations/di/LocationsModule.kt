@@ -23,5 +23,5 @@ val locationsModule =
         // detail: which region the screen is about arrives from the NavKey, so it is passed at
         // resolution rather than resolved.
         viewModel { (slug: String) -> RegionDetailViewModel(get(), slug) }
-        viewModel { (slug: String) -> LocationDetailViewModel(get(), slug) }
+        viewModel { (slug: String, versionSlug: String?) -> LocationDetailViewModel(get(), slug, versionSlug) }
     }

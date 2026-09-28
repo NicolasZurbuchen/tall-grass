@@ -21,14 +21,17 @@ class LocationDetailStoreFactory(
     private val getEncounters: GetLocationEncountersUseCase,
     private val getConditions: GetEncounterConditionsUseCase,
 ) {
-    fun create(slug: String): LocationDetailStore =
+    fun create(
+        slug: String,
+        versionSlug: String?,
+    ): LocationDetailStore =
         object :
             LocationDetailStore,
             Store<LocationDetailIntent, LocationDetailState, LocationDetailLabel> by storeFactory.create(
                 name = "LocationDetailStore",
                 initialState = LocationDetailState(isLoading = true),
                 bootstrapper = BootstrapperImpl(),
-                executorFactory = { ExecutorImpl(slug) },
+                executorFactory = { ExecutorImpl(slug, versionSlug) },
                 reducer = ReducerImpl,
             ) {}
 
@@ -40,6 +43,7 @@ class LocationDetailStoreFactory(
 
     private inner class ExecutorImpl(
         private val slug: String,
+        private val openOn: String?,
     ) : CoroutineExecutor<
             LocationDetailIntent,
             LocationDetailAction,
@@ -131,6 +135,11 @@ class LocationDetailStoreFactory(
                     }
 
                     dispatch(LocationDetailMessage.LocationLoaded(location, getConditions()))
+
+                    // The cross-link from a Pokemon's Location tab arrives with a game already
+                    // chosen, so the grid is skipped and the reader lands on the table they came
+                    // for. From a region's list there is no game yet and the grid opens. See #24.
+                    openOn?.let { selectVersion(it) }
                 } catch (e: AppException) {
                     dispatch(LocationDetailMessage.LoadFailed(e.error))
                 } catch (e: CancellationException) {

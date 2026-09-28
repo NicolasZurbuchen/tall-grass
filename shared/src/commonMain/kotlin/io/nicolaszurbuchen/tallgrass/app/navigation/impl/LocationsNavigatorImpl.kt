@@ -16,8 +16,11 @@ class LocationsNavigatorImpl(
         navigator.navigateTo(RegionDetailDestination(slug))
     }
 
-    override fun navigateToLocationDetail(slug: String) {
-        navigator.navigateTo(LocationDetailDestination(slug))
+    override fun navigateToLocationDetail(
+        slug: String,
+        versionSlug: String?,
+    ) {
+        navigator.navigateTo(LocationDetailDestination(slug, versionSlug))
     }
 
     /**

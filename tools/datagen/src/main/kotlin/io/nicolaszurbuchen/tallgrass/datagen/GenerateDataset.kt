@@ -41,16 +41,7 @@ fun main(args: Array<String>) {
             regionByLocation = places.associate { it.slug to it.region },
         )
     val locations = places.withEncounteredVersions(harvest.regions)
-    val regions =
-        buildRegions(
-            source = source,
-            versions = gameVersions,
-            locations = locations,
-            encountersByRegion =
-                harvest.regions.associate { region ->
-                    region.region to region.locations.flatMap { it.versions }.map { it.version }.toSet()
-                },
-        )
+    val regions = buildRegions(source, gameVersions, locations)
     val conditions = buildEncounterConditions(source, harvest.referencedConditions)
 
     outputDir.resolve("types.json").writeText(json.encodeToString(types))
@@ -871,11 +862,11 @@ private class EncounterHarvest(
 )
 
 /**
- * Every place that belongs to a region.
+ * Every place that belongs to a region this app ships.
  *
- * The 91 locations upstream files under no region are dropped. Nothing can reach them -- the only
- * route to a location is through the region that lists it -- and none carries an encounter, so
- * nothing goes but rows in a file.
+ * The 91 locations upstream files under no region are dropped, and so are Orre's eighteen. Nothing
+ * can reach either set -- the only route to a location is through the region that lists it -- and the
+ * spin-off region is not generated at all. See `SPIN_OFFS`.
  *
  * [LocationJson.versions] is empty here and filled by [withEncounteredVersions] once the encounters
  * are built, because it is a fact about them rather than about the place.
@@ -895,8 +886,10 @@ private fun buildLocations(source: UpstreamSource): List<LocationJson> {
 
     val areasByLocation = source.read("location_areas").groupBy { it.int("location_id") }
 
+    val shipped = CURATED_REGIONS.map { it.slug }.toSet()
+
     return source.read("locations")
-        .filter { it.intOrNull("region_id") != null }
+        .filter { regionSlugs[it.intOrNull("region_id")] in shipped }
         .map { row ->
             val id = row.int("id")
             val slug = row["identifier"]
@@ -931,12 +924,11 @@ private fun List<LocationJson>.withEncounteredVersions(encounters: List<RegionEn
     return map { it.copy(versions = versionsByLocation[it.slug].orEmpty()) }
 }
 
-/** The eleven regions, their curated facts, and the regional dex each one is the dex of. */
+/** The ten main-series regions, their curated facts, and the regional dex each one is the dex of. */
 private fun buildRegions(
     source: UpstreamSource,
     versions: List<VersionJson>,
     locations: List<LocationJson>,
-    encountersByRegion: Map<String, Set<String>>,
 ): List<RegionJson> {
     val regionNames = source.read("region_names")
 
@@ -945,7 +937,8 @@ private fun buildRegions(
             .filter { it.int("local_language_id") == ENGLISH }
             .associate { it.int("region_id") to it["name"] }
 
-    // Upstream's `ja-hrkt`, which is the name every other Pokedex shows. Absent for Orre alone.
+    // Upstream's `ja-hrkt`, which is the name every other Pokedex shows. Present for all ten, now
+    // that the one region it was missing for is not generated.
     val nativeNames =
         regionNames
             .filter { it.int("local_language_id") == JAPANESE }
@@ -963,55 +956,54 @@ private fun buildRegions(
     val locationCounts = locations.groupingBy { it.region }.eachCount()
     val curated = CURATED_REGIONS.associateBy { it.slug }
 
-    // Ordered by upstream's own id, which runs Kanto to Paldea and then Orre. Ordering on generation
-    // instead would interleave Orre with Hoenn -- both Generation III -- and drop the spin-off region
-    // into the middle of the main sequence, which is not how anyone lists them.
-    return source.read("regions").sortedBy { it.int("id") }.map { row ->
-        val id = row.int("id")
-        val slug = row["identifier"]
-        val entry = curated.getValue(slug)
+    // Ordered by upstream's own id, which runs Kanto to Paldea. Filtered to the curated table, which
+    // is what leaves Orre out: it is a spin-off region whose only games are Colosseum and XD, and
+    // this app covers the main series. See `SPIN_OFFS`.
+    return source.read("regions")
+        .filter { it["identifier"] in curated }
+        .sortedBy { it.int("id") }
+        .map { row ->
+            val id = row.int("id")
+            val slug = row["identifier"]
+            val entry = curated.getValue(slug)
 
-        // Upstream's own region-to-version-group table, and only where it is silent, the versions
-        // that actually have encounters here.
-        //
-        // A fallback rather than a union, and the difference matters both ways. `version_group_regions`
-        // has no row for Orre at all, so without the fallback the region that is only Colosseum and XD
-        // would have no games, no generation and no grid. But encounters alone are noisier than
-        // upstream's own statement: two rows put Black and White inside `team-flare-secret-hq`, which
-        // is a Kalos location, and a union took Kalos to be a Generation V region on the strength of
-        // them.
-        val declared = versions.filter { slug in it.regions }
-        val regionVersions =
-            declared.ifEmpty { versions.filter { it.slug in encountersByRegion[slug].orEmpty() } }
+            // Upstream's own region-to-version-group table, and nothing else.
+            //
+            // This used to fall back to the versions that have encounters here, because
+            // `version_group_regions` has no row for Orre and that left the region with no games at
+            // all. Orre is no longer generated, so the fallback has nothing left to rescue -- and it
+            // was never safe: two rows put Black and White inside `team-flare-secret-hq`, a Kalos
+            // location, which read Kalos as a Generation V region.
+            val regionVersions = versions.filter { slug in it.regions }
 
-        RegionJson(
-            slug = slug,
-            name = names[id] ?: slug,
-            nativeName = nativeNames[id],
-            // The generation a region belongs to is the earliest its own games are from. Kanto is
-            // Generation I even though Gold and Silver reach it, because they are Johto's games.
-            generation = regionVersions.minOfOrNull { it.generation } ?: 0,
-            blurb = entry.blurb,
-            boxArt = entry.boxArt,
-            pokedex =
-                entry.pokedexes
-                    // Sorted inside each dex and then concatenated, rather than sorted across all of
-                    // them. Kalos ships three dexes that each number from 1, so a sort on the number
-                    // alone would interleave them into three overlapping runs of 1..153.
-                    .flatMap { dex ->
-                        dexEntries[pokedexIds.getValue(dex)].orEmpty().sortedBy { it.int("pokedex_number") }
-                    }.mapNotNull { dexRow ->
-                        val speciesId = dexRow.int("species_id")
-                        val species = speciesSlugs[speciesId] ?: return@mapNotNull null
-                        RegionDexEntryJson(
-                            number = dexRow.int("pokedex_number"),
-                            variant = regionNativeVariant(species, slug, variantsBySpecies[speciesId].orEmpty()),
-                        )
-                    }.distinctBy { it.variant },
-            versions = regionVersions.map { it.slug },
-            locationCount = locationCounts[slug] ?: 0,
-        )
-    }
+            RegionJson(
+                slug = slug,
+                name = names[id] ?: slug,
+                nativeName = nativeNames.getValue(id),
+                // The generation a region belongs to is the earliest its own games are from. Kanto is
+                // Generation I even though Gold and Silver reach it: those are Johto's games.
+                generation = regionVersions.minOfOrNull { it.generation } ?: 0,
+                blurb = entry.blurb,
+                boxArt = entry.boxArt,
+                pokedex =
+                    entry.pokedexes
+                        // Sorted inside each dex and then concatenated, rather than sorted across all
+                        // of them. Kalos ships three dexes that each number from 1, so a sort on the
+                        // number alone would interleave them into three overlapping runs of 1..153.
+                        .flatMap { dex ->
+                            dexEntries[pokedexIds.getValue(dex)].orEmpty().sortedBy { it.int("pokedex_number") }
+                        }.mapNotNull { dexRow ->
+                            val speciesId = dexRow.int("species_id")
+                            val species = speciesSlugs[speciesId] ?: return@mapNotNull null
+                            RegionDexEntryJson(
+                                number = dexRow.int("pokedex_number"),
+                                variant = regionNativeVariant(species, slug, variantsBySpecies[speciesId].orEmpty()),
+                            )
+                        }.distinctBy { it.variant },
+                versions = regionVersions.map { it.slug },
+                locationCount = locationCounts[slug] ?: 0,
+            )
+        }
 }
 
 /**
@@ -1022,8 +1014,8 @@ private fun buildRegions(
  * the same naming the variant key already leans on -- so the slug is the whole match and nothing
  * extra needs storing.
  *
- * Every region with no regional forms of its own, which is Kanto through Unova and Orre, falls
- * through to the default variant.
+ * Every region with no regional forms of its own, which is Kanto through Unova, falls through to the
+ * default variant.
  */
 private fun regionNativeVariant(
     species: String,

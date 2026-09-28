@@ -35,14 +35,14 @@ fun RegionCardSkeleton(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
             modifier = Modifier.padding(MaterialTheme.spacing.md),
         ) {
-            Box(modifier = Modifier.fillMaxWidth(NATIVE_WIDTH).height(NATIVE_HEIGHT).shimmerBlock())
             Box(modifier = Modifier.fillMaxWidth(NAME_WIDTH).height(NAME_HEIGHT).shimmerBlock())
+            Box(modifier = Modifier.fillMaxWidth(FACT_WIDTH).height(FACT_HEIGHT).shimmerBlock())
         }
     }
 }
 
-private const val CARD_RATIO = 1.55f
-private const val NATIVE_WIDTH = 0.3f
-private const val NAME_WIDTH = 0.45f
-private val NATIVE_HEIGHT = 12.dp
-private val NAME_HEIGHT = 22.dp
+private const val CARD_RATIO = 1.05f
+private const val NAME_WIDTH = 0.6f
+private const val FACT_WIDTH = 0.4f
+private val NAME_HEIGHT = 20.dp
+private val FACT_HEIGHT = 11.dp

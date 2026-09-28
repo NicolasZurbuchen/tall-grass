@@ -27,7 +27,7 @@ class LocationsNavKeyHandler(
         // survives process death.
         entry<RegionDetailDestination> { destination ->
             RegionDetailRoute(
-                onNavigateToLocation = navigator::navigateToLocationDetail,
+                onNavigateToLocation = { slug -> navigator.navigateToLocationDetail(slug) },
                 onNavigateToPokemon = { label ->
                     navigator.navigateToPokemon(
                         cardSlug = label.cardSlug,
@@ -56,7 +56,10 @@ class LocationsNavKeyHandler(
                     )
                 },
                 onNavigateBack = { navigator.navigateBack() },
-                viewModel = koinViewModel<LocationDetailViewModel>(parameters = { parametersOf(destination.slug) }),
+                viewModel =
+                    koinViewModel<LocationDetailViewModel>(
+                        parameters = { parametersOf(destination.slug, destination.versionSlug) },
+                    ),
             )
         }
     }

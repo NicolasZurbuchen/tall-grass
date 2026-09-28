@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,9 @@ import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
+import org.jetbrains.compose.resources.stringResource
+import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.location_detail_available_in
 
 /**
  * What the grid collapses into once a game is chosen: the cell's own token, the game's name, and a
@@ -32,6 +38,10 @@ import io.nicolaszurbuchen.tallgrass.infra.text.asString
  * **Tapping it opens the grid again**, which is the part of #9 that actually solved the problem. The
  * earlier layouts all scrolled the selector away and the reader lost their place changing games; here
  * the selector is never more than one tap from where they are looking, and neither state scrolls.
+ *
+ * The arrow on the right is what says so. A row that happens to be tappable looks like a row, and this
+ * one is the only control on the screen that is not visibly a control -- so it points back up at where
+ * the grid was.
  *
  * [summary] is the line under the name and says what the reader is about to see -- how many species
  * are here, or that there are none. It is the caller's to write, because the route side counts
@@ -73,7 +83,7 @@ fun AvailabilityBreadcrumb(
             )
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = cell.name,
                 style = MaterialTheme.typography.titleMedium,
@@ -88,6 +98,15 @@ fun AvailabilityBreadcrumb(
                 maxLines = 1,
             )
         }
+
+        // The whole row is the control, and nothing else on this screen looks like it -- so it needs
+        // to say out loud that tapping it does something. An arrow pointing back up at where the grid
+        // was says which way it goes as well as that it goes.
+        Icon(
+            imageVector = Icons.Filled.KeyboardArrowUp,
+            contentDescription = stringResource(Res.string.location_detail_available_in),
+            tint = MaterialTheme.appColors.textTertiary,
+        )
     }
 }
 

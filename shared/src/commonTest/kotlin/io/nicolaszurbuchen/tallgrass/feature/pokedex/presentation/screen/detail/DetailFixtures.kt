@@ -108,3 +108,15 @@ internal val charizardEntry =
         primaryType = PokemonType.FIRE,
         secondaryType = PokemonType.FLYING,
     )
+
+/**
+ * A second card, so a swipe has somewhere to land.
+ *
+ * Charizard's numbers under another slug and name: nothing that uses this reads them, and the only
+ * thing asked of it is that it is not the card the reader started on.
+ */
+internal val bulbasaurDetail =
+    PokemonDetail(
+        species = charizardSpecies.copy(dexNumber = 1, name = "Bulbasaur", genus = "Seed Pokémon"),
+        variants = listOf(charizard.copy(slug = "bulbasaur", name = "Bulbasaur")),
+    )

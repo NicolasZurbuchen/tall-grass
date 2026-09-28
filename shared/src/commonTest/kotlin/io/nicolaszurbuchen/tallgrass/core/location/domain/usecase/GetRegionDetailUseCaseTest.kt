@@ -12,7 +12,7 @@ class GetRegionDetailUseCaseTest {
     private val details =
         mapOf(
             "kanto" to LocationFixtures.kantoDetail,
-            "orre" to LocationFixtures.orreDetail,
+            "johto" to LocationFixtures.johtoDetail,
         )
 
     @Test
@@ -24,15 +24,13 @@ class GetRegionDetailUseCaseTest {
         }
 
     @Test
-    fun invoke_carriesTheAbsencesOrreHas() =
+    fun invoke_carriesTheFactsTheAboutTabDraws() =
         runTest {
-            // No Japanese name and no regional dex. Both are real answers rather than missing data,
-            // and the About tab has to be able to tell them apart from a failed read.
             val useCase = GetRegionDetailUseCase(FakeLocationRepository(regionDetails = details))
-            val orre = useCase("orre")
+            val johto = useCase("johto")
 
-            assertNull(orre?.nativeName)
-            assertEquals(0, orre?.pokedexSize)
+            assertEquals("ジョウト", johto?.nativeName)
+            assertEquals(251, johto?.pokedexSize)
         }
 
     @Test

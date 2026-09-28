@@ -403,24 +403,6 @@
     ]
   },
   {
-    "slug": "colosseum",
-    "name": "Colosseum",
-    "code": "Co",
-    "console": "GAME_CUBE",
-    "generation": 3,
-    "versionGroup": "colosseum",
-    "regions": []
-  },
-  {
-    "slug": "xd",
-    "name": "XD",
-    "code": "XD",
-    "console": "GAME_CUBE",
-    "generation": 3,
-    "versionGroup": "xd",
-    "regions": []
-  },
-  {
     "slug": "ruby",
     "name": "Ruby",
     "code": "R",

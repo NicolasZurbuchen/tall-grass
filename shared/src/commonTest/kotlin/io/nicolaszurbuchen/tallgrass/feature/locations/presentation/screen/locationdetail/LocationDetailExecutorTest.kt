@@ -36,12 +36,13 @@ class LocationDetailExecutorTest {
     private fun store(
         repository: FakeLocationRepository,
         slug: String = "kanto-route-1",
+        versionSlug: String? = null,
     ) = LocationDetailStoreFactory(
         storeFactory = DefaultStoreFactory(),
         getLocationDetail = GetLocationDetailUseCase(repository),
         getEncounters = GetLocationEncountersUseCase(repository),
         getConditions = GetEncounterConditionsUseCase(repository),
-    ).create(slug)
+    ).create(slug, versionSlug)
 
     private fun repository() =
         FakeLocationRepository(

@@ -25,4 +25,7 @@ data class DetailContentUiModel(
     // Empty while the tab has not been opened for this form, and empty for good for the Megas and
     // Gigantamaxes that learn what their base form learns. The tab says which of the two it is.
     val moves: List<VariantMoveUiModel>,
+    // Its own model rather than more fields here, because the tab has a selection of its own: which
+    // game is open is a fact about this tab and survives switching to Stats and back.
+    val location: LocationUiModel,
 )

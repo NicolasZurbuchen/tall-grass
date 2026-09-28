@@ -29,6 +29,7 @@ class PokedexNavKeyHandler(
             DetailRoute(
                 onNavigateToMove = navigator::navigateToMove,
                 onNavigateToAbility = navigator::navigateToAbility,
+                onNavigateToLocation = navigator::navigateToLocation,
                 onNavigateBack = { navigator.navigateBack() },
                 viewModel =
                     koinViewModel<DetailViewModel>(

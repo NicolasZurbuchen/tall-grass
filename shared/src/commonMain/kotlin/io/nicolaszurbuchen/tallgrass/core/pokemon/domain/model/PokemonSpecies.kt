@@ -13,7 +13,13 @@ data class PokemonSpecies(
     val genus: String,
     /** Eighths of a chance of being female, or -1 for a genderless species. Upstream's encoding. */
     val genderRate: Int,
-    /** Read by nothing yet: catch rate belongs with where a Pokemon is found, not with breeding. */
+    /**
+     * How likely a ball is to hold, 0-255, where higher is easier. Upstream's scale.
+     *
+     * Read by the detail's Location tab, which is where #43 put it: catch rate is a fact about
+     * *meeting* a Pokemon rather than about raising one, and under the About tab's Training heading
+     * it read as a stat you improve.
+     */
     val captureRate: Int,
     val hatchCounter: Int,
     val growthRate: GrowthRate,

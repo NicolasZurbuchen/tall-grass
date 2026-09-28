@@ -32,7 +32,6 @@ fun RegionDetailRoute(
     RegionDetailScreen(
         state = state,
         onTabClick = { index -> viewModel.onIntent(RegionDetailIntent.TabSelected(index)) },
-        onQueryChange = { query -> viewModel.onIntent(RegionDetailIntent.QueryChanged(query)) },
         onLocationClick = { slug -> viewModel.onIntent(RegionDetailIntent.LocationClicked(slug)) },
         onPokemonClick = { slug -> viewModel.onIntent(RegionDetailIntent.PokemonClicked(slug)) },
         onBackClick = onNavigateBack,

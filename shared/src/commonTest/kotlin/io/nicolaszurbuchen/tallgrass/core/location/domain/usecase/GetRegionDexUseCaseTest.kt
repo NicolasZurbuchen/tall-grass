@@ -54,10 +54,10 @@ class GetRegionDexUseCaseTest {
     @Test
     fun invoke_returnsEmptyForARegionWithNoDex() =
         runTest {
-            // Orre, which upstream has no regional dex for. Empty is the answer rather than a gap.
+            // Johto, which upstream has no regional dex for. Empty is the answer rather than a gap.
             val useCase = GetRegionDexUseCase(FakeLocationRepository(dexes = dexes))
 
-            assertEquals(emptyList(), useCase("orre"))
+            assertEquals(emptyList(), useCase("johto"))
         }
 
     @Test

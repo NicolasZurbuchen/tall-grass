@@ -1,15 +1,19 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail
 
 import androidx.compose.runtime.Composable
+import io.nicolaszurbuchen.tallgrass.core.location.presentation.uimodel.AvailabilityGridUiModel
 import io.nicolaszurbuchen.tallgrass.core.move.presentation.uimodel.DamageClassUiModel
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.preview.TallGrassPreview
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.AboutUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.CaptureMethodUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.CatchDifficultyUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.LocationUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
@@ -152,6 +156,22 @@ private fun DetailScreenPreview() {
                                         howText = UiText.Raw("TM"),
                                     ),
                                 ),
+                            location =
+                                LocationUiModel(
+                                    isLoading = false,
+                                    // Charizard: found in the wild in older games and nowhere in
+                                    // the newest with data, which is what the second pill means.
+                                    captureMethods =
+                                        listOf(CaptureMethodUiModel.WILD_CATCH, CaptureMethodUiModel.TRANSFER_ONLY),
+                                    catchRateText = UiText.Raw("45 / 255"),
+                                    catchDifficulty = CatchDifficultyUiModel.HARD,
+                                    catchFraction = 45f / 255f,
+                                    grid = AvailabilityGridUiModel(emptyList()),
+                                    selected = null,
+                                    breadcrumbText = null,
+                                    places = emptyList(),
+                                    emptyText = null,
+                                ),
                         ),
                 ),
             onBackClick = { },
@@ -160,6 +180,9 @@ private fun DetailScreenPreview() {
             onTabClick = { },
             onAbilityClick = { },
             onMoveClick = { },
+            onVersionClick = { },
+            onBreadcrumbClick = { },
+            onPlaceClick = { },
             onRetryClick = { },
         )
     }

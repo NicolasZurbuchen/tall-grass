@@ -39,18 +39,9 @@ class RegionDetailUiMapperTest {
     }
 
     @Test
-    fun about_showsADashRatherThanAZeroForARegionWithNoDex() {
-        // Orre. A zero in a row of figures reads as a figure, and this one is upstream having no
-        // regional dex at all.
-        val about = loaded.copy(region = LocationFixtures.orreDetail).toUiModel().about
-
-        assertEquals(UiText.Raw("—"), about?.pokedexText)
-    }
-
-    @Test
-    fun about_leavesTheJapaneseNameOutWhenThereIsNone() {
-        assertNull(loaded.copy(region = LocationFixtures.orreDetail).toUiModel().about?.nativeName)
+    fun about_carriesTheNativeNameAndTheDexSize() {
         assertEquals("カントー", loaded.toUiModel().about?.nativeName)
+        assertEquals(UiText.Raw("151"), loaded.toUiModel().about?.pokedexText)
     }
 
     @Test
@@ -59,41 +50,11 @@ class RegionDetailUiMapperTest {
     }
 
     @Test
-    fun anEmptyQuery_showsEveryPlaceAndNoCount() {
-        // The unfiltered count is already on the About tab and on the card that opened the screen,
-        // so a third copy under the list would be furniture.
-        val model = loaded.toUiModel()
-
-        assertEquals(2, model.locations.size)
-        assertNull(model.matchesText)
-    }
-
-    @Test
-    fun aQuery_filtersByNameAndSaysHowMuchIsLeft() {
-        val model = loaded.copy(query = "berry").toUiModel()
-
-        assertEquals(listOf("berry-forest"), model.locations.map { it.slug })
-        assertNotNull(model.matchesText)
-    }
-
-    @Test
-    fun aQuery_readsHyphensAsSpaces() {
-        // The names are written with spaces and the slugs with hyphens, and a reader types what
-        // they see. "route 1" has to find Route 1.
-        assertEquals(listOf("kanto-route-1"), loaded.copy(query = "route 1").toUiModel().locations.map { it.slug })
-    }
-
-    @Test
-    fun aQuery_ignoresCaseAndSurroundingSpace() {
-        assertEquals(1, loaded.copy(query = "  BERRY ").toUiModel().locations.size)
-    }
-
-    @Test
-    fun aQueryThatMatchesNothing_isEmptyRatherThanUnfiltered() {
-        val model = loaded.copy(query = "zzz").toUiModel()
-
-        assertTrue(model.locations.isEmpty())
-        assertNotNull(model.matchesText)
+    fun locations_areEveryPlaceInTheRegion() {
+        // There is no filtering left to test: the search field lost focus on every keystroke inside
+        // the pager and was removed rather than left broken.
+        // In the order the repository gave them, which is by name. The mapper does not re-sort.
+        assertEquals(listOf("kanto-route-1", "berry-forest"), loaded.toUiModel().locations.map { it.slug })
     }
 
     @Test
@@ -112,9 +73,9 @@ class RegionDetailUiMapperTest {
 
     @Test
     fun anEmptyDex_isNotAnError() {
-        // Orre reaches the Pokedex tab with nothing in it, and that is an answer rather than a
+        // Johto reaches the Pokedex tab with nothing in it, and that is an answer rather than a
         // failure: the tab says so in its own words instead of borrowing the error banner.
-        val model = loaded.copy(region = LocationFixtures.orreDetail).toUiModel()
+        val model = loaded.copy(region = LocationFixtures.johtoDetail).toUiModel()
 
         assertTrue(model.dex.isEmpty())
         assertNull(model.error)

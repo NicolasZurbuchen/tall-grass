@@ -3,7 +3,10 @@ package io.nicolaszurbuchen.tallgrass.feature.locations.presentation.navigation
 interface LocationsNavigator {
     fun navigateToRegionDetail(slug: String)
 
-    fun navigateToLocationDetail(slug: String)
+    fun navigateToLocationDetail(
+        slug: String,
+        versionSlug: String? = null,
+    )
 
     /**
      * Opens a Pokemon from a region's Pokedex tab.

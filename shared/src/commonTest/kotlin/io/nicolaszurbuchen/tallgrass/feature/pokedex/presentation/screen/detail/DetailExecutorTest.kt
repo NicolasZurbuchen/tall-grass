@@ -8,6 +8,9 @@ import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.AbilityFixtures
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.fake.FakeAbilityRepository
 import io.nicolaszurbuchen.tallgrass.core.ability.domain.usecase.GetAbilitiesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
+import io.nicolaszurbuchen.tallgrass.core.location.domain.fake.FakeLocationRepository
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantAvailabilityUseCase
+import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantEncountersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.FakeMoveRepository
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.fake.FakePokedexRepository
@@ -56,6 +59,7 @@ class DetailExecutorTest {
         repository: FakePokedexRepository = FakePokedexRepository(details = mapOf("charizard" to charizardDetail)),
         moves: FakeMoveRepository = FakeMoveRepository(),
         abilities: FakeAbilityRepository = FakeAbilityRepository(),
+        locations: FakeLocationRepository = FakeLocationRepository(),
     ) = DetailStoreFactory(
         storeFactory = DefaultStoreFactory(),
         getDexEntries = GetDexEntriesUseCase(repository),
@@ -63,6 +67,8 @@ class DetailExecutorTest {
         getTypeMatchups = GetTypeMatchupsUseCase(chart),
         getMovesForVariant = GetMovesForVariantUseCase(moves),
         getAbilitiesForVariant = GetAbilitiesForVariantUseCase(abilities),
+        getVariantAvailability = GetVariantAvailabilityUseCase(locations),
+        getVariantEncounters = GetVariantEncountersUseCase(locations),
     ).create(slug, DexQuery.All, formSlug = null)
 
     @Test
@@ -229,6 +235,87 @@ class DetailExecutorTest {
                 store.accept(DetailIntent.TabSelected(DetailState.Tab.MOVES))
 
                 assertEquals(1, abilities.abilitiesForCallCount)
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun entrySelected_readsTheOpenTabForTheCardItLandsOn() =
+        runTest {
+            // The lazy reads were wired to the tab *changing*, so a reader already on Location who
+            // swiped kept a tab that had never read for the card now in front of them -- and absence
+            // is how that tab says "not read yet", so it sat on its skeleton until they left it.
+            val locations = FakeLocationRepository()
+            val repository =
+                FakePokedexRepository(
+                    details = mapOf("charizard" to charizardDetail, "bulbasaur" to bulbasaurDetail),
+                )
+            val store = store(repository = repository, locations = locations)
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.LOCATION))
+                while (state.availability["charizard"] == null) state = awaitItem()
+
+                store.accept(DetailIntent.EntrySelected("bulbasaur"))
+                while (state.availability["bulbasaur"] == null) state = awaitItem()
+
+                assertEquals(2, locations.availabilityCallCount)
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun entrySelected_readsTheMovesTabForTheCardItLandsOn() =
+        runTest {
+            // The same bug from the other tab, where it read as a Pokemon that knows nothing.
+            val moves = FakeMoveRepository()
+            val repository =
+                FakePokedexRepository(
+                    details = mapOf("charizard" to charizardDetail, "bulbasaur" to bulbasaurDetail),
+                )
+            val store = store(repository = repository, moves = moves)
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.MOVES))
+                while (state.moves["charizard"] == null) state = awaitItem()
+
+                store.accept(DetailIntent.EntrySelected("bulbasaur"))
+                while (state.moves["bulbasaur"] == null) state = awaitItem()
+
+                assertEquals(2, moves.movesForCallCount)
+                cancelAndIgnoreRemainingEvents()
+            }
+            store.dispose()
+        }
+
+    @Test
+    fun formSelected_readsWhicheverTabIsOpenRatherThanAlwaysTheMoves() =
+        runTest {
+            // A form is not found where its base form is, so the Location tab has its own read per
+            // variant -- and switching form used to fire the Moves read whatever tab was in front of
+            // the reader, which left this one on nothing.
+            val locations = FakeLocationRepository()
+            val store = store(locations = locations)
+
+            store.stateFlow.test {
+                var state = awaitItem()
+                while (state.isLoading) state = awaitItem()
+
+                store.accept(DetailIntent.TabSelected(DetailState.Tab.LOCATION))
+                while (state.availability["charizard"] == null) state = awaitItem()
+
+                store.accept(DetailIntent.FormSelected("charizard-mega-x"))
+                while (state.availability["charizard-mega-x"] == null) state = awaitItem()
+
+                assertEquals(2, locations.availabilityCallCount)
                 cancelAndIgnoreRemainingEvents()
             }
             store.dispose()

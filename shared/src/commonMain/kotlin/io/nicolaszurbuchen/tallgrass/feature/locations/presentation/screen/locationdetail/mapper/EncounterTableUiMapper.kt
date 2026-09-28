@@ -69,20 +69,18 @@ fun List<Encounter>.toConditionAxesUiModel(
 fun List<Encounter>.toEncounterAreasUiModel(
     conditions: List<EncounterCondition>,
     pinned: Map<String, String>,
+    locationSlug: String,
+    locationName: String,
 ): List<EncounterAreaUiModel> {
     val axisOf = conditions.associate { it.slug to it.axis }
 
-    // The axes these rows actually vary on, which is what "every axis pinned" has to mean for the
-    // figures to be exact. An axis with one value is not a choice and does not count.
-    val varying =
+    // The values each axis can take in this table. An axis with one value is not a choice: it applies
+    // always, so it neither needs a control nor makes anything uncertain.
+    val tagsByAxis =
         flatMap { it.conditions }
             .distinct()
-            .mapNotNull { tag -> axisOf[tag]?.let { tag to it } }
-            .groupBy({ it.second }, { it.first })
-            .filterValues { it.size > 1 }
-            .keys
-
-    val isBestCase = varying.any { it !in pinned.keys }
+            .mapNotNull { tag -> axisOf[tag]?.let { axis -> axis to tag } }
+            .groupBy({ it.first }, { it.second })
 
     val matching =
         filter { encounter ->
@@ -92,27 +90,82 @@ fun List<Encounter>.toEncounterAreasUiModel(
             }
         }
 
-    // Labelled only when there is more than one, which is what makes #24's fold invisible in the
-    // 85.5% of cases where a location draws the method from a single area.
-    val showAreaNames = matching.map { it.areaSlug }.distinct().size > 1
+    // Every complete condition state the pins still allow, or null when there are too many to walk.
+    //
+    // **One more option per axis than it has tags**, which is the "none of these" case: upstream lists
+    // only the states that have rows, so a table whose time tags are all `time-morning` still has a
+    // rest of the day, and in it every morning-tagged row is absent. That extra option is what tells
+    // the two kinds of row apart — a row tagged with nothing is counted in every state and is exact,
+    // a morning-only row is counted in one and is a best case.
+    //
+    // Null past the cap is a real possibility rather than defensiveness: Galar's Wild Area tables
+    // carry weather and story progress together, and the product is not bounded by anything here.
+    val unpinned = tagsByAxis.filterKeys { it !in pinned.keys }
+    val stateCount = unpinned.values.fold(1) { total, tags -> total * (tags.size + 1) }
+    val states =
+        if (stateCount > STATE_CAP) {
+            null
+        } else {
+            unpinned.values.fold(listOf(pinned.values.toSet())) { built, tags ->
+                built.flatMap { state -> tags.map { state + it } + listOf(state) }
+            }
+        }
+
+    // Labelled when the method comes from more than one area, which is what keeps #24's fold invisible
+    // in the 85.5% of cases where it comes from one.
+    //
+    // Upstream names only some of them: 179 areas belonging to multi-area locations have no prose name
+    // at all, and Brooklet Hill's four are among them. Unlabelled they read as duplicates -- three
+    // identical bubbling spots at 50% apiece, apparently adding to 150% -- when they are three separate
+    // tables that each total 100. So the slug stands in, spelled out: "North", "South", "Totems den".
+    //
+    // The one area whose slug *is* the location's takes the location's own name, because it is the
+    // place itself rather than a corner of it: "Postwick" beside "Leons room", not "Postwick" twice.
+    val areas = matching.map { it.areaSlug }.distinct()
+    val label = { areaSlug: String, areaName: String? ->
+        areaName ?: locationName.takeIf { areaSlug == locationSlug } ?: areaSlug.spellOutSlug()
+    }
 
     return matching
         .groupBy { it.areaSlug }
         .map { (areaSlug, rows) ->
             EncounterAreaUiModel(
                 slug = areaSlug,
-                name = rows.firstOrNull()?.areaName?.takeIf { showAreaNames },
-                rows = rows.toRowsUiModel(isBestCase),
+                name = if (areas.size > 1) label(areaSlug, rows.firstOrNull()?.areaName) else null,
+                rows = rows.toRowsUiModel(states),
             )
         }.sortedBy { it.slug }
 }
 
-private fun List<Encounter>.toRowsUiModel(isBestCase: Boolean): List<EncounterRowUiModel> =
+/**
+ * **A rate is a best case only where it actually varies.**
+ *
+ * The first version of this asked the table: if any axis was unpinned, every row in it was written
+ * "up to". That was wrong for most rows. Horsea on Kanto's Route 19 is 25% on the Super Rod in every
+ * state there is, and writing "up to 25%" of a figure that never moves undersells it — while a
+ * Pokemon that really is day-only sits in the same table and really is a best case.
+ *
+ * So each variant is asked separately: compute its share in every state the pins still allow, and if
+ * the answer never changes, the figure is exact. Pidgey at 45% by day and nothing at night varies and
+ * says "up to"; Horsea, tagged with nothing, does not.
+ */
+private fun List<Encounter>.toRowsUiModel(states: List<Set<String>>?): List<EncounterRowUiModel> =
     groupBy { it.variantSlug }
         .map { (_, rows) ->
             // Summed within a state, compared across them: rows sharing a condition set are slots of
             // one table and add up, rows in different states are alternatives and the best wins.
-            val chance = rows.groupBy { it.conditions.sorted() }.values.maxOf { state -> state.sumOf { it.chance } }
+            val perState =
+                states?.map { state -> rows.filter { row -> state.containsAll(row.conditions) }.sumOf { it.chance } }
+
+            val chance =
+                perState?.maxOrNull()
+                    ?: rows.groupBy { it.conditions.sorted() }.values.maxOf { slots -> slots.sumOf { it.chance } }
+
+            // Past the cap there is nothing to compare, so the question becomes whether the variant is
+            // conditioned at all -- which is the same answer wherever it is not.
+            val isBestCase =
+                perState?.let { it.distinct().size > 1 } ?: rows.any { it.conditions.isNotEmpty() }
+
             val first = rows.first()
             val minLevel = rows.minOf { it.minLevel }
             val maxLevel = rows.maxOf { it.maxLevel }
@@ -146,3 +199,8 @@ private fun List<Encounter>.toRowsUiModel(isBestCase: Boolean): List<EncounterRo
         }.sortedWith(compareByDescending<EncounterRowUiModel> { it.rateFraction }.thenBy { it.name })
 
 private const val FULL_TABLE = 100f
+
+// Enough for every table in this dataset except a handful of Generation VIII ones, which combine
+// weather with story progress. Walking a few hundred states to decide a label is cheap; walking
+// thousands on every recomposition is not.
+private const val STATE_CAP = 256
