@@ -67,7 +67,11 @@
     <string name="pokedex_detail_stat_speed">Speed</string>
     <string name="pokedex_detail_stat_total">Total</string>
 
-    <string name="pokedex_detail_type_defenses">Type Defenses</string>
+    <!-- The two halves of the type chart, split because they answer different questions: what gets
+         through this Pokemon, and what bounces off it. The multiplier is a title on the left of each
+         row rather than a word on every chip. -->
+    <string name="pokedex_detail_weaknesses">Weaknesses</string>
+    <string name="pokedex_detail_resistances">Resistances</string>
     <!-- Under the two right-hand columns of the stat table: what each stat reaches at level 100 with
          the worst and the best a trainer can do to it. Short, because they sit over three digits. -->
     <string name="pokedex_detail_stat_min">Min</string>

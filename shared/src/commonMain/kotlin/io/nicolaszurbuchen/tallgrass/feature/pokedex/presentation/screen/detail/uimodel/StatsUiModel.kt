@@ -14,7 +14,11 @@ data class StatsUiModel(
     val bars: List<StatBarUiModel>,
     val totalText: String,
     val totalFraction: Float,
-    val matchups: List<TypeMatchupUiModel>,
+    // Two lists rather than one, because they answer different questions: what gets through, and
+    // what bounces off. Either is empty for the Pokemon that has none of that kind -- Eelektross has
+    // no weakness at all -- and the tab draws no heading over an empty one.
+    val weaknesses: List<MatchupGroupUiModel>,
+    val resistances: List<MatchupGroupUiModel>,
 )
 
 /**
@@ -34,9 +38,20 @@ data class StatBarUiModel(
     val maxText: String,
 )
 
+/**
+ * The types that hit one defender by the same multiplier, under the multiplier as a title.
+ *
+ * The factor used to be on every chip, which meant "×2" printed four times in a row on most
+ * Pokemon. As a left-hand title it is said once and the chips get their width back.
+ */
+@Immutable
+data class MatchupGroupUiModel(
+    val factorText: String,
+    val types: List<TypeMatchupUiModel>,
+)
+
 @Immutable
 data class TypeMatchupUiModel(
     val typeLabel: String,
     val typeColor: Color,
-    val factorText: String,
 )

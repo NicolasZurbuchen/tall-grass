@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,15 +37,18 @@ import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MatchupGroupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.pokedex_detail_resistances
 import tallgrass.shared.generated.resources.pokedex_detail_stat_max
 import tallgrass.shared.generated.resources.pokedex_detail_stat_min
 import tallgrass.shared.generated.resources.pokedex_detail_stat_total
-import tallgrass.shared.generated.resources.pokedex_detail_type_defenses
+import tallgrass.shared.generated.resources.pokedex_detail_weaknesses
 
 /**
  * The stats and matchups of the form on screen, which is the half of this screen that genuinely
@@ -62,14 +66,26 @@ fun StatsTab(
     Column(modifier = modifier.fillMaxWidth()) {
         StatTable(stats = stats, tint = tint)
 
-        Text(
-            text = stringResource(Res.string.pokedex_detail_type_defenses),
-            style = MaterialTheme.typography.headlineMedium,
-            color = tint.asLabelColor(),
-            modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.md),
+        // Two sections rather than eighteen chips in one flow. A reader sizing a Pokemon up asks
+        // what gets through it and what bounces off, and those are different questions -- read as
+        // one list they had to be told apart by the factor printed on each chip.
+        MatchupSection(
+            title = Res.string.pokedex_detail_weaknesses,
+            groups = stats.weaknesses,
+            tint = tint,
+            firstChipIndex = 0,
+            elapsedMillis = elapsedMillis,
         )
 
-        MatchupFlow(matchups = stats.matchups, elapsedMillis = elapsedMillis)
+        // The stagger runs on across the two, so it reads as one entrance rather than two that
+        // happen to start together.
+        MatchupSection(
+            title = Res.string.pokedex_detail_resistances,
+            groups = stats.resistances,
+            tint = tint,
+            firstChipIndex = stats.weaknesses.sumOf { it.types.size },
+            elapsedMillis = elapsedMillis,
+        )
     }
 }
 
@@ -236,26 +252,81 @@ private fun GridScope.StatCells(
 }
 
 /**
- * Chips sized to their own text, wrapped onto as many rows as they need.
+ * One half of the defences: a heading, then a row per multiplier.
+ *
+ * Absent rather than empty-stated when there is nothing in it, which is a real case at both ends --
+ * Eelektross is weak to nothing and Normal resists nothing. A heading over no chips would read as a
+ * read that had not landed.
+ *
+ * [firstChipIndex] is where this section falls in the tab's stagger, so the two sections enter as one
+ * sequence rather than as two starting at once.
+ */
+@Composable
+private fun MatchupSection(
+    title: StringResource,
+    groups: List<MatchupGroupUiModel>,
+    tint: Color,
+    firstChipIndex: Int,
+    elapsedMillis: Int,
+    modifier: Modifier = Modifier,
+) {
+    if (groups.isEmpty()) return
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = tint.asLabelColor(),
+            modifier = Modifier.padding(top = MaterialTheme.spacing.lg, bottom = MaterialTheme.spacing.sm),
+        )
+
+        var chipIndex = firstChipIndex
+
+        groups.forEach { group ->
+            MatchupRow(group = group, firstChipIndex = chipIndex, elapsedMillis = elapsedMillis)
+            chipIndex += group.types.size
+        }
+    }
+}
+
+/**
+ * One multiplier and everything that hits for it: the factor on the left the way the breeding block
+ * puts its labels there, and chips sized to their own text wrapping beside it.
  *
  * DECISIONS.md § A matchup chip is sized by its name, not by the grid
  */
 @Composable
-private fun MatchupFlow(
-    matchups: List<TypeMatchupUiModel>,
+private fun MatchupRow(
+    group: MatchupGroupUiModel,
+    firstChipIndex: Int,
     elapsedMillis: Int,
     modifier: Modifier = Modifier,
 ) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
-        modifier = modifier.fillMaxWidth(),
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.md),
+        modifier = modifier.fillMaxWidth().padding(vertical = MaterialTheme.spacing.xs),
     ) {
-        // Staggered per chip rather than per row, because a flow does not report where it broke.
-        // AppStagger's own cap holds eighteen of them under four hundred milliseconds, which is what
-        // the row grouping was there to avoid.
-        matchups.forEachIndexed { index, matchup ->
-            MatchupChip(matchup = matchup, modifier = Modifier.pop(entranceFraction(index, elapsedMillis)))
+        Text(
+            text = group.factorText,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.appColors.textSecondary,
+            modifier = Modifier.width(FACTOR_COLUMN_WIDTH).padding(top = FACTOR_DROP),
+        )
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            // Staggered per chip rather than per row, because a flow does not report where it broke.
+            // AppStagger's own cap holds eighteen of them under four hundred milliseconds, which is
+            // what the row grouping was there to avoid.
+            group.types.forEachIndexed { offset, matchup ->
+                MatchupChip(
+                    matchup = matchup,
+                    modifier = Modifier.pop(entranceFraction(firstChipIndex + offset, elapsedMillis)),
+                )
+            }
         }
     }
 }
@@ -281,7 +352,6 @@ private fun MatchupChip(
                 .padding(horizontal = MaterialTheme.spacing.md, vertical = MaterialTheme.spacing.sm),
     ) {
         Text(text = matchup.typeLabel, style = MaterialTheme.typography.bodyMedium, color = label)
-        Text(text = matchup.factorText, style = MaterialTheme.typography.titleSmall, color = label)
     }
 }
 
@@ -293,3 +363,11 @@ private const val LEGEND_LEADING_CELLS = 3
 // Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
 // label on top of it still has somewhere to go.
 private const val GROUND_TINT = 0.18f
+
+// Narrower than the About tab's label column, which holds words. This one holds "×4" and everything
+// past it would come out of the chips.
+private val FACTOR_COLUMN_WIDTH = 36.dp
+
+// The factor sits against the first row of chips rather than against the top of the block, which is
+// a few pixels lower because a chip has padding and a bare line of text does not.
+private val FACTOR_DROP = 6.dp

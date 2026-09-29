@@ -12,6 +12,18 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class StatsUiMapperTest {
+    // One of each of the five the chart can produce, in no particular order: the mapper's job is to
+    // put them in one.
+    private val everyKindOfMatchup =
+        listOf(
+            TypeMatchup(PokemonType.ROCK, 400),
+            TypeMatchup(PokemonType.WATER, 200),
+            TypeMatchup(PokemonType.FIGHTING, 50),
+            TypeMatchup(PokemonType.GRASS, 25),
+            TypeMatchup(PokemonType.GROUND, 0),
+            TypeMatchup(PokemonType.ELECTRIC, 200),
+        )
+
     private fun variant(stats: PokemonStats = PokemonStats(78, 84, 78, 109, 85, 100)) =
         PokemonVariant(
             slug = "charizard",
@@ -83,26 +95,37 @@ class StatsUiMapperTest {
     }
 
     @Test
-    fun toStatsUiModel_labelsEachFactorTheWayTheGamesWriteIt() {
-        val matchups =
-            listOf(
-                TypeMatchup(PokemonType.ROCK, 400),
-                TypeMatchup(PokemonType.WATER, 200),
-                TypeMatchup(PokemonType.FIGHTING, 50),
-                TypeMatchup(PokemonType.GRASS, 25),
-                TypeMatchup(PokemonType.GROUND, 0),
-            )
+    fun toStatsUiModel_sortsTheChartIntoWhatGetsThroughAndWhatBouncesOff() {
+        val ui = variant().toStatsUiModel(everyKindOfMatchup)
 
-        val labels = variant().toStatsUiModel(matchups).matchups.map { it.factorText }
+        assertEquals(listOf("×2", "×4"), ui.weaknesses.map { it.factorText })
+        assertEquals(listOf("0", "¼", "½"), ui.resistances.map { it.factorText })
+    }
 
-        assertEquals(listOf("×4", "×2", "½", "¼", "0"), labels)
+    @Test
+    fun toStatsUiModel_saysEachFactorOnceRatherThanOnEveryChip() {
+        // The reason for the split: "×2" printed four times in a row on most Pokemon, which is the
+        // same word doing the work of a heading four times over.
+        val doubled = variant().toStatsUiModel(everyKindOfMatchup).weaknesses.first { it.factorText == "×2" }
+
+        assertEquals(listOf("Water", "Electric"), doubled.types.map { it.typeLabel })
+    }
+
+    @Test
+    fun toStatsUiModel_leavesOutAFactorNothingHitsThisPokemonFor() {
+        // Eelektross is weak to nothing at all, and most Pokemon are missing two or three of the
+        // five. A row with no chips in it is a question nobody asked.
+        val ui = variant().toStatsUiModel(listOf(TypeMatchup(PokemonType.GRASS, 25)))
+
+        assertTrue(ui.weaknesses.isEmpty())
+        assertEquals(listOf("¼"), ui.resistances.map { it.factorText })
     }
 
     @Test
     fun toStatsUiModel_colorsAMatchupByTheAttackingType() {
-        val chips = variant().toStatsUiModel(listOf(TypeMatchup(PokemonType.ROCK, 400)))
+        val chip = variant().toStatsUiModel(listOf(TypeMatchup(PokemonType.ROCK, 400))).weaknesses.single().types.single()
 
-        assertEquals(TypeUiModel.ROCK.color, chips.matchups.single().typeColor)
-        assertEquals("Rock", chips.matchups.single().typeLabel)
+        assertEquals(TypeUiModel.ROCK.color, chip.typeColor)
+        assertEquals("Rock", chip.typeLabel)
     }
 }
