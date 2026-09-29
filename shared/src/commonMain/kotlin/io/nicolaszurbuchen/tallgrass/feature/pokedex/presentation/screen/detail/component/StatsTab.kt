@@ -41,6 +41,8 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.pokedex_detail_stat_max
+import tallgrass.shared.generated.resources.pokedex_detail_stat_min
 import tallgrass.shared.generated.resources.pokedex_detail_stat_total
 import tallgrass.shared.generated.resources.pokedex_detail_type_defenses
 
@@ -72,7 +74,12 @@ fun StatsTab(
 }
 
 /**
- * Three columns: the names, the figures, and the lanes.
+ * Five columns: the names, the base figures, the lanes, and the two ends of what each stat reaches
+ * on a level 100 Pokemon.
+ *
+ * The lane is the only flexible track, so the four text columns measure themselves and it takes what
+ * is left. The column gap is a step down from the rest of the sheet because four gaps across a phone
+ * would otherwise come out of the lane, which is the part carrying the comparison.
  *
  * DECISIONS.md § The stat table is a grid, so its columns measure themselves
  */
@@ -85,7 +92,7 @@ private fun StatTable(
 ) {
     // Read before the config block rather than inside it: that block is not composable and runs
     // during the measure pass, where a MaterialTheme lookup is not available.
-    val columnGap = MaterialTheme.spacing.lg
+    val columnGap = MaterialTheme.spacing.md
     val rowGap = MaterialTheme.spacing.md
 
     Grid(
@@ -93,6 +100,8 @@ private fun StatTable(
             column(GridTrackSize.Auto)
             column(GridTrackSize.Auto)
             column(1.fr)
+            column(GridTrackSize.Auto)
+            column(GridTrackSize.Auto)
             columnGap(columnGap)
             rowGap(rowGap)
         },
@@ -103,6 +112,8 @@ private fun StatTable(
                 label = bar.label.asString(),
                 valueText = bar.valueText,
                 fraction = bar.fraction,
+                minText = bar.minText,
+                maxText = bar.maxText,
                 style = MaterialTheme.typography.bodyMedium,
                 labelColor = MaterialTheme.appColors.textSecondary,
                 tint = tint,
@@ -111,13 +122,44 @@ private fun StatTable(
 
         // The total's lane is the mean of the six above it, because a bar is full at 160 and this one
         // is full at six times that. Nothing else would let the two be compared down the column.
+        //
+        // **It has no range**, and the blanks are the answer rather than a gap: a nature raises one
+        // stat and lowers another, so the six maxima cannot be reached at once and summing them would
+        // print a total no Pokemon can have.
         StatCells(
             label = stringResource(Res.string.pokedex_detail_stat_total),
             valueText = stats.totalText,
             fraction = stats.totalFraction,
+            minText = "",
+            maxText = "",
             style = MaterialTheme.typography.titleSmall,
             labelColor = MaterialTheme.appColors.textPrimary,
             tint = tint,
+        )
+
+        // Under the columns rather than over them, because the table is read down the left and these
+        // two are a footnote to the right-hand pair rather than headings the rows hang off.
+        RangeLegendCells()
+    }
+}
+
+/**
+ * The words "Min" and "Max" under the two columns they belong to, and four empty cells to put them
+ * there.
+ *
+ * The blanks are how a grid says "this row starts in column four"; there is no skip.
+ */
+@OptIn(ExperimentalGridApi::class)
+@Composable
+private fun GridScope.RangeLegendCells() {
+    repeat(LEGEND_LEADING_CELLS) { Box(modifier = Modifier.gridItem()) }
+
+    listOf(Res.string.pokedex_detail_stat_min, Res.string.pokedex_detail_stat_max).forEach { label ->
+        Text(
+            text = stringResource(label),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.appColors.textTertiary,
+            modifier = Modifier.gridItem(alignment = Alignment.CenterEnd),
         )
     }
 }
@@ -137,6 +179,8 @@ private fun GridScope.StatCells(
     label: String,
     valueText: String,
     fraction: Float,
+    minText: String,
+    maxText: String,
     style: TextStyle,
     labelColor: Color,
     tint: Color,
@@ -175,6 +219,18 @@ private fun GridScope.StatCells(
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(LANE_HEIGHT))
                     .background(tint),
+        )
+    }
+
+    // Quieter than the base figure on purpose. The base stat is what the row is about and what the
+    // lane draws; these two are the scale it turns into, and reading as loud would make three
+    // numbers competing rather than one with its bounds.
+    listOf(minText, maxText).forEach { text ->
+        Text(
+            text = text,
+            style = style,
+            color = MaterialTheme.appColors.textSecondary,
+            modifier = Modifier.gridItem(alignment = Alignment.CenterEnd),
         )
     }
 }
@@ -230,6 +286,9 @@ private fun MatchupChip(
 }
 
 private val LANE_HEIGHT = 6.dp
+
+// Name, figure and lane, which the legend has nothing to say about.
+private const val LEGEND_LEADING_CELLS = 3
 
 // Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
 // label on top of it still has somewhere to go.

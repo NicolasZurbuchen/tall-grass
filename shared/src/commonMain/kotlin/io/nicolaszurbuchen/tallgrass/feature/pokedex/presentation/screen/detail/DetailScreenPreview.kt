@@ -89,12 +89,14 @@ private fun DetailScreenPreview() {
                                 StatsUiModel(
                                     bars =
                                         listOf(
-                                            StatBarUiModel(UiText.Raw("HP"), "78", 0.49f),
-                                            StatBarUiModel(UiText.Raw("Attack"), "84", 0.53f),
-                                            StatBarUiModel(UiText.Raw("Defense"), "78", 0.49f),
-                                            StatBarUiModel(UiText.Raw("Sp. Atk"), "109", 0.68f),
-                                            StatBarUiModel(UiText.Raw("Sp. Def"), "85", 0.53f),
-                                            StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f),
+                                            // Charizard's real bands, so the preview shows the
+                                            // widths the columns actually have to hold.
+                                            StatBarUiModel(UiText.Raw("HP"), "78", 0.49f, "266", "360"),
+                                            StatBarUiModel(UiText.Raw("Attack"), "84", 0.53f, "155", "293"),
+                                            StatBarUiModel(UiText.Raw("Defense"), "78", 0.49f, "144", "280"),
+                                            StatBarUiModel(UiText.Raw("Sp. Atk"), "109", 0.68f, "200", "348"),
+                                            StatBarUiModel(UiText.Raw("Sp. Def"), "85", 0.53f, "157", "295"),
+                                            StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f, "184", "328"),
                                         ),
                                     totalText = "534",
                                     totalFraction = 0.56f,

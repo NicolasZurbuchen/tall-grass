@@ -218,6 +218,23 @@ class DatasetTest {
         assertTrue(stray.isEmpty(), "Variants yielding against a stat they do not have: ${stray.map { it.slug }}")
     }
 
+    /**
+     * **`StatRange.ofHp` recognises Shedinja by a base HP of 1 and nothing else.**
+     *
+     * Its HP is 1 whatever is done to it, where the formula would say 112 to 206, so the Stats tab
+     * hard-codes the exception the games do. That is only safe while the base is unique to it: a
+     * second Pokemon with base HP 1 would silently be given one hit point too.
+     *
+     * Asserted here rather than left as a comment because it is a fact about the dataset, and this
+     * is the file that fails when the dataset changes under an assumption.
+     */
+    @Test
+    fun shedinja_isTheOnlyPokemonWithABaseHpOfOne() {
+        val lowest = variants.filter { it.stats["hp"] == 1 }
+
+        assertEquals(listOf("shedinja"), lowest.map { it.slug })
+    }
+
     @Test
     fun species_carryTheBreedingDataTheAboutTabNeeds() {
         val bulbasaur = species.single { it.dexNumber == 1 }

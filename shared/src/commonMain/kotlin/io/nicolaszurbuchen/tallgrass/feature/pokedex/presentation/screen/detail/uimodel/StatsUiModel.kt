@@ -21,12 +21,17 @@ data class StatsUiModel(
  * [fraction] is the bar's length, already clamped — the component draws it and decides nothing.
  * [valueText] is the figure beside it, which is not the same number: a bar is full at 160 and the
  * value keeps going.
+ *
+ * [minText] and [maxText] are what the base stat becomes on a level 100 Pokemon at the two ends of
+ * what a trainer can do to it. See `StatRange`, which is where the arithmetic and the reasoning are.
  */
 @Immutable
 data class StatBarUiModel(
     val label: UiText,
     val valueText: String,
     val fraction: Float,
+    val minText: String,
+    val maxText: String,
 )
 
 @Immutable

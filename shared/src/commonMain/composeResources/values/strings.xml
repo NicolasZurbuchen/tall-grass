@@ -68,6 +68,10 @@
     <string name="pokedex_detail_stat_total">Total</string>
 
     <string name="pokedex_detail_type_defenses">Type Defenses</string>
+    <!-- Under the two right-hand columns of the stat table: what each stat reaches at level 100 with
+         the worst and the best a trainer can do to it. Short, because they sit over three digits. -->
+    <string name="pokedex_detail_stat_min">Min</string>
+    <string name="pokedex_detail_stat_max">Max</string>
 
     <string name="moves_title">Moves</string>
     <!-- Under the figure on a move card, which is the move's power or an em dash. -->

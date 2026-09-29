@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.StatRange
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
@@ -16,23 +17,35 @@ import tallgrass.shared.generated.resources.pokedex_detail_stat_special_defense
 import tallgrass.shared.generated.resources.pokedex_detail_stat_speed
 
 fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
-    val bar = { label: UiText, value: Int ->
+    val bar = { label: UiText, value: Int, range: StatRange ->
         StatBarUiModel(
             label = label,
             valueText = value.toString(),
             fraction = (value.toFloat() / FULL_BAR).coerceAtMost(1f),
+            minText = range.min.toString(),
+            maxText = range.max.toString(),
         )
     }
 
     return StatsUiModel(
         bars =
             listOf(
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_attack), stats.specialAttack),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed),
+                // HP takes its own formula and no nature, which is why it is the one asked
+                // differently rather than the one with a flag.
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp, StatRange.ofHp(stats.hp)),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack, StatRange.of(stats.attack)),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense, StatRange.of(stats.defense)),
+                bar(
+                    UiText.Resource(Res.string.pokedex_detail_stat_special_attack),
+                    stats.specialAttack,
+                    StatRange.of(stats.specialAttack),
+                ),
+                bar(
+                    UiText.Resource(Res.string.pokedex_detail_stat_special_defense),
+                    stats.specialDefense,
+                    StatRange.of(stats.specialDefense),
+                ),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed, StatRange.of(stats.speed)),
             ),
         totalText = stats.total.toString(),
         totalFraction = (stats.total.toFloat() / (FULL_BAR * STAT_COUNT)).coerceAtMost(1f),
