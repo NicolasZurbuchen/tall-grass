@@ -14,6 +14,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailContentUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailHeroUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.DetailTabUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 
 fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
     val detail = details[activeEntrySlug]
@@ -107,8 +108,15 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                         },
                     about = detail.species.toAboutUiModel(variant),
                     stats = variant.toStatsUiModel(matchups[variant.slug].orEmpty()),
-                    abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
-                    moves = moves[variant.slug].orEmpty().map { it.toUiModel() },
+                    moves =
+                        MovesUiModel(
+                            // The map is the answer, not what is in it. An entry that is an empty
+                            // list is a form that learns nothing; no entry at all is a read that has
+                            // not landed, and the two look identical once either is flattened.
+                            isLoading = variant.slug !in moves,
+                            abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
+                            learned = moves[variant.slug].orEmpty().map { it.toUiModel() },
+                        ),
                     location =
                         availability[variant.slug].toLocationUiModel(
                             captureRate = detail.species.captureRate,
