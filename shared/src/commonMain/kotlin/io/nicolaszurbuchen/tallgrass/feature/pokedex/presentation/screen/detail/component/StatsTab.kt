@@ -139,15 +139,14 @@ private fun StatTable(
         // The total's lane is the mean of the six above it, because a bar is full at 160 and this one
         // is full at six times that. Nothing else would let the two be compared down the column.
         //
-        // **It has no range**, and the blanks are the answer rather than a gap: a nature raises one
-        // stat and lowers another, so the six maxima cannot be reached at once and summing them would
-        // print a total no Pokemon can have.
+        // Its range is the two columns added up. See `StatsUiModel` on why no Pokemon reaches either
+        // end of it.
         StatCells(
             label = stringResource(Res.string.pokedex_detail_stat_total),
             valueText = stats.totalText,
             fraction = stats.totalFraction,
-            minText = "",
-            maxText = "",
+            minText = stats.totalMinText,
+            maxText = stats.totalMaxText,
             style = MaterialTheme.typography.titleSmall,
             labelColor = MaterialTheme.appColors.textPrimary,
             tint = tint,

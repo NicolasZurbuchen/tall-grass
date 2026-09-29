@@ -14,6 +14,17 @@ data class StatsUiModel(
     val bars: List<StatBarUiModel>,
     val totalText: String,
     val totalFraction: Float,
+    /**
+     * The six columns added up, which is arithmetic rather than a figure from the games.
+     *
+     * **No single Pokemon reaches either end.** A nature raises one stat and lowers another, and the
+     * 510 EVs a Pokemon has to spend are a third of the 1,512 the six maxima assume — so the sum is
+     * the bound on the column and not a total anything can have. It is here because a reader adding
+     * the column up by hand gets the same number, and a table whose total row skips two of its five
+     * columns reads as a table with something missing.
+     */
+    val totalMinText: String,
+    val totalMaxText: String,
     // Two lists rather than one, because they answer different questions: what gets through, and
     // what bounces off. Either is empty for the Pokemon that has none of that kind -- Eelektross has
     // no weakness at all -- and the tab draws no heading over an empty one.
