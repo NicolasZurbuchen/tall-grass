@@ -7,8 +7,12 @@ import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
+import io.nicolaszurbuchen.tallgrass.infra.text.UiText
+import tallgrass.shared.generated.resources.Res
+import tallgrass.shared.generated.resources.pokedex_detail_dynamax_hp
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class StatsUiMapperTest {
@@ -93,6 +97,23 @@ class StatsUiMapperTest {
         assertEquals(0.5f, bars[0].fraction)
         assertEquals(0.25f, bars[1].fraction)
         assertEquals(0f, bars[2].fraction)
+    }
+
+    @Test
+    fun toStatsUiModel_saysWhatDynamaxDoesToAGigantamaxFormsHitPoints() {
+        // Charizard's HP at level 100 is 266 to 360, and Dynamax Level 10 doubles it. The note is a
+        // sentence under the table rather than a column in it, because Dynamaxing multiplies the HP
+        // the Pokemon already has and there is nothing to put beside a base stat.
+        val gmax = variant().copy(gmaxMove = "g-max-wildfire").toStatsUiModel(emptyList())
+
+        assertEquals(UiText.Resource(Res.string.pokedex_detail_dynamax_hp, listOf(532, 720)), gmax.dynamaxHpText)
+    }
+
+    @Test
+    fun toStatsUiModel_saysNothingAboutDynamaxOnAFormThatCannotGigantamax() {
+        // Every Pokemon in Sword and Shield can Dynamax, so this is the narrower of two true things:
+        // it is shown where a reader is already asking what the form does.
+        assertNull(variant().toStatsUiModel(emptyList()).dynamaxHpText)
     }
 
     @Test

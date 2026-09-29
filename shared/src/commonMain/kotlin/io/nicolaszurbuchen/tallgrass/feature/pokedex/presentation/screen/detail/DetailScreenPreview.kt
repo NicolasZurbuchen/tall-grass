@@ -101,6 +101,9 @@ private fun DetailScreenPreview() {
                                         ),
                                     totalText = "534",
                                     totalFraction = 0.56f,
+                                    // Null, because this is the ordinary Charizard. Only a
+                                    // Gigantamax form draws the Dynamax note.
+                                    dynamaxHpText = null,
                                     // Charizard, which has one of each kind of row: a lone x4, a
                                     // pair at x2, an immunity, and a handful it barely feels.
                                     weaknesses =
