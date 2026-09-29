@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMaxMoves
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveLearners
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoveStatChanges
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoves
@@ -7,6 +8,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.SelectMoves
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.BattleStat
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.DamageClass
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.LearnMethod
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveAilment
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveCategory
@@ -132,7 +134,15 @@ fun SelectMovesForVariant.toDomain(): VariantMove? {
         type = type,
         damageClass = damageClass,
         power = power?.toInt(),
+        maxPower = maxPower?.toInt(),
         method = method,
         level = level?.toInt(),
     )
+}
+
+/** Null on the same grounds as the rest: a type this build does not know is a disagreement, not a gap. */
+fun SelectMaxMoves.toDomain(): MaxMove? {
+    val type = PokemonType.fromSlug(typeSlug) ?: return null
+
+    return MaxMove(slug = slug, name = name, type = type, power = power?.toInt())
 }

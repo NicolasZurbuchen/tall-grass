@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.core.move.data.repository
 
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.MoveLocalDataSource
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
@@ -17,4 +18,6 @@ class MoveRepositoryImpl(
     override suspend fun moveLearners(slug: String): List<MoveLearner> = localDataSource.learners(slug)
 
     override suspend fun movesFor(variantSlug: String): List<VariantMove> = localDataSource.movesFor(variantSlug)
+
+    override suspend fun maxMoves(): List<MaxMove> = localDataSource.maxMoves()
 }

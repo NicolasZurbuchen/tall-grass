@@ -26,12 +26,15 @@ import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMaxMoveUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_abilities
+import tallgrass.shared.generated.resources.pokedex_detail_max_moves_heading
+import tallgrass.shared.generated.resources.pokedex_detail_max_moves_note
 import tallgrass.shared.generated.resources.pokedex_detail_moves_heading
 import tallgrass.shared.generated.resources.pokedex_detail_no_moves
 
@@ -81,6 +84,34 @@ fun MovesTab(
                     AbilityRow(ability = ability, onClick = { onAbilityClick(ability.slug) })
                 }
             }
+        }
+
+        // **A Gigantamax form's list is the converted one rather than a second list beside it.** A
+        // Dynamaxed Pokemon does not use the moves it learnt, so showing both would be showing one
+        // set of moves it has and one set it does not, with nothing on either saying which.
+        if (moves.maxMoves.isNotEmpty()) {
+            SectionHeading(
+                title = Res.string.pokedex_detail_max_moves_heading,
+                tint = tint,
+                isFirst = moves.abilities.isEmpty(),
+            )
+
+            // Said rather than left to be worked out. Sixty moves come out as ten, and a reader who
+            // came looking for Flamethrower needs to know it is in there under another name.
+            Text(
+                text = stringResource(Res.string.pokedex_detail_max_moves_note),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.appColors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(bottom = MaterialTheme.spacing.md),
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
+                moves.maxMoves.forEach { move ->
+                    MaxMoveRow(move = move, onClick = { onMoveClick(move.slug) })
+                }
+            }
+
+            return@Column
         }
 
         SectionHeading(
@@ -199,6 +230,64 @@ private fun AbilityRow(
                     modifier = Modifier.padding(top = MaterialTheme.spacing.xs),
                 )
             }
+        }
+    }
+}
+
+/**
+ * One converted row: the Max Move, and under it the moves that become it.
+ *
+ * Two lines where an ordinary move row is one, because the second line is the whole reason the first
+ * is believable. The form's own G-Max Move is set in the heavier style -- it is the one row that is
+ * about this Pokemon rather than about Dynamax.
+ */
+@Composable
+private fun MaxMoveRow(
+    move: VariantMaxMoveUiModel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(containerColor = move.type.color, contentColor = Color.White),
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.md)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                DamageClassIcon(
+                    damageClass = move.damageClass,
+                    color = Color.White.copy(alpha = GLYPH_ALPHA),
+                    modifier = Modifier.size(GLYPH_WIDTH),
+                )
+
+                Text(
+                    text = move.name,
+                    style =
+                        if (move.isSignature) {
+                            MaterialTheme.typography.titleMedium
+                        } else {
+                            MaterialTheme.typography.bodyLarge
+                        },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+
+                Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.size(width = POWER_WIDTH, height = ROW_TEXT)) {
+                    Text(text = move.powerText, style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+
+            Text(
+                text = move.sourcesText.asString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = HOW_ALPHA),
+                modifier = Modifier.padding(top = MaterialTheme.spacing.xs),
+            )
         }
     }
 }

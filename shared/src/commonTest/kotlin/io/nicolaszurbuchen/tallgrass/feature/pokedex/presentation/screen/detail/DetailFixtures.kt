@@ -44,6 +44,7 @@ internal val charizard =
         stats = PokemonStats(hp = 78, attack = 84, defense = 78, specialAttack = 109, specialDefense = 85, speed = 100),
         baseExperience = 240,
         evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
+        gmaxMove = null,
     )
 
 internal val charizardMegaX =
@@ -63,9 +64,33 @@ internal val charizardMegaX =
         // yield does not, and only regional forms change that. Breeding moves with neither.
         baseExperience = 285,
         evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
+        gmaxMove = null,
+    )
+
+/**
+ * The form that converts, and the only kind that does.
+ *
+ * Its stats are the base form's, which is true of every Gigantamax form: the factor changes what the
+ * Pokemon does, not what it is. [PokemonVariant.gmaxMove] is the whole of the difference here.
+ */
+internal val charizardGmax =
+    charizard.copy(
+        slug = "charizard-gmax",
+        name = "Gigantamax Charizard",
+        formLabel = "Gigantamax Charizard",
+        formKind = FormKind.GIGANTAMAX,
+        isDefault = false,
+        gmaxMove = "g-max-wildfire",
     )
 
 internal val charizardDetail = PokemonDetail(species = charizardSpecies, variants = listOf(charizard, charizardMegaX))
+
+/**
+ * Its own detail rather than a third variant on [charizardDetail], so the tests that count what is in
+ * the form switcher go on counting what they were written to count.
+ */
+internal val charizardGmaxDetail =
+    PokemonDetail(species = charizardSpecies, variants = listOf(charizard, charizardGmax))
 
 internal val charizardHandoff =
     HeroHandoff(

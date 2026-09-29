@@ -177,7 +177,22 @@ INSERT INTO moveLearner(moveSlug, variantSlug, method, level) VALUES (?, ?, ?, ?
 -- level-up first and by level within it, and that order lives in `LearnMethod`'s declaration rather
 -- than in a CASE expression here that would have to be kept in step with it.
 selectMovesForVariant:
-SELECT m.slug, m.name, m.typeSlug, m.damageClass, m.power, l.method, l.level
+SELECT m.slug, m.name, m.typeSlug, m.damageClass, m.power, m.maxPower, l.method, l.level
 FROM moveLearner l
 JOIN move m ON m.slug = l.moveSlug
 WHERE l.variantSlug = ?;
+
+-- The 19 Max Moves and the 33 G-Max Moves, which are what a Dynamaxed Pokemon's moves turn into.
+--
+-- Matched on the slug because that is the only thing they have in common: they are spread across
+-- every type, they are not one generation, and their category and power columns are nominal. Fifty-
+-- two rows, read once and held for the whole conversion.
+--
+-- `power` is set for exactly three of them -- G-Max Drum Solo, Fireball and Hydrosnipe are 160
+-- whatever they replaced. For the other forty-nine it is null and the power comes from the move that
+-- was replaced, which is what `maxPower` on that move is for.
+selectMaxMoves:
+SELECT slug, name, typeSlug, power
+FROM move
+WHERE slug LIKE 'max-%' OR slug LIKE 'g-max-%'
+ORDER BY slug;

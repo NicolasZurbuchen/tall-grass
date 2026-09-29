@@ -53,6 +53,7 @@ fun SelectVariantDetails.toDomain(
         stats = stats,
         baseExperience = baseExperience?.toInt(),
         evYield = evYield,
+        gmaxMove = gmaxMove,
     )
 }
 

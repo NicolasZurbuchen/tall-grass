@@ -48,6 +48,7 @@ class PokemonDetailLocalMapperTest {
         height = 6,
         weight = 99,
         baseExperience = baseExperience,
+        gmaxMove = null,
         artworkUrl = "https://example.invalid/10103.png",
         primaryType = primaryType,
         secondaryType = secondaryType,

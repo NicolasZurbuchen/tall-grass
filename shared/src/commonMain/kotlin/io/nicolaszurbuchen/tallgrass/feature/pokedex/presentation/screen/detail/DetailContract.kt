@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.ability.domain.model.VariantAbility
 import io.nicolaszurbuchen.tallgrass.core.error.AppError
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantAvailability
 import io.nicolaszurbuchen.tallgrass.core.location.domain.model.VariantEncounter
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.DexEntry
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
@@ -109,6 +110,15 @@ sealed interface DetailMessage {
         val moves: List<VariantMove>,
     ) : DetailMessage
 
+    /**
+     * What the Moves tab shows for a Gigantamax form instead of [MovesLoaded]'s list: the Max Moves
+     * those moves become. Read in the same pass, because the conversion is made out of them.
+     */
+    data class MaxMovesLoaded(
+        val variantSlug: String,
+        val maxMoves: List<VariantMaxMove>,
+    ) : DetailMessage
+
     data class AvailabilityLoaded(
         val variantSlug: String,
         val availability: VariantAvailability,
@@ -185,6 +195,9 @@ data class DetailState(
     // different colour. Read when the tab is first opened for a form rather than with the detail,
     // which is what keeps a reader who never opens it from paying for a hundred rows per swipe.
     val moves: Map<String, List<VariantMove>> = emptyMap(),
+    // Only the Gigantamax forms have an entry, and it is what the tab draws for them in place of the
+    // moves above: a Dynamaxed Pokemon does not use its own moves. Keyed and cached like the rest.
+    val maxMoves: Map<String, List<VariantMaxMove>> = emptyMap(),
     // Keyed by variant for the same reason, and read in the same pass: a form has its own abilities
     // too, and Alolan Sandshrew's Slush Rush is not Sandshrew's Sand Veil.
     val abilities: Map<String, List<VariantAbility>> = emptyMap(),

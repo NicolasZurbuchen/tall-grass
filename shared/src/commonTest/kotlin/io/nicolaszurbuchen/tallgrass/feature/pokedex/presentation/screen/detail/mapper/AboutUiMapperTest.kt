@@ -51,6 +51,7 @@ class AboutUiMapperTest {
         stats = PokemonStats(78, 84, 78, 109, 85, 100),
         baseExperience = baseExperience,
         evYield = evYield,
+        gmaxMove = null,
     )
 
     private fun argsOf(text: UiText): List<Any> = (text as UiText.Resource).args

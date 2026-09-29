@@ -4,6 +4,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.MoveLocalDa
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.MoveLocalDataSourceImpl
 import io.nicolaszurbuchen.tallgrass.core.move.data.repository.MoveRepositoryImpl
 import io.nicolaszurbuchen.tallgrass.core.move.domain.repository.MoveRepository
+import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMaxMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMoveDetailUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMoveLearnersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
@@ -26,4 +27,5 @@ val moveModule =
         singleOf(::GetMoveDetailUseCase)
         singleOf(::GetMoveLearnersUseCase)
         singleOf(::GetMovesForVariantUseCase)
+        singleOf(::GetMaxMovesForVariantUseCase)
     }
