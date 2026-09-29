@@ -29,28 +29,33 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
         )
     }
 
+    // Named rather than inlined into the bars, because the total row adds them up and parsing the
+    // figures back out of the strings it just wrote would be the alternative.
+    //
+    // HP takes its own formula and no nature, which is why it is the one asked differently rather
+    // than the one with a flag.
+    val hp = StatRange.ofHp(stats.hp)
+    val attack = StatRange.of(stats.attack)
+    val defense = StatRange.of(stats.defense)
+    val specialAttack = StatRange.of(stats.specialAttack)
+    val specialDefense = StatRange.of(stats.specialDefense)
+    val speed = StatRange.of(stats.speed)
+    val ranges = listOf(hp, attack, defense, specialAttack, specialDefense, speed)
+
     return StatsUiModel(
         bars =
             listOf(
-                // HP takes its own formula and no nature, which is why it is the one asked
-                // differently rather than the one with a flag.
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp, StatRange.ofHp(stats.hp)),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack, StatRange.of(stats.attack)),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense, StatRange.of(stats.defense)),
-                bar(
-                    UiText.Resource(Res.string.pokedex_detail_stat_special_attack),
-                    stats.specialAttack,
-                    StatRange.of(stats.specialAttack),
-                ),
-                bar(
-                    UiText.Resource(Res.string.pokedex_detail_stat_special_defense),
-                    stats.specialDefense,
-                    StatRange.of(stats.specialDefense),
-                ),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed, StatRange.of(stats.speed)),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp, hp),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack, attack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense, defense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_attack), stats.specialAttack, specialAttack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense, specialDefense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed, speed),
             ),
         totalText = stats.total.toString(),
         totalFraction = (stats.total.toFloat() / (FULL_BAR * STAT_COUNT)).coerceAtMost(1f),
+        totalMinText = ranges.sumOf { it.min }.toString(),
+        totalMaxText = ranges.sumOf { it.max }.toString(),
         // **The one battle figure on a screen of base stats.** Dynamaxing multiplies the HP the
         // Pokemon already has, so the pair is the level 100 band doubled rather than anything to do
         // with the base stat beside it -- which is also why it is a sentence under the table rather
@@ -60,11 +65,9 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
         // Every Pokemon in Sword and Shield can Dynamax, so this is the narrower of two true things.
         dynamaxHpText =
             gmaxMove?.let {
-                val dynamaxed = StatRange.ofHp(stats.hp)
-
                 UiText.Resource(
                     Res.string.pokedex_detail_dynamax_hp,
-                    listOf(dynamaxed.min * MAX_DYNAMAX_MULTIPLIER, dynamaxed.max * MAX_DYNAMAX_MULTIPLIER),
+                    listOf(hp.min * MAX_DYNAMAX_MULTIPLIER, hp.max * MAX_DYNAMAX_MULTIPLIER),
                 )
             },
         weaknesses = WEAKENING_FACTORS.toMatchupGroupsUiModel(matchups),

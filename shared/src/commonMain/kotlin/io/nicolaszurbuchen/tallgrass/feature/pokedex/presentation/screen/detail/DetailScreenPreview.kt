@@ -101,6 +101,8 @@ private fun DetailScreenPreview() {
                                         ),
                                     totalText = "534",
                                     totalFraction = 0.56f,
+                                    totalMinText = "1106",
+                                    totalMaxText = "1904",
                                     // Null, because this is the ordinary Charizard. Only a
                                     // Gigantamax form draws the Dynamax note.
                                     dynamaxHpText = null,
