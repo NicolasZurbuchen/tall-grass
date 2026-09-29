@@ -1,8 +1,10 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.StatRange
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
 import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MatchupGroupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
@@ -16,37 +18,71 @@ import tallgrass.shared.generated.resources.pokedex_detail_stat_special_defense
 import tallgrass.shared.generated.resources.pokedex_detail_stat_speed
 
 fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
-    val bar = { label: UiText, value: Int ->
+    val bar = { label: UiText, value: Int, range: StatRange ->
         StatBarUiModel(
             label = label,
             valueText = value.toString(),
             fraction = (value.toFloat() / FULL_BAR).coerceAtMost(1f),
+            minText = range.min.toString(),
+            maxText = range.max.toString(),
         )
     }
+
+    // Named rather than inlined into the bars, because the total row adds them up and parsing the
+    // figures back out of the strings it just wrote would be the alternative.
+    //
+    // HP takes its own formula and no nature, which is why it is the one asked differently rather
+    // than the one with a flag.
+    val hp = StatRange.ofHp(stats.hp)
+    val attack = StatRange.of(stats.attack)
+    val defense = StatRange.of(stats.defense)
+    val specialAttack = StatRange.of(stats.specialAttack)
+    val specialDefense = StatRange.of(stats.specialDefense)
+    val speed = StatRange.of(stats.speed)
+    val ranges = listOf(hp, attack, defense, specialAttack, specialDefense, speed)
 
     return StatsUiModel(
         bars =
             listOf(
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_attack), stats.specialAttack),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense),
-                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_hp), stats.hp, hp),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_attack), stats.attack, attack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_defense), stats.defense, defense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_attack), stats.specialAttack, specialAttack),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_special_defense), stats.specialDefense, specialDefense),
+                bar(UiText.Resource(Res.string.pokedex_detail_stat_speed), stats.speed, speed),
             ),
         totalText = stats.total.toString(),
         totalFraction = (stats.total.toFloat() / (FULL_BAR * STAT_COUNT)).coerceAtMost(1f),
-        matchups =
-            matchups.map { matchup ->
-                val type = matchup.attackingType.toUiModel()
-
-                TypeMatchupUiModel(
-                    typeLabel = type.label,
-                    typeColor = type.color,
-                    factorText = FACTOR_LABELS[matchup.factorPercent] ?: "×${matchup.factorPercent / NEUTRAL_PERCENT}",
-                )
-            },
+        totalMinText = ranges.sumOf { it.min }.toString(),
+        totalMaxText = ranges.sumOf { it.max }.toString(),
+        weaknesses = WEAKENING_FACTORS.toMatchupGroupsUiModel(matchups),
+        resistances = RESISTING_FACTORS.toMatchupGroupsUiModel(matchups),
     )
+}
+
+/**
+ * The factors in this order, each with the types that hit for it, and nothing for a factor no type
+ * hits this defender for.
+ *
+ * The receiver is the order rather than the data, which is what makes the two calls above read as
+ * the two halves of one question.
+ */
+private fun List<Int>.toMatchupGroupsUiModel(matchups: List<TypeMatchup>): List<MatchupGroupUiModel> {
+    val byFactor = matchups.groupBy { it.factorPercent }
+
+    return mapNotNull { factor ->
+        byFactor[factor]?.let { rows ->
+            MatchupGroupUiModel(
+                factorText = FACTOR_LABELS.getValue(factor),
+                types =
+                    rows.map { matchup ->
+                        val type = matchup.attackingType.toUiModel()
+
+                        TypeMatchupUiModel(typeLabel = type.label, typeColor = type.color)
+                    },
+            )
+        }
+    }
 }
 
 // A full bar at 160 rather than at 255, the real maximum: only Blissey's HP comes near 255, and
@@ -58,10 +94,11 @@ private const val FULL_BAR = 160f
 // and reading its size to scale itself is a circle a reader has to unwind.
 private const val STAT_COUNT = 6
 
-private const val NEUTRAL_PERCENT = 100
-
-// The five factors the chart can produce. Written as fractions rather than as "x0.25", which is how
-// the games write them and is shorter in a row of eighteen chips.
+// The five factors the chart can produce, and the whole of them -- see `TypeMatchup`, where a
+// neutral matchup is not a matchup and is absent. `getValue` rather than a fallback, because a sixth
+// would be a bug in the chart rather than a label this file should invent a spelling for.
+//
+// Written as fractions rather than as "x0.25", which is how the games write them.
 private val FACTOR_LABELS =
     mapOf(
         0 to "0",
@@ -70,3 +107,7 @@ private val FACTOR_LABELS =
         200 to "×2",
         400 to "×4",
     )
+
+// Lightest first in each, which is the order they were asked for.
+private val WEAKENING_FACTORS = listOf(200, 400)
+private val RESISTING_FACTORS = listOf(0, 25, 50)
