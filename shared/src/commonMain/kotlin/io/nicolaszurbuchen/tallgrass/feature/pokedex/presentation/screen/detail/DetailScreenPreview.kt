@@ -14,6 +14,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.LocationUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
@@ -107,54 +108,58 @@ private fun DetailScreenPreview() {
                                             TypeMatchupUiModel("Bug", TypeUiModel.BUG.color, "¼"),
                                         ),
                                 ),
-                            // A normal slot and the hidden one, which is what most Pokemon have.
-                            abilities =
-                                listOf(
-                                    VariantAbilityUiModel(
-                                        slug = "blaze",
-                                        name = "Blaze",
-                                        initial = "B",
-                                        shortEffect =
-                                            "Strengthens Fire moves to 1.5× their power when at 1/3 max HP or less.",
-                                        hiddenText = null,
-                                    ),
-                                    VariantAbilityUiModel(
-                                        slug = "solar-power",
-                                        name = "Solar Power",
-                                        initial = "S",
-                                        shortEffect =
-                                            "Boosts Special Attack in harsh sunlight, at the cost of HP each turn.",
-                                        hiddenText = UiText.Raw("Hidden"),
-                                    ),
-                                ),
-                            // Both halves of the how column: a level where there is one, the method
-                            // where there is not.
                             moves =
-                                listOf(
-                                    VariantMoveUiModel(
-                                        slug = "flamethrower",
-                                        name = "Flamethrower",
-                                        type = TypeUiModel.FIRE,
-                                        damageClass = DamageClassUiModel.SPECIAL,
-                                        powerText = "90",
-                                        howText = UiText.Raw("Lv 46"),
-                                    ),
-                                    VariantMoveUiModel(
-                                        slug = "dragon-dance",
-                                        name = "Dragon Dance",
-                                        type = TypeUiModel.DRAGON,
-                                        damageClass = DamageClassUiModel.STATUS,
-                                        powerText = "—",
-                                        howText = UiText.Raw("Egg"),
-                                    ),
-                                    VariantMoveUiModel(
-                                        slug = "earthquake",
-                                        name = "Earthquake",
-                                        type = TypeUiModel.GROUND,
-                                        damageClass = DamageClassUiModel.PHYSICAL,
-                                        powerText = "100",
-                                        howText = UiText.Raw("TM"),
-                                    ),
+                                MovesUiModel(
+                                    isLoading = false,
+                                    // A normal slot and the hidden one, which is what most Pokemon have.
+                                    abilities =
+                                        listOf(
+                                            VariantAbilityUiModel(
+                                                slug = "blaze",
+                                                name = "Blaze",
+                                                initial = "B",
+                                                shortEffect =
+                                                    "Strengthens Fire moves to 1.5× their power when at 1/3 max HP or less.",
+                                                hiddenText = null,
+                                            ),
+                                            VariantAbilityUiModel(
+                                                slug = "solar-power",
+                                                name = "Solar Power",
+                                                initial = "S",
+                                                shortEffect =
+                                                    "Boosts Special Attack in harsh sunlight, at the cost of HP each turn.",
+                                                hiddenText = UiText.Raw("Hidden"),
+                                            ),
+                                        ),
+                                    // Both halves of the how column: a level where there is one, the method
+                                    // where there is not.
+                                    learned =
+                                        listOf(
+                                            VariantMoveUiModel(
+                                                slug = "flamethrower",
+                                                name = "Flamethrower",
+                                                type = TypeUiModel.FIRE,
+                                                damageClass = DamageClassUiModel.SPECIAL,
+                                                powerText = "90",
+                                                howText = UiText.Raw("Lv 46"),
+                                            ),
+                                            VariantMoveUiModel(
+                                                slug = "dragon-dance",
+                                                name = "Dragon Dance",
+                                                type = TypeUiModel.DRAGON,
+                                                damageClass = DamageClassUiModel.STATUS,
+                                                powerText = "—",
+                                                howText = UiText.Raw("Egg"),
+                                            ),
+                                            VariantMoveUiModel(
+                                                slug = "earthquake",
+                                                name = "Earthquake",
+                                                type = TypeUiModel.GROUND,
+                                                damageClass = DamageClassUiModel.PHYSICAL,
+                                                powerText = "100",
+                                                howText = UiText.Raw("TM"),
+                                            ),
+                                        ),
                                 ),
                             location =
                                 LocationUiModel(

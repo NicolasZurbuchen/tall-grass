@@ -24,6 +24,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.presentation.component.DamageClas
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
@@ -54,33 +55,44 @@ import tallgrass.shared.generated.resources.pokedex_detail_no_moves
  */
 @Composable
 fun MovesTab(
-    abilities: List<VariantAbilityUiModel>,
-    moves: List<VariantMoveUiModel>,
+    moves: MovesUiModel,
     tint: Color,
     onAbilityClick: (String) -> Unit,
     onMoveClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // **Drawn before anything else, because absence means two things here.** The tab reads for
+    // itself the first time it is opened for a form, and a swipe onto another card opens it again
+    // for a form nobody has read yet. Without this the gap rendered as the "learns nothing" message
+    // for a frame, which is the one thing on this tab that is meant to be rare.
+    if (moves.isLoading) {
+        TabContentSkeleton(modifier = modifier)
+        return
+    }
+
     Column(modifier = modifier.fillMaxWidth()) {
-        // Absent rather than empty-stated. Every Pokemon has at least one ability, so nothing here
-        // means the read has not landed — and a heading over a "none" that cannot happen would be
-        // answering a question nobody asked.
-        if (abilities.isNotEmpty()) {
+        // Absent rather than empty-stated. Every Pokemon has at least one ability, so a heading over
+        // a "none" that cannot happen would be answering a question nobody asked.
+        if (moves.abilities.isNotEmpty()) {
             SectionHeading(title = Res.string.pokedex_detail_abilities, tint = tint, isFirst = true)
 
             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
-                abilities.forEach { ability ->
+                moves.abilities.forEach { ability ->
                     AbilityRow(ability = ability, onClick = { onAbilityClick(ability.slug) })
                 }
             }
         }
 
-        SectionHeading(title = Res.string.pokedex_detail_moves_heading, tint = tint, isFirst = abilities.isEmpty())
+        SectionHeading(
+            title = Res.string.pokedex_detail_moves_heading,
+            tint = tint,
+            isFirst = moves.abilities.isEmpty(),
+        )
 
-        if (moves.isEmpty()) {
+        if (moves.learned.isEmpty()) {
             // Arceus and Silvally, whose seventeen type forms each have no row of their own upstream
-            // and learn exactly what their base form learns. Said out loud, because an empty list
-            // reads as a read that has not finished rather than as an answer.
+            // and learn exactly what their base form learns. Now that the read has a state of its
+            // own, this says only what it means.
             Text(
                 text = stringResource(Res.string.pokedex_detail_no_moves),
                 style = MaterialTheme.typography.bodyLarge,
@@ -91,7 +103,7 @@ fun MovesTab(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
-            moves.forEach { move ->
+            moves.learned.forEach { move ->
                 MoveRow(move = move, onClick = { onMoveClick(move.slug) })
             }
         }

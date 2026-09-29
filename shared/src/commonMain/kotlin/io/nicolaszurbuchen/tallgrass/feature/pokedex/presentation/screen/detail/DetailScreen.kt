@@ -319,7 +319,6 @@ fun DetailScreen(
 
                                 DetailTabUiModel.MOVES -> {
                                     MovesTab(
-                                        abilities = content.abilities,
                                         moves = content.moves,
                                         tint = tint,
                                         onAbilityClick = onAbilityClick,
