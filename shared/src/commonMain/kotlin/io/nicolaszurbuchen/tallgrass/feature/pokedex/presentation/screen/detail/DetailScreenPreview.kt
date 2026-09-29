@@ -101,6 +101,8 @@ private fun DetailScreenPreview() {
                                         ),
                                     totalText = "534",
                                     totalFraction = 0.56f,
+                                    totalMinText = "1106",
+                                    totalMaxText = "1904",
                                     // Charizard, which has one of each kind of row: a lone x4, a
                                     // pair at x2, an immunity, and a handful it barely feels.
                                     weaknesses =

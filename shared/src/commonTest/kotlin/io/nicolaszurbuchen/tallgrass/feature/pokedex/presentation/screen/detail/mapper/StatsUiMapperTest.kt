@@ -55,6 +55,20 @@ class StatsUiMapperTest {
     }
 
     @Test
+    fun toStatsUiModel_addsTheTwoRangeColumnsUpOnTheTotalRow() {
+        // Charizard's six bands summed. Arithmetic rather than a figure from the games: no Pokemon
+        // reaches either end, because one nature cannot help all six stats and 510 EVs are a third of
+        // the 1,512 the maxima assume. The reader adding the column up by hand gets the same number,
+        // which is the whole reason the row has it.
+        val ui = variant().toStatsUiModel(emptyList())
+
+        assertEquals("1106", ui.totalMinText)
+        assertEquals("1904", ui.totalMaxText)
+        assertEquals(ui.bars.sumOf { it.minText.toInt() }.toString(), ui.totalMinText)
+        assertEquals(ui.bars.sumOf { it.maxText.toInt() }.toString(), ui.totalMaxText)
+    }
+
+    @Test
     fun toStatsUiModel_scalesTheTotalBarBySixFullStats() {
         // The total's lane is the mean of the six above it. A stat is full at 160, so the total is
         // full at six times that, and the two can be read down the same column.
