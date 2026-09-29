@@ -589,8 +589,8 @@ class DatasetTest {
      * which is what made switching form appear to change what a Pokemon knows.
      *
      * Bide is what this asserts on because it is unambiguous: nothing learns it past Generation 7, so
-     * a Kanto starter holding it can only have come from a 1996 read. The seven that keep it are Megas
-     * and Totems, whose own newest game still had it.
+     * a Kanto starter holding it can only have come from a 1996 read. The four that keep it are Totems
+     * and a Gen 5 pair, none of which has been in a game since.
      */
     @Test
     fun learnset_readsReleaseOrderRatherThanTheOrderIdsWereAssignedIn() {
@@ -598,7 +598,7 @@ class DatasetTest {
         val kanto = setOf("charizard", "blastoise", "venusaur", "pikachu", "mewtwo")
 
         assertEquals(emptySet(), bide intersect kanto, "Kanto is reading its Japanese Blue moveset")
-        assertEquals(7, bide.size)
+        assertEquals(4, bide.size)
     }
 
     @Test
@@ -612,7 +612,7 @@ class DatasetTest {
                 .filterValues { it > 1 }
 
         assertTrue(duplicated.isEmpty(), "A Pokemon listed twice for one move: $duplicated")
-        assertEquals(66553, learnset.sumOf { it.learnedBy.size })
+        assertEquals(71864, learnset.sumOf { it.learnedBy.size })
     }
 
     @Test
@@ -628,17 +628,55 @@ class DatasetTest {
 
     @Test
     fun learnset_isEmptyOnlyForMovesNobodyIsTaught() {
-        // Z-moves, Max moves and the handful that only exist mid-battle. An empty list here is a fact
-        // rather than a join that missed.
-        assertEquals(113, learnset.count { it.learnedBy.isEmpty() })
+        // Z-moves, Max moves, the handful that only exist mid-battle, and the twenty that nothing but
+        // a Mega had a row for before the Megas started borrowing. An empty list here is a fact rather
+        // than a join that missed.
+        assertEquals(133, learnset.count { it.learnedBy.isEmpty() })
         assertTrue(learnset.single { it.slug == "assist" }.learnedBy.isEmpty())
         assertTrue(learnset.single { it.slug == "tackle" }.learnedBy.isNotEmpty())
     }
 
+    /**
+     * **A Mega fights on with the moves it came in with, so it has no learnset of its own to differ
+     * in.** Upstream files one anyway, and it is a fact about which games the form appears in rather
+     * than about the Pokemon: Mega Charizard X was reading Let's Go while Charizard read
+     * Scarlet/Violet, so the form switcher appeared to rewrite the move list.
+     *
+     * The two awkward pairs are the point of the assertion. `meowstic-female-mega` borrows from
+     * `meowstic-female` and not from the species' default form, which is the male and genuinely learns
+     * a different set; `urshifu-rapid-strike-gmax` borrows from the rapid strike style for the same
+     * reason. Resolving either through `isDefault` alone would look right everywhere else.
+     */
+    @Test
+    fun everyMegaAndGigantamax_learnsExactlyWhatItsBaseFormLearns() {
+        val movesOf = { slug: String ->
+            learnset.filter { entry -> entry.learnedBy.any { it.variant == slug } }
+                .map { entry -> entry.slug to entry.learnedBy.single { it.variant == slug }.let { it.method to it.level } }
+                .toMap()
+        }
+
+        val borrowed =
+            mapOf(
+                "charizard-mega-x" to "charizard",
+                "charizard-gmax" to "charizard",
+                "meowstic-female-mega" to "meowstic-female",
+                "urshifu-rapid-strike-gmax" to "urshifu-rapid-strike",
+                // The two whose slug leaves nothing behind once the word comes off, so the species'
+                // default form answers after all.
+                "pyroar-mega" to "pyroar-male",
+                "zygarde-mega" to "zygarde-50",
+            )
+
+        borrowed.forEach { (form, base) ->
+            assertEquals(movesOf(base), movesOf(form), "$form does not learn what $base learns")
+            assertTrue(movesOf(base).isNotEmpty(), "$base has no moves to lend")
+        }
+    }
+
     @Test
     fun everyPokemonWithNoLearnset_isAFormThatBorrowsOne() {
-        // A Mega and a Gigantamax learn what their base form learns and upstream does not repeat the
-        // rows. What would be wrong is a card in the grid with nothing behind it.
+        // Arceus and Silvally, whose seventeen type forms each have no `pokemon` row of their own and
+        // so no rows to have. What would be wrong is a card in the grid with nothing behind it.
         val taught = learnset.flatMap { it.learnedBy }.map { it.variant }.toSet()
         val untaught = variants.filterNot { it.slug in taught }
 
@@ -646,10 +684,8 @@ class DatasetTest {
             untaught.none { it.listedInDex },
             "Dex cards with no moves: ${untaught.filter { it.listedInDex }.map { it.slug }}",
         )
-        assertEquals(
-            setOf(FormKind.MEGA, FormKind.GIGANTAMAX, FormKind.ALTERNATE),
-            untaught.map { it.formKind }.toSet(),
-        )
+        assertEquals(setOf(FormKind.ALTERNATE), untaught.map { it.formKind }.toSet())
+        assertEquals(34, untaught.size)
     }
 
     // endregion

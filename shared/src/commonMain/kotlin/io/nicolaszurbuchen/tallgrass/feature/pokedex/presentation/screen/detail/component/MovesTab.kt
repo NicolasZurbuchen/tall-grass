@@ -78,9 +78,9 @@ fun MovesTab(
         SectionHeading(title = Res.string.pokedex_detail_moves_heading, tint = tint, isFirst = abilities.isEmpty())
 
         if (moves.isEmpty()) {
-            // Every Mega and Gigantamax, which learn what their base form learns and which upstream
-            // does not repeat rows for. Said out loud, because an empty list reads as a read that has
-            // not finished rather than as an answer.
+            // Arceus and Silvally, whose seventeen type forms each have no row of their own upstream
+            // and learn exactly what their base form learns. Said out loud, because an empty list
+            // reads as a read that has not finished rather than as an answer.
             Text(
                 text = stringResource(Res.string.pokedex_detail_no_moves),
                 style = MaterialTheme.typography.bodyLarge,

@@ -29,7 +29,9 @@ fun main(args: Array<String>) {
     val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
     val abilities = buildAbilities(source)
     val moves = buildMoves(source)
-    val learnset = buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
+    val learnset =
+        buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
+            .withBorrowedForms(variants)
 
     val gameVersions = buildVersions(source)
     val places = buildLocations(source)
@@ -636,6 +638,71 @@ private fun buildLearnset(
             }
         }
 }
+
+/**
+ * Gives every Mega and Gigantamax the moves of the form it is a state of, in place of its own.
+ *
+ * **A Mega Evolution happens mid-battle and the Pokemon fights on with the four moves it came in
+ * with.** A Gigantamax is the same kind of thing. Neither is a Pokemon that learnt anything
+ * different; it is one that changed shape, so its learnset is not its own fact to have.
+ *
+ * Upstream files them as `pokemon` rows all the same, which quietly turns their learnset into a fact
+ * about *which games the form appears in*. Charizard is read from Scarlet/Violet and Mega Charizard
+ * X from Let's Go, because Let's Go is the newest game a Mega Charizard exists in -- so the detail
+ * screen's form switcher appeared to rewrite the move list. The 34 Gigantamax forms have no rows
+ * upstream at all and read as Pokemon that know nothing.
+ *
+ * The base form is whatever the slug says before the word that makes it one of these, which is not
+ * the same as the species' default form: `meowstic-female-mega` borrows from `meowstic-female`, and
+ * the default is the male, which genuinely learns a different set. Where the slug leaves nothing
+ * behind -- `pyroar-mega`, whose base is filed as `pyroar-male`, and `zygarde-mega`, whose is
+ * `zygarde-50` -- the default is the answer after all.
+ */
+private fun List<LearnsetJson>.withBorrowedForms(variants: List<VariantJson>): List<LearnsetJson> {
+    val known = variants.map { it.slug }.toSet()
+    val defaults = variants.filter { it.isDefault }.associate { it.speciesSlug to it.slug }
+
+    val borrowedFrom =
+        variants.filter { it.formKind in BORROWING_FORM_KINDS }
+            .associate { variant ->
+                val base = variant.slug.baseFormSlug()?.takeIf { it in known }
+
+                variant.slug to (base ?: defaults.getValue(variant.speciesSlug))
+            }
+
+    // Inverted once rather than searched per learner: this runs against 66,553 of them.
+    val borrowersOf = borrowedFrom.entries.groupBy({ it.value }, { it.key })
+
+    return map { entry ->
+        // **Dropped, not merged.** A Mega with rows of its own has the wrong rows, not a subset of
+        // the right ones -- that is the whole of what this function is here to correct.
+        val own = entry.learnedBy.filterNot { it.variant in borrowedFrom }
+        val borrowed = own.flatMap { learner -> borrowersOf[learner.variant].orEmpty().map { learner.copy(variant = it) } }
+
+        entry.copy(learnedBy = (own + borrowed).sortedWith(compareBy({ it.method }, { it.variant })))
+    }
+}
+
+/**
+ * Everything before the word that makes a slug a Mega or a Gigantamax, or null when it has no such
+ * word.
+ *
+ * Read off the slug rather than off upstream's `form` identifier, which does not reliably line up
+ * with it: `meowstic-male-mega` is filed under the form `mega-male`, and stripping that leaves
+ * nothing to look up.
+ */
+private fun String.baseFormSlug(): String? {
+    val parts = split('-')
+    val marker = parts.indexOfLast { it in FORM_MARKERS }
+
+    return if (marker > 0) parts.take(marker).joinToString("-") else null
+}
+
+/** The two whose moves are their base form's by the rules of the game rather than by coincidence. */
+private val BORROWING_FORM_KINDS = setOf(FormKind.MEGA, FormKind.GIGANTAMAX)
+
+/** `mega` covers `-mega`, `-mega-x`, `-mega-y` and Legends Z-A's `-mega-z` in one word. */
+private val FORM_MARKERS = setOf("mega", "gmax")
 
 /**
  * Earlier in [METHOD_PRIORITY] wins; between two level-up rows, the earlier one does.
