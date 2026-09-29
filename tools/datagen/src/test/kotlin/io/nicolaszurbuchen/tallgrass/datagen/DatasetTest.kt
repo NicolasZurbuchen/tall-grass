@@ -416,9 +416,11 @@ class DatasetTest {
 
     @Test
     fun moves_areTheMainSeriesOnesOnly() {
-        // Upstream's other eighteen are Pokemon XD's Shadow moves, on the same threshold as the
-        // Conquest abilities.
-        assertEquals(919, moves.size)
+        // 919 from upstream, whose other eighteen are Pokemon XD's Shadow moves and sit on the same
+        // threshold as the Conquest abilities, plus the 33 hand-written G-Max Moves upstream has
+        // none of.
+        assertEquals(952, moves.size)
+        assertEquals(33, moves.count { it.slug.startsWith("g-max-") })
         assertTrue(moves.none { it.slug.startsWith("shadow-") && it.type == "shadow" })
         assertTrue(moves.all { it.type in types.types.map { type -> type.slug } })
         assertEquals(setOf("physical", "special", "status"), moves.map { it.damageClass }.toSet())
@@ -429,8 +431,10 @@ class DatasetTest {
         // None of these is a missing value standing in for a default. A status move has no power,
         // a never-miss move has no accuracy, and 93 Generation VIII and IX moves have no effect
         // text because upstream has written none -- they carry no effect id at all.
-        assertEquals(331, moves.count { it.power == null })
-        assertEquals(285, moves.count { it.accuracy == null })
+        // The G-Max Moves add 30 to the first and 33 to the second: three of them have a power of
+        // their own and none of them can miss.
+        assertEquals(361, moves.count { it.power == null })
+        assertEquals(318, moves.count { it.accuracy == null })
         assertEquals(93, moves.count { it.shortEffect == null })
         assertEquals(93, moves.count { it.effect == null })
 
@@ -465,10 +469,13 @@ class DatasetTest {
 
     @Test
     fun moveMeta_isAbsentOnlyWhereUpstreamWroteNone() {
-        // 827 of the 919 have a meta row, and the 92 that do not are the same recent moves that have
-        // no effect text -- minus Syrup Bomb, which has meta and no prose. A meta row appearing on
-        // an older move would mean the join went wrong, not that upstream filled a gap.
-        assertEquals(92, moves.count { it.meta == null })
+        // 827 of upstream's 919 have a meta row, and the 92 that do not are the same recent moves
+        // that have no effect text -- minus Syrup Bomb, which has meta and no prose. A meta row
+        // appearing on an older move would mean the join went wrong, not that upstream filled a gap.
+        //
+        // The 33 G-Max Moves have none either, and could not: `move_meta` is upstream's table and
+        // these are not upstream's moves.
+        assertEquals(125, moves.count { it.meta == null })
         assertTrue(moves.none { it.meta == null && it.generation < 8 })
 
         val categories = moves.mapNotNull { it.meta?.category }.toSet()
@@ -564,6 +571,105 @@ class DatasetTest {
 
     // endregion
 
+    // region gigantamax
+
+    @Test
+    fun gmaxMoves_areOneApieceForEveryGigantamaxFormAndNothingElse() {
+        val gmaxForms = variants.filter { it.formKind == FormKind.GIGANTAMAX }
+        val named = gmaxForms.mapNotNull { it.gmaxMove }.toSet()
+        val catalogue = moves.filter { it.slug.startsWith("g-max-") }.map { it.slug }.toSet()
+
+        assertEquals(34, gmaxForms.size)
+        assertEquals(gmaxForms.size, gmaxForms.count { it.gmaxMove != null }, "A Gigantamax form with no move")
+        assertEquals(catalogue, named, "The catalogue and the forms disagree about which moves exist")
+
+        // 33 for 34 forms: Toxtricity's two share G-Max Stun Shock, and Urshifu is the only Pokemon
+        // with two of its own, one per style.
+        assertEquals(33, catalogue.size)
+        assertEquals("g-max-wildfire", variants.single { it.slug == "charizard-gmax" }.gmaxMove)
+        assertEquals(
+            listOf("g-max-stun-shock", "g-max-stun-shock"),
+            variants.filter { it.slug.startsWith("toxtricity-") && it.gmaxMove != null }.map { it.gmaxMove },
+        )
+    }
+
+    @Test
+    fun nothingButAGigantamaxForm_hasAGmaxMove() {
+        val stray = variants.filter { it.gmaxMove != null && it.formKind != FormKind.GIGANTAMAX }
+
+        assertTrue(stray.isEmpty(), "Forms holding a G-Max Move they cannot use: ${stray.map { it.slug }}")
+    }
+
+    /**
+     * **The whole point of `max-move-power.json` being the complement of a rule rather than a list.**
+     *
+     * A Max Move's power is a step function of the base move's, and 53 moves sit outside the steps.
+     * If a future pin adds a move that is neither in the bands nor in the file, the Moves tab would
+     * print a power for it that is quietly wrong -- which is exactly the failure the exceptions exist
+     * to prevent, so it fails here instead.
+     */
+    @Test
+    fun everyMoveAGigantamaxCanReach_hasAMaxPower() {
+        val gmaxForms = variants.filter { it.formKind == FormKind.GIGANTAMAX }.map { it.slug }.toSet()
+        val bySlug = moves.associateBy { it.slug }
+
+        val reachable =
+            learnset.filter { entry -> entry.learnedBy.any { it.variant in gmaxForms } }
+                .map { bySlug.getValue(it.slug) }
+
+        val damaging = reachable.filter { it.damageClass != "status" }
+        val holes = damaging.filter { it.maxPower == null }
+
+        assertTrue(reachable.size > 400, "Only ${reachable.size} moves reachable, which is too few to be right")
+        assertTrue(holes.isEmpty(), "Damaging moves with no Max Move power: ${holes.map { it.slug }}")
+        assertTrue(reachable.none { it.damageClass == "status" && it.maxPower != null }, "A status move with a power")
+    }
+
+    @Test
+    fun maxPower_isAStepOfTheBaseRatherThanAScalingOfIt() {
+        val power = { slug: String -> moves.single { it.slug == slug }.maxPower }
+
+        // One band: 75 through 100 all land on 130, which is why the converted list collapses.
+        assertEquals(130, power("fire-punch"))
+        assertEquals(130, power("flamethrower"))
+        assertEquals(130, power("earthquake"))
+        assertEquals(90, power("ember"))
+        assertEquals(150, power("explosion"))
+
+        // Fighting and Poison run about a third lower on every band.
+        assertEquals(90, power("brick-break"))
+        assertEquals(90, power("cross-chop"))
+        assertEquals(95, power("close-combat"))
+    }
+
+    @Test
+    fun maxPower_readsTheExceptionsAheadOfTheBands() {
+        val power = { slug: String -> moves.single { it.slug == slug }.maxPower }
+
+        // Per hit, so the bands read 25 as the weakest thing there is. It is one of the strongest.
+        assertEquals(130, power("rock-blast"))
+
+        // No power at all to put in a band.
+        assertEquals(75, power("seismic-toss"))
+        assertEquals(130, power("fissure"))
+
+        // Power that varies with something other than itself.
+        assertEquals(130, power("weather-ball"))
+        assertEquals(130, power("gyro-ball"))
+    }
+
+    @Test
+    fun aMoveNoPokemonHas_hasNoMaxPower() {
+        // Z-Moves are the trap: Catastropika is power 210 and the bands would call it 150, but it is
+        // not a move a Pokemon learns -- it is one a Z-Crystal makes out of another. The Max Moves
+        // are the same case from the other end, being what the conversion produces.
+        assertEquals(null, moves.single { it.slug == "catastropika" }.maxPower)
+        assertEquals(null, moves.single { it.slug == "max-flare" }.maxPower)
+        assertEquals(null, moves.single { it.slug == "g-max-wildfire" }.maxPower)
+    }
+
+    // endregion
+
     // region learnset
 
     @Test
@@ -645,10 +751,10 @@ class DatasetTest {
 
     @Test
     fun learnset_isEmptyOnlyForMovesNobodyIsTaught() {
-        // Z-moves, Max moves, the handful that only exist mid-battle, and the twenty that nothing but
-        // a Mega had a row for before the Megas started borrowing. An empty list here is a fact rather
-        // than a join that missed.
-        assertEquals(133, learnset.count { it.learnedBy.isEmpty() })
+        // Z-moves, Max moves, the 33 G-Max Moves, the handful that only exist mid-battle, and the
+        // twenty that nothing but a Mega had a row for before the Megas started borrowing. An empty
+        // list here is a fact rather than a join that missed.
+        assertEquals(166, learnset.count { it.learnedBy.isEmpty() })
         assertTrue(learnset.single { it.slug == "assist" }.learnedBy.isEmpty())
         assertTrue(learnset.single { it.slug == "tackle" }.learnedBy.isNotEmpty())
     }

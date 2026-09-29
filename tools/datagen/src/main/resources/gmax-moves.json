@@ -1,0 +1,253 @@
+{
+  "comment": [
+    "The 33 G-Max Moves, which upstream does not have. PokeAPI's move table stops at 919",
+    "(malignant-chain); there is no g-max-wildfire in the pinned CSVs and none in the live API either,",
+    "so unlike every other row in this dataset these are written by hand.",
+    "",
+    "Source: Bulbapedia's G-Max Move article, read 2026-09-29. Names, owners and types are",
+    "transcribed from it; the effect prose is written here rather than copied.",
+    "",
+    "`forms` is a list because Toxtricity's two forms share one move. Urshifu has one each, so those",
+    "are two entries rather than one entry naming both.",
+    "",
+    "`power` is set only for the three that have one of their own. Every other G-Max Move takes its",
+    "power and its category from whichever move it replaced, so neither can be stated here and both",
+    "are worked out per Pokemon instead. See maxPowerOf in GenerateDataset.kt."
+  ],
+  "moves": [
+    {
+      "slug": "g-max-vine-lash",
+      "name": "G-Max Vine Lash",
+      "type": "grass",
+      "forms": ["venusaur-gmax"],
+      "effect": "Damages every opponent that is not a Grass type at the end of each turn, for four turns."
+    },
+    {
+      "slug": "g-max-wildfire",
+      "name": "G-Max Wildfire",
+      "type": "fire",
+      "forms": ["charizard-gmax"],
+      "effect": "Damages every opponent that is not a Fire type at the end of each turn, for four turns."
+    },
+    {
+      "slug": "g-max-cannonade",
+      "name": "G-Max Cannonade",
+      "type": "water",
+      "forms": ["blastoise-gmax"],
+      "effect": "Damages every opponent that is not a Water type at the end of each turn, for four turns."
+    },
+    {
+      "slug": "g-max-befuddle",
+      "name": "G-Max Befuddle",
+      "type": "bug",
+      "forms": ["butterfree-gmax"],
+      "effect": "Poisons, paralyses or puts every opponent to sleep."
+    },
+    {
+      "slug": "g-max-volt-crash",
+      "name": "G-Max Volt Crash",
+      "type": "electric",
+      "forms": ["pikachu-gmax"],
+      "effect": "Paralyses every opponent."
+    },
+    {
+      "slug": "g-max-gold-rush",
+      "name": "G-Max Gold Rush",
+      "type": "normal",
+      "forms": ["meowth-gmax"],
+      "effect": "Confuses every opponent and scatters coins, which are collected after the battle."
+    },
+    {
+      "slug": "g-max-chi-strike",
+      "name": "G-Max Chi Strike",
+      "type": "fighting",
+      "forms": ["machamp-gmax"],
+      "effect": "Raises the critical-hit rate of the user and its allies by one stage, and stacks with itself."
+    },
+    {
+      "slug": "g-max-terror",
+      "name": "G-Max Terror",
+      "type": "ghost",
+      "forms": ["gengar-gmax"],
+      "effect": "Stops the target being switched out, as Mean Look does."
+    },
+    {
+      "slug": "g-max-foam-burst",
+      "name": "G-Max Foam Burst",
+      "type": "water",
+      "forms": ["kingler-gmax"],
+      "effect": "Lowers the Speed of every opponent by two stages."
+    },
+    {
+      "slug": "g-max-resonance",
+      "name": "G-Max Resonance",
+      "type": "ice",
+      "forms": ["lapras-gmax"],
+      "effect": "Weakens both physical and special damage to the user's side for five turns, as Aurora Veil does without needing snow."
+    },
+    {
+      "slug": "g-max-cuddle",
+      "name": "G-Max Cuddle",
+      "type": "normal",
+      "forms": ["eevee-gmax"],
+      "effect": "Infatuates every opponent of the opposite gender to the user."
+    },
+    {
+      "slug": "g-max-replenish",
+      "name": "G-Max Replenish",
+      "type": "normal",
+      "forms": ["snorlax-gmax"],
+      "effect": "Has a half chance of giving back a Berry the user or an ally has eaten."
+    },
+    {
+      "slug": "g-max-malodor",
+      "name": "G-Max Malodor",
+      "type": "poison",
+      "forms": ["garbodor-gmax"],
+      "effect": "Poisons every opponent."
+    },
+    {
+      "slug": "g-max-meltdown",
+      "name": "G-Max Meltdown",
+      "type": "steel",
+      "forms": ["melmetal-gmax"],
+      "effect": "Stops every opponent using the same move twice in a row, as Torment does."
+    },
+    {
+      "slug": "g-max-drum-solo",
+      "name": "G-Max Drum Solo",
+      "type": "grass",
+      "forms": ["rillaboom-gmax"],
+      "power": 160,
+      "effect": "Ignores the target's Ability, and has a power of 160 whatever the base move was."
+    },
+    {
+      "slug": "g-max-fireball",
+      "name": "G-Max Fireball",
+      "type": "fire",
+      "forms": ["cinderace-gmax"],
+      "power": 160,
+      "effect": "Ignores the target's Ability, and has a power of 160 whatever the base move was."
+    },
+    {
+      "slug": "g-max-hydrosnipe",
+      "name": "G-Max Hydrosnipe",
+      "type": "water",
+      "forms": ["inteleon-gmax"],
+      "power": 160,
+      "effect": "Ignores the target's Ability, and has a power of 160 whatever the base move was."
+    },
+    {
+      "slug": "g-max-wind-rage",
+      "name": "G-Max Wind Rage",
+      "type": "flying",
+      "forms": ["corviknight-gmax"],
+      "effect": "Clears screens, entry hazards and terrain from the target's side of the field."
+    },
+    {
+      "slug": "g-max-gravitas",
+      "name": "G-Max Gravitas",
+      "type": "psychic",
+      "forms": ["orbeetle-gmax"],
+      "effect": "Intensifies gravity for five turns, as Gravity does."
+    },
+    {
+      "slug": "g-max-stonesurge",
+      "name": "G-Max Stonesurge",
+      "type": "water",
+      "forms": ["drednaw-gmax"],
+      "effect": "Scatters Stealth Rock on the target's side of the field."
+    },
+    {
+      "slug": "g-max-volcalith",
+      "name": "G-Max Volcalith",
+      "type": "rock",
+      "forms": ["coalossal-gmax"],
+      "effect": "Damages every opponent that is not a Rock type at the end of each turn, for four turns."
+    },
+    {
+      "slug": "g-max-tartness",
+      "name": "G-Max Tartness",
+      "type": "grass",
+      "forms": ["flapple-gmax"],
+      "effect": "Lowers the evasiveness of every opponent by one stage."
+    },
+    {
+      "slug": "g-max-sweetness",
+      "name": "G-Max Sweetness",
+      "type": "grass",
+      "forms": ["appletun-gmax"],
+      "effect": "Cures the user and its allies on the field of their status conditions."
+    },
+    {
+      "slug": "g-max-sandblast",
+      "name": "G-Max Sandblast",
+      "type": "ground",
+      "forms": ["sandaconda-gmax"],
+      "effect": "Traps the target in a sandstorm for four or five turns, as Sand Tomb does."
+    },
+    {
+      "slug": "g-max-stun-shock",
+      "name": "G-Max Stun Shock",
+      "type": "electric",
+      "forms": ["toxtricity-amped-gmax", "toxtricity-low-key-gmax"],
+      "effect": "Poisons or paralyses every opponent."
+    },
+    {
+      "slug": "g-max-centiferno",
+      "name": "G-Max Centiferno",
+      "type": "fire",
+      "forms": ["centiskorch-gmax"],
+      "effect": "Traps the target in fire for four or five turns, as Fire Spin does."
+    },
+    {
+      "slug": "g-max-smite",
+      "name": "G-Max Smite",
+      "type": "fairy",
+      "forms": ["hatterene-gmax"],
+      "effect": "Confuses every opponent."
+    },
+    {
+      "slug": "g-max-snooze",
+      "name": "G-Max Snooze",
+      "type": "dark",
+      "forms": ["grimmsnarl-gmax"],
+      "effect": "Has a half chance of making the target drowsy, so that it falls asleep at the end of the next turn."
+    },
+    {
+      "slug": "g-max-finale",
+      "name": "G-Max Finale",
+      "type": "fairy",
+      "forms": ["alcremie-gmax"],
+      "effect": "Heals the user and its allies by a sixth of their maximum HP."
+    },
+    {
+      "slug": "g-max-steelsurge",
+      "name": "G-Max Steelsurge",
+      "type": "steel",
+      "forms": ["copperajah-gmax"],
+      "effect": "Scatters sharp steel on the target's side, which hurts a Pokemon switching in by as much as Steel damages it."
+    },
+    {
+      "slug": "g-max-depletion",
+      "name": "G-Max Depletion",
+      "type": "dragon",
+      "forms": ["duraludon-gmax"],
+      "effect": "Takes two PP from the last move the target used."
+    },
+    {
+      "slug": "g-max-one-blow",
+      "name": "G-Max One Blow",
+      "type": "dark",
+      "forms": ["urshifu-single-strike-gmax"],
+      "effect": "Hits through protection, Max Guard included."
+    },
+    {
+      "slug": "g-max-rapid-flow",
+      "name": "G-Max Rapid Flow",
+      "type": "water",
+      "forms": ["urshifu-rapid-strike-gmax"],
+      "effect": "Hits through protection, Max Guard included."
+    }
+  ]
+}

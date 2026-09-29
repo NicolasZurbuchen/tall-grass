@@ -12,6 +12,23 @@ private val json =
         explicitNulls = true
     }
 
+/** For the two hand-written inputs, whose `comment` blocks are prose for a reader rather than data. */
+private val inputJson = Json { ignoreUnknownKeys = true }
+
+/**
+ * Reads one of this generator's own committed inputs.
+ *
+ * The only two files here that are not read from the pinned upstream. Both say inside themselves
+ * where they came from and why they have to exist at all.
+ */
+private inline fun <reified T> readInput(name: String): T {
+    val text =
+        GmaxCatalogueJson::class.java.getResourceAsStream(name)?.bufferedReader()?.readText()
+            ?: error("Missing generator input: $name")
+
+    return inputJson.decodeFromString(text)
+}
+
 /**
  * Rewrites the committed JSON dataset from the pinned upstream CSVs.
  *
@@ -24,11 +41,17 @@ fun main(args: Array<String>) {
 
     println("Generating dataset from ${SOURCE_SHA.take(7)}")
 
+    val gmax = readInput<GmaxCatalogueJson>("/gmax-moves.json")
+    val maxPower = readInput<MaxPowerJson>("/max-move-power.json")
+
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
-    val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
+    val variants = buildVariants(source, species.map { it.dexNumber }.toSet()).withGmaxMoves(gmax)
     val abilities = buildAbilities(source)
-    val moves = buildMoves(source)
+
+    // The G-Max Moves join the list before the learnset is built, so they are known moves like any
+    // other and get an entry of their own -- an empty one, because nothing learns a G-Max Move.
+    val moves = (buildMoves(source) + gmax.toMovesJson()).sortedBy { it.slug }
     val learnset =
         buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
             .withBorrowedForms(variants)
@@ -50,7 +73,7 @@ fun main(args: Array<String>) {
     outputDir.resolve("species.json").writeText(json.encodeToString(species))
     outputDir.resolve("variants.json").writeText(json.encodeToString(variants))
     outputDir.resolve("abilities.json").writeText(json.encodeToString(abilities))
-    outputDir.resolve("moves.json").writeText(json.encodeToString(moves))
+    outputDir.resolve("moves.json").writeText(json.encodeToString(moves.withMaxPower(learnset, maxPower)))
     outputDir.resolve("learnset.json").writeText(json.encodeToString(learnset))
     outputDir.resolve("versions.json").writeText(json.encodeToString(gameVersions))
     outputDir.resolve("regions.json").writeText(json.encodeToString(regions))
@@ -257,6 +280,9 @@ private fun buildVariants(
                     // non-default form is numbered from 10000, so within a species the base form
                     // leads and its variants follow.
                     sortOrder = id,
+                    // Filled by [withGmaxMoves]. Upstream has no G-Max Moves, so there is nothing in
+                    // this row to read it from.
+                    gmaxMove = null,
                     types = types[id].orEmpty().filterNotNull(),
                     stats =
                         stats[id].orEmpty()
@@ -517,6 +543,8 @@ private fun buildMoves(source: UpstreamSource): List<MoveJson> {
                 target = targets[row.int("target_id")] ?: error("Move '$slug' has an unknown target"),
                 shortEffect = entry?.get("short_effect"),
                 effect = entry?.get("effect")?.replace(BLANK_LINE, "\n")?.trim(),
+                // Filled by [withMaxPower], which cannot run until the learnset exists.
+                maxPower = null,
                 meta = meta[id]?.let { buildMoveMeta(slug, it, categories, ailments) },
                 statChanges = statChanges[id].orEmpty(),
             )
@@ -554,6 +582,120 @@ private fun buildMoveMeta(
         statChance = row.int("stat_chance").takeIf { it != 0 },
     )
 }
+
+/**
+ * The hand-written G-Max Moves as ordinary moves, so each one is a row a reader can open.
+ *
+ * Most of what a move row holds cannot be stated for one of these. The category and the power come
+ * from whichever move was replaced, so they are not facts about the G-Max Move at all -- except for
+ * the three that are 160 whatever they replaced. [MoveJson.damageClass] is not nullable and cannot
+ * be left out, so these carry the same nominal "physical" that upstream files its own nineteen Max
+ * Moves under; nothing reads it, because the conversion takes the category from the base move.
+ */
+private fun GmaxCatalogueJson.toMovesJson(): List<MoveJson> =
+    moves.map { move ->
+        MoveJson(
+            slug = move.slug,
+            name = move.name,
+            generation = DYNAMAX_GENERATION,
+            type = move.type,
+            damageClass = NOMINAL_DAMAGE_CLASS,
+            power = move.power,
+            // A Max Move cannot miss, and upstream's own nineteen are filed the same way.
+            accuracy = null,
+            pp = MAX_MOVE_PP,
+            priority = 0,
+            target = MAX_MOVE_TARGET,
+            // One sentence is the whole of what there is to say, and the detail screen reads the long
+            // field while a row reads the short one. Splitting it would mean writing it twice.
+            shortEffect = move.effect,
+            effect = move.effect,
+            maxPower = null,
+            meta = null,
+            statChanges = emptyMap(),
+        )
+    }
+
+/** Points each Gigantamax form at the move its own-type attacks become. */
+private fun List<VariantJson>.withGmaxMoves(catalogue: GmaxCatalogueJson): List<VariantJson> {
+    val byForm = catalogue.moves.flatMap { move -> move.forms.map { it to move.slug } }.toMap()
+
+    return map { variant -> variant.copy(gmaxMove = byForm[variant.slug]) }
+}
+
+/**
+ * What each move's power becomes when it is Dynamaxed.
+ *
+ * **Not a scaling of the move's own power but a step function of it**, seven bands wide, with a
+ * lower set of steps for Fighting and Poison. The bands cover 386 of the 439 moves that can be
+ * Dynamaxed; `max-move-power.json` holds the other 53 and says why each is there.
+ *
+ * Null for the status moves, which all become Max Guard and have no power to have, and null for
+ * everything nothing learns. That last test is what keeps the Z-Moves out: Catastropika is power 210
+ * and the bands would happily call it 150, but it is not a move any Pokemon has -- it is a move a
+ * Z-Crystal makes out of one -- and the question does not arise for it. Same for the Max Moves
+ * themselves, which are what this produces rather than what it reads.
+ */
+private fun List<MoveJson>.withMaxPower(
+    learnset: List<LearnsetJson>,
+    exceptions: MaxPowerJson,
+): List<MoveJson> {
+    val learned = learnset.filter { it.learnedBy.isNotEmpty() }.map { it.slug }.toSet()
+
+    return map { move ->
+        val power =
+            when {
+                move.slug !in learned -> null
+
+                // Ahead of the bands rather than after them, because most of these have no power for
+                // a band to read in the first place.
+                move.slug in exceptions.power -> exceptions.power.getValue(move.slug)
+
+                move.damageClass == STATUS_DAMAGE_CLASS -> null
+
+                else -> move.power?.let { base -> bracketsFor(move.type).first { base <= it.first }.second }
+            }
+
+        move.copy(maxPower = power)
+    }
+}
+
+private fun bracketsFor(typeSlug: String): List<Pair<Int, Int>> =
+    if (typeSlug in WEAKENED_MAX_TYPES) WEAKENED_MAX_BRACKETS else MAX_BRACKETS
+
+/**
+ * The upper bound of each band and what a move in it becomes, lowest first. Read in order, so the
+ * first band a move fits is its own.
+ *
+ * The bands are uneven on purpose -- 75 through 100 is one step, which is why most of a Pokemon's
+ * serious attacking moves come out of the conversion at the same power and why the converted list is
+ * so much shorter than the one it was made from.
+ */
+private val MAX_BRACKETS =
+    listOf(40 to 90, 50 to 100, 60 to 110, 70 to 120, 100 to 130, 140 to 140, Int.MAX_VALUE to 150)
+
+/** The same seven bands about a third weaker, which is a balance decision in the games. */
+private val WEAKENED_MAX_BRACKETS =
+    listOf(40 to 70, 50 to 75, 60 to 80, 70 to 85, 100 to 90, 140 to 95, Int.MAX_VALUE to 100)
+
+private val WEAKENED_MAX_TYPES = setOf("fighting", "poison")
+
+private const val STATUS_DAMAGE_CLASS = "status"
+
+/** Sword and Shield, where Dynamax was introduced and where it has stayed. */
+private const val DYNAMAX_GENERATION = 8
+
+/**
+ * What upstream files its own nineteen Max Moves under, matched so the fifty-two read alike.
+ *
+ * Nominal in both cases: a Max Move's category is the category of the move it replaced.
+ */
+private const val NOMINAL_DAMAGE_CLASS = "physical"
+
+private const val MAX_MOVE_PP = 10
+
+/** Upstream's target vocabulary, and the value its own Max Moves carry. */
+private const val MAX_MOVE_TARGET = "selected-pokemon-me-first"
 
 /**
  * Which Pokemon learn each move, from each Pokemon's most recent appearance.

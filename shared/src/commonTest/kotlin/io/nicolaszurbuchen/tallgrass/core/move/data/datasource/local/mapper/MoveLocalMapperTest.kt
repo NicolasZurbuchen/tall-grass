@@ -50,6 +50,7 @@ class MoveLocalMapperTest {
         typeSlug = typeSlug,
         damageClass = damageClass,
         power = power,
+        maxPower = null,
         accuracy = accuracy,
         pp = pp,
         priority = 0,

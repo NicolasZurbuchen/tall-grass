@@ -305,6 +305,7 @@ private fun PokedexDatabase.insertVariant(
         baseExperience = 64,
         artworkUrl = "$slug.png",
         sortOrder = dexNumber,
+        gmaxMove = null,
     )
     types.forEachIndexed { index, type ->
         variantQueries.insertVariantType(slug, type, (index + 1).toLong())

@@ -80,6 +80,10 @@ data class VariantJson(
     val baseExperience: Int?,
     val artworkUrl: String,
     val sortOrder: Int,
+    // The exclusive move this form's attacking moves of its own type become while it is
+    // Gigantamaxed. Set for the 34 Gigantamax forms and null for everything else, which is what
+    // makes it the test for "is this the form that has one" rather than a second boolean.
+    val gmaxMove: String?,
     val types: List<String>,
     val stats: Map<String, Int>,
     val evYield: Map<String, Int>,
@@ -143,6 +147,13 @@ data class MoveJson(
     val target: String,
     val shortEffect: String?,
     val effect: String?,
+    // What this move's power becomes when it is Dynamaxed, which is not a scaling of [power] but a
+    // step function of it. Null for the status moves, which all become Max Guard and so have no
+    // power of their own, and for the Z-moves and the Max Moves, which cannot be Dynamaxed at all.
+    //
+    // Stored rather than computed in the app because the exception table it needs is 53 rows of
+    // hand-transcribed data, and that belongs on this side of the line. See `maxPowerOf`.
+    val maxPower: Int?,
     val meta: MoveMetaJson?,
     // Stat stages the move moves, keyed by stat slug and signed: {"attack": -1}. Empty for the 745
     // moves that move none, so a screen can ask the map rather than ask whether there is one.
@@ -425,4 +436,40 @@ data class EncounterConditionJson(
     val slug: String,
     val axis: String,
     val isDefault: Boolean,
+)
+
+/**
+ * The hand-written G-Max catalogue, read from `gmax-moves.json`.
+ *
+ * An input to generation rather than an output of it, and the only one in this project: PokeAPI has
+ * no G-Max Moves in the pinned CSVs and none in its live API, so there is nothing upstream to read
+ * them from. The file says where they came from.
+ */
+@Serializable
+data class GmaxCatalogueJson(
+    val moves: List<GmaxMoveJson>,
+)
+
+/**
+ * One G-Max Move.
+ *
+ * [forms] is a list because Toxtricity's two forms share G-Max Stun Shock. [power] is set for the
+ * three that have one of their own -- Drum Solo, Fireball and Hydrosnipe are 160 whatever they
+ * replaced -- and null for the other thirty, which take the power of the move they replaced and so
+ * cannot state one here.
+ */
+@Serializable
+data class GmaxMoveJson(
+    val slug: String,
+    val name: String,
+    val type: String,
+    val forms: List<String>,
+    val power: Int? = null,
+    val effect: String,
+)
+
+/** The 53 moves the Max Move brackets cannot describe, read from `max-move-power.json`. */
+@Serializable
+data class MaxPowerJson(
+    val power: Map<String, Int>,
 )

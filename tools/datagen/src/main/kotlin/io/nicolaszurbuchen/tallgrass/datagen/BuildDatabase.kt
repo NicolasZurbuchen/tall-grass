@@ -111,6 +111,7 @@ fun main(args: Array<String>) {
                 typeSlug = entry.type,
                 damageClass = entry.damageClass,
                 power = entry.power?.toLong(),
+                maxPower = entry.maxPower?.toLong(),
                 accuracy = entry.accuracy?.toLong(),
                 pp = entry.pp?.toLong(),
                 priority = entry.priority.toLong(),
@@ -153,6 +154,7 @@ fun main(args: Array<String>) {
                 baseExperience = entry.baseExperience?.toLong(),
                 artworkUrl = entry.artworkUrl,
                 sortOrder = entry.sortOrder.toLong(),
+                gmaxMove = entry.gmaxMove,
             )
             entry.types.forEachIndexed { index, type ->
                 database.variantQueries.insertVariantType(entry.slug, type, (index + 1).toLong())
