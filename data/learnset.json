@@ -119162,6 +119162,341 @@
     ]
   },
   {
+    "slug": "g-max-befuddle",
+    "learnedBy": [
+      {
+        "variant": "butterfree-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-cannonade",
+    "learnedBy": [
+      {
+        "variant": "blastoise-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-centiferno",
+    "learnedBy": [
+      {
+        "variant": "centiskorch-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-chi-strike",
+    "learnedBy": [
+      {
+        "variant": "machamp-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-cuddle",
+    "learnedBy": [
+      {
+        "variant": "eevee-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-depletion",
+    "learnedBy": [
+      {
+        "variant": "duraludon-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-drum-solo",
+    "learnedBy": [
+      {
+        "variant": "rillaboom-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-finale",
+    "learnedBy": [
+      {
+        "variant": "alcremie-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-fireball",
+    "learnedBy": [
+      {
+        "variant": "cinderace-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-foam-burst",
+    "learnedBy": [
+      {
+        "variant": "kingler-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-gold-rush",
+    "learnedBy": [
+      {
+        "variant": "meowth-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-gravitas",
+    "learnedBy": [
+      {
+        "variant": "orbeetle-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-hydrosnipe",
+    "learnedBy": [
+      {
+        "variant": "inteleon-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-malodor",
+    "learnedBy": [
+      {
+        "variant": "garbodor-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-meltdown",
+    "learnedBy": [
+      {
+        "variant": "melmetal-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-one-blow",
+    "learnedBy": [
+      {
+        "variant": "urshifu-single-strike-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-rapid-flow",
+    "learnedBy": [
+      {
+        "variant": "urshifu-rapid-strike-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-replenish",
+    "learnedBy": [
+      {
+        "variant": "snorlax-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-resonance",
+    "learnedBy": [
+      {
+        "variant": "lapras-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-sandblast",
+    "learnedBy": [
+      {
+        "variant": "sandaconda-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-smite",
+    "learnedBy": [
+      {
+        "variant": "hatterene-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-snooze",
+    "learnedBy": [
+      {
+        "variant": "grimmsnarl-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-steelsurge",
+    "learnedBy": [
+      {
+        "variant": "copperajah-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-stonesurge",
+    "learnedBy": [
+      {
+        "variant": "drednaw-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-stun-shock",
+    "learnedBy": [
+      {
+        "variant": "toxtricity-amped-gmax",
+        "method": "gigantamax",
+        "level": null
+      },
+      {
+        "variant": "toxtricity-low-key-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-sweetness",
+    "learnedBy": [
+      {
+        "variant": "appletun-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-tartness",
+    "learnedBy": [
+      {
+        "variant": "flapple-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-terror",
+    "learnedBy": [
+      {
+        "variant": "gengar-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-vine-lash",
+    "learnedBy": [
+      {
+        "variant": "venusaur-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-volcalith",
+    "learnedBy": [
+      {
+        "variant": "coalossal-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-volt-crash",
+    "learnedBy": [
+      {
+        "variant": "pikachu-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-wildfire",
+    "learnedBy": [
+      {
+        "variant": "charizard-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
+    "slug": "g-max-wind-rage",
+    "learnedBy": [
+      {
+        "variant": "corviknight-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
+  },
+  {
     "slug": "gastro-acid",
     "learnedBy": [
       {

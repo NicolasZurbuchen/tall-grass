@@ -182,6 +182,7 @@ private fun PokedexDatabase.insertMove(
         typeSlug = typeSlug,
         damageClass = damageClass,
         power = 90,
+        maxPower = 130,
         accuracy = 100,
         pp = 15,
         priority = 0,
