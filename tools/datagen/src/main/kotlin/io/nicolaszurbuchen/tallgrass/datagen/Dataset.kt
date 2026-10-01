@@ -80,10 +80,6 @@ data class VariantJson(
     val baseExperience: Int?,
     val artworkUrl: String,
     val sortOrder: Int,
-    // The exclusive move this form's attacking moves of its own type become while it is
-    // Gigantamaxed. Set for the 34 Gigantamax forms and null for everything else, which is what
-    // makes it the test for "is this the form that has one" rather than a second boolean.
-    val gmaxMove: String?,
     val types: List<String>,
     val stats: Map<String, Int>,
     val evYield: Map<String, Int>,

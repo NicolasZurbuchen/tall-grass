@@ -14,4 +14,7 @@ enum class LearnMethodUiModel(
     MACHINE("TM"),
     EGG("Egg"),
     TUTOR("Tutor"),
+
+    // Not "learned" in any sense a player would use. The form has it, and the word is the form.
+    GIGANTAMAX("Gigantamax"),
 }

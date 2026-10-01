@@ -134,7 +134,6 @@ private fun PokedexDatabase.insertVariant(
         baseExperience = 60,
         artworkUrl = "https://example.invalid/$slug.png",
         sortOrder = sortOrder,
-        gmaxMove = null,
     )
     variantQueries.insertVariantType(slug, type, 1)
 

@@ -19,6 +19,16 @@ enum class LearnMethod(
     MACHINE("machine"),
     EGG("egg"),
     TUTOR("tutor"),
+
+    /**
+     * Not one of upstream's and not a way of learning anything: a Gigantamax form has its G-Max Move
+     * by being that form, the way it has its types.
+     *
+     * It is a learnset row all the same, because "which Pokemon has this move" has one table and
+     * that is it. Last in the declaration because the order is the generator's preference between
+     * two ways to the same move, and there is never a second way to this one.
+     */
+    GIGANTAMAX("gigantamax"),
     ;
 
     companion object {

@@ -23,11 +23,7 @@ CREATE TABLE variant (
     -- is a different claim from a form worth nothing -- there is no such form.
     baseExperience   INTEGER,
     artworkUrl       TEXT NOT NULL,
-    sortOrder        INTEGER NOT NULL,
-    -- The exclusive move this form's own-type attacks become while it is Gigantamaxed. Set for the
-    -- 34 Gigantamax forms and null for the other 1,351, which is what makes it the test for "does
-    -- this form have one" rather than a second boolean beside `formKind`.
-    gmaxMove         TEXT
+    sortOrder        INTEGER NOT NULL
 );
 
 CREATE INDEX variantBySpecies ON variant(speciesDexNumber);
@@ -97,8 +93,8 @@ selectVariantsBySpecies:
 SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
 
 insertVariant:
-INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, baseExperience, artworkUrl, sortOrder, gmaxMove)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, baseExperience, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertVariantType:
 INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
