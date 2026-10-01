@@ -186,6 +186,9 @@ private fun DetailScreenPreview() {
                                                 howText = UiText.Raw("TM"),
                                             ),
                                         ),
+                                    // Empty, and always is here: this preview is the ordinary
+                                    // Charizard, and only a Gigantamax form has anything to convert.
+                                    maxMoves = emptyList(),
                                 ),
                             location =
                                 LocationUiModel(

@@ -22,4 +22,8 @@ data class MovesUiModel(
     // Empty for the Arceus and Silvally type forms, which have no rows of their own upstream, and
     // empty for nothing else once the read has landed.
     val learned: List<VariantMoveUiModel>,
+    // What [learned] becomes when the Pokemon Gigantamaxes, and empty for every form that cannot.
+    // Non-empty is the test the tab draws on: a Gigantamax Pokemon does not use its own moves, so
+    // where there are Max Moves they are the list rather than a second one beside it.
+    val maxMoves: List<VariantMaxMoveUiModel>,
 )

@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.core.move.domain.fake
 
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
@@ -16,6 +17,7 @@ class FakeMoveRepository(
     private var details: Map<String, MoveDetail> = emptyMap(),
     private var learners: Map<String, List<MoveLearner>> = emptyMap(),
     private var variantMoves: Map<String, List<VariantMove>> = emptyMap(),
+    private var maxMoves: List<MaxMove> = emptyList(),
     private var failure: Throwable? = null,
 ) : MoveRepository {
     var movesCallCount: Int = 0
@@ -28,6 +30,9 @@ class FakeMoveRepository(
         private set
 
     var movesForCallCount: Int = 0
+        private set
+
+    var maxMovesCallCount: Int = 0
         private set
 
     override suspend fun moves(): List<Move> {
@@ -52,5 +57,11 @@ class FakeMoveRepository(
         movesForCallCount++
         failure?.let { throw it }
         return variantMoves[variantSlug].orEmpty()
+    }
+
+    override suspend fun maxMoves(): List<MaxMove> {
+        maxMovesCallCount++
+        failure?.let { throw it }
+        return maxMoves
     }
 }

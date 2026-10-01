@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local
 
 import io.nicolaszurbuchen.tallgrass.core.move.data.datasource.local.mapper.toDomain
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.Move
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveDetail
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MoveLearner
@@ -36,6 +37,16 @@ class MoveLocalDataSourceImpl(
         withContext(dispatcher) {
             queries.value
                 .selectMoveLearners(slug)
+                .executeAsList()
+                .mapNotNull { it.toDomain() }
+        }
+
+    // Fifty-two rows read whole, because the conversion needs every type's answer at once and a
+    // per-type query would be eighteen round trips to the same table.
+    override suspend fun maxMoves(): List<MaxMove> =
+        withContext(dispatcher) {
+            queries.value
+                .selectMaxMoves()
                 .executeAsList()
                 .mapNotNull { it.toDomain() }
         }

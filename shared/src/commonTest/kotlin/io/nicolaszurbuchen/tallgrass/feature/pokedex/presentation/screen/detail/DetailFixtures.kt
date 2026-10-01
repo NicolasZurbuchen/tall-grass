@@ -65,7 +65,30 @@ internal val charizardMegaX =
         evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 3, specialDefense = 0, speed = 0),
     )
 
+/**
+ * The form that converts, and the only kind that does.
+ *
+ * Its stats are the base form's, which is true of every Gigantamax form: the factor changes what the
+ * Pokemon does, not what it is. [FormKind.GIGANTAMAX] is the whole of the difference here -- which
+ * move it has is a learnset row rather than a field on the form.
+ */
+internal val charizardGmax =
+    charizard.copy(
+        slug = "charizard-gmax",
+        name = "Gigantamax Charizard",
+        formLabel = "Gigantamax Charizard",
+        formKind = FormKind.GIGANTAMAX,
+        isDefault = false,
+    )
+
 internal val charizardDetail = PokemonDetail(species = charizardSpecies, variants = listOf(charizard, charizardMegaX))
+
+/**
+ * Its own detail rather than a third variant on [charizardDetail], so the tests that count what is in
+ * the form switcher go on counting what they were written to count.
+ */
+internal val charizardGmaxDetail =
+    PokemonDetail(species = charizardSpecies, variants = listOf(charizard, charizardGmax))
 
 internal val charizardHandoff =
     HeroHandoff(

@@ -18,6 +18,11 @@ data class VariantMove(
     val type: PokemonType,
     val damageClass: DamageClass,
     val power: Int?,
+    /**
+     * What this move's power becomes when the Pokemon Dynamaxes, which is a step of [power] rather
+     * than a scaling of it. Null for the status moves, which all become Max Guard.
+     */
+    val maxPower: Int?,
     val method: LearnMethod,
     val level: Int?,
 )

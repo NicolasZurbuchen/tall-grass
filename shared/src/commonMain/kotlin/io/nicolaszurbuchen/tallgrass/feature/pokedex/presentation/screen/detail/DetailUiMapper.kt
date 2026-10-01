@@ -116,6 +116,7 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                             isLoading = variant.slug !in moves,
                             abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
                             learned = moves[variant.slug].orEmpty().map { it.toUiModel() },
+                            maxMoves = maxMoves[variant.slug].orEmpty().map { it.toUiModel() },
                         ),
                     location =
                         availability[variant.slug].toLocationUiModel(
