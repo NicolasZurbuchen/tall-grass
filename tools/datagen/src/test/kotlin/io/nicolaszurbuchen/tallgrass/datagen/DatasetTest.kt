@@ -573,31 +573,53 @@ class DatasetTest {
 
     // region gigantamax
 
+    /**
+     * **Which Pokemon has which move has one table, and a G-Max Move is a move.**
+     *
+     * This was a `gmaxMove` column on the variant for a while, which meant the dataset answered the
+     * same question twice -- and answered it wrongly in the learnset, where every G-Max Move sat with
+     * an empty `learnedBy` saying nothing had it.
+     */
     @Test
-    fun gmaxMoves_areOneApieceForEveryGigantamaxFormAndNothingElse() {
-        val gmaxForms = variants.filter { it.formKind == FormKind.GIGANTAMAX }
-        val named = gmaxForms.mapNotNull { it.gmaxMove }.toSet()
+    fun gmaxMoves_areListedAgainstTheFormsThatHaveThem() {
         val catalogue = moves.filter { it.slug.startsWith("g-max-") }.map { it.slug }.toSet()
+        val learners = learnset.filter { it.slug in catalogue }
 
-        assertEquals(34, gmaxForms.size)
-        assertEquals(gmaxForms.size, gmaxForms.count { it.gmaxMove != null }, "A Gigantamax form with no move")
-        assertEquals(catalogue, named, "The catalogue and the forms disagree about which moves exist")
-
-        // 33 for 34 forms: Toxtricity's two share G-Max Stun Shock, and Urshifu is the only Pokemon
-        // with two of its own, one per style.
+        // 33 moves for 34 forms: Toxtricity's two share G-Max Stun Shock, and Urshifu is the only
+        // Pokemon with two of its own, one per style.
         assertEquals(33, catalogue.size)
-        assertEquals("g-max-wildfire", variants.single { it.slug == "charizard-gmax" }.gmaxMove)
+        assertEquals(34, learners.sumOf { it.learnedBy.size })
+        assertTrue(learners.none { it.learnedBy.isEmpty() }, "A G-Max Move nothing has")
+
         assertEquals(
-            listOf("g-max-stun-shock", "g-max-stun-shock"),
-            variants.filter { it.slug.startsWith("toxtricity-") && it.gmaxMove != null }.map { it.gmaxMove },
+            listOf("charizard-gmax"),
+            learnset.single { it.slug == "g-max-wildfire" }.learnedBy.map { it.variant },
+        )
+        assertEquals(
+            listOf("toxtricity-amped-gmax", "toxtricity-low-key-gmax"),
+            learnset.single { it.slug == "g-max-stun-shock" }.learnedBy.map { it.variant },
         )
     }
 
     @Test
-    fun nothingButAGigantamaxForm_hasAGmaxMove() {
-        val stray = variants.filter { it.gmaxMove != null && it.formKind != FormKind.GIGANTAMAX }
+    fun everyGigantamaxForm_hasExactlyOneGmaxMoveAndNothingElseHasAny() {
+        val gmaxForms = variants.filter { it.formKind == FormKind.GIGANTAMAX }.map { it.slug }.toSet()
+        val holders =
+            learnset.flatMap { entry -> entry.learnedBy.filter { it.method == "gigantamax" }.map { it.variant } }
 
-        assertTrue(stray.isEmpty(), "Forms holding a G-Max Move they cannot use: ${stray.map { it.slug }}")
+        assertEquals(34, gmaxForms.size)
+        assertEquals(gmaxForms, holders.toSet(), "A form has a G-Max Move it cannot use, or lacks one")
+        assertEquals(holders.size, holders.distinct().size, "A form with two G-Max Moves")
+    }
+
+    @Test
+    fun aGmaxMoveIsHadRatherThanLearnt() {
+        // Not one of upstream's four methods, and the row carries no level: a Gigantamax form has its
+        // move by being that form, the way it has its types.
+        val rows = learnset.flatMap { it.learnedBy }.filter { it.method == "gigantamax" }
+
+        assertTrue(rows.all { it.level == null })
+        assertEquals(setOf("gigantamax"), rows.map { it.method }.toSet())
     }
 
     /**
@@ -616,6 +638,9 @@ class DatasetTest {
         val reachable =
             learnset.filter { entry -> entry.learnedBy.any { it.variant in gmaxForms } }
                 .map { bySlug.getValue(it.slug) }
+                // The form's own G-Max Move is reachable and has no Max Move power, which is right:
+                // it is what the conversion produces rather than something it converts.
+                .filterNot { it.slug.startsWith("g-max-") }
 
         val damaging = reachable.filter { it.damageClass != "status" }
         val holes = damaging.filter { it.maxPower == null }
@@ -735,7 +760,7 @@ class DatasetTest {
                 .filterValues { it > 1 }
 
         assertTrue(duplicated.isEmpty(), "A Pokemon listed twice for one move: $duplicated")
-        assertEquals(71864, learnset.sumOf { it.learnedBy.size })
+        assertEquals(71898, learnset.sumOf { it.learnedBy.size })
     }
 
     @Test
@@ -751,10 +776,11 @@ class DatasetTest {
 
     @Test
     fun learnset_isEmptyOnlyForMovesNobodyIsTaught() {
-        // Z-moves, Max moves, the 33 G-Max Moves, the handful that only exist mid-battle, and the
-        // twenty that nothing but a Mega had a row for before the Megas started borrowing. An empty
-        // list here is a fact rather than a join that missed.
-        assertEquals(166, learnset.count { it.learnedBy.isEmpty() })
+        // Z-moves, Max moves, the handful that only exist mid-battle, and the twenty that nothing
+        // but a Mega had a row for before the Megas started borrowing. An empty list here is a fact
+        // rather than a join that missed -- and the G-Max Moves are not among them, which they were
+        // while the forms that have them were recorded on the variant instead.
+        assertEquals(133, learnset.count { it.learnedBy.isEmpty() })
         assertTrue(learnset.single { it.slug == "assist" }.learnedBy.isEmpty())
         assertTrue(learnset.single { it.slug == "tackle" }.learnedBy.isNotEmpty())
     }
@@ -769,11 +795,14 @@ class DatasetTest {
      * `meowstic-female` and not from the species' default form, which is the male and genuinely learns
      * a different set; `urshifu-rapid-strike-gmax` borrows from the rapid strike style for the same
      * reason. Resolving either through `isDefault` alone would look right everywhere else.
+     *
+     * A Gigantamax form's own G-Max Move is excluded, because that one is not borrowed -- it is the
+     * only move in the dataset a form has rather than learns.
      */
     @Test
     fun everyMegaAndGigantamax_learnsExactlyWhatItsBaseFormLearns() {
         val movesOf = { slug: String ->
-            learnset.filter { entry -> entry.learnedBy.any { it.variant == slug } }
+            learnset.filter { entry -> entry.learnedBy.any { it.variant == slug && it.method != "gigantamax" } }
                 .map { entry -> entry.slug to entry.learnedBy.single { it.variant == slug }.let { it.method to it.level } }
                 .toMap()
         }

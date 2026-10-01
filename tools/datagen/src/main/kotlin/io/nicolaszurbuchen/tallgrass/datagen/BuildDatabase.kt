@@ -154,7 +154,6 @@ fun main(args: Array<String>) {
                 baseExperience = entry.baseExperience?.toLong(),
                 artworkUrl = entry.artworkUrl,
                 sortOrder = entry.sortOrder.toLong(),
-                gmaxMove = entry.gmaxMove,
             )
             entry.types.forEachIndexed { index, type ->
                 database.variantQueries.insertVariantType(entry.slug, type, (index + 1).toLong())

@@ -1540,6 +1540,16 @@ output of it — the first in this project. It sits beside the generator rather 
 `data/` is what generation writes and this is what it reads. Both files say inside themselves where
 they came from and when.
 
+**Which form has which G-Max Move is a learnset row**, not a column on the variant. It was a column at
+first, which meant the dataset answered "does this Pokémon have this move" in two places — and answered
+it wrongly in the one that already existed, where all 33 G-Max Moves sat with an empty `learnedBy` saying
+nothing had them while the variant said otherwise. The move's own screen had nothing to list under
+Learned by.
+
+The row carries a method of `gigantamax`, which is not one of upstream's four and not a way of learning
+anything: a Gigantamax form has its move by being that form, the way it has its types. It is still a
+learnset row, because the question has one table and that is it.
+
 The same is true of the Max Move powers, for a less obvious reason. A Max Move's power is not carried
 over from the base move and not scaled from it: it is a step function of it, seven bands wide, with a
 lower set of steps for Fighting and Poison. The bands are in the generator. They cover 386 of the 439

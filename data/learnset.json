@@ -119163,135 +119163,338 @@
   },
   {
     "slug": "g-max-befuddle",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "butterfree-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-cannonade",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "blastoise-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-centiferno",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "centiskorch-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-chi-strike",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "machamp-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-cuddle",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "eevee-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-depletion",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "duraludon-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-drum-solo",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "rillaboom-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-finale",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "alcremie-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-fireball",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "cinderace-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-foam-burst",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "kingler-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-gold-rush",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "meowth-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-gravitas",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "orbeetle-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-hydrosnipe",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "inteleon-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-malodor",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "garbodor-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-meltdown",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "melmetal-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-one-blow",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "urshifu-single-strike-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-rapid-flow",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "urshifu-rapid-strike-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-replenish",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "snorlax-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-resonance",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "lapras-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-sandblast",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "sandaconda-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-smite",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "hatterene-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-snooze",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "grimmsnarl-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-steelsurge",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "copperajah-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-stonesurge",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "drednaw-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-stun-shock",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "toxtricity-amped-gmax",
+        "method": "gigantamax",
+        "level": null
+      },
+      {
+        "variant": "toxtricity-low-key-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-sweetness",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "appletun-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-tartness",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "flapple-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-terror",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "gengar-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-vine-lash",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "venusaur-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-volcalith",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "coalossal-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-volt-crash",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "pikachu-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-wildfire",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "charizard-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "g-max-wind-rage",
-    "learnedBy": []
+    "learnedBy": [
+      {
+        "variant": "corviknight-gmax",
+        "method": "gigantamax",
+        "level": null
+      }
+    ]
   },
   {
     "slug": "gastro-acid",
