@@ -1,5 +1,6 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.mapper
 
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonVariant
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.StatRange
 import io.nicolaszurbuchen.tallgrass.core.type.domain.model.TypeMatchup
@@ -63,12 +64,17 @@ fun PokemonVariant.toStatsUiModel(matchups: List<TypeMatchup>): StatsUiModel {
         //
         // Shown on the Gigantamax forms alone, where a reader is already asking what the form does.
         // Every Pokemon in Sword and Shield can Dynamax, so this is the narrower of two true things.
+        //
+        // The form kind rather than the form's G-Max Move, which is a learnset row and not something
+        // a Stats mapper has any business reading.
         dynamaxHpText =
-            gmaxMove?.let {
+            if (formKind == FormKind.GIGANTAMAX) {
                 UiText.Resource(
                     Res.string.pokedex_detail_dynamax_hp,
                     listOf(hp.min * MAX_DYNAMAX_MULTIPLIER, hp.max * MAX_DYNAMAX_MULTIPLIER),
                 )
+            } else {
+                null
             },
         weaknesses = WEAKENING_FACTORS.toMatchupGroupsUiModel(matchups),
         resistances = RESISTING_FACTORS.toMatchupGroupsUiModel(matchups),

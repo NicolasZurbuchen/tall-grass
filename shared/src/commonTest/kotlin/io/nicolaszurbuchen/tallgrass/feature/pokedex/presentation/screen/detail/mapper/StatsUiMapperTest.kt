@@ -117,7 +117,7 @@ class StatsUiMapperTest {
         // Charizard's HP at level 100 is 266 to 360, and Dynamax Level 10 doubles it. The note is a
         // sentence under the table rather than a column in it, because Dynamaxing multiplies the HP
         // the Pokemon already has and there is nothing to put beside a base stat.
-        val gmax = variant().copy(gmaxMove = "g-max-wildfire").toStatsUiModel(emptyList())
+        val gmax = variant().copy(formKind = FormKind.GIGANTAMAX).toStatsUiModel(emptyList())
 
         assertEquals(UiText.Resource(Res.string.pokedex_detail_dynamax_hp, listOf(532, 720)), gmax.dynamaxHpText)
     }
