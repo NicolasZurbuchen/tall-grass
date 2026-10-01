@@ -118,7 +118,6 @@ SELECT
     v.weight,
     v.baseExperience,
     v.artworkUrl,
-    v.gmaxMove,
     t1.typeSlug AS primaryType,
     t2.typeSlug AS secondaryType
 FROM variant v

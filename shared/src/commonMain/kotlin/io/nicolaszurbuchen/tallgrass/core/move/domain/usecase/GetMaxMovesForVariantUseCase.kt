@@ -1,6 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.core.move.domain.usecase
 
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.DamageClass
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.LearnMethod
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.VariantMove
@@ -27,15 +28,7 @@ import io.nicolaszurbuchen.tallgrass.core.type.domain.model.PokemonType
 class GetMaxMovesForVariantUseCase(
     private val repository: MoveRepository,
 ) {
-    /**
-     * [gmaxMoveSlug] is the form's own G-Max Move, from `PokemonVariant.gmaxMove`. Null gives the
-     * ordinary Dynamax conversion, which is every Pokemon's and is what the Gigantamax forms would
-     * have without their signature.
-     */
-    suspend operator fun invoke(
-        variantSlug: String,
-        gmaxMoveSlug: String?,
-    ): List<VariantMaxMove> {
+    suspend operator fun invoke(variantSlug: String): List<VariantMaxMove> {
         val moves = repository.movesFor(variantSlug)
         if (moves.isEmpty()) return emptyList()
 
@@ -48,9 +41,17 @@ class GetMaxMovesForVariantUseCase(
                 .filter { it.slug.startsWith(MAX_MOVE_PREFIX) && it.slug != MAX_GUARD }
                 .associateBy { it.type }
         val guard = catalogue[MAX_GUARD]
-        val signature = gmaxMoveSlug?.let { catalogue[it] }
 
-        return moves.groupBy { move -> move.becomes(byType, guard, signature) }
+        // **The form's own move is one of its learnset rows**, under a method no other row carries: a
+        // Gigantamax form has it by being that form. It comes out of the list being converted,
+        // because it is what the rest of the list converts into.
+        //
+        // Absent for every form that is not a Gigantamax one, which leaves the ordinary Dynamax
+        // conversion -- every Pokemon's, and what a Gigantamax form would have without its factor.
+        val signature = moves.firstOrNull { it.method == LearnMethod.GIGANTAMAX }?.let { catalogue[it.slug] }
+
+        return moves.filterNot { it.method == LearnMethod.GIGANTAMAX }
+            .groupBy { move -> move.becomes(byType, guard, signature) }
             .mapNotNull { (target, sources) -> target?.toVariantMaxMove(sources, signature) }
             // Strongest first, which puts Max Guard last: it is the one row with no power, and it is
             // also the one every Pokemon has, so it is the least worth reading.
