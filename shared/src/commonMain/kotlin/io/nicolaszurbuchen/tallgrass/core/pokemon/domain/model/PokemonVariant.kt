@@ -35,10 +35,4 @@ data class PokemonVariant(
     val stats: PokemonStats,
     val baseExperience: Int?,
     val evYield: EvYield?,
-    /**
-     * The exclusive move this form's own-type attacks become while it is Gigantamaxed, and null for
-     * the 1,351 forms that are not Gigantamax ones. Being null *is* the test for whether a form has
-     * one, which is why there is no boolean beside it.
-     */
-    val gmaxMove: String?,
 )

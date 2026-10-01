@@ -12,6 +12,7 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantAvai
 import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantEncountersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMaxMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
+import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.FormKind
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.model.PokemonDetail
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetDexEntriesUseCase
 import io.nicolaszurbuchen.tallgrass.core.pokemon.domain.usecase.GetPokemonDetailUseCase
@@ -235,16 +236,16 @@ class DetailStoreFactory(
         }
 
         /**
-         * The G-Max Move of one form, or null for the 1,351 that have none.
+         * Whether the form now on screen is one of the 34 that can Gigantamax.
          *
          * Read off the detail already in State rather than fetched: the tab reads only after the
          * detail has landed, so the form is there to be asked.
          */
-        private fun gmaxMoveOf(variantSlug: String): String? =
+        private fun isGigantamax(variantSlug: String): Boolean =
             state().details[state().activeEntrySlug]
                 ?.variants
                 ?.firstOrNull { it.slug == variantSlug }
-                ?.gmaxMove
+                ?.formKind == FormKind.GIGANTAMAX
 
         /**
          * Both halves of the Moves tab for one form, read the first time it is opened for that form.
@@ -279,13 +280,11 @@ class DetailStoreFactory(
                         dispatch(DetailMessage.AbilitiesLoaded(variantSlug, getAbilitiesForVariant(variantSlug)))
                         dispatch(DetailMessage.MovesLoaded(variantSlug, getMovesForVariant(variantSlug)))
 
-                        // Only the Gigantamax forms, and the test is the move rather than the form
-                        // kind: a form with no G-Max Move of its own has nothing to convert into
-                        // that the ordinary list does not already say.
-                        gmaxMoveOf(variantSlug)?.let { gmaxMove ->
-                            dispatch(
-                                DetailMessage.MaxMovesLoaded(variantSlug, getMaxMovesForVariant(variantSlug, gmaxMove)),
-                            )
+                        // Only the Gigantamax forms. Every Pokemon in Sword and Shield can Dynamax,
+                        // so the conversion is defined for all of them -- but for a form with no
+                        // G-Max Move it says nothing the ordinary list does not already say.
+                        if (isGigantamax(variantSlug)) {
+                            dispatch(DetailMessage.MaxMovesLoaded(variantSlug, getMaxMovesForVariant(variantSlug)))
                         }
                     } catch (e: AppException) {
                         return@launch

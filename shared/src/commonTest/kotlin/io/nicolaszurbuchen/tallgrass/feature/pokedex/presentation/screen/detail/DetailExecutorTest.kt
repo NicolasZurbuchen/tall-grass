@@ -13,6 +13,7 @@ import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantAvai
 import io.nicolaszurbuchen.tallgrass.core.location.domain.usecase.GetVariantEncountersUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.FakeMoveRepository
 import io.nicolaszurbuchen.tallgrass.core.move.domain.fake.MoveFixtures
+import io.nicolaszurbuchen.tallgrass.core.move.domain.model.LearnMethod
 import io.nicolaszurbuchen.tallgrass.core.move.domain.model.MaxMove
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMaxMovesForVariantUseCase
 import io.nicolaszurbuchen.tallgrass.core.move.domain.usecase.GetMovesForVariantUseCase
@@ -306,9 +307,15 @@ class DetailExecutorTest {
             // The wiring the conversion hangs off: the executor has to notice that the form now on
             // screen has a G-Max Move and ask for the converted list. Miss it and the tab quietly
             // falls back to the moves the Pokemon learnt, which is not what it uses.
+            val signature =
+                MoveFixtures.charizardFlamethrower.copy(
+                    slug = "g-max-wildfire",
+                    method = LearnMethod.GIGANTAMAX,
+                    level = null,
+                )
             val moves =
                 FakeMoveRepository(
-                    variantMoves = mapOf("charizard-gmax" to listOf(MoveFixtures.charizardFlamethrower)),
+                    variantMoves = mapOf("charizard-gmax" to listOf(MoveFixtures.charizardFlamethrower, signature)),
                     maxMoves = listOf(MaxMove("g-max-wildfire", "G-Max Wildfire", PokemonType.FIRE, power = null)),
                 )
             val repository = FakePokedexRepository(details = mapOf("charizard" to charizardGmaxDetail))

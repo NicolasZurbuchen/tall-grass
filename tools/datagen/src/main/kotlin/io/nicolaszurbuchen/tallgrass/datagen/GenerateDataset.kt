@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
 
     val types = buildTypeChart(source)
     val species = buildSpecies(source)
-    val variants = buildVariants(source, species.map { it.dexNumber }.toSet()).withGmaxMoves(gmax)
+    val variants = buildVariants(source, species.map { it.dexNumber }.toSet())
     val abilities = buildAbilities(source)
 
     // The G-Max Moves join the list before the learnset is built, so they are known moves like any
@@ -55,6 +55,7 @@ fun main(args: Array<String>) {
     val learnset =
         buildLearnset(source, moves.map { it.slug }.toSet(), variants.map { it.slug }.toSet())
             .withBorrowedForms(variants)
+            .withGmaxLearners(gmax)
 
     val gameVersions = buildVersions(source)
     val places = buildLocations(source)
@@ -280,9 +281,6 @@ private fun buildVariants(
                     // non-default form is numbered from 10000, so within a species the base form
                     // leads and its variants follow.
                     sortOrder = id,
-                    // Filled by [withGmaxMoves]. Upstream has no G-Max Moves, so there is nothing in
-                    // this row to read it from.
-                    gmaxMove = null,
                     types = types[id].orEmpty().filterNotNull(),
                     stats =
                         stats[id].orEmpty()
@@ -616,11 +614,28 @@ private fun GmaxCatalogueJson.toMovesJson(): List<MoveJson> =
         )
     }
 
-/** Points each Gigantamax form at the move its own-type attacks become. */
-private fun List<VariantJson>.withGmaxMoves(catalogue: GmaxCatalogueJson): List<VariantJson> {
-    val byForm = catalogue.moves.flatMap { move -> move.forms.map { it to move.slug } }.toMap()
+/**
+ * Gives each G-Max Move the forms that have it.
+ *
+ * **Which Pokemon has which move is the learnset's question**, and it was being answered twice: once
+ * here and once by a `gmaxMove` column on the variant. The column went, because this is the table
+ * that already joins the two and the G-Max Moves were sitting in it with an empty `learnedBy` -- a
+ * row saying nothing has G-Max Vine Lash, next to a column saying Gigantamax Venusaur does.
+ *
+ * It also fixes the move's own screen, which had nothing to list under Learned by.
+ *
+ * **Runs after [withBorrowedForms]**, which drops every row belonging to a Mega or a Gigantamax
+ * before putting the base form's back. Run the other way round and these would be among what it
+ * dropped.
+ */
+private fun List<LearnsetJson>.withGmaxLearners(catalogue: GmaxCatalogueJson): List<LearnsetJson> {
+    val formsOf = catalogue.moves.associate { it.slug to it.forms }
 
-    return map { variant -> variant.copy(gmaxMove = byForm[variant.slug]) }
+    return map { entry ->
+        val forms = formsOf[entry.slug] ?: return@map entry
+
+        entry.copy(learnedBy = forms.sorted().map { LearnerJson(variant = it, method = GIGANTAMAX, level = null) })
+    }
 }
 
 /**
@@ -645,6 +660,14 @@ private fun List<MoveJson>.withMaxPower(
     return map { move ->
         val power =
             when {
+                // What this produces rather than what it reads. A Max Move cannot itself be
+                // Dynamaxed, and the three G-Max Moves with a power of their own would otherwise be
+                // handed a second one.
+                move.isMaxMove() -> null
+
+                // Not a move any Pokemon has. The Z-Moves are what this catches: Catastropika is
+                // power 210 and the bands would happily call it 150, but it is a move a Z-Crystal
+                // makes out of another rather than one a Pokemon learns.
                 move.slug !in learned -> null
 
                 // Ahead of the bands rather than after them, because most of these have no power for
@@ -659,6 +682,13 @@ private fun List<MoveJson>.withMaxPower(
         move.copy(maxPower = power)
     }
 }
+
+/**
+ * Whether this move is one of the fifty-two a Dynamaxed Pokemon's moves turn into.
+ *
+ * The two prefixes rather than one, because `g-max-` does not start with `max-`.
+ */
+private fun MoveJson.isMaxMove(): Boolean = slug.startsWith(MAX_MOVE_PREFIX) || slug.startsWith(GMAX_MOVE_PREFIX)
 
 private fun bracketsFor(typeSlug: String): List<Pair<Int, Int>> =
     if (typeSlug in WEAKENED_MAX_TYPES) WEAKENED_MAX_BRACKETS else MAX_BRACKETS
@@ -681,6 +711,18 @@ private val WEAKENED_MAX_BRACKETS =
 private val WEAKENED_MAX_TYPES = setOf("fighting", "poison")
 
 private const val STATUS_DAMAGE_CLASS = "status"
+
+private const val MAX_MOVE_PREFIX = "max-"
+private const val GMAX_MOVE_PREFIX = "g-max-"
+
+/**
+ * Not one of upstream's four methods and not a way of learning anything: a Gigantamax form has its
+ * G-Max Move by being that form, the way a Pokemon has its types.
+ *
+ * It is a learnset row all the same, because the question "which Pokemon has this move" has one
+ * table and this is it.
+ */
+private const val GIGANTAMAX = "gigantamax"
 
 /** Sword and Shield, where Dynamax was introduced and where it has stayed. */
 private const val DYNAMAX_GENERATION = 8

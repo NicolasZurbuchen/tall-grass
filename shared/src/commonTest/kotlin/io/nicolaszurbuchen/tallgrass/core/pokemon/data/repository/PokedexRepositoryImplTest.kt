@@ -58,7 +58,6 @@ class PokedexRepositoryImplTest {
                         stats = PokemonStats(38, 41, 40, 50, 65, 65),
                         baseExperience = 60,
                         evYield = EvYield(hp = 0, attack = 0, defense = 0, specialAttack = 0, specialDefense = 0, speed = 1),
-                        gmaxMove = null,
                     ),
                 ),
         )

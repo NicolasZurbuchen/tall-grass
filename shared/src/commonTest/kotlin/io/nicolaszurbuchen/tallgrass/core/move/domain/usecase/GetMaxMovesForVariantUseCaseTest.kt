@@ -41,10 +41,22 @@ class GetMaxMovesForVariantUseCaseTest {
             MaxMove("g-max-fireball", "G-Max Fireball", PokemonType.FIRE, power = 160),
         )
 
-    private fun useCase(moves: List<VariantMove>) =
-        GetMaxMovesForVariantUseCase(
-            FakeMoveRepository(variantMoves = mapOf("charizard-gmax" to moves), maxMoves = catalogue),
-        )
+    /**
+     * The learnset row that carries the form's own move, which is how a Gigantamax form has one: a
+     * method no other row uses, and no level, because it is not learnt.
+     */
+    private fun signature(slug: String) =
+        move(slug, PokemonType.FIRE, power = null, maxPower = null).copy(method = LearnMethod.GIGANTAMAX, level = null)
+
+    private fun useCase(
+        moves: List<VariantMove>,
+        gmaxMove: String? = null,
+    ) = GetMaxMovesForVariantUseCase(
+        FakeMoveRepository(
+            variantMoves = mapOf("charizard-gmax" to moves + listOfNotNull(gmaxMove?.let { signature(it) })),
+            maxMoves = catalogue,
+        ),
+    )
 
     @Test
     fun invoke_turnsTheMovesOfTheSignatureTypeIntoTheFormsOwnMove() =
@@ -58,7 +70,7 @@ class GetMaxMovesForVariantUseCaseTest {
                     move("fly", PokemonType.FLYING, damageClass = DamageClass.PHYSICAL),
                 )
 
-            val converted = useCase(moves)("charizard-gmax", "g-max-wildfire")
+            val converted = useCase(moves, "g-max-wildfire")("charizard-gmax")
 
             assertEquals(listOf("g-max-wildfire", "max-airstream"), converted.map { it.slug })
             assertTrue(converted.first().isSignature)
@@ -68,11 +80,22 @@ class GetMaxMovesForVariantUseCaseTest {
     @Test
     fun invoke_withoutASignature_leavesTheFireMovesAsTheOrdinaryMaxMove() =
         runTest {
-            // Every Pokemon can Dynamax; only 34 forms can Gigantamax. Null is the difference.
-            val converted = useCase(listOf(move("flamethrower", PokemonType.FIRE)))("charizard-gmax", null)
+            // Every Pokemon can Dynamax; only 34 forms can Gigantamax. Having no such learnset row
+            // is the difference.
+            val converted = useCase(listOf(move("flamethrower", PokemonType.FIRE)))("charizard-gmax")
 
             assertEquals(listOf("max-flare"), converted.map { it.slug })
             assertTrue(converted.single().isSignature.not())
+        }
+
+    @Test
+    fun invoke_doesNotCountTheFormsOwnMoveAmongTheMovesThatBecomeIt() =
+        runTest {
+            // The signature arrives as a learnset row like any other, so it has to come out of the
+            // list being converted. Left in, G-Max Wildfire would be listed among its own sources.
+            val converted = useCase(listOf(move("flamethrower", PokemonType.FIRE)), "g-max-wildfire")("charizard-gmax")
+
+            assertEquals(listOf("flamethrower"), converted.single().sources.map { it.slug })
         }
 
     @Test
@@ -88,7 +111,7 @@ class GetMaxMovesForVariantUseCaseTest {
                     move("heat-wave", PokemonType.FIRE, power = 95, maxPower = 130),
                 )
 
-            val wildfire = useCase(moves)("charizard-gmax", "g-max-wildfire").single()
+            val wildfire = useCase(moves, "g-max-wildfire")("charizard-gmax").single()
 
             assertEquals(4, wildfire.sources.size)
             assertEquals(listOf("Fire-blast", "Flamethrower", "Heat-wave", "Ember"), wildfire.sources.map { it.name })
@@ -101,7 +124,7 @@ class GetMaxMovesForVariantUseCaseTest {
             // which is what it can actually do.
             val moves = listOf(move("ember", PokemonType.FIRE, power = 40, maxPower = 90), move("flamethrower", PokemonType.FIRE))
 
-            assertEquals(130, useCase(moves)("charizard-gmax", null).single().power)
+            assertEquals(130, useCase(moves)("charizard-gmax").single().power)
         }
 
     @Test
@@ -115,7 +138,7 @@ class GetMaxMovesForVariantUseCaseTest {
                     move("fire-blast", PokemonType.FIRE, power = 110, maxPower = 140),
                 )
 
-            assertEquals(DamageClass.SPECIAL, useCase(moves)("charizard-gmax", null).single().damageClass)
+            assertEquals(DamageClass.SPECIAL, useCase(moves)("charizard-gmax").single().damageClass)
         }
 
     @Test
@@ -124,7 +147,7 @@ class GetMaxMovesForVariantUseCaseTest {
             // G-Max Fireball is 160 whatever it replaced, so the strongest source does not get a say.
             val moves = listOf(move("ember", PokemonType.FIRE, power = 40, maxPower = 90))
 
-            assertEquals(160, useCase(moves)("charizard-gmax", "g-max-fireball").single().power)
+            assertEquals(160, useCase(moves, "g-max-fireball")("charizard-gmax").single().power)
         }
 
     @Test
@@ -139,7 +162,7 @@ class GetMaxMovesForVariantUseCaseTest {
                     move("body-slam", PokemonType.NORMAL, damageClass = DamageClass.PHYSICAL),
                 )
 
-            val converted = useCase(moves)("charizard-gmax", null)
+            val converted = useCase(moves)("charizard-gmax")
 
             assertEquals(listOf("max-strike", "max-guard"), converted.map { it.slug })
             assertEquals(2, converted.single { it.slug == "max-guard" }.sources.size)
@@ -160,7 +183,7 @@ class GetMaxMovesForVariantUseCaseTest {
 
             assertEquals(
                 listOf("max-airstream", "max-flare", "max-guard"),
-                useCase(moves)("charizard-gmax", null).map { it.slug },
+                useCase(moves)("charizard-gmax").map { it.slug },
             )
         }
 
@@ -171,7 +194,7 @@ class GetMaxMovesForVariantUseCaseTest {
             // catalogue read is skipped rather than made and thrown away.
             val repository = FakeMoveRepository(maxMoves = catalogue)
 
-            assertEquals(emptyList(), GetMaxMovesForVariantUseCase(repository)("arceus-fire", null))
+            assertEquals(emptyList(), GetMaxMovesForVariantUseCase(repository)("arceus-fire"))
             assertEquals(0, repository.maxMovesCallCount)
         }
 }
