@@ -264,7 +264,6 @@ private fun buildVariants(
                     // Replaced in the second pass below: classifying a form needs its species'
                     // default variant, which does not exist yet while this one is being built.
                     formKind = FormKind.NONE,
-                    isMega = defaultForm?.bool("is_mega") ?: false,
                     isBattleOnly = isBattleOnly,
                     isDefault = row.bool("is_default"),
                     // One card per species, and no more: the browse list is the National Dex.
@@ -314,6 +313,19 @@ private fun buildVariants(
     // so every default form has to exist before anything can be classified.
     val defaults = drafts.filter { it.isDefault }.associateBy { it.speciesDexNumber }
 
+    // **Upstream's own flag, read here rather than carried on [VariantJson].** It was a field until
+    // it was noticed that nothing read it: `formKind` is the derived answer, and all 97 rows it is
+    // true for come out MEGA. Only the classifier below ever wanted it.
+    //
+    // The alternative is `form.startsWith("mega")`, which is true of exactly the same 97 today and
+    // is still a convention where this is a fact. Primal Groudon is the reminder that the two can
+    // come apart: the same kind of thing to a player, and upstream does not flag it.
+    val megaSlugs =
+        source.read("pokemon")
+            .filter { defaultForms[it.int("id")]?.bool("is_mega") == true }
+            .map { it["identifier"] }
+            .toSet()
+
     val classified =
         drafts.map { draft ->
             val base = defaults[draft.speciesDexNumber]
@@ -322,7 +334,7 @@ private fun buildVariants(
                     classifyForm(
                         isDefault = draft.isDefault,
                         form = draft.form.orEmpty(),
-                        isMega = draft.isMega,
+                        isMega = draft.slug in megaSlugs,
                         isBattleOnly = draft.isBattleOnly,
                         differsFromBase = base == null || !draft.sharesBattleDataWith(base),
                     ),

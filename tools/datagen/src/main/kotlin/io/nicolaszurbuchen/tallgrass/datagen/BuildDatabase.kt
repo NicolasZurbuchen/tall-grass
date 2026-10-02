@@ -145,7 +145,6 @@ fun main(args: Array<String>) {
                 formLabel = entry.formLabel,
                 form = entry.form,
                 formKind = entry.formKind.name,
-                isMega = entry.isMega,
                 isBattleOnly = entry.isBattleOnly,
                 isDefault = entry.isDefault,
                 listedInDex = entry.listedInDex,

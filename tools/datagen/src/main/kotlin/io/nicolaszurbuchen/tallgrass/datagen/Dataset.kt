@@ -71,7 +71,6 @@ data class VariantJson(
     val formLabel: String?,
     val form: String?,
     val formKind: FormKind,
-    val isMega: Boolean,
     val isBattleOnly: Boolean,
     val isDefault: Boolean,
     val listedInDex: Boolean,
