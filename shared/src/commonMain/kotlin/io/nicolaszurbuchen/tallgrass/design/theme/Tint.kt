@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 
 /**
  * A subject's own colour, pushed far enough off the sheet to be read as text.
@@ -20,6 +21,27 @@ import androidx.compose.ui.graphics.lerp
 @Composable
 @ReadOnlyComposable
 fun Color.asLabelColor(): Color = lerp(this, if (MaterialTheme.appColors.isDark) Color.White else Color.Black, LABEL_SHIFT)
+
+/**
+ * Black or white, whichever can be read *on* this colour.
+ *
+ * [asLabelColor]'s opposite number. That one is for a subject's colour drawn as text on the sheet;
+ * this is for text drawn on a shape already filled with it, where there is nothing to shift because
+ * the ground is the colour.
+ *
+ * Neither answer works for all eighteen types, which is why this is a test rather than a constant:
+ * Electric and Ice are nearly white and Dragon and Dark nearly black, so white-on-everything leaves
+ * four chips at about 1.5:1 -- the same problem [asLabelColor] exists to solve, reached from the
+ * other side.
+ *
+ * No theme lookup, unlike [asLabelColor]. The ground is the type's colour in both themes, so what
+ * reads on it does not change with the sheet behind it.
+ */
+fun Color.asOnColor(): Color = if (luminance() > ON_COLOR_PIVOT) Color.Black else Color.White
+
+// Where black and white are equally legible against a colour. It is the midpoint of the WCAG
+// contrast formula rather than of the brightness range, which is why it is 0.179 and not 0.5.
+private const val ON_COLOR_PIVOT = 0.179f
 
 // How far a colour moves before it is worth reading. Enough that Electric, the palette's brightest,
 // clears 4.5:1 on a white sheet; little enough that the hue is still recognisably the type's. The

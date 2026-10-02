@@ -18,7 +18,6 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.navigation.SharedElementKey
@@ -113,26 +112,26 @@ private fun DetailScreenPreview() {
                                             MatchupGroupUiModel(
                                                 "×2",
                                                 listOf(
-                                                    TypeMatchupUiModel("Water", TypeUiModel.WATER.color),
-                                                    TypeMatchupUiModel("Electric", TypeUiModel.ELECTRIC.color),
+                                                    TypeUiModel.WATER,
+                                                    TypeUiModel.ELECTRIC,
                                                 ),
                                             ),
                                             MatchupGroupUiModel(
                                                 "×4",
-                                                listOf(TypeMatchupUiModel("Rock", TypeUiModel.ROCK.color)),
+                                                listOf(TypeUiModel.ROCK),
                                             ),
                                         ),
                                     resistances =
                                         listOf(
                                             MatchupGroupUiModel(
                                                 "0",
-                                                listOf(TypeMatchupUiModel("Ground", TypeUiModel.GROUND.color)),
+                                                listOf(TypeUiModel.GROUND),
                                             ),
                                             MatchupGroupUiModel(
                                                 "¼",
                                                 listOf(
-                                                    TypeMatchupUiModel("Grass", TypeUiModel.GRASS.color),
-                                                    TypeMatchupUiModel("Bug", TypeUiModel.BUG.color),
+                                                    TypeUiModel.GRASS,
+                                                    TypeUiModel.BUG,
                                                 ),
                                             ),
                                         ),

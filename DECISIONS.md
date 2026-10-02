@@ -681,12 +681,25 @@ They wrap instead, each sized to its own text. What is lost is the row index the
 a flow does not report where it broke; the stagger is per chip now, and `AppStagger`'s cap holds
 eighteen of them under four hundred milliseconds, which is what the row grouping was there to avoid.
 
-**The label is the type's own colour, shifted.** A chip filled with `TypeUiModel.color` at full
-strength is the dex card's problem again — see *A type pill on the type's own colour is a scrim* — so
-the ground is an 18% wash of it and the label is the same hue moved 45% toward black on a light
-sheet, or toward white on a dark one. Pure Grass measures 1.9:1 against white; the shift is what
-makes it a colour rather than a suggestion, and it has to know the theme because "darker" is only
-legible in one of them.
+**The chip is filled with the type's colour and carries its symbol.** It was an 18% wash of that
+colour with the same hue shifted 45% toward the far end of the theme as the label, which was legible
+and quiet — eighteen pale lozenges that had to be read word by word. Filled, each chip is the colour
+the reader already associates with the type, and the symbol means the common ones stop being read at
+all.
+
+That only works because the label colour is chosen per type. **White on every chip puts thirteen of
+the eighteen under 4.5:1** — Electric at 1.5, Ice at 1.6, Ground at 1.8, Steel at 2.0 — because these
+colours were picked to be told apart from each other rather than to be written on. `asOnColor` tests
+the ground's luminance against the midpoint of the WCAG formula and answers black or white; the worst
+chip then measures 5.6:1 and most are above 7.
+
+So the sheet has two rules for a type's colour and they are not in tension: `asLabelColor` for the
+colour drawn *as* text, where the hue has to survive and the sheet is behind it, and `asOnColor` for
+text drawn *on* the colour, where the hue is the ground and only legibility is left to decide.
+
+**Rejected: white everywhere.** It is what the reference this was taken from does, and it is the
+reason four of its chips are hard to read. A uniform rule looks more deliberate in a screenshot of
+five chips and worse in a list of eighteen.
 
 ### Text that trails a heading enters from the side
 

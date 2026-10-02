@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -29,17 +30,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import io.nicolaszurbuchen.tallgrass.core.type.presentation.component.TypeIcon
+import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.design.theme.AppDuration
 import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
+import io.nicolaszurbuchen.tallgrass.design.theme.asOnColor
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MatchupGroupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -331,9 +334,9 @@ private fun MatchupRow(
             // Staggered per chip rather than per row, because a flow does not report where it broke.
             // AppStagger's own cap holds eighteen of them under four hundred milliseconds, which is
             // what the row grouping was there to avoid.
-            group.types.forEachIndexed { offset, matchup ->
+            group.types.forEachIndexed { offset, type ->
                 MatchupChip(
-                    matchup = matchup,
+                    type = type,
                     modifier = Modifier.pop(entranceFraction(firstChipIndex + offset, elapsedMillis)),
                 )
             }
@@ -343,25 +346,25 @@ private fun MatchupRow(
 
 @Composable
 private fun MatchupChip(
-    matchup: TypeMatchupUiModel,
+    type: TypeUiModel,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MaterialTheme.appColors
-
-    // The chip is its type's colour twice over: a wash of it behind, and the same hue pushed off
-    // that wash in front.
-    val ground = lerp(colors.surface, matchup.typeColor, GROUND_TINT)
-    val label = matchup.typeColor.asLabelColor()
+    // **Black or white by what the ground is, not white everywhere.** Four of the eighteen are
+    // nearly white themselves -- Electric, Ice, Steel, Ground -- and a white label on those measures
+    // about 1.5:1, which is the contrast the wash this chip used to have was chosen to avoid.
+    val content = type.color.asOnColor()
 
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
         modifier =
             modifier
-                .clip(MaterialTheme.shapes.small)
-                .background(ground)
-                .padding(horizontal = MaterialTheme.spacing.md, vertical = MaterialTheme.spacing.sm),
+                .clip(RoundedCornerShape(CHIP_CORNER))
+                .background(type.color)
+                .padding(horizontal = CHIP_PADDING_HORIZONTAL, vertical = CHIP_PADDING_VERTICAL),
     ) {
-        Text(text = matchup.typeLabel, style = MaterialTheme.typography.bodyMedium, color = label)
+        TypeIcon(type = type, color = content, modifier = Modifier.size(GLYPH_SIZE))
+        Text(text = type.label, style = MaterialTheme.typography.labelSmall, color = content)
     }
 }
 
@@ -370,9 +373,18 @@ private val LANE_HEIGHT = 6.dp
 // Name, figure and lane, which the legend has nothing to say about.
 private const val LEGEND_LEADING_CELLS = 3
 
-// Enough of the type's colour for the chip to be identifiable at a glance, little enough that the
-// label on top of it still has somewhere to go.
-private const val GROUND_TINT = 0.18f
+// Larger than any radius in the shape scale, because a chip is a stadium rather than a rounded box.
+// The same figure TypePill uses, so the two read as the same object at different sizes.
+private val CHIP_CORNER = 999.dp
+
+// Off the spacing scale, as TypePill's are and for the same reason: a stadium curves away from its
+// contents at both ends, so a pill padded to the scale has visibly less room than a box would.
+private val CHIP_PADDING_HORIZONTAL = 10.dp
+private val CHIP_PADDING_VERTICAL = 6.dp
+
+// Square vectors, sized against an 11sp label: large enough to be a symbol rather than a speck,
+// small enough that the name is still what the chip is read by.
+private val GLYPH_SIZE = 16.dp
 
 // Narrower than the About tab's label column, which holds words. This one holds "×4" and everything
 // past it would come out of the chips.

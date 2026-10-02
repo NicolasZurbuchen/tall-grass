@@ -8,7 +8,6 @@ import io.nicolaszurbuchen.tallgrass.core.type.presentation.mapper.toUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MatchupGroupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
-import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.TypeMatchupUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_dynamax_hp
@@ -95,12 +94,7 @@ private fun List<Int>.toMatchupGroupsUiModel(matchups: List<TypeMatchup>): List<
         byFactor[factor]?.let { rows ->
             MatchupGroupUiModel(
                 factorText = FACTOR_LABELS.getValue(factor),
-                types =
-                    rows.map { matchup ->
-                        val type = matchup.attackingType.toUiModel()
-
-                        TypeMatchupUiModel(typeLabel = type.label, typeColor = type.color)
-                    },
+                types = rows.map { it.attackingType.toUiModel() },
             )
         }
     }
