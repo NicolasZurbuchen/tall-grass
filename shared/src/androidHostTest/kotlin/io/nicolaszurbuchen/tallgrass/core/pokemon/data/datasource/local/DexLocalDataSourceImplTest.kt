@@ -110,7 +110,6 @@ private fun PokedexDatabase.insertVariant(
         formLabel = formLabel,
         form = formLabel?.let { slug.substringAfter("-", "") }?.ifEmpty { null },
         formKind = if (formLabel == null) "NONE" else "ALTERNATE",
-        isMega = false,
         isBattleOnly = false,
         isDefault = formLabel == null,
         listedInDex = listed,

@@ -125,7 +125,6 @@ private fun PokedexDatabase.insertVariant(
         formLabel = formLabel,
         form = if (isDefault) null else "alola",
         formKind = formKind,
-        isMega = false,
         isBattleOnly = false,
         isDefault = isDefault,
         listedInDex = true,

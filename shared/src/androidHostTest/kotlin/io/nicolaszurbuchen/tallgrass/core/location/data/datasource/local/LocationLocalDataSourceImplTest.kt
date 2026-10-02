@@ -296,7 +296,6 @@ private fun PokedexDatabase.insertVariant(
         formLabel = null,
         form = null,
         formKind = "NONE",
-        isMega = false,
         isBattleOnly = false,
         isDefault = listed,
         listedInDex = listed,
