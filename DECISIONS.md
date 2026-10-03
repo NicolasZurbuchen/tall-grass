@@ -681,12 +681,30 @@ They wrap instead, each sized to its own text. What is lost is the row index the
 a flow does not report where it broke; the stagger is per chip now, and `AppStagger`'s cap holds
 eighteen of them under four hundred milliseconds, which is what the row grouping was there to avoid.
 
-**The label is the type's own colour, shifted.** A chip filled with `TypeUiModel.color` at full
-strength is the dex card's problem again — see *A type pill on the type's own colour is a scrim* — so
-the ground is an 18% wash of it and the label is the same hue moved 45% toward black on a light
-sheet, or toward white on a dark one. Pure Grass measures 1.9:1 against white; the shift is what
-makes it a colour rather than a suggestion, and it has to know the theme because "darker" is only
-legible in one of them.
+### A matchup chip is filled with its type's colour, and its label is white
+
+It was an 18% wash of that colour with the same hue shifted 45% toward the far end of the theme as the
+label, which was legible and quiet — eighteen pale lozenges that had to be read word by word. Filled,
+each chip is the colour the reader already associates with the type, and the symbol means the common
+ones stop being read at all.
+
+**The label is white on all eighteen, which is a trade and not a default.** The measurement is not
+close: white puts thirteen of them under 4.5:1 — Electric at 1.5, Ice at 1.6, Ground at 1.8, Steel at
+2.0 — because these colours were chosen to be told apart from each other rather than to be written on.
+Choosing black or white by the ground's luminance scores far better, worst chip 5.6:1.
+
+It lost anyway, on what the chips are *for*. A matchup chip is read as a colour and a symbol; the word
+confirms it. The four palest grounds are also among the most recognisable in the palette, so what the
+per-type rule buys is legibility on the part the reader is least dependent on, at the price of a label
+that changes colour halfway down the list — a visible inconsistency on every chip, including the
+thirteen that did not need it.
+
+**So this is the one type-coloured surface in the app without a contrast rule behind its text.**
+`asLabelColor` still governs a type's colour drawn *as* text on the sheet, where the hue has to survive
+and the word is all there is. Its opposite number — `asOnColor`, which tested the ground's luminance
+and answered black or white — existed for these chips alone and was deleted with them. If a filled
+type-coloured surface ever carries text that has to be *read* rather than confirmed, that is the
+function to bring back; `git log -S asOnColor` is where it went.
 
 ### Text that trails a heading enters from the side
 
