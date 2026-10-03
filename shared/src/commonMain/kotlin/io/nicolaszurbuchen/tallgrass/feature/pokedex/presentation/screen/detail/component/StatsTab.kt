@@ -37,7 +37,6 @@ import io.nicolaszurbuchen.tallgrass.design.theme.AppEasing
 import io.nicolaszurbuchen.tallgrass.design.theme.ENTRANCE_DONE
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
-import io.nicolaszurbuchen.tallgrass.design.theme.asOnColor
 import io.nicolaszurbuchen.tallgrass.design.theme.entranceFraction
 import io.nicolaszurbuchen.tallgrass.design.theme.pop
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
@@ -349,11 +348,6 @@ private fun MatchupChip(
     type: TypeUiModel,
     modifier: Modifier = Modifier,
 ) {
-    // **Black or white by what the ground is, not white everywhere.** Four of the eighteen are
-    // nearly white themselves -- Electric, Ice, Steel, Ground -- and a white label on those measures
-    // about 1.5:1, which is the contrast the wash this chip used to have was chosen to avoid.
-    val content = type.color.asOnColor()
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.xs),
@@ -363,8 +357,8 @@ private fun MatchupChip(
                 .background(type.color)
                 .padding(horizontal = CHIP_PADDING_HORIZONTAL, vertical = CHIP_PADDING_VERTICAL),
     ) {
-        TypeIcon(type = type, color = content, modifier = Modifier.size(GLYPH_SIZE))
-        Text(text = type.label, style = MaterialTheme.typography.labelSmall, color = content)
+        TypeIcon(type = type, color = CHIP_CONTENT, modifier = Modifier.size(GLYPH_SIZE))
+        Text(text = type.label, style = MaterialTheme.typography.labelSmall, color = CHIP_CONTENT)
     }
 }
 
@@ -372,6 +366,11 @@ private val LANE_HEIGHT = 6.dp
 
 // Name, figure and lane, which the legend has nothing to say about.
 private const val LEGEND_LEADING_CELLS = 3
+
+// White on all eighteen grounds rather than chosen per type, which is a deliberate trade and not an
+// oversight: it is uniform, and on the paler types it is under the 4.5:1 a label would otherwise
+// want. DECISIONS.md § A matchup chip is filled with its type's colour, and its label is white
+private val CHIP_CONTENT = Color.White
 
 // Larger than any radius in the shape scale, because a chip is a stadium rather than a rounded box.
 // The same figure TypePill uses, so the two read as the same object at different sizes.
