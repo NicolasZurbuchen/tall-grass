@@ -190,11 +190,12 @@ class GetMaxMovesForVariantUseCaseTest {
     @Test
     fun invoke_readsNothingWhenTheFormLearnsNothing() =
         runTest {
-            // The Arceus and Silvally case, reached through a form that cannot Gigantamax anyway. The
-            // catalogue read is skipped rather than made and thrown away.
+            // No form in the dataset learns nothing now that the ones upstream files no rows for
+            // borrow their base form's, so this is a guard rather than a case: the catalogue read is
+            // skipped rather than made and thrown away.
             val repository = FakeMoveRepository(maxMoves = catalogue)
 
-            assertEquals(emptyList(), GetMaxMovesForVariantUseCase(repository)("arceus-fire"))
+            assertEquals(emptyList(), GetMaxMovesForVariantUseCase(repository)("blastoise-gmax"))
             assertEquals(0, repository.maxMovesCallCount)
         }
 }

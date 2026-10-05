@@ -54,7 +54,8 @@ class DetailUiMapperTest {
 
     @Test
     fun toUiModel_movesTabIsNotLoadingOnceTheReadLandsOnNothing() {
-        // What an Arceus form looks like: read, and genuinely learning nothing of its own.
+        // A read that landed on nothing. The dataset no longer produces a form like this, but which
+        // of the two things an empty list means is the mapper's decision rather than the data's.
         val read = state().copy(moves = mapOf("charizard" to emptyList())).toUiModel(charizardHandoff)
 
         assertTrue(assertNotNull(read.content).moves.isLoading.not())
