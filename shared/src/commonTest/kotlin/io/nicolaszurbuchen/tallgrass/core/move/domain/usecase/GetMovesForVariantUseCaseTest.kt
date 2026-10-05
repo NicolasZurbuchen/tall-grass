@@ -20,10 +20,11 @@ class GetMovesForVariantUseCaseTest {
         }
 
     @Test
-    fun invoke_returnsEmptyForAFormThatLearnsNothingOfItsOwn() =
+    fun invoke_returnsEmptyForAVariantWithNoRows() =
         runTest {
-            // Every Mega and Gigantamax: they learn what their base form learns and upstream does not
-            // repeat the rows. An empty list is the answer rather than the absence of one.
+            // No form in the dataset is like this any more: the ones upstream files no rows for borrow
+            // their base form's. The use case must still report what the database holds rather than
+            // reach for a base form of its own, which is a decision taken once at generation time.
             val useCase = GetMovesForVariantUseCase(FakeMoveRepository(variantMoves = moves))
 
             assertTrue(useCase("charizard-mega-x").isEmpty())

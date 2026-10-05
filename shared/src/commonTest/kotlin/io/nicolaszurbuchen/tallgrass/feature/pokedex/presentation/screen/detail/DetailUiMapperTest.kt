@@ -40,9 +40,9 @@ class DetailUiMapperTest {
      * **The one thing on this tab that absence used to mean twice.**
      *
      * The Moves tab reads for itself when it is first opened for a form, so a form with no entry in
-     * the map has not been read and a form with an empty entry learns nothing. Flattened with
-     * `orEmpty()` the two are the same list, and the tab said "learns what its base form learns" in
-     * the frame before every read landed.
+     * the map has not been read. Flattened with `orEmpty()` that is the same list a form learning
+     * nothing would give, and the tab drew as though the read had landed on nothing in the frame
+     * before it actually did.
      */
     @Test
     fun toUiModel_movesTabIsLoadingUntilTheReadForThisFormLands() {
@@ -54,7 +54,8 @@ class DetailUiMapperTest {
 
     @Test
     fun toUiModel_movesTabIsNotLoadingOnceTheReadLandsOnNothing() {
-        // What an Arceus form looks like: read, and genuinely learning nothing of its own.
+        // A read that landed on nothing. The dataset no longer produces a form like this, but which
+        // of the two things an empty list means is the mapper's decision rather than the data's.
         val read = state().copy(moves = mapOf("charizard" to emptyList())).toUiModel(charizardHandoff)
 
         assertTrue(assertNotNull(read.content).moves.isLoading.not())
