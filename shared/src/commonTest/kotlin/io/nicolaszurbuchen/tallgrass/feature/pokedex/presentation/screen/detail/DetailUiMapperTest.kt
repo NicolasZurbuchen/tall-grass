@@ -36,6 +36,45 @@ class DetailUiMapperTest {
         assertTrue(ui.isLoading)
     }
 
+    /**
+     * **The one thing on this tab that absence used to mean twice.**
+     *
+     * The Moves tab reads for itself when it is first opened for a form, so a form with no entry in
+     * the map has not been read. Flattened with `orEmpty()` that is the same list a form learning
+     * nothing would give, and the tab drew as though the read had landed on nothing in the frame
+     * before it actually did.
+     */
+    @Test
+    fun toUiModel_movesTabIsLoadingUntilTheReadForThisFormLands() {
+        val unread = assertNotNull(state().toUiModel(charizardHandoff).content)
+
+        assertTrue(unread.moves.isLoading)
+        assertTrue(unread.moves.learned.isEmpty())
+    }
+
+    @Test
+    fun toUiModel_movesTabIsNotLoadingOnceTheReadLandsOnNothing() {
+        // What an Arceus form looks like: read, and genuinely learning nothing of its own.
+        val read = state().copy(moves = mapOf("charizard" to emptyList())).toUiModel(charizardHandoff)
+
+        assertTrue(assertNotNull(read.content).moves.isLoading.not())
+        assertTrue(assertNotNull(read.content).moves.learned.isEmpty())
+    }
+
+    @Test
+    fun toUiModel_movesTabGoesBackToLoadingWhenTheFormChangesUnderIt() {
+        // A swipe or a form switch points the tab at a variant nobody has read, which is the gap the
+        // skeleton fills. The map is keyed by form for exactly this reason.
+        val readOne = state().copy(moves = mapOf("charizard" to emptyList()))
+
+        assertTrue(assertNotNull(readOne.toUiModel(charizardHandoff).content).moves.isLoading.not())
+        assertTrue(
+            assertNotNull(
+                readOne.copy(activeVariantSlug = "charizard-mega-x").toUiModel(charizardHandoff).content,
+            ).moves.isLoading,
+        )
+    }
+
     @Test
     fun toUiModel_keepsTheTappedCardsKeyWhileTheTappedFormIsOnScreen() {
         assertEquals(dexArtworkKey("charizard"), state().toUiModel(charizardHandoff).heroes.single().artworkKey)

@@ -19,14 +19,10 @@ data class DetailContentUiModel(
     val tab: DetailTabUiModel,
     val about: AboutUiModel,
     val stats: StatsUiModel,
-    // Both fill together, the first time the Moves tab is opened for this form. Every Pokemon has at
-    // least one ability, so an empty list here means the read has not happened yet.
-    val abilities: List<VariantAbilityUiModel>,
-    // Empty while the tab has not been opened for this form, and only then. Every form learns
-    // something -- the ones upstream files no rows for by borrowing their base form's -- so there is
-    // no second reading of an empty list here, and the tab has no empty state.
-    val moves: List<VariantMoveUiModel>,
-    // Its own model rather than more fields here, because the tab has a selection of its own: which
-    // game is open is a fact about this tab and survives switching to Stats and back.
+    // Its own model rather than loose lists here, because the tab reads for itself and so has a
+    // state About and Stats do not: not read yet.
+    val moves: MovesUiModel,
+    // Its own model for the same reason and one more: the tab has a selection of its own, and which
+    // game is open survives switching to Stats and back.
     val location: LocationUiModel,
 )

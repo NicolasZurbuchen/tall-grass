@@ -248,7 +248,9 @@ class DetailStoreFactory(
          * what should happen — a tab holding half of itself is not loaded.
          *
          * Failures are swallowed, like the carousel's: a tab that cannot be read is worth less than
-         * an error message covering the Pokemon they came to see.
+         * an error message covering the Pokemon they came to see. What a swallowed failure looks
+         * like is the skeleton, which is the honest reading -- nothing was read -- and leaving the
+         * tab and coming back retries, because the guard is still false.
          */
         private fun loadTab(variantSlug: String) {
             if (state().moves.containsKey(variantSlug)) return
@@ -278,7 +280,8 @@ class DetailStoreFactory(
          * Cached per variant on the same grounds as the moves: a reader comparing two forms switches
          * back and forth, and the second look should not read again. Failures are swallowed for the
          * same reason too -- a tab that cannot be read is worth less than an error message covering
-         * the Pokemon they came to see.
+         * the Pokemon they came to see -- and leave the skeleton up, which a return to the tab
+         * retries.
          */
         private fun loadAvailability(variantSlug: String) {
             if (state().availability.containsKey(variantSlug)) return

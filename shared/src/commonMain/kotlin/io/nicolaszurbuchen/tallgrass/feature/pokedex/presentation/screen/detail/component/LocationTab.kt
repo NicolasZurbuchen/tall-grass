@@ -92,14 +92,25 @@ fun LocationTab(
             color = tint.asLabelColor(),
         )
 
-        if (location.selected == null) {
-            AvailabilityGrid(grid = location.grid, onVersionClick = onVersionClick)
-        } else {
-            AvailabilityBreadcrumb(
-                cell = location.selected,
-                summary = location.breadcrumbText ?: UiText.Raw(""),
-                onClick = onBreadcrumbClick,
-            )
+        when {
+            // The grid is the tab's own read rather than the detail's, so it is empty for the frame
+            // between opening the tab and the database answering. Left to draw itself that is a
+            // heading over nothing, which reads as a Pokemon that is in no game at all.
+            location.isLoading -> {
+                TabContentSkeleton(rows = GRID_SKELETON_ROWS)
+            }
+
+            location.selected == null -> {
+                AvailabilityGrid(grid = location.grid, onVersionClick = onVersionClick)
+            }
+
+            else -> {
+                AvailabilityBreadcrumb(
+                    cell = location.selected,
+                    summary = location.breadcrumbText ?: UiText.Raw(""),
+                    onClick = onBreadcrumbClick,
+                )
+            }
         }
 
         location.emptyText?.let {
@@ -244,3 +255,6 @@ private val BAR_HEIGHT = 4.dp
 private val METHOD_PILL_WIDTH = 96.dp
 
 private const val DETAIL_SEPARATOR = " · "
+
+// Roughly the height of the grid this stands in for: five consoles' worth of rows.
+private const val GRID_SKELETON_ROWS = 5

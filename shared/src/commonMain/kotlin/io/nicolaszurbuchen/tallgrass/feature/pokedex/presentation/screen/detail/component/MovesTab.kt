@@ -24,6 +24,7 @@ import io.nicolaszurbuchen.tallgrass.core.move.presentation.component.DamageClas
 import io.nicolaszurbuchen.tallgrass.design.theme.appColors
 import io.nicolaszurbuchen.tallgrass.design.theme.asLabelColor
 import io.nicolaszurbuchen.tallgrass.design.theme.spacing
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantAbilityUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.VariantMoveUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.asString
@@ -53,34 +54,45 @@ import tallgrass.shared.generated.resources.pokedex_detail_moves_heading
  */
 @Composable
 fun MovesTab(
-    abilities: List<VariantAbilityUiModel>,
-    moves: List<VariantMoveUiModel>,
+    moves: MovesUiModel,
     tint: Color,
     onAbilityClick: (String) -> Unit,
     onMoveClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // **Drawn before anything else, because the tab reads for itself.** It does so the first time it
+    // is opened for a form, and a swipe onto another card opens it again for a form nobody has read
+    // yet. Without this the gap rendered for a frame as two headings with nothing under them.
+    if (moves.isLoading) {
+        TabContentSkeleton(modifier = modifier)
+        return
+    }
+
     Column(modifier = modifier.fillMaxWidth()) {
-        // Absent rather than empty-stated. Every Pokemon has at least one ability, so nothing here
-        // means the read has not landed — and a heading over a "none" that cannot happen would be
-        // answering a question nobody asked.
-        if (abilities.isNotEmpty()) {
+        // Absent rather than empty-stated. Every Pokemon has at least one ability, so a heading over
+        // a "none" that cannot happen would be answering a question nobody asked.
+        if (moves.abilities.isNotEmpty()) {
             SectionHeading(title = Res.string.pokedex_detail_abilities, tint = tint, isFirst = true)
 
             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
-                abilities.forEach { ability ->
+                moves.abilities.forEach { ability ->
                     AbilityRow(ability = ability, onClick = { onAbilityClick(ability.slug) })
                 }
             }
         }
 
-        SectionHeading(title = Res.string.pokedex_detail_moves_heading, tint = tint, isFirst = abilities.isEmpty())
+        SectionHeading(
+            title = Res.string.pokedex_detail_moves_heading,
+            tint = tint,
+            isFirst = moves.abilities.isEmpty(),
+        )
 
-        // No empty state, as above: every one of the 1,385 forms learns something now that the ones
-        // upstream files no rows for borrow their base form's, so nothing here means the read has not
-        // landed. `DatasetTest.everyPokemon_learnsSomething` is what keeps that true.
+        // Absent rather than empty-stated, as the abilities are. Every one of the 1,385 forms learns
+        // something now that the ones upstream files no rows for borrow their base form's, and the
+        // read has a state of its own above, so there is nothing left for an empty list to mean.
+        // `DatasetTest.everyPokemon_learnsSomething` is what keeps that true.
         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
-            moves.forEach { move ->
+            moves.learned.forEach { move ->
                 MoveRow(move = move, onClick = { onMoveClick(move.slug) })
             }
         }
