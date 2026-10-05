@@ -629,7 +629,7 @@ class DatasetTest {
                 .filterValues { it > 1 }
 
         assertTrue(duplicated.isEmpty(), "A Pokemon listed twice for one move: $duplicated")
-        assertEquals(71864, learnset.sumOf { it.learnedBy.size })
+        assertEquals(75077, learnset.sumOf { it.learnedBy.size })
     }
 
     @Test
@@ -663,9 +663,13 @@ class DatasetTest {
      * `meowstic-female` and not from the species' default form, which is the male and genuinely learns
      * a different set; `urshifu-rapid-strike-gmax` borrows from the rapid strike style for the same
      * reason. Resolving either through `isDefault` alone would look right everywhere else.
+     *
+     * The type forms are here for the opposite reason: upstream files them no row at all, so the
+     * assertion is that the gap was filled rather than that wrong rows were replaced. Arceus holds a
+     * plate and Silvally a memory, and neither is a thing a Pokemon learns moves from.
      */
     @Test
-    fun everyMegaAndGigantamax_learnsExactlyWhatItsBaseFormLearns() {
+    fun everyFormThatBorrows_learnsExactlyWhatItsBaseFormLearns() {
         val movesOf = { slug: String ->
             learnset.filter { entry -> entry.learnedBy.any { it.variant == slug } }
                 .map { entry -> entry.slug to entry.learnedBy.single { it.variant == slug }.let { it.method to it.level } }
@@ -682,6 +686,9 @@ class DatasetTest {
                 // default form answers after all.
                 "pyroar-mega" to "pyroar-male",
                 "zygarde-mega" to "zygarde-50",
+                // No word comes off these, so the species' default form answers by the same fallback.
+                "arceus-fire" to "arceus",
+                "silvally-steel" to "silvally",
             )
 
         borrowed.forEach { (form, base) ->
@@ -690,19 +697,21 @@ class DatasetTest {
         }
     }
 
+    /**
+     * **Every one of the 1,385 learns something, and the Moves tab is written in the knowledge that
+     * it does.** There is no empty state on it: a form with nothing to show would render a heading
+     * over a blank, so this is where that is caught rather than on a device.
+     *
+     * Reachable without a code change. A species upstream adds before it fills in `pokemon_moves`
+     * arrives with no rows on either the default form or anything borrowing from it, and the answer is
+     * a judgement -- exclude it from the dex, or show the tab an empty state again -- rather than
+     * something the generator should pick.
+     */
     @Test
-    fun everyPokemonWithNoLearnset_isAFormThatBorrowsOne() {
-        // Arceus and Silvally, whose seventeen type forms each have no `pokemon` row of their own and
-        // so no rows to have. What would be wrong is a card in the grid with nothing behind it.
+    fun everyPokemon_learnsSomething() {
         val taught = learnset.flatMap { it.learnedBy }.map { it.variant }.toSet()
-        val untaught = variants.filterNot { it.slug in taught }
 
-        assertTrue(
-            untaught.none { it.listedInDex },
-            "Dex cards with no moves: ${untaught.filter { it.listedInDex }.map { it.slug }}",
-        )
-        assertEquals(setOf(FormKind.ALTERNATE), untaught.map { it.formKind }.toSet())
-        assertEquals(34, untaught.size)
+        assertEquals(emptyList(), variants.filterNot { it.slug in taught }.map { it.slug })
     }
 
     // endregion
