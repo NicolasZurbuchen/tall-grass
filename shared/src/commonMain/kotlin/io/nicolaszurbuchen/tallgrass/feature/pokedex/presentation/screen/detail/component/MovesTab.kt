@@ -32,7 +32,6 @@ import org.jetbrains.compose.resources.stringResource
 import tallgrass.shared.generated.resources.Res
 import tallgrass.shared.generated.resources.pokedex_detail_abilities
 import tallgrass.shared.generated.resources.pokedex_detail_moves_heading
-import tallgrass.shared.generated.resources.pokedex_detail_no_moves
 
 /**
  * What this form can do: the abilities it has, then every move it learns.
@@ -77,19 +76,9 @@ fun MovesTab(
 
         SectionHeading(title = Res.string.pokedex_detail_moves_heading, tint = tint, isFirst = abilities.isEmpty())
 
-        if (moves.isEmpty()) {
-            // Arceus and Silvally, whose seventeen type forms each have no row of their own upstream
-            // and learn exactly what their base form learns. Said out loud, because an empty list
-            // reads as a read that has not finished rather than as an answer.
-            Text(
-                text = stringResource(Res.string.pokedex_detail_no_moves),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.appColors.textSecondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            return@Column
-        }
-
+        // No empty state, as above: every one of the 1,385 forms learns something now that the ones
+        // upstream files no rows for borrow their base form's, so nothing here means the read has not
+        // landed. `DatasetTest.everyPokemon_learnsSomething` is what keeps that true.
         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
             moves.forEach { move ->
                 MoveRow(move = move, onClick = { onMoveClick(move.slug) })

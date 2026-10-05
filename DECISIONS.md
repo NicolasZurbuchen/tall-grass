@@ -1200,7 +1200,7 @@ moves are untagged, and both want deciding rather than defaulting. See #66.
 `pokemon_moves` is 638,321 rows because it holds every version group a Pokemon has ever appeared in.
 Filtering each Pokemon to its most recent one is #7's latest-by-default applied to a table rather than
 to a screen: what a Pokemon learns is what it learns in the newest game that has it. That leaves
-62,777 rows across 1,268 Pokemon, which is what the Learned by tab reads.
+66,553 rows across 1,268 Pokemon, which is what the Learned by tab reads.
 
 **"Most recent" had to be asked more carefully than that, and the first version was wrong.** Version
 group 32 is Pokemon Champions, and every row in it is `train` — Legends: Arceus-style move mastery,
@@ -1211,7 +1211,24 @@ tab rendered, the list was empty, and an empty list is a legitimate answer for 1
 So the rows are filtered to the four methods that actually teach — level-up, machine, egg, tutor —
 *before* anything asks which version group is newest. The question became "the newest game in which
 this Pokemon actually learns something", which needs no list of titles to skip and answers the same
-way for whatever upstream adds next. A test pins Charizard at Flamethrower, level 46.
+way for whatever upstream adds next. A test pins Charizard at Flamethrower, level 30.
+
+**"Newest" was read off the wrong column, and that was wrong for the whole of Kanto.** The code took
+the highest `version_group_id`, on the reasoning that upstream numbers a version group when its games
+come out. It did, until `red-green-japan` and `blue-japan` were appended at ids 28 and 29 — behind
+Scarlet/Violet at 25. Every Pokemon in the 1996 Japanese carts then read as though 1996 were the
+newest game that had it: 151 of the 1,268, learning Bide and Rage and reaching Flamethrower at 46.
+
+What made it survive review is that a Generation I moveset is *plausible*. Nothing was missing and
+nothing was malformed; the levels were simply thirty years old. It surfaced only because Megas are not
+in those carts and kept a modern moveset, so switching to Mega Charizard appeared to rewrite the move
+list — a form-handling symptom for a data bug. `version_groups.order` is upstream's own answer and
+what the game grid four hundred lines down was already sorting on.
+
+**The test that should have caught it was asserting the bug.** It pinned Flamethrower at 46, written
+against output that was already wrong, so it passed and read as coverage. Same failure mode as a
+Konsist rule that cannot fail, reached from the other direction: a test written from the output rather
+than from the rule proves only that the code still does what it did.
 
 **One row per Pokemon and move, not one per way of getting it.** A move that is both a level-up move
 and a TM is one fact on a card and upstream files it twice; the generator keeps the most informative
@@ -1219,12 +1236,50 @@ answer — level-up first, because it is the one that carries a number. 71,940 r
 
 **Zero is not a level**, which is the same rule the move meta needed. Upstream writes 0 in the level
 column for every machine, egg and tutor row, and for the 160 level-up moves a Pokemon knows without
-being taught. Carried through, a TM would have read as being learned at level 0.
+being taught. and a TM would have read as being learned at level 0.
 
-The 117 Pokemon with no learnset at all are Megas, Gigantamaxes and alternate forms, which learn what
-their base form learns and which upstream does not duplicate rows for. **None of them is a dex card**,
-and a test says so — that is the difference between a known gap and a grid entry with nothing behind
-it.
+**Nothing has an empty learnset, and that is a rule rather than an observation.** A form upstream
+files no `pokemon_moves` row for takes its base form's set — see § A form that has no moves of its own
+borrows them — so all 1,385 learn something, and `DatasetTest.everyPokemon_learnsSomething` is what
+holds it. The Moves tab has no empty state as a result: an empty list there means the read has not
+landed and nothing else.
+
+### A form that has no moves of its own borrows them
+
+A Mega Evolution happens mid-battle and the Pokemon fights on with the four moves it came in with. A
+Gigantamax is the same kind of thing, and so is a plate on Arceus or a memory in Silvally: none of
+them is a Pokemon that learnt something different, so none has a learnset of its own to have.
+
+Upstream does not file it that way. It gives the Megas `pokemon` rows with learnsets, which quietly
+turns the question into *which games does this form appear in* — Mega Charizard X was reading Let's Go
+while Charizard read Scarlet/Violet, so the form switcher appeared to rewrite the move list. The
+Gigantamaxes and the 34 type forms get no rows at all, and read as Pokemon that know nothing.
+
+**The two cases are not the same case.** A Mega's own rows are *dropped*, because wrong rows are not a
+subset of right ones. A form with no rows has nothing to drop, and that rule is written about the
+missing rows rather than about Arceus and Silvally by name: a cosmetic form added upstream inherits
+instead of arriving empty, with no code change to make it do so.
+
+**The base form is read off the slug, and off `isDefault` only as a fallback.** `meowstic-female-mega`
+must borrow from `meowstic-female`, where the species default is the male and genuinely learns a
+different set; `urshifu-rapid-strike-gmax` is the same shape. Where no word comes off the slug —
+`pyroar-mega`, filed under `pyroar-male`, `zygarde-mega` under `zygarde-50`, and every type form,
+whose slug carries no marker at all — the default answers after all.
+
+**Rejected: a `borrowsFrom` pointer instead of copied rows.** `learnset.json` now repeats Arceus's 121
+moves seventeen times and Silvally's 68 seventeen times. That is 3,213 rows and 333KB, five per cent
+of the file, saying the same thing over and over where one field could have named the relationship.
+
+What the pointer costs is that resolution moves from one place to every reader. This file is an
+intermediate: the app never opens it, the generator rewrites it whole, and the database build turns it
+into `moveLearner` rows keyed by variant and move — which is where the repetition stops being
+repetition and becomes an index. A pointer would have to be followed by that build, by the detail
+screen's move list, and by every test that asks what a form knows, each with its own chance to get the
+slug-then-default fallback wrong. Expanded, *what does this form learn* is answered by reading one
+list, which is also what makes the file reviewable.
+
+The cost is repo size on a file nobody reads end to end, not payload: the app ships the database, and
+repeated rows compress and index like any others.
 
 ### The bundled dataset is replaced when it changes, not only when it is missing
 
