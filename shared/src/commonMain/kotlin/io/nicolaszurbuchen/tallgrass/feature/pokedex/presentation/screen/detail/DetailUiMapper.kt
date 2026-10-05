@@ -110,9 +110,9 @@ fun DetailState.toUiModel(hero: HeroHandoff): DetailUiModel {
                     stats = variant.toStatsUiModel(matchups[variant.slug].orEmpty()),
                     moves =
                         MovesUiModel(
-                            // The map is the answer, not what is in it. An entry that is an empty
-                            // list is a form that learns nothing; no entry at all is a read that has
-                            // not landed, and the two look identical once either is flattened.
+                            // The map is the answer, not what is in it. No entry at all is a read
+                            // that has not landed, and `orEmpty()` flattens that into the same list
+                            // a form learning nothing would give -- so the test is on the key.
                             isLoading = variant.slug !in moves,
                             abilities = abilities[variant.slug].orEmpty().map { it.toUiModel() },
                             learned = moves[variant.slug].orEmpty().map { it.toUiModel() },
