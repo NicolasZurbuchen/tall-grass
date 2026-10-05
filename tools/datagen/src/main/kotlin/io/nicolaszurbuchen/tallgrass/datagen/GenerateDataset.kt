@@ -824,30 +824,43 @@ private fun buildLearnset(
 }
 
 /**
- * Gives every Mega and Gigantamax the moves of the form it is a state of, in place of its own.
+ * Gives a form with no learnset of its own the moves of the form it is a state of.
  *
- * **A Mega Evolution happens mid-battle and the Pokemon fights on with the four moves it came in
- * with.** A Gigantamax is the same kind of thing. Neither is a Pokemon that learnt anything
- * different; it is one that changed shape, so its learnset is not its own fact to have.
+ * **Two kinds of form qualify, and not for the same reason.**
  *
- * Upstream files them as `pokemon` rows all the same, which quietly turns their learnset into a fact
- * about *which games the form appears in*. Charizard is read from Scarlet/Violet and Mega Charizard
- * X from Let's Go, because Let's Go is the newest game a Mega Charizard exists in -- so the detail
- * screen's form switcher appeared to rewrite the move list. The 34 Gigantamax forms have no rows
- * upstream at all and read as Pokemon that know nothing.
+ * A Mega Evolution happens mid-battle and the Pokemon fights on with the four moves it came in with;
+ * a Gigantamax is the same kind of thing. Neither is a Pokemon that learnt anything different, so
+ * neither has a learnset of its own to have -- and upstream files them as `pokemon` rows regardless,
+ * which quietly turns their learnset into a fact about *which games the form appears in*. Charizard
+ * is read from Scarlet/Violet and Mega Charizard X from Let's Go, because Let's Go is the newest game
+ * a Mega Charizard exists in, so the detail screen's form switcher appeared to rewrite the move list.
+ *
+ * The other kind is a form upstream files no row for at all: the 34 Gigantamaxes, and Arceus's and
+ * Silvally's seventeen type forms each, where the plate or the memory is carried rather than learnt.
+ * Nothing can be wrong with rows that do not exist, and what was wrong is the answer they produced --
+ * a Pokemon that knows nothing. **Stated as a rule about missing rows rather than about those two
+ * species**, so a cosmetic form added upstream inherits instead of arriving empty.
  *
  * The base form is whatever the slug says before the word that makes it one of these, which is not
  * the same as the species' default form: `meowstic-female-mega` borrows from `meowstic-female`, and
  * the default is the male, which genuinely learns a different set. Where the slug leaves nothing
- * behind -- `pyroar-mega`, whose base is filed as `pyroar-male`, and `zygarde-mega`, whose is
- * `zygarde-50` -- the default is the answer after all.
+ * behind -- `pyroar-mega`, whose base is filed as `pyroar-male`, `zygarde-mega`, whose is
+ * `zygarde-50`, and every type form, whose slug carries no such word at all -- the default is the
+ * answer after all.
  */
 private fun List<LearnsetJson>.withBorrowedForms(variants: List<VariantJson>): List<LearnsetJson> {
     val known = variants.map { it.slug }.toSet()
     val defaults = variants.filter { it.isDefault }.associate { it.speciesSlug to it.slug }
+    val taught = flatMap { it.learnedBy }.map { it.variant }.toSet()
 
+    // The second clause is the general rule and the first is the exception to it: a Mega or a
+    // Gigantamax borrows even where upstream gave it rows, because those rows are wrong rather than
+    // incomplete.
+    //
+    // A default form is never a borrower. One with no rows has nothing to borrow from either, and is
+    // a gap worth failing a test over rather than papering over.
     val borrowedFrom =
-        variants.filter { it.formKind in BORROWING_FORM_KINDS }
+        variants.filter { it.formKind in BORROWING_FORM_KINDS || (!it.isDefault && it.slug !in taught) }
             .associate { variant ->
                 val base = variant.slug.baseFormSlug()?.takeIf { it in known }
 
@@ -882,7 +895,10 @@ private fun String.baseFormSlug(): String? {
     return if (marker > 0) parts.take(marker).joinToString("-") else null
 }
 
-/** The two whose moves are their base form's by the rules of the game rather than by coincidence. */
+/**
+ * The two that borrow whatever upstream gave them, because their moves are their base form's by the
+ * rules of the game rather than by a gap in the data.
+ */
 private val BORROWING_FORM_KINDS = setOf(FormKind.MEGA, FormKind.GIGANTAMAX)
 
 /** `mega` covers `-mega`, `-mega-x`, `-mega-y` and Legends Z-A's `-mega-z` in one word. */
