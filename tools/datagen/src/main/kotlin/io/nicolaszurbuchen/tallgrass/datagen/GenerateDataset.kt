@@ -557,13 +557,13 @@ private fun buildMoveMeta(
  * Which Pokemon learn each move, from each Pokemon's most recent appearance.
  *
  * `pokemon_moves` is 638,321 rows because it holds every version group a Pokemon has ever been in.
- * Filtering each Pokemon to the highest version group it appears in leaves 71,940, which is #7's
+ * Filtering each Pokemon to the newest version group it learns anything in leaves 74,414, which is #7's
  * latest-by-default applied to a table rather than to a screen: what a Pokemon learns is what it
  * learns in the newest game that has it.
  *
  * **One row per Pokemon and move, not one per way of getting it.** A move that is both a level-up
  * move and a TM is one fact on a card, and upstream files it twice; [METHOD_PRIORITY] picks which
- * answer to keep, lowest level first where there are several. 71,940 rows become 46,679.
+ * answer to keep, lowest level first where there are several. 74,414 rows become 66,553.
  *
  * `train` is excluded and is not a way of learning anything -- it is Legends: Arceus's move mastery,
  * which sharpens a move the Pokemon already has. Left in, it would be 19,810 rows claiming a Pokemon
@@ -589,24 +589,32 @@ private fun buildLearnset(
         source.read("pokemon_moves")
             .filter { methods[it.int("pokemon_move_method_id")] in METHOD_PRIORITY }
 
-    // Highest wins because upstream allocates version group ids in release order, which is the only
-    // ordering it publishes. A generation added out of order upstream would need a real table here.
+    // **Upstream's own ordering column, not its ids.** This asked for the highest id, on the reasoning
+    // that a version group is numbered when its games come out -- which held until `red-green-japan`
+    // and `blue-japan` were added at 28 and 29, behind Scarlet/Violet at 25. Every Pokemon in the
+    // 1996 Japanese carts then read as though 1996 were the newest game that had it: Charizard learnt
+    // Flamethrower at 46 and knew Bide, Rage and Submission, and 151 of them were wrong together.
+    //
+    // `order` is what upstream publishes for exactly this question, and what [buildVersions] four
+    // hundred lines down already sorts the game grid on.
+    val releaseOrder = source.read("version_groups").associate { it.int("id") to it.int("order") }
+
     val newestPerPokemon =
         rows.groupBy { it.int("pokemon_id") }
-            .mapValues { (_, entries) -> entries.maxOf { it.int("version_group_id") } }
+            .mapValues { (_, entries) -> entries.maxOf { releaseOrder.getValue(it.int("version_group_id")) } }
 
     val best = mutableMapOf<Pair<String, String>, LearnerJson>()
 
     rows.forEach { row ->
         val pokemonId = row.int("pokemon_id")
-        if (row.int("version_group_id") != newestPerPokemon[pokemonId]) return@forEach
+        if (releaseOrder.getValue(row.int("version_group_id")) != newestPerPokemon[pokemonId]) return@forEach
 
         val variant = variantSlugs[pokemonId]?.takeIf { it in knownVariants } ?: return@forEach
         val move = moveSlugs[row.int("move_id")]?.takeIf { it in knownMoves } ?: return@forEach
         val method = methods[row.int("pokemon_move_method_id")]?.takeIf { it in METHOD_PRIORITY } ?: return@forEach
 
         // **Zero is not a level.** Upstream writes 0 in this column for every machine, egg and tutor
-        // row -- 33,677 of the 46,679 -- where the question does not arise, and for the 160 level-up
+        // row -- 48,163 of the 66,553 -- where the question does not arise, and for the 322 level-up
         // moves a Pokemon knows without being taught, which it learns on evolution or already has.
         // Carried through, a TM would say the move is learned at level 0.
         val level = row.intOrNull("level")?.takeIf { method == LEVEL_UP && it > 0 }

@@ -574,7 +574,31 @@ class DatasetTest {
             learnset.single { it.slug == "flamethrower" }.learnedBy.singleOrNull { it.variant == "charizard" }
 
         assertEquals("level-up", charizard?.method)
-        assertEquals(46, charizard?.level)
+
+        // Scarlet/Violet, which is where Charizard was always supposed to be read from. It was 46
+        // here until the release-order fix below, which is the Red/Blue figure.
+        assertEquals(30, charizard?.level)
+    }
+
+    /**
+     * **Upstream's ids stopped being release order, and 151 Pokemon quietly read as 1996.**
+     *
+     * `red-green-japan` and `blue-japan` were added at ids 28 and 29 -- behind Scarlet/Violet at 25 --
+     * so taking the highest id handed every Pokemon in those carts its Generation 1 moveset. Charizard
+     * knew Bide, Rage and Submission. The Megas are not in the Japanese carts and kept a modern set,
+     * which is what made switching form appear to change what a Pokemon knows.
+     *
+     * Bide is what this asserts on because it is unambiguous: nothing learns it past Generation 7, so
+     * a Kanto starter holding it can only have come from a 1996 read. The seven that keep it are Megas
+     * and Totems, whose own newest game still had it.
+     */
+    @Test
+    fun learnset_readsReleaseOrderRatherThanTheOrderIdsWereAssignedIn() {
+        val bide = learnset.single { it.slug == "bide" }.learnedBy.map { it.variant }.toSet()
+        val kanto = setOf("charizard", "blastoise", "venusaur", "pikachu", "mewtwo")
+
+        assertEquals(emptySet(), bide intersect kanto, "Kanto is reading its Japanese Blue moveset")
+        assertEquals(7, bide.size)
     }
 
     @Test
@@ -588,7 +612,7 @@ class DatasetTest {
                 .filterValues { it > 1 }
 
         assertTrue(duplicated.isEmpty(), "A Pokemon listed twice for one move: $duplicated")
-        assertEquals(62777, learnset.sumOf { it.learnedBy.size })
+        assertEquals(66553, learnset.sumOf { it.learnedBy.size })
     }
 
     @Test
@@ -606,7 +630,7 @@ class DatasetTest {
     fun learnset_isEmptyOnlyForMovesNobodyIsTaught() {
         // Z-moves, Max moves and the handful that only exist mid-battle. An empty list here is a fact
         // rather than a join that missed.
-        assertEquals(106, learnset.count { it.learnedBy.isEmpty() })
+        assertEquals(113, learnset.count { it.learnedBy.isEmpty() })
         assertTrue(learnset.single { it.slug == "assist" }.learnedBy.isEmpty())
         assertTrue(learnset.single { it.slug == "tackle" }.learnedBy.isNotEmpty())
     }
