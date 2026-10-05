@@ -18,8 +18,8 @@ import io.nicolaszurbuchen.tallgrass.design.theme.spacing
  *
  * Moves and Location are not filled by the detail read: they go to the database when they are first
  * opened for a form, and again when a swipe puts a form under them that nobody has read. Without
- * something here the gap rendered as each tab's empty state -- "learns nothing" on one, a heading
- * over a grid with no games in it on the other -- which is a wrong answer rather than a missing one.
+ * something here the gap rendered as each tab's own idea of nothing -- two bare headings on one, a
+ * heading over a grid with no games in it on the other -- a wrong answer rather than a missing one.
  *
  * No tab row, unlike [DetailSheetSkeleton]: by the time this draws the real one is already up, and
  * the reader is looking underneath it.

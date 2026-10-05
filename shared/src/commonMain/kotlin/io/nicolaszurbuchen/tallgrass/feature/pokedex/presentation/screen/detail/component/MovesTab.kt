@@ -36,7 +36,6 @@ import tallgrass.shared.generated.resources.pokedex_detail_abilities
 import tallgrass.shared.generated.resources.pokedex_detail_max_moves_heading
 import tallgrass.shared.generated.resources.pokedex_detail_max_moves_note
 import tallgrass.shared.generated.resources.pokedex_detail_moves_heading
-import tallgrass.shared.generated.resources.pokedex_detail_no_moves
 
 /**
  * What this form can do: the abilities it has, then every move it learns.
@@ -64,10 +63,9 @@ fun MovesTab(
     onMoveClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // **Drawn before anything else, because absence means two things here.** The tab reads for
-    // itself the first time it is opened for a form, and a swipe onto another card opens it again
-    // for a form nobody has read yet. Without this the gap rendered as the "learns nothing" message
-    // for a frame, which is the one thing on this tab that is meant to be rare.
+    // **Drawn before anything else, because the tab reads for itself.** It does so the first time it
+    // is opened for a form, and a swipe onto another card opens it again for a form nobody has read
+    // yet. Without this the gap rendered for a frame as two headings with nothing under them.
     if (moves.isLoading) {
         TabContentSkeleton(modifier = modifier)
         return
@@ -120,19 +118,10 @@ fun MovesTab(
             isFirst = moves.abilities.isEmpty(),
         )
 
-        if (moves.learned.isEmpty()) {
-            // Arceus and Silvally, whose seventeen type forms each have no row of their own upstream
-            // and learn exactly what their base form learns. Now that the read has a state of its
-            // own, this says only what it means.
-            Text(
-                text = stringResource(Res.string.pokedex_detail_no_moves),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.appColors.textSecondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            return@Column
-        }
-
+        // Absent rather than empty-stated, as the abilities are. Every one of the 1,385 forms learns
+        // something now that the ones upstream files no rows for borrow their base form's, and the
+        // read has a state of its own above, so there is nothing left for an empty list to mean.
+        // `DatasetTest.everyPokemon_learnsSomething` is what keeps that true.
         Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.sm)) {
             moves.learned.forEach { move ->
                 MoveRow(move = move, onClick = { onMoveClick(move.slug) })
