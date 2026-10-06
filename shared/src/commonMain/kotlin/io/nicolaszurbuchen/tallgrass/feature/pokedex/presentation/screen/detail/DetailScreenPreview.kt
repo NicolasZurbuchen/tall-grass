@@ -14,6 +14,7 @@ import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.FormPillUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.GenderUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.LocationUiModel
+import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MatchupGroupUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.MovesUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatBarUiModel
 import io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel.StatsUiModel
@@ -89,23 +90,48 @@ private fun DetailScreenPreview() {
                                 StatsUiModel(
                                     bars =
                                         listOf(
-                                            StatBarUiModel(UiText.Raw("HP"), "78", 0.49f),
-                                            StatBarUiModel(UiText.Raw("Attack"), "84", 0.53f),
-                                            StatBarUiModel(UiText.Raw("Defense"), "78", 0.49f),
-                                            StatBarUiModel(UiText.Raw("Sp. Atk"), "109", 0.68f),
-                                            StatBarUiModel(UiText.Raw("Sp. Def"), "85", 0.53f),
-                                            StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f),
+                                            // Charizard's real bands, so the preview shows the
+                                            // widths the columns actually have to hold.
+                                            StatBarUiModel(UiText.Raw("HP"), "78", 0.49f, "266", "360"),
+                                            StatBarUiModel(UiText.Raw("Attack"), "84", 0.53f, "155", "293"),
+                                            StatBarUiModel(UiText.Raw("Defense"), "78", 0.49f, "144", "280"),
+                                            StatBarUiModel(UiText.Raw("Sp. Atk"), "109", 0.68f, "200", "348"),
+                                            StatBarUiModel(UiText.Raw("Sp. Def"), "85", 0.53f, "157", "295"),
+                                            StatBarUiModel(UiText.Raw("Speed"), "100", 0.63f, "184", "328"),
                                         ),
                                     totalText = "534",
                                     totalFraction = 0.56f,
-                                    matchups =
+                                    totalMinText = "1106",
+                                    totalMaxText = "1904",
+                                    // Charizard, which has one of each kind of row: a lone x4, a
+                                    // pair at x2, an immunity, and a handful it barely feels.
+                                    weaknesses =
                                         listOf(
-                                            TypeMatchupUiModel("Rock", TypeUiModel.ROCK.color, "×4"),
-                                            TypeMatchupUiModel("Water", TypeUiModel.WATER.color, "×2"),
-                                            TypeMatchupUiModel("Electric", TypeUiModel.ELECTRIC.color, "×2"),
-                                            TypeMatchupUiModel("Ground", TypeUiModel.GROUND.color, "0"),
-                                            TypeMatchupUiModel("Grass", TypeUiModel.GRASS.color, "¼"),
-                                            TypeMatchupUiModel("Bug", TypeUiModel.BUG.color, "¼"),
+                                            MatchupGroupUiModel(
+                                                "×2",
+                                                listOf(
+                                                    TypeMatchupUiModel("Water", TypeUiModel.WATER.color),
+                                                    TypeMatchupUiModel("Electric", TypeUiModel.ELECTRIC.color),
+                                                ),
+                                            ),
+                                            MatchupGroupUiModel(
+                                                "×4",
+                                                listOf(TypeMatchupUiModel("Rock", TypeUiModel.ROCK.color)),
+                                            ),
+                                        ),
+                                    resistances =
+                                        listOf(
+                                            MatchupGroupUiModel(
+                                                "0",
+                                                listOf(TypeMatchupUiModel("Ground", TypeUiModel.GROUND.color)),
+                                            ),
+                                            MatchupGroupUiModel(
+                                                "¼",
+                                                listOf(
+                                                    TypeMatchupUiModel("Grass", TypeUiModel.GRASS.color),
+                                                    TypeMatchupUiModel("Bug", TypeUiModel.BUG.color),
+                                                ),
+                                            ),
                                         ),
                                 ),
                             moves =
