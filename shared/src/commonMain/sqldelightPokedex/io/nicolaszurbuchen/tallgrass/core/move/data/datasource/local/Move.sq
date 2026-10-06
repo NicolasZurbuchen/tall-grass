@@ -12,6 +12,11 @@ CREATE TABLE move (
     -- "physical", "special" or "status".
     damageClass TEXT NOT NULL,
     power       INTEGER,
+    -- What this move's power becomes when it is Dynamaxed, which is a step function of `power`
+    -- rather than a scaling of it -- and is not derivable from this table alone: 53 moves sit
+    -- outside the steps. Null for the status moves, which all become Max Guard, and for everything
+    -- nothing learns, which is the Z-Moves and the Max Moves themselves.
+    maxPower    INTEGER,
     accuracy    INTEGER,
     pp          INTEGER,
     priority    INTEGER NOT NULL,
@@ -73,8 +78,8 @@ countMoves:
 SELECT count(*) FROM move;
 
 insertMove:
-INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns, drain, healing, critRate, flinchChance, statChance)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO move(slug, name, generation, typeSlug, damageClass, power, maxPower, accuracy, pp, priority, target, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns, drain, healing, critRate, flinchChance, statChance)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertMoveStatChange:
 INSERT INTO moveStatChange(moveSlug, statSlug, change) VALUES (?, ?, ?);
@@ -91,9 +96,9 @@ ORDER BY name;
 -- the domain model, so the one mapper that touches both imports it aliased. Named rather than starred
 -- anyway: the list is what says a column was dropped rather than forgotten.
 selectMove:
-SELECT slug, name, generation, typeSlug, damageClass, power, accuracy, pp, priority, target,
-       shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns, maxTurns,
-       drain, healing, critRate, flinchChance, statChance
+SELECT slug, name, generation, typeSlug, damageClass, power, maxPower, accuracy, pp, priority,
+       target, shortEffect, effect, category, ailment, ailmentChance, minHits, maxHits, minTurns,
+       maxTurns, drain, healing, critRate, flinchChance, statChance
 FROM move
 WHERE slug = ?;
 

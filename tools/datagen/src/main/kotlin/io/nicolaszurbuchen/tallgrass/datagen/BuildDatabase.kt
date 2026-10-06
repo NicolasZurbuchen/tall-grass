@@ -111,6 +111,7 @@ fun main(args: Array<String>) {
                 typeSlug = entry.type,
                 damageClass = entry.damageClass,
                 power = entry.power?.toLong(),
+                maxPower = entry.maxPower?.toLong(),
                 accuracy = entry.accuracy?.toLong(),
                 pp = entry.pp?.toLong(),
                 priority = entry.priority.toLong(),

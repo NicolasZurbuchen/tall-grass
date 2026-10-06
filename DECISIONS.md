@@ -1582,3 +1582,43 @@ The search field on the Locations tab lost focus on every keystroke: it sits ins
 which recomposes whole each time the query changes. A field that cannot be typed into is worse than a
 long list, so it is gone rather than left broken. The filtering, the match count and their strings went
 with it.
+
+### The G-Max Moves are written by hand, because there is nowhere to read them from
+
+Every other row in this dataset comes from the pinned upstream CSVs. The 33 G-Max Moves cannot: PokéAPI's
+move table stops at 919 and has no `g-max-wildfire`, in the pin or in its live API. Nor is there any
+mapping from a Gigantamax form to its move. Without them a Gigantamax Charizard's Fire attacks read as
+Max Flare, which is the wrong move and the whole of what makes the form different.
+
+So `tools/datagen/src/main/resources/gmax-moves.json` is an **input** to generation rather than an
+output of it — the first in this project. It sits beside the generator rather than in `data/`, because
+`data/` is what generation writes and this is what it reads. Both files say inside themselves where
+they came from and when.
+
+**Which form has which G-Max Move is a learnset row**, not a column on the variant. It was a column at
+first, which meant the dataset answered "does this Pokémon have this move" in two places — and answered
+it wrongly in the one that already existed, where all 33 G-Max Moves sat with an empty `learnedBy` saying
+nothing had them while the variant said otherwise. The move's own screen had nothing to list under
+Learned by.
+
+The row carries a method of `gigantamax`, which is not one of upstream's four and not a way of learning
+anything: a Gigantamax form has its move by being that form, the way it has its types. It is still a
+learnset row, because the question has one table and that is it.
+
+The same is true of the Max Move powers, for a less obvious reason. A Max Move's power is not carried
+over from the base move and not scaled from it: it is a step function of it, seven bands wide, with a
+lower set of steps for Fighting and Poison. The bands are in the generator. They cover 386 of the 439
+moves that can be Dynamaxed, and the other 53 are in `max-move-power.json`: multi-hit moves, where the
+listed power is per hit and the bands read Rock Blast as the weakest thing there is; moves whose power
+varies with something other than themselves; and the fixed-damage moves, which have no power to look up
+at all.
+
+That file is the **complement of the rule rather than a selection from it** — it was built by applying
+the bands to all 439 rows and keeping every row they got wrong. That is what makes it checkable: it is
+not a list somebody thought of, it is what is left. `DatasetTest` asserts that every move a Gigantamax
+form can reach lands in one or the other, so a future pin that adds a move outside both fails there
+rather than printing a quietly wrong figure in the app.
+
+Storing the answer per move rather than computing it in the app is the same call: the exception table
+belongs on the generator's side of the line, and the app should read a number rather than carry 53 rows
+of transcription to work one out.
