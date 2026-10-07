@@ -145,6 +145,7 @@ object MoveFixtures {
             type = PokemonType.FIRE,
             damageClass = DamageClass.SPECIAL,
             power = 90,
+            maxPower = 130,
             method = LearnMethod.LEVEL_UP,
             level = 46,
         )
