@@ -143,7 +143,7 @@ class StatsUiMapperTest {
         // same word doing the work of a heading four times over.
         val doubled = variant().toStatsUiModel(everyKindOfMatchup).weaknesses.first { it.factorText == "×2" }
 
-        assertEquals(listOf("Water", "Electric"), doubled.types.map { it.typeLabel })
+        assertEquals(listOf(TypeUiModel.WATER, TypeUiModel.ELECTRIC), doubled.types)
     }
 
     @Test
@@ -157,10 +157,11 @@ class StatsUiMapperTest {
     }
 
     @Test
-    fun toStatsUiModel_colorsAMatchupByTheAttackingType() {
+    fun toStatsUiModel_namesTheAttackingTypeRatherThanTheDefendersOwn() {
+        // The chip draws the type's colour, its symbol and its name, so it is handed the type rather
+        // than a copy of the three. Rock is what hits Charizard for four, not what Charizard is.
         val chip = variant().toStatsUiModel(listOf(TypeMatchup(PokemonType.ROCK, 400))).weaknesses.single().types.single()
 
-        assertEquals(TypeUiModel.ROCK.color, chip.typeColor)
-        assertEquals("Rock", chip.typeLabel)
+        assertEquals(TypeUiModel.ROCK, chip)
     }
 }

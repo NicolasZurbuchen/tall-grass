@@ -1,7 +1,7 @@
 package io.nicolaszurbuchen.tallgrass.feature.pokedex.presentation.screen.detail.uimodel
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
+import io.nicolaszurbuchen.tallgrass.core.type.presentation.uimodel.TypeUiModel
 import io.nicolaszurbuchen.tallgrass.infra.text.UiText
 
 /**
@@ -58,15 +58,13 @@ data class StatBarUiModel(
  *
  * The factor used to be on every chip, which meant "×2" printed four times in a row on most
  * Pokemon. As a left-hand title it is said once and the chips get their width back.
+ *
+ * [types] is [TypeUiModel] rather than a wrapper around it. There was one, carrying a label and a
+ * colour copied off the type; once the chip started drawing the symbol too it was copying all three
+ * and adding nothing.
  */
 @Immutable
 data class MatchupGroupUiModel(
     val factorText: String,
-    val types: List<TypeMatchupUiModel>,
-)
-
-@Immutable
-data class TypeMatchupUiModel(
-    val typeLabel: String,
-    val typeColor: Color,
+    val types: List<TypeUiModel>,
 )
