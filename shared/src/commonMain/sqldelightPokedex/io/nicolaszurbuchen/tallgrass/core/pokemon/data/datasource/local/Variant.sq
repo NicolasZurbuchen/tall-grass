@@ -12,7 +12,7 @@ CREATE TABLE variant (
     form             TEXT,
     -- The closed taxonomy derived from it, which is what a screen filters on. See FormKind.kt.
     formKind         TEXT NOT NULL,
-    isMega           INTEGER AS kotlin.Boolean NOT NULL,
+
     isBattleOnly     INTEGER AS kotlin.Boolean NOT NULL,
     isDefault        INTEGER AS kotlin.Boolean NOT NULL,
     listedInDex      INTEGER AS kotlin.Boolean NOT NULL,
@@ -93,8 +93,8 @@ selectVariantsBySpecies:
 SELECT * FROM variant WHERE speciesDexNumber = ? ORDER BY sortOrder;
 
 insertVariant:
-INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isMega, isBattleOnly, isDefault, listedInDex, height, weight, baseExperience, artworkUrl, sortOrder)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO variant(slug, speciesDexNumber, speciesSlug, name, formLabel, form, formKind, isBattleOnly, isDefault, listedInDex, height, weight, baseExperience, artworkUrl, sortOrder)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertVariantType:
 INSERT INTO variantType(variantSlug, typeSlug, slot) VALUES (?, ?, ?);
