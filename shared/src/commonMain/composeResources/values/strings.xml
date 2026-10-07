@@ -76,6 +76,10 @@
     <string name="pokedex_detail_resistances">Resistances</string>
     <!-- Under the two right-hand columns of the stat table: what each stat reaches at level 100 with
          the worst and the best a trainer can do to it. Short, because they sit over three digits. -->
+    <!-- Under the stat table on a Gigantamax form, and the one battle figure on a screen of base
+         stats. Both ends of the multiplier are named because the ceiling alone reads as a flat
+         doubling: a Pokemon Dynamaxes at 1.5x and reaches 2x only at Dynamax Level 10. -->
+    <string name="pokedex_detail_dynamax_hp">Dynamaxed, HP is ×1.5 at Dynamax Level 0 and ×2 at Level 10 — %1$s to %2$s.</string>
     <string name="pokedex_detail_stat_min">Min</string>
     <string name="pokedex_detail_stat_max">Max</string>
 

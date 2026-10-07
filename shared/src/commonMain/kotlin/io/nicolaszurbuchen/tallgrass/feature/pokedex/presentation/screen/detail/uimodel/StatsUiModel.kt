@@ -25,6 +25,10 @@ data class StatsUiModel(
      */
     val totalMinText: String,
     val totalMaxText: String,
+    // Only for the Gigantamax forms, which is where the question comes up. Dynamaxing multiplies the
+    // HP a Pokemon already has rather than its base stat, so this is a note under the table rather
+    // than a seventh row in it -- there is nothing to put in the other four columns.
+    val dynamaxHpText: UiText?,
     // Two lists rather than one, because they answer different questions: what gets through, and
     // what bounces off. Either is empty for the Pokemon that has none of that kind -- Eelektross has
     // no weakness at all -- and the tab draws no heading over an empty one.

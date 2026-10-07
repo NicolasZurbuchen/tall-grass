@@ -66,6 +66,17 @@ fun StatsTab(
     Column(modifier = modifier.fillMaxWidth()) {
         StatTable(stats = stats, tint = tint)
 
+        // Under the table rather than in it: Dynamaxing multiplies the HP a Pokemon already has, so
+        // there is nothing to put in the other four columns and a seventh row would claim otherwise.
+        stats.dynamaxHpText?.let { text ->
+            Text(
+                text = text.asString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.appColors.textSecondary,
+                modifier = Modifier.fillMaxWidth().padding(top = MaterialTheme.spacing.md),
+            )
+        }
+
         // Two sections rather than eighteen chips in one flow. A reader sizing a Pokemon up asks
         // what gets through it and what bounces off, and those are different questions -- read as
         // one list they had to be told apart by the factor printed on each chip.
