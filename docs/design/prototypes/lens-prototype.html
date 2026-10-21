@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PROTOTYPE — game lens</title>
+<!--
+  PROTOTYPE, throwaway. Ticket: "Prototype the lens: switcher, fallback banner, dex chips, detail header" (#93).
+  Three variants of how the lens context is expressed, switchable via ?variant=A|B|C and the bottom bar (or ← →):
+    A — Corner chip:   lens is a small chip in the app bar; fallback is a slim strip; dex chips are a row.
+    B — Game colour:   the lens game tints the app bar; fallback is a card in the content; dex chips are tabs.
+    C — Context bar:   one persistent strip under the app bar carries lens + dex + context; fallback turns it amber.
+  Everything decided on map #87 is the same in all three; only where and how the context shows differs.
+  Data is a hand-picked handful of Pokémon. Dex numbers, cooldowns and some move values are illustrative.
+-->
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#e7e9f1;font-family:Poppins,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#2b2f45}
+  .stage{display:flex;justify-content:center;padding:24px 16px 90px}
+  .phone{width:360px;height:748px;background:#fff;border-radius:38px;overflow:hidden;position:relative;
+         box-shadow:0 40px 90px -40px rgba(40,44,80,.6),0 0 0 9px #1a1d2b;flex:0 0 auto}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column}
+  .scroll{flex:1;overflow-y:auto}
+  .scroll::-webkit-scrollbar{width:0}
+  button{font-family:inherit;cursor:pointer}
+
+  /* app bar */
+  .ab{display:flex;align-items:center;gap:8px;padding:36px 14px 10px;min-height:78px;background:#fff;transition:background .25s}
+  .ab .back{border:0;background:none;font-size:20px;color:inherit;padding:0 4px}
+  .ab .ttl{font-size:19px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chip{border:1.5px solid #e2e5ef;background:#fff;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:600;color:#2b2f45;white-space:nowrap}
+  .chip.nat{color:#6b7090}
+
+  /* variant B: game colour */
+  .vB .ab.tinted{color:#fff}
+  .vB .gamebadge{border:0;border-radius:8px;padding:4px 8px;font-size:10.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.18)}
+  .vB .gamebadge.nat{background:#eef0f6;color:#6b7090}
+
+  /* variant C: context bar */
+  .ctx{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#f4f5fa;border-bottom:1px solid #eceef5;font-size:11px;overflow-x:auto;white-space:nowrap}
+  .ctx::-webkit-scrollbar{height:0}
+  .ctx .lensbtn{border:0;background:#2b2f45;color:#fff;border-radius:7px;padding:5px 9px;font-size:11px;font-weight:600}
+  .ctx .sep{color:#c3c7d6}
+  .ctx .dexc{border:0;background:none;padding:3px 2px;font-size:11px;color:#8a8fa8;font-weight:600}
+  .ctx .dexc.on{color:#2b2f45;text-decoration:underline;text-underline-offset:4px}
+  .ctx.warn{background:#fff3d6;border-bottom-color:#f3dfa8}
+  .ctx.warn .lensbtn{background:#b7791f}
+
+  /* banners */
+  .strip{background:#fff3d6;color:#7a5410;font-size:11px;padding:7px 14px;border-bottom:1px solid #f3dfa8}
+  .bcard{margin:10px 14px 0;border-radius:14px;background:#fff8e6;border:1.5px solid #f3dfa8;padding:11px 12px;font-size:11.5px;color:#6b4a0d;display:flex;gap:10px;align-items:flex-start}
+  .bcard b{display:block;font-size:12px;margin-bottom:2px}
+  .label{font-size:10px;color:#9095ad;padding:4px 14px 0}
+
+  /* dex chips */
+  .dexrow{display:flex;gap:6px;padding:4px 14px 8px;overflow-x:auto}
+  .dexrow::-webkit-scrollbar{height:0}
+  .dchip{border:1.5px solid #e2e5ef;background:#fff;border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;color:#6b7090;white-space:nowrap}
+  .dchip.on{background:#2b2f45;border-color:#2b2f45;color:#fff}
+  .dtabs{display:flex;border-bottom:1.5px solid #f0f2f8;padding:0 10px;overflow-x:auto}
+  .dtabs::-webkit-scrollbar{height:0}
+  .dtab{border:0;background:none;padding:9px 8px;font-size:11px;font-weight:600;color:#b0b4c6;white-space:nowrap}
+  .dtab.on{color:#2b2f45;box-shadow:inset 0 -2.5px 0 #2b2f45}
+
+  /* home */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 16px}
+  .tile{border:0;border-radius:16px;height:64px;color:#fff;font-weight:600;font-size:13px;text-align:left;padding:0 14px}
+  .note{font-size:10.5px;color:#9095ad;padding:10px 18px;line-height:1.5}
+
+  /* dex grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 14px 20px}
+  .card{border:0;border-radius:16px;height:96px;position:relative;text-align:left;padding:10px 10px;color:#fff;overflow:hidden}
+  .card .n{font-size:12.5px;font-weight:700}
+  .card .num{position:absolute;right:10px;top:9px;font-size:10px;font-weight:700;opacity:.8}
+  .card img{position:absolute;right:-4px;bottom:-6px;width:70px;height:70px;object-fit:contain}
+  .card .badge{display:inline-block;margin-top:4px;font-size:8.5px;font-weight:700;background:rgba(255,255,255,.28);border-radius:6px;padding:2px 5px}
+  .sect{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#b0b4c6;padding:12px 16px 4px;text-transform:uppercase}
+
+  /* detail */
+  .hero{position:relative;color:#fff;padding:0 18px 70px;transition:background .25s}
+  .hero .nm{font-size:22px;font-weight:700}
+  .hero .ctxline{font-size:11px;font-weight:600;opacity:.85;margin-top:2px}
+  .hero .types{display:flex;gap:5px;margin-top:6px}
+  .tp{font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:rgba(255,255,255,.28)}
+  .hero img{position:absolute;right:12px;bottom:-26px;width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(0,0,0,.25))}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;padding:14px 16px 2px}
+  .pill{border:1.5px solid #e2e5ef;background:#fff;border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:600;color:#2b2f45}
+  .pill.on{background:#2b2f45;color:#fff;border-color:#2b2f45}
+  .pill.off{color:#c3c7d6;border-style:dashed}
+  .pill.off small{display:block;font-size:8px;font-weight:600}
+  .sheet{background:#fff;border-radius:26px 26px 0 0;margin-top:-26px;position:relative;min-height:400px}
+  .tabs{display:flex;gap:14px;padding:16px 16px 0;border-bottom:1.5px solid #f0f2f8;overflow-x:auto}
+  .tabs::-webkit-scrollbar{height:0}
+  .tab{border:0;background:none;font-size:11.5px;font-weight:600;color:#b0b4c6;padding:0 0 9px;white-space:nowrap}
+  .tab.on{color:#2b2f45;box-shadow:inset 0 -2.5px 0 #2b2f45}
+  .body{padding:12px 16px 30px;font-size:12px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #f4f5f9}
+  .row .k{color:#9095ad}
+  .h{font-size:11px;font-weight:700;margin:12px 0 4px}
+  .muted{color:#9095ad;font-size:11px}
+  .stat{display:grid;grid-template-columns:62px 30px 1fr;gap:8px;align-items:center;padding:4px 0}
+  .stat .bar{height:6px;background:#f0f2f8;border-radius:4px;overflow:hidden}
+  .stat .bar i{display:block;height:100%;border-radius:4px}
+  .mv{display:grid;grid-template-columns:1fr 56px 44px 44px;gap:6px;padding:7px 0;border-bottom:1px solid #f4f5f9;align-items:baseline}
+  .mv.head{font-size:9.5px;color:#9095ad;font-weight:700}
+  .mv .sub{display:block;font-size:9px;color:#9095ad}
+  .lnk{border:0;background:none;padding:0;color:#3b6fd8;font-weight:600;font-size:inherit;text-align:left}
+
+  /* evolution */
+  .evo{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:8px 0}
+  .em{border:0;background:#f6f7fb;border-radius:14px;width:84px;padding:6px 4px 7px;text-align:center;font-size:10.5px;font-weight:600;color:#2b2f45}
+  .em img{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto}
+  .em.off{opacity:.38}
+  .em.off small{display:block;font-size:8px}
+  .arr{font-size:9px;color:#6b7090;text-align:center;width:62px}
+  .arr b{display:block;font-size:13px;color:#b0b4c6}
+  .branch{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+  .branch .cell{text-align:center}
+  .branch .em{width:100%}
+  .branch .trig{font-size:8.5px;color:#6b7090;min-height:22px;padding:2px}
+
+  /* location */
+  .ggrid .gr{display:grid;grid-template-columns:44px 1fr;gap:8px;margin-bottom:8px}
+  .ggrid .gl{font-size:8.5px;font-weight:700;color:#b0b4c6;padding-top:7px;text-align:right}
+  .cells{display:flex;gap:5px;flex-wrap:wrap}
+  .gc{border:0;width:30px;height:30px;border-radius:8px;font-size:9px;font-weight:700;background:#3FAE72;color:#fff}
+  .gc.no{background:#f2f4f9;color:#c8ccda}
+  .gc.sel{outline:2.5px solid #2b2f45;outline-offset:1.5px}
+  .seg{display:inline-flex;border:1.5px solid #e2e5ef;border-radius:10px;overflow:hidden;margin:4px 0 8px}
+  .seg button{border:0;background:#fff;padding:5px 14px;font-size:11px;font-weight:600;color:#6b7090}
+  .seg button.on{background:#2b2f45;color:#fff}
+  .enc{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f4f5f9}
+  .mchip{font-size:9px;font-weight:700;background:#eef0f6;border-radius:6px;padding:2px 6px;color:#6b7090;align-self:center}
+  .dlc{font-size:8px;font-weight:700;background:#2b2f45;color:#fff;border-radius:4px;padding:1px 4px;margin-left:5px;vertical-align:middle}
+
+  /* lists */
+  .li{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #f4f5f9;font-size:12.5px;width:100%;border-left:0;border-right:0;border-top:0;background:#fff;text-align:left}
+  .li .meta{font-size:10px;color:#9095ad}
+  .empty{padding:40px 26px;text-align:center;color:#6b7090;font-size:12.5px;line-height:1.6}
+  .empty .big{font-size:28px;margin-bottom:6px}
+  .btn{border:0;background:#2b2f45;color:#fff;border-radius:10px;padding:8px 14px;font-size:11.5px;font-weight:600;margin-top:10px}
+  .notin{font-size:9px;font-weight:700;color:#b0b4c6;border:1.2px dashed #d5d8e4;border-radius:6px;padding:1px 5px}
+  .search{margin:4px 14px 6px;border:1.5px solid #e2e5ef;border-radius:12px;padding:8px 12px}
+  .search input{border:0;outline:0;font-family:inherit;font-size:13px;width:100%}
+
+  /* picker sheet */
+  .scrim{position:absolute;inset:0;background:rgba(20,22,40,.45);display:flex;align-items:flex-end;z-index:5}
+  .psheet{background:#fff;width:100%;border-radius:24px 24px 0 0;padding:10px 16px 22px;max-height:82%;overflow-y:auto}
+  .psheet .grab{width:36px;height:4px;border-radius:2px;background:#dfe2ec;margin:0 auto 10px}
+  .psheet h3{margin:0 0 2px;font-size:15px}
+  .psheet .sub{font-size:11px;color:#9095ad;margin-bottom:10px}
+  .prow{margin-bottom:10px}
+  .prow .pl{font-size:9px;font-weight:700;color:#b0b4c6;letter-spacing:.06em;margin-bottom:5px}
+  .prow .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opt{border:1.5px solid #e2e5ef;background:#fff;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:600;color:#2b2f45}
+  .opt.on{background:#2b2f45;color:#fff;border-color:#2b2f45}
+  .opt.dis{color:#c8ccda;border-style:dashed;cursor:default}
+  .setting{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#6b7090;padding:8px 0 0;border-top:1px solid #f0f2f8;margin-top:6px}
+
+  /* prototype switcher bar (not part of the design) */
+  .proto{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#111;color:#fff;border-radius:999px;padding:6px 8px;display:flex;align-items:center;gap:8px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:50;font-family:system-ui,sans-serif}
+  .proto button{background:#333;color:#fff;border:0;border-radius:999px;width:28px;height:28px;font-size:14px}
+  .proto .lab{min-width:200px;text-align:center}
+  .proto .tag{background:#f5c518;color:#111;border-radius:6px;padding:1px 6px;font-weight:700;margin-right:6px;font-size:10px}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone" id="phone"></div></div>
+<div class="proto">
+  <span class="tag">PROTOTYPE</span>
+  <button id="prev" title="Previous variant (←)">‹</button>
+  <span class="lab" id="vlabel"></span>
+  <button id="next" title="Next variant (→)">›</button>
+</div>
+<script>
+/* ---------------------------------------------------------------- data */
+const ART = id => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + id + '.png';
+
+// Release order. std = standard mechanics (abilities, PP, accuracy): eligible as a reference game.
+const GAMES = [
+  { id:'rb',   name:'Red/Blue',          console:'GB',     gen:1, std:true,  abilities:false, megas:false, color:'#C0392B',
+    versions:['Red','Blue'],          dexes:[{id:'kanto', label:'Kanto'}] },
+  { id:'usum', name:'Ultra Sun/Ultra Moon', console:'3DS', gen:7, std:true,  abilities:true,  megas:true,  color:'#E67E22',
+    versions:['Ultra Sun','Ultra Moon'], dexes:[{id:'alola', label:'Alola'}, {id:'melemele', label:'Melemele'}] },
+  { id:'swsh', name:'Sword/Shield',      console:'Switch', gen:8, std:true,  abilities:true,  megas:false, color:'#2F80ED',
+    versions:['Sword','Shield'],      dexes:[{id:'galar', label:'Galar'}, {id:'ioa', label:'Isle of Armor', dlc:true}, {id:'ct', label:'Crown Tundra', dlc:true}] },
+  { id:'la',   name:'Legends: Arceus',   console:'Switch', gen:8, std:false, abilities:false, megas:false, color:'#8E7B5A',
+    versions:['Legends: Arceus'],     dexes:[{id:'hisui', label:'Hisui'}], styles:true },
+  { id:'sv',   name:'Scarlet/Violet',    console:'Switch', gen:9, std:true,  abilities:true,  megas:false, color:'#B03A8C',
+    versions:['Scarlet','Violet'],    dexes:[{id:'paldea', label:'Paldea'}, {id:'kitakami', label:'Kitakami', dlc:true}, {id:'blueberry', label:'Blueberry', dlc:true}] },
+  { id:'za',   name:'Legends: Z-A',      console:'Switch', gen:9, std:false, abilities:false, megas:true,  color:'#1FA37A',
+    versions:['Legends: Z-A'],        dexes:[{id:'lumiose', label:'Lumiose'}, {id:'hyperspace', label:'Hyperspace', dlc:true}], cooldowns:true },
+];
+const G = id => GAMES.find(g => g.id === id);
+const TYPE_COLOR = { Fire:'#F08030', Ice:'#64C8D8', Normal:'#A8A878', Fairy:'#EE99AC', Rock:'#B8A038', Steel:'#8E9AAA', Ground:'#C9A55C', Water:'#5B8FE8', Electric:'#E8C23C', Psychic:'#F06A8E', Dark:'#6B5A4E', Grass:'#62B85A', Flying:'#8FA4E8', Dragon:'#6F5CE8' };
+
+// Forms. games = where the form exists. dex = number per (game.dex). Stats current; gen1 adds Special.
+const FORMS = {
+  'vulpix':        { sp:'vulpix', name:'Vulpix', label:'Kanto', nat:37, art:37, types:['Fire'], stats:[38,41,40,50,65,65], special:65,
+                     games:['rb','usum','swsh','sv'], dex:{ rb:{kanto:37}, swsh:{galar:68} },
+                     abil:['Flash Fire','Drought (H)'], evo:'vulpix' },
+  'vulpix-alola':  { sp:'vulpix', name:'Vulpix', label:'Alolan', nat:37, art:10103, types:['Ice'], stats:[38,41,40,50,65,65],
+                     games:['usum','swsh','la','sv'], dex:{ usum:{alola:23, melemele:31}, la:{hisui:79}, sv:{blueberry:56} },
+                     abil:['Snow Cloak','Snow Warning (H)'], evo:'vulpix-alola' },
+  'clefairy':      { sp:'clefairy', name:'Clefairy', label:'', nat:35, art:35, types:['Fairy'], oldTypes:{maxGen:5, types:['Normal']}, stats:[70,45,48,60,65,35], special:60,
+                     games:['rb','usum','swsh','sv','za'], dex:{ rb:{kanto:35}, usum:{alola:41}, swsh:{galar:255}, za:{lumiose:72} },
+                     abil:['Cute Charm','Magic Guard','Friend Guard (H)'], evo:'clefairy' },
+  'onix':          { sp:'onix', name:'Onix', label:'', nat:95, art:95, types:['Rock','Ground'], stats:[35,45,160,30,45,70], special:30,
+                     games:['rb','usum','swsh','la'], dex:{ rb:{kanto:95}, swsh:{galar:178}, la:{hisui:84} },
+                     abil:['Rock Head','Sturdy','Weak Armor (H)'], evo:'onix' },
+  'steelix':       { sp:'steelix', name:'Steelix', label:'', nat:208, art:208, types:['Steel','Ground'], stats:[75,85,200,55,65,30],
+                     games:['usum','swsh','la'], dex:{ swsh:{galar:179}, la:{hisui:85} },
+                     abil:['Rock Head','Sturdy','Sheer Force (H)'], evo:'onix' },
+  'eevee':         { sp:'eevee', name:'Eevee', label:'', nat:133, art:133, types:['Normal'], stats:[55,55,50,45,65,55], special:65,
+                     games:['rb','usum','swsh','la','sv'], dex:{ rb:{kanto:133}, usum:{alola:120}, swsh:{galar:196}, la:{hisui:70}, sv:{paldea:188} },
+                     abil:['Run Away','Adaptability','Anticipation (H)'], evo:'eevee' },
+  'growlithe':     { sp:'growlithe', name:'Growlithe', label:'Kanto', nat:58, art:58, types:['Fire'], stats:[55,70,45,70,50,60], special:50,
+                     games:['rb','usum','swsh','sv'], dex:{ rb:{kanto:58}, usum:{alola:139}, swsh:{galar:188}, sv:{paldea:27} },
+                     abil:['Intimidate','Flash Fire','Justified (H)'], evo:'growlithe' },
+  'growlithe-hisui': { sp:'growlithe', name:'Growlithe', label:'Hisuian', nat:58, art:10229, types:['Fire','Rock'], stats:[60,75,45,65,50,55],
+                     games:['la','sv'], dex:{ la:{hisui:57} },
+                     abil:['Intimidate','Flash Fire','Rock Head (H)'], evo:'growlithe-hisui' },
+  'charizard':     { sp:'charizard', name:'Charizard', label:'', nat:6, art:6, types:['Fire','Flying'], stats:[78,84,78,109,85,100], special:85,
+                     games:['rb','usum','swsh','sv','za'], dex:{ rb:{kanto:6}, swsh:{galar:380}, sv:{kitakami:11}, za:{lumiose:9} },
+                     abil:['Blaze','Solar Power (H)'], evo:'charizard' },
+  'charizard-mega-x': { sp:'charizard', name:'Charizard', label:'Mega X', nat:6, art:10034, types:['Fire','Dragon'], stats:[78,130,111,130,85,100],
+                     games:['usum','za'], abil:['Tough Claws'], evo:'charizard' },
+  'charizard-mega-y': { sp:'charizard', name:'Charizard', label:'Mega Y', nat:6, art:10035, types:['Fire','Flying'], stats:[78,104,78,159,115,100],
+                     games:['usum','za'], abil:['Drought'], evo:'charizard' },
+  'charizard-gmax':{ sp:'charizard', name:'Charizard', label:'Gigantamax', nat:6, art:10196, types:['Fire','Flying'], stats:[78,84,78,109,85,100],
+                     games:['swsh'], abil:['Blaze','Solar Power (H)'], evo:'charizard' },
+  'wooloo':        { sp:'wooloo', name:'Wooloo', label:'', nat:831, art:831, types:['Normal'], stats:[42,40,55,40,45,48],
+                     games:['swsh'], dex:{ swsh:{galar:182, ioa:11} },
+                     abil:['Fluffy','Run Away','Bulletproof (H)'], evo:'wooloo' },
+};
+const SPECIES = ['charizard','clefairy','vulpix','growlithe','onix','eevee','steelix','wooloo'];
+const formsOf = sp => Object.keys(FORMS).filter(k => FORMS[k].sp === sp);
+const DEFAULT = sp => formsOf(sp)[0];
+// "Also in this game": roster species that sit in none of the game's dexes.
+const ALSO = { usum:['charizard'], sv:['clefairy','vulpix','onix'] };
+
+// Evolution members (identity). games = where the member exists.
+const MEMBERS = {
+  charmander:{n:'Charmander', art:4, games:['rb','usum','swsh','sv','za']}, charmeleon:{n:'Charmeleon', art:5, games:['rb','usum','swsh','sv','za']},
+  charizard:{n:'Charizard', art:6, slug:'charizard', games:FORMS.charizard.games},
+  cleffa:{n:'Cleffa', art:173, games:['usum','swsh','sv','za']}, clefairy:{n:'Clefairy', art:35, slug:'clefairy', games:FORMS.clefairy.games}, clefable:{n:'Clefable', art:36, games:['rb','usum','swsh','sv','za']},
+  vulpix:{n:'Vulpix', art:37, slug:'vulpix', games:FORMS.vulpix.games}, ninetales:{n:'Ninetales', art:38, games:['rb','usum','swsh','sv']},
+  'vulpix-alola':{n:'Alolan Vulpix', art:10103, slug:'vulpix-alola', games:FORMS['vulpix-alola'].games}, 'ninetales-alola':{n:'Alolan Ninetales', art:10104, games:['usum','swsh','la','sv']},
+  growlithe:{n:'Growlithe', art:58, slug:'growlithe', games:FORMS.growlithe.games}, arcanine:{n:'Arcanine', art:59, games:['rb','usum','swsh','sv']},
+  'growlithe-hisui':{n:'Hisuian Growlithe', art:10229, slug:'growlithe-hisui', games:['la','sv']}, 'arcanine-hisui':{n:'Hisuian Arcanine', art:10230, games:['la','sv']},
+  onix:{n:'Onix', art:95, slug:'onix', games:FORMS.onix.games}, steelix:{n:'Steelix', art:208, slug:'steelix', games:FORMS.steelix.games},
+  wooloo:{n:'Wooloo', art:831, slug:'wooloo', games:['swsh']}, dubwool:{n:'Dubwool', art:832, games:['swsh']},
+  eevee:{n:'Eevee', art:133, slug:'eevee', games:FORMS.eevee.games},
+  vaporeon:{n:'Vaporeon', art:134, games:['rb','usum','swsh','la','sv']}, jolteon:{n:'Jolteon', art:135, games:['rb','usum','swsh','la','sv']}, flareon:{n:'Flareon', art:136, games:['rb','usum','swsh','la','sv']},
+  espeon:{n:'Espeon', art:196, games:['usum','swsh','la','sv']}, umbreon:{n:'Umbreon', art:197, games:['usum','swsh','la','sv']},
+  leafeon:{n:'Leafeon', art:470, games:['usum','swsh','la','sv']}, glaceon:{n:'Glaceon', art:471, games:['usum','swsh','la','sv']}, sylveon:{n:'Sylveon', art:700, games:['usum','swsh','la','sv']},
+};
+// Lines: steps [from, to, triggerByGame]. Triggers come from the screen's one game.
+const LINES = {
+  charizard:{ steps:[['charmander','charmeleon',{_:'Lv. 16'}],['charmeleon','charizard',{_:'Lv. 36'}]] },
+  clefairy:{ steps:[['cleffa','clefairy',{_:'High friendship'}],['clefairy','clefable',{_:'Moon Stone'}]] },
+  vulpix:{ steps:[['vulpix','ninetales',{_:'Fire Stone'}]] },
+  'vulpix-alola':{ steps:[['vulpix-alola','ninetales-alola',{_:'Ice Stone'}]] },
+  growlithe:{ steps:[['growlithe','arcanine',{_:'Fire Stone'}]] },
+  'growlithe-hisui':{ steps:[['growlithe-hisui','arcanine-hisui',{_:'Fire Stone'}]] },
+  onix:{ steps:[['onix','steelix',{_:'Trade holding Metal Coat', la:'Use a Linking Cord'}]] },
+  wooloo:{ steps:[['wooloo','dubwool',{_:'Lv. 24'}]] },
+  eevee:{ root:'eevee', branch:[
+    ['vaporeon',{_:'Water Stone'}],['jolteon',{_:'Thunder Stone'}],['flareon',{_:'Fire Stone'}],
+    ['espeon',{_:'Friendship, day'}],['umbreon',{_:'Friendship, night'}],
+    ['leafeon',{usum:'Level up near Moss Rock', _:'Leaf Stone'}],['glaceon',{usum:'Level up near Ice Rock', _:'Ice Stone'}],
+    ['sylveon',{usum:'Affection + Fairy move', _:'Friendship + Fairy move'}] ] },
+};
+
+// Moves, per game. LA has styles, Z-A has cooldowns, Gen 1 derives category from type.
+const MOVES = {
+  flamethrower:{ n:'Flamethrower', type:'Fire', games:{
+    rb:{p:95,a:100,pp:15}, usum:{p:90,a:100,pp:15}, swsh:{p:90,a:100,pp:15}, la:{p:80,ag:70,st:100,a:100,pp:10}, sv:{p:90,a:100,pp:15}, za:{p:90,cd:'6 s'} },
+    cat:'Special', learners:{ rb:['charizard','vulpix','growlithe'], usum:['charizard','vulpix','growlithe','charizard-mega-x'], swsh:['charizard','vulpix','growlithe'], la:['growlithe-hisui'], sv:['charizard','vulpix','growlithe','growlithe-hisui'], za:['charizard','charizard-mega-x','charizard-mega-y'] } },
+  'hidden-power':{ n:'Hidden Power', type:'Normal', games:{ usum:{p:60,a:100,pp:15} }, cat:'Special',
+    learners:{ usum:['charizard','vulpix','clefairy','eevee','onix','steelix','growlithe'] } },
+  'body-slam':{ n:'Body Slam', type:'Normal', games:{ rb:{p:85,a:100,pp:15}, usum:{p:85,a:100,pp:15}, swsh:{p:85,a:100,pp:15}, sv:{p:85,a:100,pp:15}, za:{p:85,cd:'5 s'} }, cat:'Physical',
+    learners:{ rb:['clefairy','eevee','onix'], usum:['clefairy','eevee','onix','steelix'], swsh:['clefairy','eevee','onix','steelix','wooloo'], sv:['clefairy','eevee'], za:['clefairy'] } },
+  moonblast:{ n:'Moonblast', type:'Fairy', games:{ usum:{p:95,a:100,pp:15}, swsh:{p:95,a:100,pp:15}, sv:{p:95,a:100,pp:15}, za:{p:95,cd:'7 s'} }, cat:'Special',
+    learners:{ usum:['clefairy'], swsh:['clefairy'], sv:['clefairy'], za:['clefairy'] } },
+  'iron-tail':{ n:'Iron Tail', type:'Steel', games:{ usum:{p:100,a:75,pp:15}, swsh:{p:100,a:75,pp:15}, la:{p:100,ag:85,st:120,a:75,pp:5}, sv:{p:100,a:75,pp:15} }, cat:'Physical',
+    learners:{ usum:['onix','steelix','growlithe'], swsh:['onix','steelix'], la:['onix','steelix'], sv:['growlithe','growlithe-hisui'] } },
+  'sing':{ n:'Sing', type:'Normal', games:{ rb:{p:null,a:55,pp:15}, usum:{p:null,a:55,pp:15}, swsh:{p:null,a:55,pp:15}, sv:{p:null,a:55,pp:15} }, cat:'Status',
+    learners:{ rb:['clefairy'], usum:['clefairy'], swsh:['clefairy'], sv:['clefairy'] } },
+};
+const TM = { sv:{ flamethrower:'TM125', 'body-slam':'TM066' }, swsh:{ flamethrower:'TM15', 'iron-tail':'TR56' }, usum:{ flamethrower:'TM35', 'hidden-power':'TM10' } };
+const SPECIAL_TYPES = ['Fire','Water','Grass','Ice','Electric','Psychic','Dragon','Dark'];
+
+const ABILITIES = [
+  { n:'Flash Fire', gen:3 }, { n:'Cute Charm', gen:3 }, { n:'Magic Guard', gen:4 }, { n:'Intimidate', gen:3 },
+  { n:'Snow Warning', gen:4 }, { n:'Fluffy', gen:7 }, { n:'Adaptability', gen:4 }, { n:'Sturdy', gen:3 },
+];
+
+// Encounters (illustrative). Sections = the game's regions / DLC areas.
+const ENC = {
+  vulpix:{ rb:{Red:[], Blue:[['Kanto','Route 7','Lv 18-20 · 10%','Tall grass']]},
+           swsh:{Sword:[['Galar','Motostoke Riverbank','Lv 24-27 · up to 15%','Overworld'],['Isle of Armor','Fields of Honor','Lv 60-62 · 6%','Tall grass']], Shield:[]},
+           sv:{Scarlet:[], Violet:[]}},
+  'vulpix-alola':{ usum:{'Ultra Sun':[], 'Ultra Moon':[['Alola','Mount Lanakila','Lv 42-45 · 10%','Tall grass']]},
+                   swsh:{Sword:[], Shield:[['Crown Tundra','Snowslide Slope','Lv 62-64 · 5%','Overworld']]},
+                   la:{'Legends: Arceus':[['Hisui','Alabaster Icelands','Lv 30-35','Overworld']]},
+                   sv:{Scarlet:[['Blueberry','Polar Biome','Lv 63-66','Overworld']], Violet:[['Blueberry','Polar Biome','Lv 63-66','Overworld']]}},
+  wooloo:{ swsh:{Sword:[['Galar','Route 1','Lv 2-4 · 30%','Tall grass'],['Isle of Armor','Fields of Honor','Lv 60 · 10%','Overworld']], Shield:[['Galar','Route 1','Lv 2-4 · 30%','Tall grass']]}},
+  onix:{ rb:{Red:[['Kanto','Rock Tunnel','Lv 13-17 · 10%','Cave']], Blue:[['Kanto','Rock Tunnel','Lv 13-17 · 10%','Cave']]},
+         swsh:{Sword:[['Galar','Galar Mine','Lv 12-14 · 10%','Overworld']], Shield:[['Galar','Galar Mine','Lv 12-14 · 10%','Overworld']]},
+         la:{'Legends: Arceus':[['Hisui','Coronet Highlands','Lv 25-30','Overworld']]}},
+};
+// Locations under a lens: the game's world, sectioned.
+const WORLD = {
+  rb:[['Kanto',['Pallet Town','Route 1','Viridian Forest','Rock Tunnel','Route 7']]],
+  usum:[['Alola',['Route 1','Mount Lanakila','Melemele Meadow']]],
+  swsh:[['Galar',['Route 1','Galar Mine','Motostoke Riverbank']],['Isle of Armor',['Fields of Honor','Soothing Wetlands']],['Crown Tundra',['Snowslide Slope','Ballimere Lake']]],
+  la:[['Hisui',['Obsidian Fieldlands','Coronet Highlands','Alabaster Icelands']]],
+  sv:[['Paldea',['South Province','Area Zero']],['Kitakami',['Mossui Town','Oni Mountain']],['Blueberry',['Savanna Biome','Polar Biome']]],
+  za:[['Lumiose',['Wild Zone 1','Wild Zone 2']],['Hyperspace',['Hyperspace Lumiose']]],
+};
+
+/* ---------------------------------------------------------------- lens rules */
+const has = (slug, gid) => (FORMS[slug] ? FORMS[slug].games : MEMBERS[slug].games).includes(gid);
+// Reference game: newest standard game that holds it; a non-standard game only if it is the only one.
+function refGame(slug) {
+  const gs = (FORMS[slug] ? FORMS[slug].games : MEMBERS[slug].games).map(G);
+  const std = gs.filter(g => g.std);
+  return (std.length ? std : gs).slice(-1)[0];
+}
+// The screen's one game, and whether we fell back.
+function screenGame(slug) {
+  if (S.lens !== 'national' && has(slug, S.lens)) return { g: G(S.lens), fallback:false };
+  return { g: refGame(slug), fallback: S.lens !== 'national' };
+}
+// Native form for a species in a game: the dex-listed one, then the regional one, then default.
+function nativeForm(sp, gid, dexId) {
+  const fs = formsOf(sp).filter(f => has(f, gid));
+  if (!fs.length) return DEFAULT(sp);
+  const listed = fs.filter(f => FORMS[f].dex && FORMS[f].dex[gid] && (!dexId || FORMS[f].dex[gid][dexId]));
+  if (listed.length === 1) return listed[0];
+  const regional = { usum:'Alolan', la:'Hisuian', sv:'Paldean', swsh:'Galarian' }[gid];
+  const reg = (listed.length ? listed : fs).find(f => FORMS[f].label === regional);
+  return reg || (listed[0] || fs[0]);
+}
+function typesIn(f, g) { return (f.oldTypes && g.gen <= f.oldTypes.maxGen) ? f.oldTypes.types : f.types; }
+
+/* ---------------------------------------------------------------- state */
+const params = new URLSearchParams(location.search);
+const VARIANTS = [['A','Corner chip'],['B','Game colour'],['C','Context bar']];
+const S = {
+  variant: (params.get('variant') || 'A').toUpperCase(),
+  lens: 'national', nationalOrder:false, dexId:null,
+  stack:[{s:'home'}], picker:null, search:'',
+};
+const cur = () => S.stack[S.stack.length - 1];
+function go(scr) { S.stack.push(scr); render(); }
+function back() { if (S.stack.length > 1) S.stack.pop(); render(); }
+function setLens(id) {
+  S.lens = id; S.dexId = id === 'national' ? null : G(id).dexes[0].id; S.picker = null;
+  const t = cur();
+  if (t.s === 'locs-gate') { S.stack.pop(); S.stack.push({ s:'locs' }); }
+  render();
+}
+
+/* ---------------------------------------------------------------- shared chrome (varies by variant) */
+const lensName = () => S.lens === 'national' ? 'National' : G(S.lens).name;
+function appBar(title, lensAware, opts = {}) {
+  const v = S.variant, gl = S.lens !== 'national' ? G(S.lens) : null;
+  const backBtn = S.stack.length > 1 ? `<button class="back" onclick="back()">←</button>` : '';
+  let right = '';
+  if (lensAware && v === 'A') right = `<button class="chip ${gl ? '' : 'nat'}" onclick="openPicker()">${lensName()} ▾</button>`;
+  if (lensAware && v === 'B') right = `<button class="gamebadge ${gl ? '' : 'nat'}" onclick="openPicker()">${lensName()} ▾</button>`;
+  const tint = lensAware && v === 'B' && gl ? `style="background:${gl.color}"` : (opts.bg ? `style="background:${opts.bg};color:#fff"` : '');
+  let html = `<div class="ab ${lensAware && v === 'B' && gl ? 'tinted' : ''}" ${tint}>${backBtn}<div class="ttl">${title}</div>${right}</div>`;
+  if (lensAware && v === 'C') html += contextBar(opts);
+  return html;
+}
+function contextBar(opts) {
+  const warn = opts.fallback;
+  let inner = `<button class="lensbtn" onclick="openPicker()">${lensName()} ▾</button>`;
+  if (warn) inner += `<span>Not in ${G(S.lens).name}</span><span class="sep">›</span><span>showing <b>${opts.shown}</b></span>`;
+  else if (opts.dexChips && S.lens !== 'national') inner += dexChipsInline();
+  else if (opts.context) inner += `<span class="sep">·</span><span>${opts.context}</span>`;
+  else if (opts.shown && S.lens === 'national') inner += `<span class="sep">·</span><span>Showing ${opts.shown}</span>`;
+  return `<div class="ctx ${warn ? 'warn' : ''}">${inner}</div>`;
+}
+function fallbackBanner(name, shown) {
+  if (S.variant === 'A') return `<div class="strip">${name} isn't in ${G(S.lens).name} · showing <b>${shown}</b></div>`;
+  if (S.variant === 'B') return `<div class="bcard"><div>⚠︎</div><div><b>Not in ${G(S.lens).name}</b>${name} is shown as it is in ${shown}, the newest game that has it.</div></div>`;
+  return ''; // C carries it in the context bar
+}
+function showingLabel(shown) {
+  if (S.lens !== 'national') return '';
+  if (S.variant === 'C') return '';
+  return `<div class="label">Showing ${shown}</div>`;
+}
+function dexEntries(gid, dexId) {
+  if (dexId === 'also') return (ALSO[gid] || []).map(sp => ({ sp, slug: nativeForm(sp, gid), num: null }));
+  const out = [];
+  SPECIES.forEach(sp => formsOf(sp).forEach(f => { const d = FORMS[f].dex && FORMS[f].dex[gid]; if (d && d[dexId]) out.push({ sp, slug: nativeForm(sp, gid, dexId), num: d[dexId] }); }));
+  const seen = new Set(); return out.filter(e => !seen.has(e.sp) && seen.add(e.sp)).sort((a, b) => a.num - b.num);
+}
+function dexList() {
+  const g = G(S.lens); const ids = g.dexes.map(d => d.id); if (ALSO[S.lens]) ids.push('also');
+  return ids.map(id => ({ id, label: id === 'also' ? 'Also in this game' : g.dexes.find(d => d.id === id).label }));
+}
+function dexChipsInline() {
+  if (S.nationalOrder) return `<span class="sep">·</span><span>Whole roster, National order</span>`;
+  return dexList().map(d => `<button class="dexc ${S.dexId === d.id ? 'on' : ''}" onclick="S.dexId='${d.id}';render()">${d.label}</button>`).join('');
+}
+function dexChips() {
+  if (S.lens === 'national' || S.variant === 'C' || S.nationalOrder) return '';
+  const list = dexList(); if (list.length < 2) return '';
+  if (S.variant === 'A') return `<div class="dexrow">${list.map(d => `<button class="dchip ${S.dexId === d.id ? 'on' : ''}" onclick="S.dexId='${d.id}';render()">${d.label}</button>`).join('')}</div>`;
+  return `<div class="dtabs">${list.map(d => `<button class="dtab ${S.dexId === d.id ? 'on' : ''}" onclick="S.dexId='${d.id}';render()">${d.label}</button>`).join('')}</div>`;
+}
+
+/* ---------------------------------------------------------------- screens */
+function home() {
+  const tiles = [['Pokédex','#4FC1A6',"go({s:'dex'})"],['Moves','#F7786B',"go({s:'moves'})"],['Abilities','#58ABF6',"go({s:'abilities'})"],['Items','#FFCE4B',''],
+                 ['Locations','#7C538C',"go({s: S.lens==='national' ? 'locs-gate' : 'locs'})"],['Type Chart','#B1736C',''],['Team Builder','#6F7DD6',''],['Compare','#E58FB4','']];
+  return appBar('Tall Grass', false) +
+    `<div class="scroll"><div class="search" onclick="go({s:'search'})"><input placeholder="Search Pokémon, moves…" readonly></div>
+     <div class="tiles">${tiles.map(t => `<button class="tile" style="background:${t[1]}" onclick="${t[2]}">${t[0]}</button>`).join('')}</div>
+     <div class="note">Home has no lens chip: it is not lens-aware. Type Chart, Team Builder and Compare are toolbox tools (no lens). Items and the toolbox are inert here.<br>Current lens: <b>${lensName()}</b> (persists across restarts).</div></div>`;
+}
+function dex() {
+  let entries, sub = '';
+  if (S.lens === 'national') {
+    entries = SPECIES.map(sp => ({ sp, slug: DEFAULT(sp), num: FORMS[DEFAULT(sp)].nat })).sort((a, b) => a.num - b.num);
+  } else if (S.nationalOrder) {
+    const roster = SPECIES.filter(sp => formsOf(sp).some(f => has(f, S.lens)));
+    entries = roster.map(sp => ({ sp, slug: nativeForm(sp, S.lens), num: FORMS[DEFAULT(sp)].nat, nat:true })).sort((a, b) => a.num - b.num);
+  } else {
+    entries = dexEntries(S.lens, S.dexId);
+    if (S.dexId === 'also') sub = `<div class="label">Can be held in ${G(S.lens).name} but sits in none of its Pokédexes. National numbers.</div>`;
+  }
+  const order = S.lens !== 'national' ? `<div class="label"><label><input type="checkbox" ${S.nationalOrder ? 'checked' : ''} onchange="S.nationalOrder=this.checked;render()"> National ordering (setting)</label></div>` : '';
+  const cards = entries.map(e => {
+    const f = FORMS[e.slug]; const g = S.lens === 'national' ? refGame(e.slug) : G(S.lens);
+    const col = TYPE_COLOR[typesIn(f, g)[0]];
+    const num = e.num == null || e.nat ? '#' + String(f.nat).padStart(3, '0') : '#' + String(e.num).padStart(3, '0');
+    const badge = S.dexId === 'also' && !e.nat ? '<span class="badge">Transfer only</span>' : (f.label && f.label !== 'Kanto' ? `<span class="badge">${f.label}</span>` : '');
+    return `<button class="card" style="background:${col}" onclick="openDetail('${e.slug}', ${e.num == null || e.nat ? 'null' : `'${S.dexId}'`})"><div class="n">${f.name}</div>${badge}<div class="num">${num}</div><img src="${ART(f.art)}"></button>`;
+  }).join('') || '<div class="muted" style="padding:20px">Nothing from this sample in this dex.</div>';
+  return appBar('Pokédex', true, { dexChips:true }) + dexChips() + `<div class="scroll">${order}${sub}<div class="grid">${cards}</div></div>`;
+}
+function openDetail(slug, dexId, specific) {
+  // Opening a species resolves to the lens game's native form; a specific form opens exactly that form.
+  let s = slug;
+  if (!specific && S.lens !== 'national') s = nativeForm(FORMS[slug] ? FORMS[slug].sp : slug, S.lens, dexId);
+  go({ s:'detail', slug:s, dexId, tab:'about', ver:null });
+}
+function detail() {
+  const t = cur(), f = FORMS[t.slug], sg = screenGame(t.slug), g = sg.g;
+  const types = typesIn(f, g), col = TYPE_COLOR[types[0]];
+  // Header number: context dex, else main dex, else National.
+  let ctx = '';
+  const dexOf = f.dex && f.dex[g.id];
+  if (t.dexId && dexOf && dexOf[t.dexId]) ctx = `${g.dexes.find(d => d.id === t.dexId).label} #${String(dexOf[t.dexId]).padStart(3,'0')}`;
+  else if (dexOf) { const d = g.dexes.find(d => dexOf[d.id]); ctx = `${d.label} #${String(dexOf[d.id]).padStart(3,'0')}`; }
+  else ctx = `#${String(f.nat).padStart(3,'0')} · Not in a regional Pokédex`;
+  if (S.lens === 'national') ctx = `#${String(f.nat).padStart(3,'0')}`;
+  const pills = formsOf(f.sp).length > 1 ? `<div class="pills">${formsOf(f.sp).map(k => {
+      const F = FORMS[k], absent = S.lens !== 'national' && !has(k, S.lens);
+      const lab = F.label || 'Base';
+      return `<button class="pill ${k === t.slug ? 'on' : ''} ${absent ? 'off' : ''}" onclick="swapForm('${k}')">${lab}${absent ? `<small>Not in ${G(S.lens).name}</small>` : ''}</button>`;
+    }).join('')}</div>` : '';
+  const abOpts = { fallback: sg.fallback, shown: g.name, context: S.lens !== 'national' ? ctx : '' };
+  const tabs = ['about','stats','evolution','moves','location'];
+  const tabNames = { about:'About', stats:'Base Stats', evolution:'Evolution', moves:'Moves', location:'Location' };
+  return `<div class="screen" style="background:${col}">` + appBar('', true, Object.assign({ bg: col }, abOpts)) +
+    (sg.fallback ? fallbackBanner(f.name, g.name) : '') +
+    `<div class="scroll"><div class="hero" style="background:${col}"><div class="nm">${f.label && f.label !== 'Kanto' && f.label !== '' ? f.label + ' ' : ''}${f.name}</div>
+      <div class="ctxline">${S.variant === 'C' ? `#${String(f.nat).padStart(3,'0')}` : ctx}${S.lens === 'national' && S.variant !== 'C' ? ` · Showing ${g.name}` : ''}</div>
+      <div class="types">${types.map(x => `<span class="tp">${x}</span>`).join('')}</div><img src="${ART(f.art)}"></div>
+    <div class="sheet">${pills}<div class="tabs">${tabs.map(x => `<button class="tab ${t.tab === x ? 'on' : ''}" onclick="cur().tab='${x}';render()">${tabNames[x]}</button>`).join('')}</div>
+    <div class="body">${({ about, stats, evolution, moves: movesTab, location: locationTab })[t.tab](t, f, g)}</div></div></div></div>`;
+}
+function swapForm(k) { const t = cur(); t.slug = k; render(); }
+function about(t, f, g) {
+  const nums = [];
+  GAMES.forEach(G2 => { const d = f.dex && f.dex[G2.id]; if (d) Object.keys(d).forEach(k => nums.push(`${G2.name} · ${G2.dexes.find(x => x.id === k).label} #${String(d[k]).padStart(3,'0')}`)); });
+  const ab = g.abilities ? `<div class="h">Abilities</div>${f.abil.map(a => `<div class="row"><span>${a}</span></div>`).join('')}`
+    : (f.games.every(x => !G(x).abilities) ? `<div class="h">Abilities</div><div class="muted">No abilities in ${g.name}.</div>` : '');
+  return `<div class="row"><span class="k">National</span><span>#${String(f.nat).padStart(3,'0')}</span></div>
+    <div class="h">Pokédex numbers</div>${nums.map(n => `<div class="row"><span class="muted">${n}</span></div>`).join('') || '<div class="muted">—</div>'}
+    ${ab}`;
+}
+function stats(t, f, g) {
+  const names = g.gen === 1 ? ['HP','Attack','Defense','Special','Speed'] : ['HP','Attack','Defense','Sp. Atk','Sp. Def','Speed'];
+  const vals = g.gen === 1 ? [f.stats[0], f.stats[1], f.stats[2], f.special ?? f.stats[3], f.stats[5]] : f.stats;
+  const col = TYPE_COLOR[typesIn(f, g)[0]];
+  return names.map((n, i) => `<div class="stat"><span class="muted">${n}</span><b>${vals[i]}</b><div class="bar"><i style="width:${Math.min(100, vals[i] / 1.6)}%;background:${col}"></i></div></div>`).join('') +
+    `<div class="stat"><span class="muted">Total</span><b>${vals.reduce((a, b) => a + b, 0)}</b><span></span></div>` +
+    (g.gen === 1 ? `<div class="muted" style="margin-top:8px">Five stats: Special is one stat in ${g.name}.</div>` : '');
+}
+function member(id, g) {
+  const m = MEMBERS[id], absent = !m.games.includes(g.id);
+  const click = m.slug ? `openDetail('${m.slug}', null, true)` : `alert('${m.n}: not in this sample')`;
+  return `<button class="em ${absent ? 'off' : ''}" onclick="${click}"><img src="${ART(m.art)}">${m.n}${absent ? `<small>Not in ${g.name}</small>` : ''}</button>`;
+}
+function trig(map, g) { return map[g.id] || map._; }
+function evolution(t, f, g) {
+  const line = LINES[f.evo];
+  if (line.branch) {
+    return `<div style="text-align:center">${member('eevee', g)}</div><div class="branch">${line.branch.map(([id, tm]) => {
+      const absent = !MEMBERS[id].games.includes(g.id);
+      return `<div class="cell"><div class="trig">${absent ? '' : trig(tm, g)}</div>${member(id, g)}</div>`; }).join('')}</div>
+      <div class="muted" style="margin-top:8px">Branches keep their positions whatever the lens. Triggers come from ${g.name}; an arrow into an absent member has none.</div>`;
+  }
+  let html = '<div class="evo">';
+  line.steps.forEach(([a, b, tm], i) => {
+    if (i === 0) html += member(a, g);
+    const absent = !MEMBERS[b].games.includes(g.id) || !MEMBERS[a].games.includes(g.id);
+    html += `<div class="arr"><b>→</b>${absent ? '' : trig(tm, g)}</div>` + member(b, g);
+  });
+  return html + '</div>';
+}
+function moveRow(mid, g) {
+  const m = MOVES[mid], v = m.games[g.id];
+  const cat = g.gen <= 3 && m.cat !== 'Status' ? (SPECIAL_TYPES.includes(m.type) ? 'Special' : 'Physical') : m.cat;
+  if (g.cooldowns) return `<div class="mv"><button class="lnk" onclick="go({s:'move',id:'${mid}'})">${m.n}</button><span>${v.p ?? '—'}</span><span>${v.cd}</span><span class="muted">${cat.slice(0,4)}</span></div>`;
+  return `<div class="mv"><button class="lnk" onclick="go({s:'move',id:'${mid}'})">${m.n}</button><span>${v.p ?? '—'}</span><span>${v.a}</span><span>${v.pp}</span></div>`;
+}
+function movesTab(t, f, g) {
+  const list = Object.keys(MOVES).filter(mid => (MOVES[mid].learners[g.id] || []).includes(t.slug) || (MOVES[mid].learners[g.id] || []).includes(f.sp));
+  const head = g.cooldowns ? `<div class="mv head"><span>Move</span><span>Power</span><span>Cooldown</span><span>Cat.</span></div>`
+                           : `<div class="mv head"><span>Move</span><span>Power</span><span>Acc.</span><span>PP</span></div>`;
+  return `<div class="muted">${g.name} learnset${g.cooldowns ? ' · no PP or accuracy in this game' : ''}${g.styles ? ' · standard power shown' : ''}</div>` + head + (list.map(mid => moveRow(mid, g)).join('') || '<div class="muted">No sample moves.</div>');
+}
+function locationTab(t, f, g) {
+  const enc = ENC[t.slug] || {};
+  if (S.lens === 'national') {
+    const rows = ['Switch','3DS','GB'];
+    const cells = GAMES.flatMap(G2 => G2.versions.map(v => ({ g:G2, v, ok: !!(enc[G2.id] && enc[G2.id][v] && enc[G2.id][v].length) })));
+    const latest = [...cells].reverse().find(c => c.ok);
+    const sel = t.ver ? cells.find(c => c.v === t.ver) : latest;
+    const code = v => v.split(/[ :/]/).filter(Boolean).map(w => w[0]).join('').slice(0, 2);
+    return `<div class="muted">Which game has it? Latest obtainable preselected.</div><div class="ggrid" style="margin-top:8px">${rows.map(r => `<div class="gr"><div class="gl">${r}</div><div class="cells">${cells.filter(c => c.g.console === r).map(c =>
+      `<button class="gc ${c.ok ? '' : 'no'} ${sel && c.v === sel.v ? 'sel' : ''}" title="${c.v}" onclick="cur().ver='${c.v}';render()">${code(c.v)}</button>`).join('')}</div></div>`).join('')}</div>` +
+      (sel ? encList(sel.g, sel.v, enc, null) : '<div class="muted">Not obtainable in any game in this sample.</div>');
+  }
+  const ver = t.ver && g.versions.includes(t.ver) ? t.ver : g.versions[0];
+  return (g.versions.length > 1 ? `<div class="seg">${g.versions.map(v => `<button class="${v === ver ? 'on' : ''}" onclick="cur().ver='${v}';render()">${v}</button>`).join('')}</div>` : '') +
+    encList(g, ver, enc, t.dexId);
+}
+function encList(g, ver, enc, ctxDex) {
+  const rows = (enc[g.id] && enc[g.id][ver]) || [];
+  if (!rows.length) return `<div class="muted" style="margin-top:8px">${ver}: transfer it in from another game.</div>`;
+  let secs = [...new Set(rows.map(r => r[0]))];
+  const ctxLabel = ctxDex && g.dexes.find(d => d.id === ctxDex) ? g.dexes.find(d => d.id === ctxDex).label : null;
+  if (ctxLabel) secs.sort((a, b) => (b === ctxLabel) - (a === ctxLabel));
+  return `<div class="h">${ver}</div>` + secs.map(s => {
+    const dlc = g.dexes.find(d => d.label === s && d.dlc);
+    return `<div class="sect" style="padding-left:0">${s}${dlc ? '<span class="dlc">DLC</span>' : ''}</div>` +
+      rows.filter(r => r[0] === s).map(r => `<div class="enc"><div><div>${r[1]}</div><div class="muted">${r[2]}</div></div><span class="mchip">${r[3]}</span></div>`).join('');
+  }).join('');
+}
+function moves() {
+  const g = S.lens === 'national' ? null : G(S.lens);
+  const ids = Object.keys(MOVES).filter(mid => !g || MOVES[mid].games[g.id]);
+  const tmSort = cur().tmSort && g;
+  const tm = mid => g && TM[g.id] && TM[g.id][mid];
+  const sorted = tmSort ? ids.filter(tm).sort((a, b) => String(tm(a)).localeCompare(String(tm(b)), undefined, { numeric:true })) : ids;
+  return appBar('Moves', true, { shown: '' }) + `<div class="scroll">
+    ${g ? `<div class="label"><label><input type="checkbox" ${tmSort ? 'checked' : ''} onchange="cur().tmSort=this.checked;render()"> Sort by TM number</label></div>` : ''}
+    ${sorted.map(mid => { const rg = g || G(Object.keys(MOVES[mid].games).slice(-1)[0]);
+      return `<button class="li" onclick="go({s:'move',id:'${mid}'})"><span>${MOVES[mid].n}<div class="meta">${MOVES[mid].type}${tmSort ? ' · ' + tm(mid) : ''}${!g ? ' · as of ' + refMove(mid).name : ''}</div></span><span class="meta">›</span></button>`; }).join('')}
+    ${g ? `<div class="note">Moves that don't exist in ${g.name} aren't listed (Hidden Power is gone from Gen 8 on). Search still finds them.</div>` : ''}</div>`;
+}
+function refMove(mid) { const gs = Object.keys(MOVES[mid].games).map(G); const std = gs.filter(x => x.std); return (std.length ? std : gs).slice(-1)[0]; }
+function move() {
+  const t = cur(), m = MOVES[t.id];
+  const inLens = S.lens !== 'national' && m.games[S.lens];
+  const g = inLens ? G(S.lens) : refMove(t.id), fb = S.lens !== 'national' && !inLens, v = m.games[g.id];
+  const cat = g.gen <= 3 && m.cat !== 'Status' ? (SPECIAL_TYPES.includes(m.type) ? 'Special' : 'Physical') : m.cat;
+  let rows = `<div class="row"><span class="k">Type</span><span>${m.type}</span></div><div class="row"><span class="k">Category</span><span>${cat}${g.gen <= 3 ? ' <span class="muted">(by type)</span>' : ''}</span></div>`;
+  rows += `<div class="row"><span class="k">Power</span><span style="text-align:right">${v.p ?? '—'}${g.styles && v.ag ? `<br><span class="muted">Agile ${v.ag} · Strong ${v.st}</span>` : ''}</span></div>`;
+  if (g.cooldowns) rows += `<div class="row"><span class="k">Cooldown</span><span>${v.cd}</span></div>`;
+  else rows += `<div class="row"><span class="k">Accuracy</span><span>${v.a}</span></div><div class="row"><span class="k">PP</span><span>${v.pp}</span></div>`;
+  if (TM[g.id] && TM[g.id][t.id]) rows += `<div class="row"><span class="k">Machine</span><span>${TM[g.id][t.id]} in ${g.name}</span></div>`;
+  const learners = (m.learners[g.id] || []).map(s => `<button class="li" onclick="openDetail('${s}', null, true)">${FORMS[s].label && FORMS[s].label !== 'Kanto' ? FORMS[s].label + ' ' : ''}${FORMS[s].name}<span class="meta">›</span></button>`).join('');
+  return appBar(m.n, true, { fallback: fb, shown: g.name }) + (fb ? fallbackBanner(m.n, g.name) : '') +
+    `<div class="scroll">${showingLabel(g.name)}<div class="body">${rows}<div class="h">Learned by, in ${g.name}</div></div>${learners}
+     ${g.cooldowns ? '<div class="note">Z-A has no PP and no accuracy: cooldown takes PP\'s slot and the accuracy row is omitted.</div>' : ''}</div>`;
+}
+function abilities() {
+  const g = S.lens === 'national' ? null : G(S.lens);
+  if (g && !g.abilities) {
+    return appBar('Abilities', true, {}) + `<div class="scroll"><div class="empty"><div class="big">∅</div>${g.name} has no abilities.<br>${g.gen <= 2 ? 'They were introduced in Ruby/Sapphire.' : 'This game removed them.'}<br><button class="btn" onclick="setLens('national')">See them in National</button></div></div>`;
+  }
+  const list = ABILITIES.filter(a => !g || a.gen <= g.gen);
+  return appBar('Abilities', true, {}) + `<div class="scroll">${list.map(a => `<div class="li"><span>${a.n}<div class="meta">Gen ${a.gen}</div></span></div>`).join('')}</div>`;
+}
+function locsGate() {
+  return appBar('Locations', true, {}) + `<div class="scroll"><div class="empty"><div class="big">🗺</div>Locations are per game.<br><button class="btn" onclick="openPicker('Locations are per game: which one are you playing?')">Choose a game</button></div>
+    <div class="note">With no lens, the Locations tile opens the picker; choosing a game sets the lens. The Regions list and region detail are removed.</div></div>`;
+}
+function locs() {
+  const w = WORLD[S.lens] || [];
+  return appBar('Locations', true, {}) + `<div class="scroll">${w.map(([sec, ls]) => {
+    const dlc = G(S.lens).dexes.find(d => d.label === sec && d.dlc);
+    return `<div class="sect">${sec}${dlc ? '<span class="dlc">DLC</span>' : ''}</div>` + ls.map(l => `<div class="li"><span>${l}</span><span class="meta">›</span></div>`).join(''); }).join('')}
+    <div class="note">The game's own locations, sectioned by region or DLC area. FireRed's Kanto and Red/Blue's would differ.</div></div>`;
+}
+function search() {
+  const q = S.search.toLowerCase();
+  const g = S.lens === 'national' ? null : G(S.lens);
+  let poke = Object.keys(FORMS).filter(k => (FORMS[k].label + ' ' + FORMS[k].name).toLowerCase().includes(q));
+  let mv = Object.keys(MOVES).filter(k => MOVES[k].n.toLowerCase().includes(q));
+  if (g) { poke.sort((a, b) => has(b, g.id) - has(a, g.id)); mv.sort((a, b) => !!MOVES[b].games[g.id] - !!MOVES[a].games[g.id]); }
+  const badge = ok => g && !ok ? `<span class="notin">Not in ${g.name}</span>` : '';
+  return appBar('Search', true, {}) + `<div class="search"><input id="q" autofocus placeholder="Try: char, vulpix, hidden" value="${S.search}" oninput="S.search=this.value;render();document.getElementById('q').focus();document.getElementById('q').setSelectionRange(99,99)"></div>
+    <div class="scroll"><div class="sect">Pokémon</div>${poke.slice(0, 5).map(k => `<button class="li" onclick="openDetail('${k}', null, true)"><span>${FORMS[k].label && FORMS[k].label !== 'Kanto' ? FORMS[k].label + ' ' : ''}${FORMS[k].name}</span>${badge(g && has(k, g.id))}</button>`).join('')}
+    <div class="sect">Moves</div>${mv.slice(0, 5).map(k => `<button class="li" onclick="go({s:'move',id:'${k}'})"><span>${MOVES[k].n}</span>${badge(g && MOVES[k].games[g.id])}</button>`).join('')}</div>`;
+}
+
+/* ---------------------------------------------------------------- picker */
+function openPicker(title) { S.picker = { title: title || 'Which game?' }; render(); }
+function picker() {
+  if (!S.picker) return '';
+  const rows = ['Switch','3DS','DS','GBA','GB'];
+  const extra = { DS:['Black/White','HeartGold/SoulSilver','Diamond/Pearl'], GBA:['FireRed/LeafGreen','Ruby/Sapphire'], '3DS':['X/Y','Sun/Moon'], GB:['Gold/Silver','Yellow'], Switch:["Let's Go",'BDSP'] };
+  return `<div class="scrim" onclick="if(event.target===this){S.picker=null;render()}"><div class="psheet"><div class="grab"></div>
+    <h3>${S.picker.title}</h3><div class="sub">The lens stays on until you change it, and is remembered next time.</div>
+    <div class="prow"><div class="opts"><button class="opt ${S.lens === 'national' ? 'on' : ''}" onclick="setLens('national')">National</button></div></div>
+    ${rows.map(r => `<div class="prow"><div class="pl">${r}</div><div class="opts">${GAMES.filter(g => g.console === r).map(g => `<button class="opt ${S.lens === g.id ? 'on' : ''}" onclick="setLens('${g.id}')">${g.name}</button>`).join('')}${(extra[r] || []).map(n => `<span class="opt dis">${n}</span>`).join('')}</div></div>`).join('')}
+    <div class="setting"><span>National ordering in the dex</span><input type="checkbox" ${S.nationalOrder ? 'checked' : ''} onchange="S.nationalOrder=this.checked;render()"></div>
+  </div></div>`;
+}
+
+/* ---------------------------------------------------------------- render + switcher */
+const SCREENS = { home, dex, detail, moves, move, abilities, 'locs-gate': locsGate, locs, search };
+function render() {
+  const t = cur(), html = SCREENS[t.s]();
+  document.getElementById('phone').innerHTML = (html.startsWith('<div class="screen"') ? html : `<div class="screen">${html}</div>`) + picker();
+  document.getElementById('phone').className = 'phone v' + S.variant;
+  const v = VARIANTS.find(x => x[0] === S.variant) || VARIANTS[0];
+  document.getElementById('vlabel').textContent = `${v[0]} — ${v[1]}`;
+}
+function cycle(d) {
+  const i = VARIANTS.findIndex(x => x[0] === S.variant);
+  S.variant = VARIANTS[(i + d + VARIANTS.length) % VARIANTS.length][0];
+  const p = new URLSearchParams(location.search); p.set('variant', S.variant); history.replaceState(null, '', '?' + p);
+  render();
+}
+document.getElementById('prev').onclick = () => cycle(-1);
+document.getElementById('next').onclick = () => cycle(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea,[contenteditable]')) return;
+  if (e.key === 'ArrowLeft') cycle(-1); if (e.key === 'ArrowRight') cycle(1);
+});
+render();
+</script>
+</body>
+</html>
